@@ -2,15 +2,27 @@
 
 Genera fino al numero di rose configurato per giornata, con vincoli Dunkest, previsioni PDK e malus trasferimenti. Il preset iniziale è per la stagione 2026/27 e usa le prestazioni NBA 2025/26.
 
-## Preparazione
+## Installazione da Terminale
 
-Da Terminale, una sola volta:
+Dopo aver clonato il repository, entra nella cartella del progetto. I comandi funzionano anche se la cartella locale si chiama `Dunkest_2.0`:
 
 ```bash
-cd Dunkest
-./.venv/bin/pip install -e .
+cd Dunkest_2.0
+python3 -m venv .venv
+./.venv/bin/python -m pip install --upgrade pip
+./.venv/bin/python -m pip install -e ".[dev]"
 ./.venv/bin/python -m playwright install chromium
 ```
+
+Installa anche CBC, richiesto dall'ottimizzatore: su macOS `brew install cbc`; su Debian/Ubuntu `sudo apt install coinor-cbc`. Verifica l'installazione con `./.venv/bin/python -m dunkest --help` e l'intera suite con `./.venv/bin/python -m pytest -q`. Non è necessario attivare l'ambiente virtuale: usa direttamente `.venv/bin/python`.
+
+Il backtest usa dati archiviati in locale che non sono inclusi nel repository. Prima di lanciarlo, leggi [data/README.md](data/README.md) e verifica che esistano gli snapshot prepartita e i risultati per la stagione/giornate scelte. Esempio:
+
+```bash
+bash ./run-backtest.sh --config config/backtest.example.yaml --from-gw 1 --to-gw 10
+```
+
+Il comando produce un report di readiness e termina con codice diverso da zero se mancano prove storiche necessarie; non genera metriche di lineup su dati incompleti. Il file di configurazione d'esempio seleziona la stagione 2025/26: usalo solo se gli snapshot locali corrispondono a quella stagione.
 
 L'ottimizzatore richiede CBC disponibile nel sistema. Su macOS si installa con `brew install cbc`; su Debian/Ubuntu con `sudo apt install coinor-cbc`.
 
