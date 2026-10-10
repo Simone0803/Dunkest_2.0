@@ -144,6 +144,8 @@ def _compare_risk_objectives(
     settings: Settings,
     realized_map: dict[str, float],
     gameweek: int,
+    current_roster: list[str] | None = None,
+    current_coach: str | None = None,
 ) -> list[dict]:
     if not realized_map:
         return []
@@ -159,7 +161,8 @@ def _compare_risk_objectives(
             comparison_settings.risk_lambda = risk_lambda
         try:
             solutions = optimize_top_k_lineups(
-                players, coaches, comparison_settings, k=1
+                players, coaches, comparison_settings,
+                current_roster=current_roster, current_coach=current_coach, k=1
             )
         except ValueError as exc:
             rows.append({
@@ -445,11 +448,40 @@ def run_walk_forward_backtest(
             # today's prices to fill the gap.
             coach_df = _neutral_coaches(gw_games, round_settings.min_cr)
         risk_rows = _compare_risk_objectives(
-            preds, coach_df, round_settings, realized_map, gw
+            preds, coach_df, round_settings, realized_map, gw,
+            current_roster=round_settings.current_roster,
+            current_coach=round_settings.current_coach,
         )
         for risk_row in risk_rows:
             risk_row["evaluation_split"] = "holdout" if gw >= holdout_start_gw else "selection"
         risk_comparison_rows.extend(risk_rows)
+        selected_strategy = None
+        if gw >= holdout_start_gw and risk_comparison_rows:
+            selection_frame = pd.DataFrame(risk_comparison_rows)
+            selection_frame = selection_frame.loc[
+                selection_frame.get("evaluation_split", pd.Series(index=selection_frame.index, dtype=str)).eq("selection")
+            ]
+            selection_frame["realized_player_score"] = pd.to_numeric(
+                selection_frame.get("realized_player_score"), errors="coerce"
+            )
+            selection_frame = selection_frame.dropna(subset=["realized_player_score"])
+            if not selection_frame.empty:
+                means = selection_frame.groupby(
+                    ["objective", "risk_lambda"], dropna=False, as_index=False
+                )["realized_player_score"].mean()
+                chosen = means.sort_values(
+                    ["realized_player_score", "objective", "risk_lambda"],
+                    ascending=[False, True, True], kind="stable"
+                ).iloc[0]
+                selected_strategy = {
+                    "objective": str(chosen["objective"]),
+                    "risk_lambda": float(chosen["risk_lambda"]) if pd.notna(chosen["risk_lambda"]) else None,
+                    "selection_mean_realized_player_score": float(chosen["realized_player_score"]),
+                    "selection_gameweeks": sorted(selection_frame["gameweek"].unique().tolist()),
+                }
+                round_settings.optimizer_objective = selected_strategy["objective"]
+                if selected_strategy["risk_lambda"] is not None:
+                    round_settings.risk_lambda = selected_strategy["risk_lambda"]
         lineups = optimize_top_k_lineups(preds, coach_df, round_settings, k=3)
         realized_coach_map = _realized_coach_scores(coach_market, team_logs, gw_games) if historical_coach_market_available else {}
         # An ex-post optimum is meaningful only if every candidate in the
@@ -543,6 +575,8 @@ def run_walk_forward_backtest(
             rows.append({
                 "gameweek": gw, "rank": rank,
                 "evaluation_split": "holdout" if gw >= holdout_start_gw else "selection",
+                "optimizer_objective": round_settings.optimizer_objective,
+                "risk_lambda": round_settings.risk_lambda,
                 "expected_team_pdk": sol.expected_team_pdk,
                 "realized_player_score_before_transfers": player_score_before_transfers if complete else float("nan"),
                 "realized_player_score": player_score,
@@ -590,5 +624,6 @@ def run_walk_forward_backtest(
         "holdout_start_gameweek": holdout_start_gw,
         "selection_gameweeks": list(range(from_gw, holdout_start_gw)),
         "holdout_gameweeks": list(range(holdout_start_gw, to_gw + 1)),
+        "selected_holdout_strategy": selected_strategy if "selected_strategy" in locals() else None,
     }
     return results, report, extras
