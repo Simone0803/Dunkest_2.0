@@ -176,12 +176,27 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
             "Training features are empty or lack target_pdk. Check the NBA game-log "
             "cache and the selected feature season."
         )
-    df = features.dropna(subset=["target_pdk"]).copy()
+    df = features.copy()
+    df["target_pdk"] = pd.to_numeric(df["target_pdk"], errors="coerce")
+    finite_target = np.isfinite(df["target_pdk"].to_numpy(dtype=float, na_value=np.nan))
+    df = df.loc[finite_target].copy()
     if df.empty:
-        raise ValueError("No historical target_pdk values are available for model training.")
+        raise ValueError("No finite historical target_pdk values are available for model training.")
+
+    # Ignore features that are absent or entirely missing in the training slice.
+    # An all-missing feature otherwise becomes a synthetic constant zero column.
     cols = [c for c in FEATURE_COLS if c in df.columns]
     for c in cols:
         df[c] = pd.to_numeric(df[c], errors="coerce")
+    cols = [
+        c for c in cols
+        if np.isfinite(df[c].to_numpy(dtype=float, na_value=np.nan)).any()
+    ]
+    if not cols:
+        raise ValueError(
+            "No usable model features are available: expected at least one finite "
+            "column from FEATURE_COLS. Check feature generation and historical data."
+        )
     target_pdk = pd.to_numeric(df["target_pdk"], errors="coerce")
     baseline = pd.to_numeric(
         df.get("expected_pdk_minutes_model", pd.Series(0.0, index=df.index)),
