@@ -1,0 +1,19 @@
+# Preset: prima giornata NBA 2026/27, squadra nuova (95 CR, trasferimenti gratis)
+season: "2026-27"
+season_id: "26"
+opening_prior_season_id: "25"
+nba_season_start: "2026-10-20"
+nba_season_end: "2027-06-30"
+season_opener:
+  prior_season: "2025-26"
+  gameweek: 1
+  budget: 95.0
+  transfer_penalty: 0.0
+  use_pdk_cr_proxy: false
+  pdk_cr_scale: 2.75
+
+max_player_log_entries: 0
+optimizer_top_k: 3
+min_different_players_top_k: 1
+optimizer_objective: expected_value
+use_injuries: true

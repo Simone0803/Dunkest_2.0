@@ -1,0 +1,35 @@
+{
+  "scope": "player-game OOF; one NBA season; segmented by realized minutes/home status for diagnosis",
+  "segments": {
+    "minutes_lt12": {
+      "n": 2404,
+      "mae": 5.456267173594929,
+      "bias_prediction_minus_actual": 4.434032415109852
+    },
+    "minutes_12_24": {
+      "n": 5209,
+      "mae": 6.614848255792047,
+      "bias_prediction_minus_actual": 1.6860043452055342
+    },
+    "minutes_24_32": {
+      "n": 4595,
+      "mae": 8.107492366824886,
+      "bias_prediction_minus_actual": -1.6887994529062391
+    },
+    "minutes_ge32": {
+      "n": 2956,
+      "mae": 9.72876447606511,
+      "bias_prediction_minus_actual": -5.100909662562856
+    },
+    "home": {
+      "n": 7582,
+      "mae": 7.458630200522474,
+      "bias_prediction_minus_actual": -0.31576931546493114
+    },
+    "away": {
+      "n": 7582,
+      "mae": 7.522346595382539,
+      "bias_prediction_minus_actual": -0.13220112617846894
+    }
+  }
+}

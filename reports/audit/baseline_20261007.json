@@ -1,0 +1,273 @@
+{
+  "created_utc": "2026-10-07T15:23:09.747657+00:00",
+  "baseline_version": "pre-audit-2026-10-07",
+  "git_commit": null,
+  "git_hash_unavailable_reason": "no resolvable git commit is available in this workspace snapshot",
+  "python": "3.14.3",
+  "input_sha256": {
+    "data/processed/player_game_logs_2025-26.parquet": "cf717ea90208c7f3156297851adb11e5deeda894d489c1cddc52b384378bbaef",
+    "data/processed/team_game_logs_2025-26.parquet": "cd55900cf4f22679737d54cc21300a533e34d8b195c7f7daec3062c870ea5ac0"
+  },
+  "validation_scope": "player-game PDK OOF, NBA 2025-26; not a gameweek lineup backtest",
+  "player_game_rows": 24424,
+  "feature_rows": 24905,
+  "oof_rows": 15164,
+  "overall_metrics": {
+    "prediction": {
+      "n": 15164,
+      "mae": 7.490488397952506,
+      "rmse": 9.69435887566784,
+      "medae": 6.008221159344711,
+      "r2": 0.3913509966431149,
+      "spearman": 0.6153469874607509,
+      "pearson": 0.6259898542387352,
+      "bias": -0.22398522082170003
+    },
+    "minutes_x_rate": {
+      "n": 15120,
+      "mae": 7.542411319153065,
+      "rmse": 9.821103585619326,
+      "medae": 5.979836330690712,
+      "r2": 0.37550652813582563,
+      "spearman": 0.6065920304466271,
+      "pearson": 0.6174539855742935,
+      "bias": -0.388631336268848
+    },
+    "season_mean": {
+      "n": 15120,
+      "mae": 7.645033552413356,
+      "rmse": 9.9582673862794,
+      "medae": 6.066625341997264,
+      "r2": 0.3579410770988527,
+      "spearman": 0.5880419788574835,
+      "pearson": 0.6054145090585605,
+      "bias": -0.625523756944497
+    },
+    "last5": {
+      "n": 15120,
+      "mae": 7.932726094025573,
+      "rmse": 10.354181526900613,
+      "medae": 6.262499999999999,
+      "r2": 0.30587311033062603,
+      "spearman": 0.5724837300665903,
+      "pearson": 0.5783375942821971,
+      "bias": -0.19322749944885362
+    },
+    "weighted_recent": {
+      "n": 15120,
+      "mae": 7.76866803029468,
+      "rmse": 10.136317015964723,
+      "medae": 6.1338437500000005,
+      "r2": 0.3347763374894904,
+      "spearman": 0.5862882908233316,
+      "pearson": 0.5932233994225231,
+      "bias": -0.21307551922582307
+    }
+  },
+  "fold_metrics": [
+    {
+      "fold": 0,
+      "train_first": "2025-10-21",
+      "train_last": "2026-02-04",
+      "validation_first": "2026-02-05",
+      "validation_last": "2026-03-02",
+      "train_rows": 15129,
+      "validation_rows": 2992,
+      "metrics": {
+        "prediction": {
+          "n": 2992,
+          "mae": 7.494801478395702,
+          "rmse": 9.701628062896186,
+          "medae": 5.954367670120499,
+          "r2": 0.3601318474192883,
+          "spearman": 0.5816042730069454,
+          "pearson": 0.6001558816223532,
+          "bias": -0.06083391094784698
+        },
+        "minutes_x_rate": {
+          "n": 2980,
+          "mae": 7.536887934785514,
+          "rmse": 9.816372036925584,
+          "medae": 5.928987876364457,
+          "r2": 0.3449211706181079,
+          "spearman": 0.5725653209835442,
+          "pearson": 0.5927988617013809,
+          "bias": -0.17708272680047613
+        },
+        "season_mean": {
+          "n": 2980,
+          "mae": 7.7407788732165015,
+          "rmse": 10.02897589015497,
+          "medae": 6.112172677865612,
+          "r2": 0.31623838058593357,
+          "spearman": 0.5449359516233013,
+          "pearson": 0.576029006980894,
+          "bias": -0.466708488312099
+        },
+        "last5": {
+          "n": 2980,
+          "mae": 7.965385067114094,
+          "rmse": 10.414272238152293,
+          "medae": 6.2600000000000025,
+          "r2": 0.26269123346421075,
+          "spearman": 0.5336315988929421,
+          "pearson": 0.5452569822506225,
+          "bias": 0.09418274608501118
+        },
+        "weighted_recent": {
+          "n": 2980,
+          "mae": 7.801098344285981,
+          "rmse": 10.183373266026175,
+          "medae": 6.12984375,
+          "r2": 0.29502312580913026,
+          "spearman": 0.5476714282611932,
+          "pearson": 0.5622628539362208,
+          "bias": 0.029137065389634592
+        }
+      }
+    },
+    {
+      "fold": 1,
+      "train_first": "2025-10-21",
+      "train_last": "2026-03-02",
+      "validation_first": "2026-03-03",
+      "validation_last": "2026-03-22",
+      "train_rows": 18134,
+      "validation_rows": 3087,
+      "metrics": {
+        "prediction": {
+          "n": 3087,
+          "mae": 7.481959652038292,
+          "rmse": 9.688905403143853,
+          "medae": 6.053027574653754,
+          "r2": 0.4059330109030903,
+          "spearman": 0.6165417119576185,
+          "pearson": 0.637973804329321,
+          "bias": -0.10377768945791707
+        },
+        "minutes_x_rate": {
+          "n": 3069,
+          "mae": 7.5494704302732165,
+          "rmse": 9.789722934962384,
+          "medae": 6.010802085920041,
+          "r2": 0.39360450186410834,
+          "spearman": 0.604900110823559,
+          "pearson": 0.629680691555675,
+          "bias": -0.24017211815428471
+        },
+        "season_mean": {
+          "n": 3069,
+          "mae": 7.621582534249741,
+          "rmse": 9.903001823533025,
+          "medae": 6.16226851851852,
+          "r2": 0.3794898569430838,
+          "spearman": 0.586763908110265,
+          "pearson": 0.6197720479235527,
+          "bias": -0.5183460192238697
+        },
+        "last5": {
+          "n": 3069,
+          "mae": 7.950772917345497,
+          "rmse": 10.330269673281276,
+          "medae": 6.3500000000000005,
+          "r2": 0.3247905918925911,
+          "spearman": 0.5703581458825882,
+          "pearson": 0.5919394240577484,
+          "bias": -0.1409843054197893
+        },
+        "weighted_recent": {
+          "n": 3069,
+          "mae": 7.772160834939902,
+          "rmse": 10.086289711414956,
+          "medae": 6.133437500000001,
+          "r2": 0.3563081006599068,
+          "spearman": 0.5857843559216399,
+          "pearson": 0.6077972792517645,
+          "bias": -0.1484525898546396
+        }
+      }
+    },
+    {
+      "fold": 2,
+      "train_first": "2025-10-21",
+      "train_last": "2026-03-22",
+      "validation_first": "2026-03-23",
+      "validation_last": "2026-04-12",
+      "train_rows": 21237,
+      "validation_rows": 3231,
+      "metrics": {
+        "prediction": {
+          "n": 3231,
+          "mae": 7.610517536346877,
+          "rmse": 10.019868067588021,
+          "medae": 5.935829602095163,
+          "r2": 0.36937317229558597,
+          "spearman": 0.6006044395309283,
+          "pearson": 0.6116495315194632,
+          "bias": -0.8684293555928031
+        },
+        "minutes_x_rate": {
+          "n": 3230,
+          "mae": 7.720302544246216,
+          "rmse": 10.259683586989093,
+          "medae": 5.841858030360093,
+          "r2": 0.3389492980479075,
+          "spearman": 0.5860388310123515,
+          "pearson": 0.5957035156776715,
+          "bias": -1.2154423814396054
+        },
+        "season_mean": {
+          "n": 3230,
+          "mae": 7.897080565623399,
+          "rmse": 10.497623033714634,
+          "medae": 6.09100116301609,
+          "r2": 0.307931977058722,
+          "spearman": 0.5567589087558045,
+          "pearson": 0.5732532096022372,
+          "bias": -1.460984919078501
+        },
+        "last5": {
+          "n": 3230,
+          "mae": 8.057653637770898,
+          "rmse": 10.686492560483288,
+          "medae": 6.185000000000001,
+          "r2": 0.28280506810402894,
+          "spearman": 0.5565057110116086,
+          "pearson": 0.5656688044456275,
+          "bias": -0.7044846491228071
+        },
+        "weighted_recent": {
+          "n": 3230,
+          "mae": 7.90971532238992,
+          "rmse": 10.50094786069662,
+          "medae": 6.17696875,
+          "r2": 0.3074935214544,
+          "spearman": 0.5681189812736601,
+          "pearson": 0.5777350724341228,
+          "bias": -0.7349420757008943
+        }
+      }
+    }
+  ],
+  "historical_snapshot_coverage": {
+    "player_credits": 1,
+    "coach_market": 1,
+    "injuries": 1
+  },
+  "snapshot_files": {
+    "player_credits": [
+      "data/processed/player_credits_26_gw1.parquet"
+    ],
+    "coach_market": [
+      "data/processed/coach_market_26_gw1.parquet"
+    ],
+    "injuries": [
+      "data/processed/injuries_26_gw1.parquet"
+    ]
+  },
+  "end_to_end_lineup_backtest_available": false,
+  "limitations": [
+    "Historical CR/coach/injury snapshots are not available across prior GWs, only active season G1.",
+    "No historical Dunkest valid-fixture snapshots across GWs."
+  ]
+}

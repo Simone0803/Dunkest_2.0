@@ -1,0 +1,54 @@
+# Dunkest NBA team optimizer
+
+Genera fino al numero di rose configurato per giornata, con vincoli Dunkest, previsioni PDK e malus trasferimenti. Il preset iniziale è per la stagione 2026/27 e usa le prestazioni NBA 2025/26.
+
+## Preparazione
+
+Da Terminale, una sola volta:
+
+```bash
+cd Dunkest
+./.venv/bin/pip install -e .
+./.venv/bin/python -m playwright install chromium
+```
+
+L'ottimizzatore richiede CBC disponibile nel sistema. Su macOS si installa con `brew install cbc`; su Debian/Ubuntu con `sudo apt install coinor-cbc`.
+
+Lo scraper apre Chromium su Dunkest Lineups usando un profilo persistente locale (`~/.dunkest-optimizer/lineups-browser-profile`). Al primo utilizzo accedi nel browser; alle esecuzioni successive riusa la sessione finché Dunkest non la fa scadere. Torna alla pagina Lineups e premi Invio nel Terminale: lo scraper visita tutte le partite per aggiornare il listino e, per ciascuna, scorre fino al fondo per cercare il riquadro **Indisponibili**. Salva listino e fixture del turno in `data/current_lineups_market.csv` e `data/lineups_fixtures.csv`; i matchup vengono associati agli NBA game ID per squadra e data. Archivia un OUT solo se riesce ad abbinarlo a un giocatore del listino, in `data/lineups_availability.csv`. Rieseguire lo scraping di un turno aggiorna quel turno e rimuove chi è tornato disponibile. Password e credenziali non vengono lette né salvate dall'applicazione; il profilo Chromium contiene cookie e stato di autenticazione, quindi resta privato sul computer. Per scegliere una directory diversa imposta `DUNKEST_LINEUPS_PROFILE` prima di eseguire il comando. Per usare il listino già salvato senza aprire il browser, aggiungi `--no-lineups-scrape`.
+
+```bash
+./run-season-opener.sh
+```
+
+È ancora possibile passare un CSV alternativo con `--credits-file`. Lo scraper sostituisce il listino solo se trova almeno 250 giocatori e prezzi per tutte le squadre presenti nelle partite mostrate da Lineups; le squadre senza partite nel calendario visibile non bloccano l'aggiornamento. Se manca una squadra effettivamente in calendario o un suo coach, conserva il CSV precedente e si ferma. Il comando salva previsioni, listino usato e rose in `data/predictions/<run-id>/`. Le previsioni combinano prestazioni e minuti NBA 2025/26, ruolo di quintetto/panchina e concorrenza nel roster corrente; i giocatori indicati come indisponibili sono esclusi. Il matchup viene associato dai fixture effettivamente letti in Dunkest Lineups e risolti con squadre, data e NBA game ID: il programma non presume che la prima partita NBA di una squadra sia quella valida per Dunkest. Senza mapping, il report segnala il dato mancante e non classifica coach sulla base del solo storico nella Giornata 1; il coach in rosa è scelto solo per contenere il costo. Quando il matchup è disponibile, il modello coach stima una distribuzione del punteggio usando attacco/difesa, forza proiettata dei roster, variabilità dei punti e probabilità OT osservata dai minuti storici; a ogni esito applica le regole Dunkest ufficiali, inclusi bonus/malus e coefficiente determinato dal CR dei due coach. Il budget comune fa competere il costo del coach con quello dei giocatori nell'ottimizzazione congiunta.
+
+## Dopo la giornata 1
+
+Copia `config/roster.example.yaml` in `config/current_roster.yaml`, sostituisci i nomi con i 10 giocatori e il coach attuali, poi esegui:
+
+```bash
+./.venv/bin/python -m dunkest run --giornata 2 --roster config/current_roster.yaml
+```
+
+Dalla giornata 2 il comando aggiorna prima le quotazioni in Lineups; rifiuta rose mancanti o incomplete e applica il malus di 5 punti per ogni giocatore o coach cambiato. Per le giornate successive aggiorna il numero dopo `--giornata` e il file con la squadra effettiva. Per usare il CSV già salvato senza aprire Lineups aggiungi `--no-lineups-scrape`.
+
+I log NBA sintetici sono disattivati per impostazione predefinita: se mancano log reali e non è presente una cache valida, il flusso si ferma invece di produrre previsioni da dati simulati. Per raccogliere i log NBA configura `use_nba_api_logs: true`; per accettare esplicitamente il fallback sintetico imposta invece `allow_synthetic_logs: true` in `config/default.yaml`. La cache generata viene marcata come sintetica e il backtest la rifiuta.
+
+## Expected points e diversità delle rose
+
+L'ensemble allena Ridge, Random Forest e Gradient Boosting (più XGBoost/LightGBM quando installati) a correggere la baseline minuti attesi × PDK/minuto storico. Modelli e pesi sono validati con tre finestre temporali espansive: ogni fold usa solo le date precedenti. Un blend convesso combina baseline, ensemble e prior PDK stagionale; i suoi pesi vengono imparati su fold precedenti e gli intervalli P10/P50/P90 sono calibrati sui fold successivi, mai sugli stessi campioni usati per apprenderli. Se i dati validati non bastano, il blend usa solo la baseline e gli intervalli usano il fallback simmetrico. Il rate PDK/minuto è ponderato sui minuti giocati; i giocatori low-cost senza storico non ricevono un rate inventato. Per un giocatore senza log recente e con CR da star può intervenire un prior per ruolo e fascia CR, stimato dal mercato storico e marcato come tale. Per i rookie il prior college stima sia PDK/minuto sia minuti NBA condizionali al gioco: la stima dei minuti usa gli esiti delle classi draft passate, viene verificata su classi successive e si combina al massimo per il 35% con il prior derivato da costo e ruolo correnti. Il contributo college si riduce man mano che il rookie accumula partite NBA; il costo informa inoltre il PDK/minuto tramite i giocatori storici di ruolo e prezzo simili. Il tag di quintetto è un segnale di ruolo ma non impone un minimo di minuti che annulli il segnale del CR per i rookie senza storico. Il forecast usa anche la prestazione precedente del giocatore contro l'avversario, con shrinkage verso il rate stagionale. La probabilità di presenza e i minuti allocati dopo la competizione nel roster riducono il PDK atteso. La previsione one-step della variazione CR (`plus`) usa solo costo iniziale e punteggio Dunkest, i due input dichiarati dalla regola ufficiale. Lo storico raccoglie tutte le giornate disponibili nelle ultime cinque stagioni Dunkest concluse e mantiene stagione e giornata per una validazione walk-forward cronologica. Il modello Ridge viene attivato solo se batte la baseline della media storica fuori campione; le bande e le probabilità di guadagno/perdita/invarianza integrano i quantili P10/P50/P90 del punteggio con residui dei fold temporali e arrotondano gli esiti simulati alla griglia storica di 0,1 CR. Fuori dal supporto storico del costo la stima resta assente. La raccolta è memorizzata per stagione e il report indica numerosità e MAE temporale.
+
+L'ottimizzatore massimizza i punti attesi (non il rapporto PDK/CR), rispettando budget, ruoli, slot, capitano e limite di giocatori per squadra; il costo CR entra nel vincolo di budget. La previsione condizionale di prestazione resta distinta dalla disponibilità: `expected_pdk_conditional` è il punteggio se il giocatore gioca, `p_play` è la probabilità di presenza, e `expected_pdk` è il prodotto usato dall'ottimizzatore. Starter valgono 1×, sesto uomo 1×, panchina 0,5×, capitano aggiunge 0,5× e il coach contribuisce con la sua previsione. Le bande di squadra combinano le incertezze individuali assumendo correlazione positiva moderata tra i giocatori, invece di sommare direttamente tutti i P10/P90 individuali. Coach e giocatori sono selezionati congiuntamente sotto lo stesso budget: il solver confronta il punteggio atteso del coach e il valore dei CR che restano per i giocatori; non usa PDK/CR come obiettivo. Il report espone vittoria/margine attesi, probabilità delle soglie da bonus, OT, coefficiente di difficoltà e costo opportunità rispetto al coach più economico. Se manca il matchup, il CR non viene usato come proxy della forza della squadra; alla Giornata 1 il coach non riceve una raccomandazione basata sul solo prior storico. La forza roster corrente corregge il profilo di squadra storico fino a ±6 PDK, con un segnale di incertezza quando il forecast roster non è disponibile. Quando il mercato coach fornisce avversaria e data, il modello seleziona quella partita invece della prima gara trovata nel calendario della giornata. I minuti per i giocatori CR 4–4,5 taggati quintetto usano un prior ridotto, così un singolo tag non produce da solo una previsione da titolare esperto. Il prior college rookie viene usato solo se supera il baseline in validazione temporale tra classi draft e il suo peso si riduce con le presenze NBA. Gli snapshot di listino, disponibilità e mercato coach vengono conservati per giornata; il backtest riusa i coach quotati in quel turno e mostra la copertura degli snapshot disponibili. Il backtest può quindi misurare in modo più realistico la scelta del coach, ma il punteggio coach realizzato non è ancora riportato come dato ufficiale. Dal secondo turno il report mostra la variazione CR realmente osservata e la PLUSVALENZA ufficiale giornaliera separatamente. La plusvalenza attesa resta separata dal PDK della giornata. L'ottimizzatore la converte in PDK equivalenti tramite il valore marginale del budget, stimato con una differenza finita risolvendo la stessa rosa con `budget` e `budget + capital_gain_budget_delta` (default 1 CR); il contributo vale per ogni giocatore in rosa, non solo per la panchina. Se il budget non è vincolante, κ è zero. Il report mostra PDK correnti, ΔCR attesa, probabilità di guadagno/invarianza/perdita e valore economico convertito separatamente. Le rose top-k sono classificate per objective, hanno roster distinti e devono usare capitani diversi; `min_different_players_top_k` può imporre ulteriore diversificazione del roster e ridurre lo score delle alternative successive. Se non ci sono abbastanza capitani eleggibili distinti, il programma restituisce solo le soluzioni che rispettano il vincolo.
+
+## Regole implementate
+
+- 10 giocatori: 4 guardie, 4 ali e 2 centri; un coach incluso nel budget di 95 CR.
+- Cinque titolari in uno dei moduli ufficiali, un sesto uomo e quattro riserve.
+- Massimo tre elementi della stessa franchigia NBA, contando anche il coach.
+- Capitano tra i titolari e bonus x1,5; riserve x0,5.
+- Fino a `optimizer_top_k` proposte con roster distinti; il default vieta solo il duplicato esatto, mentre `min_different_players_top_k` può imporre diversificazione aggiuntiva.
+- Trasferimenti gratuiti prima dell'inizio stagione; poi −5 punti per ogni giocatore o coach cambiato.
+
+Il flusso di apertura usa i PDK storici ufficiali Dunkest. Le funzioni di fallback basate sui box score NBA restano disponibili per gli altri flussi, ma sono solo una stima perché la fonte ufficiale Dunkest può attribuire eventi diversamente.
+
+Per altre opzioni CLI: `./.venv/bin/python -m dunkest --help`.
