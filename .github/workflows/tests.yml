@@ -19,5 +19,18 @@ jobs:
           cache: pip
       - name: Install project and test dependencies
         run: python -m pip install -e ".[dev]"
+      - name: Smoke-test terminal entry points
+        run: |
+          bash -n run-backtest.sh
+          python -m dunkest --help
+          python -m dunkest backtest --help
+          python - <<'PY'
+          from pathlib import Path
+          from dunkest.config import Settings
+          settings = Settings.from_yaml(Path("config/backtest.example.yaml"))
+          assert settings.season_id == "25"
+          assert settings.season == "2025-26"
+          print("Backtest configuration loaded successfully.")
+          PY
       - name: Run test suite
         run: python -m pytest -q
