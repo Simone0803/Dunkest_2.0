@@ -288,7 +288,14 @@ def run_walk_forward_backtest(
             and dk["gameweek_stats_available"].fillna(False).astype(bool).any()
         ):
             actual_pdk = pd.to_numeric(dk["actual_pdk"], errors="coerce")
-            realized_map = dict(zip(dk["player_name"].map(player_key), actual_pdk))
+            valid_actuals = (
+                dk["player_name"].map(player_key).ne("")
+                & np.isfinite(actual_pdk.to_numpy(dtype=float, na_value=np.nan))
+            )
+            realized_map = dict(zip(
+                dk.loc[valid_actuals, "player_name"].map(player_key),
+                actual_pdk.loc[valid_actuals].astype(float),
+            ))
         # The GW table contains outcomes. Do not pass those scores into inference.
         dk_for_prediction = dk.copy()
         if "pdk" in dk_for_prediction:
@@ -329,17 +336,32 @@ def run_walk_forward_backtest(
             )
         )
         lineups = optimize_top_k_lineups(preds, coach_df, round_settings, k=3)
+        # An ex-post optimum is meaningful only if every candidate in the
+        # prediction universe has a finite realized score. Assigning missing
+        # outcomes zero would silently bias the hindsight optimum.
+        hindsight_complete = bool(
+            realized_map
+            and "player_name" in preds
+            and preds["player_name"].map(player_key).ne("").all()
+            and preds["player_name"].map(player_key).isin(realized_map).all()
+        )
         hindsight = preds.copy()
-        hindsight["expected_pdk"] = hindsight["player_name"].map(
-            lambda name: realized_map.get(player_key(name), 0.0)
-        ) if realized_map else float("nan")
-        hindsight["p_play"] = 1.0
-        hindsight["status"] = "Available"
-        hindsight["expected_min"] = 40.0
-        hindsight = hindsight.dropna(subset=["expected_pdk"])
+        if hindsight_complete:
+            hindsight["expected_pdk"] = hindsight["player_name"].map(
+                lambda name: realized_map[player_key(name)]
+            )
+            hindsight["p10"] = hindsight["expected_pdk"]
+            hindsight["p50"] = hindsight["expected_pdk"]
+            hindsight["p90"] = hindsight["expected_pdk"]
+        else:
+            hindsight = pd.DataFrame()
+        if not hindsight.empty:
+            hindsight["p_play"] = 1.0
+            hindsight["status"] = "Available"
+            hindsight["expected_min"] = 40.0
         ex_post_lineups = optimize_top_k_lineups(
             hindsight, coach_df, round_settings, k=1
-        ) if not hindsight.empty and realized_map else []
+        ) if not hindsight.empty else []
         ex_post_score = float("nan")
         if ex_post_lineups:
             ex_sol = ex_post_lineups[0]
