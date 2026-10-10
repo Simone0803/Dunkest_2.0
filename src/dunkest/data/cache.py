@@ -72,7 +72,7 @@ def write_parquet(df: pd.DataFrame, path: Path, source: str, **extra: Any) -> No
         os.replace(temp_path, path)
         _atomic_write_text(
             _meta_path(path),
-            json.dumps(metadata, indent=2, allow_nan=False),
+            json.dumps(metadata, indent=2),
         )
     finally:
         temp_path.unlink(missing_ok=True)
