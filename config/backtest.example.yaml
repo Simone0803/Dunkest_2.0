@@ -1,0 +1,24 @@
+# Example only: use this configuration when local archived snapshots are for
+# Dunkest season ID 25 / NBA season 2025-26. Change season_id to match the data.
+season: "2025-26"
+season_id: "25"
+target_gameweek: 10
+budget: 95.0
+transfer_penalty: 5.0
+max_from_same_nba_team: 3
+model_type: ensemble
+rolling_windows: [3, 5, 10, 15]
+use_betting_lines: false
+use_injuries: true
+use_matchup: true
+use_coach_model: true
+use_schedule: true
+data_dir: data
+nba_season_start: "2025-10-21"
+nba_season_end: "2026-06-30"
+use_nba_api_logs: true
+allow_synthetic_logs: false
+optimizer_objective: expected_value
+risk_lambda: 0.15
+optimizer_risk_lambda_grid: [0.05, 0.10, 0.15, 0.25, 0.40]
+random_state: 42
