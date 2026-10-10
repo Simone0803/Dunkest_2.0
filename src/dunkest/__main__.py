@@ -267,7 +267,7 @@ def main() -> None:
                 "[bold]Strategia scelta solo sulla validazione[/bold]  "
                 f"objective={selected_strategy['objective']}  "
                 f"risk_lambda={selected_strategy['risk_lambda']}  "
-                f"media player score validazione={selected_strategy['selection_mean_realized_player_score']:.2f}  "
+                f"media team score validazione={selected_strategy['selection_mean_realized_team_score']:.2f}  "
                 f"giornate={selected_strategy['selection_gameweeks']}"
             )
 
@@ -312,6 +312,9 @@ def main() -> None:
                 scores = pd.to_numeric(
                     group["realized_player_score"], errors="coerce"
                 ).dropna()
+                team_scores = pd.to_numeric(
+                    group.get("realized_team_score", pd.Series(dtype=float)), errors="coerce"
+                ).dropna()
                 comparison_rows.append({
                     "evaluation_split": evaluation_split,
                     "objective": objective,
@@ -319,6 +322,9 @@ def main() -> None:
                     "scored_weeks": int(scores.size),
                     "mean_realized_player_score": (
                         float(scores.mean()) if not scores.empty else float("nan")
+                    ),
+                    "mean_realized_team_score": (
+                        float(team_scores.mean()) if not team_scores.empty else float("nan")
                     ),
                 })
             print_dataframe(
@@ -331,6 +337,7 @@ def main() -> None:
                     ("risk_lambda", "Lambda", ".2f"),
                     ("scored_weeks", "Settimane valide", "d"),
                     ("mean_realized_player_score", "Player score medio", ".2f"),
+                    ("mean_realized_team_score", "Team score medio", ".2f"),
                 ],
             )
             risk_path = settings.data_path / "backtests" / (
