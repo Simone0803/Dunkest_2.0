@@ -22,6 +22,7 @@ from dunkest.optimize.milp import optimize_top_k_lineups
 from dunkest.pipeline.ablation import run_ablation_summary
 from dunkest.pipeline.importance import feature_importance_summary
 from dunkest.rules.roster import player_contribution_multiplier
+from dunkest.rules.coach import coach_points_from_game
 
 MIN_HISTORICAL_MARKET_PLAYERS = 250
 
@@ -64,6 +65,62 @@ def _realized_player_score(
         )
     return score - solution.num_transfers * transfer_penalty, True
 
+
+
+def _realized_coach_scores(
+    coach_market: pd.DataFrame, team_logs: pd.DataFrame, gw_games: pd.DataFrame
+) -> dict[str, float]:
+    """Compute official coach points from verified final scores and archived coach credits."""
+    required = {"coach", "team", "coach_cr", "opponent", "opponent_coach_cr"}
+    game_col = "Game_ID" if "Game_ID" in team_logs else "GAME_ID" if "GAME_ID" in team_logs else None
+    if coach_market.empty or not required.issubset(coach_market.columns) or game_col is None:
+        return {}
+    if not {"TEAM_ABBREVIATION", "PTS"}.issubset(team_logs.columns):
+        return {}
+    logs = team_logs.copy()
+    logs["_game_id"] = logs[game_col].astype(str)
+    logs["_team"] = logs["TEAM_ABBREVIATION"].astype(str).str.upper().str.strip()
+    logs["_pts"] = pd.to_numeric(logs["PTS"], errors="coerce")
+    logs["_minutes"] = pd.to_numeric(logs.get("MIN", pd.Series(np.nan, index=logs.index)), errors="coerce")
+    if logs["_minutes"].isna().all() and "MIN" in logs:
+        logs["_minutes"] = pd.to_timedelta(logs["MIN"], errors="coerce").dt.total_seconds() / 60.0
+    allowed_ids = set(gw_games.get("nba_game_id", pd.Series(dtype=str)).astype(str))
+    scores = {}
+    for _, row in coach_market.iterrows():
+        name = str(row.get("coach", "")).strip()
+        team = str(row.get("team", "")).strip().upper()
+        opponent = str(row.get("opponent", "")).strip().upper()
+        coach_cr = pd.to_numeric(pd.Series([row.get("coach_cr")]), errors="coerce").iloc[0]
+        opponent_cr = pd.to_numeric(pd.Series([row.get("opponent_coach_cr")]), errors="coerce").iloc[0]
+        if not name or not team or not opponent or not np.isfinite(coach_cr) or not np.isfinite(opponent_cr):
+            continue
+        game_id = str(row.get("nba_game_id", "")).strip()
+        candidates = logs.loc[logs["_game_id"].eq(game_id)] if game_id not in {"", "nan", "None", "<NA>"} else logs.iloc[0:0]
+        if game_id and allowed_ids and game_id not in allowed_ids:
+            continue
+        if candidates.empty:
+            pairs = gw_games.loc[
+                (gw_games["HOME_TEAM"].eq(team) & gw_games["AWAY_TEAM"].eq(opponent))
+                | (gw_games["HOME_TEAM"].eq(opponent) & gw_games["AWAY_TEAM"].eq(team))
+            ]
+            for target_id in pairs.get("nba_game_id", pd.Series(dtype=str)).astype(str):
+                candidates = logs.loc[logs["_game_id"].eq(target_id)]
+                if not candidates.empty:
+                    break
+        own = candidates.loc[candidates["_team"].eq(team)]
+        opp = candidates.loc[candidates["_team"].eq(opponent)]
+        if own.empty or opp.empty:
+            continue
+        own_pts = float(own["_pts"].iloc[0]) if pd.notna(own["_pts"].iloc[0]) else np.nan
+        opp_pts = float(opp["_pts"].iloc[0]) if pd.notna(opp["_pts"].iloc[0]) else np.nan
+        if not np.isfinite(own_pts) or not np.isfinite(opp_pts):
+            continue
+        minutes = pd.concat([own["_minutes"], opp["_minutes"]], ignore_index=True)
+        overtime = bool(minutes.gt(240.0).any()) if minutes.notna().any() else False
+        scores[player_key(name)] = coach_points_from_game(
+            own_pts, opp_pts, float(coach_cr), float(opponent_cr), overtime
+        )
+    return scores
 
 def _compare_risk_objectives(
     players: pd.DataFrame,
@@ -228,7 +285,13 @@ def run_walk_forward_backtest(
         )
     schedule = get_fixture_mapping(settings)
     rows: list[dict] = []
+    forecast_metric_rows: list[dict] = []
     risk_comparison_rows: list[dict] = []
+    carried_roster: list[str] = []
+    carried_coach: str | None = None
+    carried_roster_known = from_gw == 1
+    holdout_count = max(1, int(np.ceil((to_gw - from_gw + 1) * 0.20)))
+    holdout_start_gw = max(from_gw, to_gw - holdout_count + 1)
     last_feats = pd.DataFrame()
 
     if schedule.empty or "dunkest_gameweek" not in schedule:
@@ -258,8 +321,8 @@ def run_walk_forward_backtest(
         ].copy() if not team_logs.empty else team_logs
         round_settings = copy(settings)
         round_settings.target_gameweek = gw
-        round_settings.current_roster = []
-        round_settings.current_coach = None
+        round_settings.current_roster = list(carried_roster)
+        round_settings.current_coach = carried_coach
 
         # Current injury reports cannot be applied to historical rounds.
         feats = build_feature_matrix(
@@ -312,6 +375,34 @@ def run_walk_forward_backtest(
         preds = predict_players(
             round_settings, models, feats, dk_for_prediction, historical_injuries
         )
+        metric_frame = preds.copy()
+        if "player_name" in metric_frame and "expected_pdk" in metric_frame:
+            metric_frame["actual_pdk"] = metric_frame["player_name"].map(
+                lambda name: realized_map.get(player_key(name), np.nan)
+            )
+            metric_frame["expected_pdk"] = pd.to_numeric(metric_frame["expected_pdk"], errors="coerce")
+            metric_frame = metric_frame.loc[
+                np.isfinite(pd.to_numeric(metric_frame["actual_pdk"], errors="coerce"))
+                & np.isfinite(metric_frame["expected_pdk"])
+            ].copy()
+            if not metric_frame.empty:
+                error = metric_frame["expected_pdk"] - metric_frame["actual_pdk"]
+                interval = metric_frame[[column for column in ("p10", "p90") if column in metric_frame]].apply(
+                    pd.to_numeric, errors="coerce"
+                )
+                valid_interval = interval.dropna() if {"p10", "p90"}.issubset(interval.columns) else pd.DataFrame()
+                forecast_metric_rows.append({
+                    "gameweek": gw,
+                    "evaluation_split": "holdout" if gw >= holdout_start_gw else "selection",
+                    "n_player_games": int(len(metric_frame)),
+                    "mae": float(np.mean(np.abs(error))),
+                    "rmse": float(np.sqrt(np.mean(np.square(error)))),
+                    "bias": float(np.mean(error)),
+                    "p10_coverage": float(metric_frame.loc[valid_interval.index, "actual_pdk"].ge(valid_interval["p10"]).mean()) if not valid_interval.empty else float("nan"),
+                    "p90_coverage": float(metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"]).mean()) if not valid_interval.empty else float("nan"),
+                    "interval_80_coverage": float((metric_frame.loc[valid_interval.index, "actual_pdk"].ge(valid_interval["p10"]) & metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"])).mean()) if not valid_interval.empty else float("nan"),
+                    "mean_interval_width": float((valid_interval["p90"] - valid_interval["p10"]).mean()) if not valid_interval.empty else float("nan"),
+                })
 
         coach_snapshot_path = settings.data_path / "processed" / (
             f"coach_market_{settings.season_id}_gw{gw}.parquet"
@@ -339,12 +430,14 @@ def run_walk_forward_backtest(
             # No historical coach list is available for this round; don't use
             # today's prices to fill the gap.
             coach_df = _neutral_coaches(gw_games, round_settings.min_cr)
-        risk_comparison_rows.extend(
-            _compare_risk_objectives(
-                preds, coach_df, round_settings, realized_map, gw
-            )
+        risk_rows = _compare_risk_objectives(
+            preds, coach_df, round_settings, realized_map, gw
         )
+        for risk_row in risk_rows:
+            risk_row["evaluation_split"] = "holdout" if gw >= holdout_start_gw else "selection"
+        risk_comparison_rows.extend(risk_rows)
         lineups = optimize_top_k_lineups(preds, coach_df, round_settings, k=3)
+        realized_coach_map = _realized_coach_scores(coach_market, team_logs, gw_games) if historical_coach_market_available else {}
         # An ex-post optimum is meaningful only if every candidate in the
         # prediction universe has a finite realized score. Assigning missing
         # outcomes zero would silently bias the hindsight optimum.
@@ -383,24 +476,31 @@ def run_walk_forward_backtest(
                         slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
                     )
 
+
         for rank, sol in enumerate(lineups, start=1):
             actuals: dict[str, float] = {}
-            player_score = 0.0
+            player_score_before_transfers = 0.0
             for _, player in sol.players.iterrows():
                 key = player_key(player["player_name"])
                 if key not in realized_map:
                     continue
                 actuals[key] = float(realized_map[key])
                 slot = str(player.get("slot", "Bench"))
-                player_score += actuals[key] * player_contribution_multiplier(
+                player_score_before_transfers += actuals[key] * player_contribution_multiplier(
                     slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
                 )
             complete = set(sol.players["player_name"].map(player_key)).issubset(actuals)
-            if complete:
-                player_score -= sol.num_transfers * round_settings.transfer_penalty
-            else:
-                player_score = float("nan")
-
+            coach_score = realized_coach_map.get(player_key(sol.coach), float("nan"))
+            transfer_count = float(sol.num_transfers) if carried_roster_known else float("nan")
+            transfer_malus = transfer_count * round_settings.transfer_penalty if np.isfinite(transfer_count) else float("nan")
+            player_score = (
+                player_score_before_transfers - transfer_malus
+                if complete and np.isfinite(transfer_malus) else float("nan")
+            )
+            team_score = (
+                player_score + coach_score
+                if np.isfinite(player_score) and np.isfinite(coach_score) else float("nan")
+            )
             captain_hit = float("nan")
             captain_row = sol.players.loc[sol.players["slot"].eq("Captain")]
             eligible = sol.players.loc[
@@ -414,22 +514,32 @@ def run_walk_forward_backtest(
                     captain_hit = float(actuals[cap_key] >= eligible_scores.max())
             rows.append({
                 "gameweek": gw, "rank": rank,
+                "evaluation_split": "holdout" if gw >= holdout_start_gw else "selection",
                 "expected_team_pdk": sol.expected_team_pdk,
+                "realized_player_score_before_transfers": player_score_before_transfers if complete else float("nan"),
                 "realized_player_score": player_score,
-                "realized_team_score": float("nan"),
+                "realized_coach_score": coach_score,
+                "transfer_malus": transfer_malus,
+                "realized_team_score": team_score,
                 "ex_post_optimum": float("nan"),
                 "ex_post_player_optimum": ex_post_score,
                 "captain": sol.captain, "coach": sol.coach,
-                "num_transfers": float("nan"),
+                "num_transfers": transfer_count,
                 "captain_hit": captain_hit, "coach_hit": float("nan"),
                 "player_actuals_complete": complete,
-                "actual_score_complete": False,
-                "coach_score_available": False,
+                "actual_score_complete": bool(np.isfinite(team_score)),
+                "coach_score_available": bool(np.isfinite(coach_score)),
                 "historical_market_available": True,
                 "historical_market_rows": len(market_snapshot),
                 "historical_coach_market_available": historical_coach_market_available,
                 "historical_injuries_available": historical_injuries_available,
+                "transfer_count_available": carried_roster_known,
             })
+        # Simulate a live policy by carrying the rank-1 roster and coach into the next GW.
+        if lineups:
+            carried_roster = lineups[0].players["player_name"].astype(str).tolist()
+            carried_coach = str(lineups[0].coach)
+            carried_roster_known = True
 
     results = pd.DataFrame(rows)
     report = compute_backtest_metrics(results)
@@ -448,5 +558,9 @@ def run_walk_forward_backtest(
         ),
         "importance": feature_importance_summary(settings, last_feats),
         "risk_comparison": pd.DataFrame(risk_comparison_rows),
+        "forecast_metrics": pd.DataFrame(forecast_metric_rows),
+        "holdout_start_gameweek": holdout_start_gw,
+        "selection_gameweeks": list(range(from_gw, holdout_start_gw)),
+        "holdout_gameweeks": list(range(holdout_start_gw, to_gw + 1)),
     }
     return results, report, extras
