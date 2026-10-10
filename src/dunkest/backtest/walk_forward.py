@@ -557,6 +557,16 @@ def run_walk_forward_backtest(
                 )
             complete = set(sol.players["player_name"].map(player_key)).issubset(actuals)
             coach_score = realized_coach_map.get(player_key(sol.coach), float("nan"))
+            coach_actuals_complete = bool(
+                historical_coach_market_available
+                and not coach_df.empty
+                and "coach" in coach_df
+                and coach_df["coach"].map(player_key).isin(realized_coach_map).all()
+            )
+            coach_hit = (
+                float(coach_score >= max(realized_coach_map.values()))
+                if np.isfinite(coach_score) and coach_actuals_complete else float("nan")
+            )
             transfer_count = float(sol.num_transfers) if carried_roster_known else float("nan")
             transfer_malus = transfer_count * round_settings.transfer_penalty if np.isfinite(transfer_count) else float("nan")
             player_score = (
@@ -593,7 +603,7 @@ def run_walk_forward_backtest(
                 "ex_post_player_optimum": ex_post_score,
                 "captain": sol.captain, "coach": sol.coach,
                 "num_transfers": transfer_count,
-                "captain_hit": captain_hit, "coach_hit": float("nan"),
+                "captain_hit": captain_hit, "coach_hit": coach_hit,
                 "player_actuals_complete": complete,
                 "actual_score_complete": bool(np.isfinite(team_score)),
                 "coach_score_available": bool(np.isfinite(coach_score)),
