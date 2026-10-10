@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -15,7 +17,12 @@ def _meta_path(path: Path) -> Path:
 def read_parquet(path: Path) -> pd.DataFrame | None:
     if not path.exists():
         return None
-    return pd.read_parquet(path)
+    try:
+        return pd.read_parquet(path)
+    except Exception:
+        # Parquet engines expose several exception types for corrupt or incompatible files.
+        # A broken cache must behave like a cache miss, not crash the data-loading pipeline.
+        return None
 
 
 def read_cache_metadata(path: Path) -> dict[str, Any] | None:
@@ -34,17 +41,42 @@ def cache_has_complete_collection(path: Path) -> bool:
     return metadata is not None and metadata.get("collection_complete") is True
 
 
+def _atomic_write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp_path, path)
+    finally:
+        temp_path.unlink(missing_ok=True)
+
+
 def write_parquet(df: pd.DataFrame, path: Path, source: str, **extra: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(path, index=False)
-    meta = {
-        "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "source": source,
-        "rows": len(df),
-        "schema_version": 1,
-        **extra,
-    }
-    _meta_path(path).write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    os.close(fd)
+    temp_path = Path(temp_name)
+    try:
+        df.to_parquet(temp_path, index=False)
+        metadata = {
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+            "source": source,
+            "rows": len(df),
+            "schema_version": 1,
+            **extra,
+        }
+        # Publish the data file only after the Parquet writer has completed.
+        os.replace(temp_path, path)
+        _atomic_write_text(
+            _meta_path(path),
+            json.dumps(metadata, indent=2),
+        )
+    finally:
+        temp_path.unlink(missing_ok=True)
 
 
 def cache_valid(path: Path, max_age_hours: float | None = None) -> bool:
@@ -57,7 +89,9 @@ def cache_valid(path: Path, max_age_hours: float | None = None) -> bool:
         return False
     try:
         fetched = datetime.fromisoformat(meta["fetched_at"])
+        if fetched.tzinfo is None:
+            fetched = fetched.replace(tzinfo=timezone.utc)
+        age_h = (datetime.now(timezone.utc) - fetched.astimezone(timezone.utc)).total_seconds() / 3600
     except (KeyError, TypeError, ValueError):
         return False
-    age_h = (datetime.now(timezone.utc) - fetched).total_seconds() / 3600
-    return age_h <= max_age_hours
+    return 0 <= age_h <= max_age_hours

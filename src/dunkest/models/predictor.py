@@ -129,6 +129,7 @@ def _model_zoo(settings: Settings) -> dict:
 def _fit_matrix(df: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, pd.Series]:
     validate_prematch_features(df, cols)
     X = df[cols].apply(pd.to_numeric, errors="coerce")
+    X = X.replace([np.inf, -np.inf], np.nan)
     medians = X.median()
     X = X.fillna(medians).fillna(0.0)
     return X, medians
@@ -176,17 +177,32 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
             "Training features are empty or lack target_pdk. Check the NBA game-log "
             "cache and the selected feature season."
         )
-    df = features.dropna(subset=["target_pdk"]).copy()
+    df = features.copy()
+    df["target_pdk"] = pd.to_numeric(df["target_pdk"], errors="coerce")
+    finite_target = np.isfinite(df["target_pdk"].to_numpy(dtype=float, na_value=np.nan))
+    df = df.loc[finite_target].copy()
     if df.empty:
-        raise ValueError("No historical target_pdk values are available for model training.")
+        raise ValueError("No finite historical target_pdk values are available for model training.")
+
+    # Ignore features that are absent or entirely missing in the training slice.
+    # An all-missing feature otherwise becomes a synthetic constant zero column.
     cols = [c for c in FEATURE_COLS if c in df.columns]
     for c in cols:
         df[c] = pd.to_numeric(df[c], errors="coerce")
+    cols = [
+        c for c in cols
+        if np.isfinite(df[c].to_numpy(dtype=float, na_value=np.nan)).any()
+    ]
+    if not cols:
+        raise ValueError(
+            "No usable model features are available: expected at least one finite "
+            "column from FEATURE_COLS. Check feature generation and historical data."
+        )
     target_pdk = pd.to_numeric(df["target_pdk"], errors="coerce")
     baseline = pd.to_numeric(
         df.get("expected_pdk_minutes_model", pd.Series(0.0, index=df.index)),
         errors="coerce",
-    ).fillna(0.0).clip(lower=0.0)
+    ).replace([np.inf, -np.inf], np.nan).fillna(0.0).clip(lower=0.0)
     y = target_pdk - baseline
     y_min = df["target_min"] if "target_min" in df else pd.Series(np.nan, index=df.index)
     X, medians = _fit_matrix(df, cols)
@@ -203,6 +219,33 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
         oof_predictions = {
             name: pd.Series(np.nan, index=df.index, dtype=float) for name in zoo
         }
+        # Tune Ridge regularization on the earliest temporal fold only. That
+        # fold is deliberately excluded from OOF ensemble-weight/calibration
+        # fitting below, so its labels cannot both choose alpha and score it.
+        ridge_tuning_fold_index = None
+        selected_ridge_alpha = float(zoo["ridge"].alpha)
+        if validation_date_folds and len(validation_date_folds[0]):
+            tuning_dates = validation_date_folds[0]
+            tuning_train = dates < tuning_dates[0]
+            tuning_valid = dates.isin(tuning_dates)
+            if int(tuning_train.sum()) >= 80 and int(tuning_valid.sum()) >= 40:
+                tuning_X, tuning_medians = _fit_matrix(df.loc[tuning_train], cols)
+                tuning_val_X = df.loc[tuning_valid, cols].apply(pd.to_numeric, errors="coerce")
+                tuning_val_X = tuning_val_X.replace([np.inf, -np.inf], np.nan)
+                tuning_val_X = tuning_val_X.fillna(tuning_medians).fillna(0.0)
+                alpha_scores = {}
+                for alpha in (0.3, 1.0, 3.0, 10.0, 30.0):
+                    candidate = Ridge(alpha=alpha, random_state=settings.random_state)
+                    candidate.fit(tuning_X, y.loc[tuning_train])
+                    candidate_prediction = candidate.predict(tuning_val_X)
+                    alpha_scores[alpha] = float(
+                        mean_absolute_error(y.loc[tuning_valid], candidate_prediction)
+                    )
+                selected_ridge_alpha = min(alpha_scores, key=alpha_scores.get)
+                zoo["ridge"] = Ridge(
+                    alpha=selected_ridge_alpha, random_state=settings.random_state
+                )
+                ridge_tuning_fold_index = 0
         for fold_index, validation_dates in enumerate(validation_date_folds):
             if not len(validation_dates):
                 continue
@@ -212,8 +255,12 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
                 continue
             fold_X, fold_medians = _fit_matrix(df.loc[train_idx], cols)
             val_X = df.loc[val_idx, cols].apply(pd.to_numeric, errors="coerce")
+            val_X = val_X.replace([np.inf, -np.inf], np.nan)
             val_X = val_X.fillna(fold_medians).fillna(0.0)
             for name, model in zoo.items():
+                if name == "ridge" and fold_index == ridge_tuning_fold_index:
+                    # Selection fold is not a valid evaluation sample for its chosen alpha.
+                    continue
                 model.fit(fold_X, y.loc[train_idx])
                 oof_predictions[name].loc[val_idx] = model.predict(val_X)
             validation_fold.loc[val_idx] = fold_index
@@ -263,7 +310,7 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
             "prior": pd.to_numeric(
                 df.get("pdk_season_mean", pd.Series(np.nan, index=df.index)),
                 errors="coerce",
-            ),
+            ).replace([np.inf, -np.inf], np.nan),
         },
         index=df.index,
     )
@@ -294,6 +341,8 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
         fitted[name] = model
 
     fitted["_feature_cols"] = cols
+    fitted["_selected_ridge_alpha"] = selected_ridge_alpha if "selected_ridge_alpha" in locals() else float(zoo["ridge"].alpha)
+    fitted["_ridge_tuning_fold_excluded_from_oof"] = ridge_tuning_fold_index if "ridge_tuning_fold_index" in locals() else None
     fitted["_weights"] = weights
     fitted["_projection_weights"] = projection_weights
     fitted["_feature_medians"] = medians
@@ -377,6 +426,7 @@ def _ensemble_predict(models: dict, latest: pd.DataFrame) -> np.ndarray:
         if c not in X.columns:
             X[c] = np.nan
     X = X[cols].apply(pd.to_numeric, errors="coerce")
+    X = X.replace([np.inf, -np.inf], np.nan)
     medians = models.get("_feature_medians")
     if medians is not None:
         X = X.fillna(medians)

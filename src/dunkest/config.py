@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from math import isfinite
 from pathlib import Path
 from typing import Any
 
@@ -66,6 +67,27 @@ class Settings:
 
     def __post_init__(self) -> None:
         self.model_type = self.model_type.strip().casefold()
+        self.optimizer_objective = self.optimizer_objective.strip().casefold()
+        if self.optimizer_objective not in {"expected_value", "risk_adjusted"}:
+            raise ValueError(
+                "optimizer_objective must be either 'expected_value' or 'risk_adjusted'."
+            )
+        if not isfinite(self.budget) or self.budget <= 0:
+            raise ValueError("budget must be finite and positive.")
+        if not isfinite(self.min_cr) or not isfinite(self.max_cr) or self.min_cr > self.max_cr:
+            raise ValueError("min_cr and max_cr must be finite and min_cr <= max_cr.")
+        if not isfinite(self.transfer_penalty) or self.transfer_penalty < 0:
+            raise ValueError("transfer_penalty must be finite and nonnegative.")
+        if self.max_from_same_nba_team < 1:
+            raise ValueError("max_from_same_nba_team must be positive.")
+        if not isfinite(self.risk_lambda) or self.risk_lambda < 0:
+            raise ValueError("risk_lambda must be finite and nonnegative.")
+        if not self.rolling_windows or any(window < 1 for window in self.rolling_windows):
+            raise ValueError("rolling_windows must contain positive integers.")
+        if self.http_timeout <= 0 or not isfinite(self.http_timeout):
+            raise ValueError("http_timeout must be finite and positive.")
+        if self.http_retries < 1:
+            raise ValueError("http_retries must be positive.")
         if self.model_type != "ensemble":
             raise ValueError(
                 f"Unsupported model_type {self.model_type!r}; only 'ensemble' is implemented."
@@ -88,8 +110,8 @@ class Settings:
             raise ValueError("capital_gain_budget_delta must be positive.")
         if self.target_dunkest_turn is not None and self.target_dunkest_turn < 1:
             raise ValueError("target_dunkest_turn must be a positive Dunkest turn number.")
-        if any(value < 0.0 for value in self.optimizer_risk_lambda_grid):
-            raise ValueError("optimizer_risk_lambda_grid values must be nonnegative.")
+        if any(not isfinite(value) or value < 0.0 for value in self.optimizer_risk_lambda_grid):
+            raise ValueError("optimizer_risk_lambda_grid values must be finite and nonnegative.")
 
     @property
     def root(self) -> Path:

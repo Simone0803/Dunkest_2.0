@@ -206,11 +206,13 @@ def main() -> None:
                  ("status", "Esito", None), ("details", "Evidenza", None)],
                 max_rows=100,
             )
-            return
+            raise SystemExit(2)
         metrics = pd.DataFrame(
             [
                 {"metric": "Player score medio", "value": report.average_player_score},
                 {"metric": "Player score mediano", "value": report.median_player_score},
+                {"metric": "Punteggio squadra reale medio", "value": report.average_team_score},
+                {"metric": "Punteggio squadra reale mediano", "value": report.median_team_score},
                 {"metric": "Best-of-3 player score", "value": report.best_of_3_player_score},
                 {"metric": "Top-1 vs oracle player", "value": report.top1_hit_rate},
                 {"metric": "Top-3 include oracle", "value": report.top3_hit_rate},
@@ -261,21 +263,70 @@ def main() -> None:
             results.to_parquet(out, index=False)
             CONSOLE.print(f"[bold green]Risultati salvati[/bold green]  {out}")
 
+        selected_strategy = extras.get("selected_holdout_strategy")
+        if selected_strategy:
+            CONSOLE.print(
+                "[bold]Strategia scelta solo sulla validazione[/bold]  "
+                f"objective={selected_strategy['objective']}  "
+                f"risk_lambda={selected_strategy['risk_lambda']}  "
+                f"media team score validazione={selected_strategy['selection_mean_realized_team_score']:.2f}  "
+                f"giornate={selected_strategy['selection_gameweeks']}"
+            )
+
+        forecast_metrics = extras.get("forecast_metrics", pd.DataFrame())
+        if not forecast_metrics.empty:
+            print_dataframe(
+                CONSOLE,
+                f"Qualità predittiva player (holdout finale da GW{extras.get('holdout_start_gameweek')})",
+                forecast_metrics,
+                [
+                    ("gameweek", "GW", "d"),
+                    ("evaluation_split", "Split", None),
+                    ("n_player_games", "Campioni", "d"),
+                    ("mae", "MAE", ".2f"),
+                    ("rmse", "RMSE", ".2f"),
+                    ("bias", "Bias", ".2f"),
+                    ("interval_80_coverage", "Copertura P10-P90", ".1%"),
+                    ("mean_interval_width", "Ampiezza media", ".2f"),
+                ],
+            )
+            forecast_path = settings.data_path / "backtests" / (
+                f"gw{args.from_gw}_{args.to_gw}_forecast_metrics.parquet"
+            )
+            forecast_path.parent.mkdir(parents=True, exist_ok=True)
+            forecast_metrics.to_parquet(forecast_path, index=False)
+            CONSOLE.print(f"[dim]Metriche predittive salvate[/dim]  {forecast_path}")
+
         risk_comparison = extras.get("risk_comparison", pd.DataFrame())
         if not risk_comparison.empty:
             comparison_rows = []
-            for (objective, risk_lambda), group in risk_comparison.groupby(
-                ["objective", "risk_lambda"], dropna=False, sort=True
+            group_columns = ["objective", "risk_lambda"]
+            if "evaluation_split" in risk_comparison.columns:
+                group_columns = ["evaluation_split", *group_columns]
+            for group_key, group in risk_comparison.groupby(
+                group_columns, dropna=False, sort=True
             ):
+                if len(group_columns) == 3:
+                    evaluation_split, objective, risk_lambda = group_key
+                else:
+                    objective, risk_lambda = group_key
+                    evaluation_split = "all"
                 scores = pd.to_numeric(
                     group["realized_player_score"], errors="coerce"
                 ).dropna()
+                team_scores = pd.to_numeric(
+                    group.get("realized_team_score", pd.Series(dtype=float)), errors="coerce"
+                ).dropna()
                 comparison_rows.append({
+                    "evaluation_split": evaluation_split,
                     "objective": objective,
                     "risk_lambda": risk_lambda,
                     "scored_weeks": int(scores.size),
                     "mean_realized_player_score": (
                         float(scores.mean()) if not scores.empty else float("nan")
+                    ),
+                    "mean_realized_team_score": (
+                        float(team_scores.mean()) if not team_scores.empty else float("nan")
                     ),
                 })
             print_dataframe(
@@ -283,10 +334,12 @@ def main() -> None:
                 "Confronto cronologico expected-value / risk-adjusted",
                 pd.DataFrame(comparison_rows),
                 [
+                    ("evaluation_split", "Split", None),
                     ("objective", "Obiettivo", None),
                     ("risk_lambda", "Lambda", ".2f"),
                     ("scored_weeks", "Settimane valide", "d"),
                     ("mean_realized_player_score", "Player score medio", ".2f"),
+                    ("mean_realized_team_score", "Team score medio", ".2f"),
                 ],
             )
             risk_path = settings.data_path / "backtests" / (
