@@ -452,10 +452,13 @@ def run_walk_forward_backtest(
             # No historical coach list is available for this round; don't use
             # today's prices to fill the gap.
             coach_df = _neutral_coaches(gw_games, round_settings.min_cr)
-        risk_rows = _compare_risk_objectives(
-            preds, coach_df, round_settings, realized_map, gw,
-            current_roster=round_settings.current_roster,
-            current_coach=round_settings.current_coach,
+        risk_rows = (
+            _compare_risk_objectives(
+                preds, coach_df, round_settings, realized_map, gw,
+                current_roster=round_settings.current_roster,
+                current_coach=round_settings.current_coach,
+            )
+            if carried_roster_known else []
         )
         for risk_row in risk_rows:
             risk_row["evaluation_split"] = "holdout" if gw >= holdout_start_gw else "selection"
