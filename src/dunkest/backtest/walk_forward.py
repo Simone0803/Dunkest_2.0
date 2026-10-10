@@ -146,6 +146,7 @@ def _compare_risk_objectives(
     gameweek: int,
     current_roster: list[str] | None = None,
     current_coach: str | None = None,
+    realized_coach_map: dict[str, float] | None = None,
 ) -> list[dict]:
     if not realized_map:
         return []
@@ -185,6 +186,13 @@ def _compare_risk_objectives(
         realized_score, complete = _realized_player_score(
             solution, realized_map, comparison_settings.transfer_penalty
         )
+        coach_actual = (
+            (realized_coach_map or {}).get(player_key(solution.coach), float("nan"))
+        )
+        realized_team_score = (
+            realized_score + coach_actual
+            if complete and np.isfinite(coach_actual) else float("nan")
+        )
         rows.append({
             "gameweek": gameweek,
             "objective": objective,
@@ -192,6 +200,8 @@ def _compare_risk_objectives(
             "expected_player_score": solution.expected_player_pdk,
             "expected_coach_score": solution.expected_coach_pdk,
             "realized_player_score": realized_score,
+            "realized_coach_score": coach_actual,
+            "realized_team_score": realized_team_score,
             "player_actuals_complete": complete,
             "captain": solution.captain,
             "coach": solution.coach,
@@ -452,11 +462,15 @@ def run_walk_forward_backtest(
             # No historical coach list is available for this round; don't use
             # today's prices to fill the gap.
             coach_df = _neutral_coaches(gw_games, round_settings.min_cr)
+        realized_coach_map = _realized_coach_scores(
+            coach_market, team_logs, gw_games
+        ) if historical_coach_market_available else {}
         risk_rows = (
             _compare_risk_objectives(
                 preds, coach_df, round_settings, realized_map, gw,
                 current_roster=round_settings.current_roster,
                 current_coach=round_settings.current_coach,
+                realized_coach_map=realized_coach_map,
             )
             if carried_roster_known else []
         )
@@ -469,22 +483,22 @@ def run_walk_forward_backtest(
             selection_frame = selection_frame.loc[
                 selection_frame.get("evaluation_split", pd.Series(index=selection_frame.index, dtype=str)).eq("selection")
             ]
-            selection_frame["realized_player_score"] = pd.to_numeric(
-                selection_frame.get("realized_player_score"), errors="coerce"
+            selection_frame["realized_team_score"] = pd.to_numeric(
+                selection_frame.get("realized_team_score"), errors="coerce"
             )
-            selection_frame = selection_frame.dropna(subset=["realized_player_score"])
+            selection_frame = selection_frame.dropna(subset=["realized_team_score"])
             if not selection_frame.empty:
                 means = selection_frame.groupby(
                     ["objective", "risk_lambda"], dropna=False, as_index=False
-                )["realized_player_score"].mean()
+                )["realized_team_score"].mean()
                 chosen = means.sort_values(
-                    ["realized_player_score", "objective", "risk_lambda"],
+                    ["realized_team_score", "objective", "risk_lambda"],
                     ascending=[False, True, True], kind="stable"
                 ).iloc[0]
                 selected_strategy = {
                     "objective": str(chosen["objective"]),
                     "risk_lambda": float(chosen["risk_lambda"]) if pd.notna(chosen["risk_lambda"]) else None,
-                    "selection_mean_realized_player_score": float(chosen["realized_player_score"]),
+                    "selection_mean_realized_team_score": float(chosen["realized_team_score"]),
                     "selection_gameweeks": sorted(selection_frame["gameweek"].unique().tolist()),
                 }
                 round_settings.optimizer_objective = selected_strategy["objective"]
