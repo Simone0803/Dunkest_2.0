@@ -19,8 +19,9 @@ def read_parquet(path: Path) -> pd.DataFrame | None:
         return None
     try:
         return pd.read_parquet(path)
-    except (OSError, ValueError, ImportError):
-        # A truncated or otherwise unreadable cache must behave like a cache miss.
+    except Exception:
+        # Parquet engines expose several exception types for corrupt or incompatible files.
+        # A broken cache must behave like a cache miss, not crash the data-loading pipeline.
         return None
 
 
