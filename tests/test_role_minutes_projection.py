@@ -265,7 +265,11 @@ def test_ensemble_learns_residuals_and_calibrates_from_temporal_holdout(monkeypa
         residual_q90=models["_residual_q90"],
     )
 
-    assert prediction.notna().sum() == 120
+    # The first validation fold selects Ridge alpha and is deliberately
+    # excluded from weight fitting/calibration; only the next two folds score it.
+    assert prediction.notna().sum() == 80
+    assert models["_selected_ridge_alpha"] in {0.3, 1.0, 3.0, 10.0, 30.0}
+    assert models["_ridge_tuning_fold_excluded_from_oof"] == 0
     assert (prediction.dropna() - features.loc[prediction.notna(), "target_pdk"]).abs().max() < 0.1
     assert models["_residual_q10"] <= models["_residual_q90"]
     assert models["_interval_diagnostics"]
