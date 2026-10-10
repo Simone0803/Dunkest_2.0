@@ -501,6 +501,9 @@ def run_walk_forward_backtest(
             hindsight["p10"] = hindsight["expected_pdk"]
             hindsight["p50"] = hindsight["expected_pdk"]
             hindsight["p90"] = hindsight["expected_pdk"]
+            # Capital-gain forecasts are not realized game points and must not
+            # influence the hindsight optimum for fantasy-score evaluation.
+            hindsight["expected_plusvalenza"] = 0.0
         else:
             hindsight = pd.DataFrame()
         if not hindsight.empty:
