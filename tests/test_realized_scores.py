@@ -13,7 +13,7 @@ def test_realized_player_scores_excludes_missing_and_nonfinite_outcomes():
         }
     )
 
-    assert _realized_player_scores(frame) == {"playerone": 12.5}
+    assert _realized_player_scores(frame) == {"player one": 12.5}
 
 
 def test_realized_player_scores_excludes_conflicting_duplicate_identities():
@@ -25,7 +25,7 @@ def test_realized_player_scores_excludes_conflicting_duplicate_identities():
         }
     )
 
-    assert _realized_player_scores(frame) == {"playertwo": 9.0}
+    assert _realized_player_scores(frame) == {"player two": 9.0}
 
 
 def test_realized_player_scores_requires_available_gameweek_stats():
