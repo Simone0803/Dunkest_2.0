@@ -461,9 +461,22 @@ def run_walk_forward_backtest(
             hindsight["p_play"] = 1.0
             hindsight["status"] = "Available"
             hindsight["expected_min"] = 40.0
+        coach_hindsight_complete = bool(
+            historical_coach_market_available
+            and not coach_df.empty
+            and "coach" in coach_df
+            and coach_df["coach"].map(player_key).isin(realized_coach_map).all()
+        )
+        coach_hindsight = coach_df.copy()
+        if coach_hindsight_complete:
+            coach_hindsight["expected_coach_pdk"] = coach_hindsight["coach"].map(
+                lambda name: realized_coach_map[player_key(name)]
+            )
+        else:
+            coach_hindsight = pd.DataFrame()
         ex_post_lineups = optimize_top_k_lineups(
-            hindsight, coach_df, round_settings, k=1
-        ) if not hindsight.empty else []
+            hindsight, coach_hindsight, round_settings, k=1
+        ) if not hindsight.empty and coach_hindsight_complete else []
         ex_post_score = float("nan")
         if ex_post_lineups:
             ex_sol = ex_post_lineups[0]
@@ -475,6 +488,7 @@ def run_walk_forward_backtest(
                     ex_post_score += float(value) * player_contribution_multiplier(
                         slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
                     )
+            ex_post_score += float(realized_coach_map[player_key(ex_sol.coach)])
 
 
         for rank, sol in enumerate(lineups, start=1):
@@ -521,7 +535,7 @@ def run_walk_forward_backtest(
                 "realized_coach_score": coach_score,
                 "transfer_malus": transfer_malus,
                 "realized_team_score": team_score,
-                "ex_post_optimum": float("nan"),
+                "ex_post_optimum": ex_post_score,
                 "ex_post_player_optimum": ex_post_score,
                 "captain": sol.captain, "coach": sol.coach,
                 "num_transfers": transfer_count,
