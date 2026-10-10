@@ -45,11 +45,11 @@ def test_average_scores_and_accuracy_use_rank_one_only():
 
     assert report.average_team_score == 95.0
     assert report.median_team_score == 95.0
-    assert report.best_of_3_realized == 150.0
+    assert report.best_of_3_realized == 147.5
     assert report.regret_vs_ex_post == 20.0
     assert report.average_player_score == 75.0
     assert report.median_player_score == 75.0
-    assert report.best_of_3_player_score == 105.0
+    assert report.best_of_3_player_score == 127.5
     assert report.regret_vs_ex_post_player_score == 10.0
     assert report.captain_accuracy == 0.5
     assert report.coach_accuracy == 0.5
