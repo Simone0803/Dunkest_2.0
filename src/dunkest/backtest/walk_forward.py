@@ -505,7 +505,6 @@ def run_walk_forward_backtest(
                 if selected_strategy["risk_lambda"] is not None:
                     round_settings.risk_lambda = selected_strategy["risk_lambda"]
         lineups = optimize_top_k_lineups(preds, coach_df, round_settings, k=3)
-        realized_coach_map = _realized_coach_scores(coach_market, team_logs, gw_games) if historical_coach_market_available else {}
         # An ex-post optimum is meaningful only if every candidate in the
         # prediction universe has a finite realized score. Assigning missing
         # outcomes zero would silently bias the hindsight optimum.
