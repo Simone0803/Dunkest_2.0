@@ -520,8 +520,11 @@ def run_walk_forward_backtest(
             )
         else:
             coach_hindsight = pd.DataFrame()
+        oracle_settings = copy(round_settings)
+        oracle_settings.optimizer_objective = "expected_value"
+        oracle_settings.risk_lambda = 0.0
         ex_post_lineups = optimize_top_k_lineups(
-            hindsight, coach_hindsight, round_settings, k=1
+            hindsight, coach_hindsight, oracle_settings, k=1
         ) if not hindsight.empty and coach_hindsight_complete and carried_roster_known else []
         ex_post_score = float("nan")
         if ex_post_lineups:
