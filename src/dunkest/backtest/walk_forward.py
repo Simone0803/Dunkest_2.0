@@ -119,10 +119,10 @@ def _realized_coach_scores(
                 (gw_games["HOME_TEAM"].eq(team) & gw_games["AWAY_TEAM"].eq(opponent))
                 | (gw_games["HOME_TEAM"].eq(opponent) & gw_games["AWAY_TEAM"].eq(team))
             ]
-            for target_id in pairs.get("nba_game_id", pd.Series(dtype=str)).astype(str):
-                candidates = logs.loc[logs["_game_id"].eq(target_id)]
-                if not candidates.empty:
-                    break
+            target_ids = pairs.get("nba_game_id", pd.Series(dtype=str)).astype(str).tolist()
+            # A fallback is valid only if the archived matchup resolves to one unique NBA game.
+            if len(target_ids) == 1:
+                candidates = logs.loc[logs["_game_id"].eq(target_ids[0])]
         own = candidates.loc[candidates["_team"].eq(team)]
         opp = candidates.loc[candidates["_team"].eq(opponent)]
         if own.empty or opp.empty:
