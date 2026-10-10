@@ -49,6 +49,22 @@ def _realized_player_scores(dk: pd.DataFrame) -> dict[str, float]:
     return dict(zip(valid_rows["key"], valid_rows["score"]))
 
 
+_POST_MATCH_MARKET_COLUMNS = (
+    "pdk", "prior_pdk", "actual_pdk", "target_pdk", "target_min",
+    "plus", "official_plusvalenza", "gameweek_stats_available",
+    "game_status_final", "final_score", "home_score", "away_score",
+)
+
+
+def _mask_post_match_market_outcomes(dk: pd.DataFrame) -> pd.DataFrame:
+    """Remove same-round outcomes from the input used to generate historical forecasts."""
+    out = dk.copy()
+    for column in _POST_MATCH_MARKET_COLUMNS:
+        if column in out.columns:
+            out[column] = np.nan
+    return out
+
+
 def _realized_player_score(
     solution, realized_map: dict[str, float], transfer_penalty: float
 ) -> tuple[float, bool]:
@@ -369,9 +385,7 @@ def run_walk_forward_backtest(
             continue
         realized_map = _realized_player_scores(dk)
         # The GW table contains outcomes. Do not pass those scores into inference.
-        dk_for_prediction = dk.copy()
-        if "pdk" in dk_for_prediction:
-            dk_for_prediction["pdk"] = float("nan")
+        dk_for_prediction = _mask_post_match_market_outcomes(dk)
         preds = predict_players(
             round_settings, models, feats, dk_for_prediction, historical_injuries
         )
@@ -476,7 +490,7 @@ def run_walk_forward_backtest(
             coach_hindsight = pd.DataFrame()
         ex_post_lineups = optimize_top_k_lineups(
             hindsight, coach_hindsight, round_settings, k=1
-        ) if not hindsight.empty and coach_hindsight_complete else []
+        ) if not hindsight.empty and coach_hindsight_complete and carried_roster_known else []
         ex_post_score = float("nan")
         if ex_post_lineups:
             ex_sol = ex_post_lineups[0]
