@@ -261,16 +261,49 @@ def main() -> None:
             results.to_parquet(out, index=False)
             CONSOLE.print(f"[bold green]Risultati salvati[/bold green]  {out}")
 
+        forecast_metrics = extras.get("forecast_metrics", pd.DataFrame())
+        if not forecast_metrics.empty:
+            print_dataframe(
+                CONSOLE,
+                f"Qualità predittiva player (holdout finale da GW{extras.get('holdout_start_gameweek')})",
+                forecast_metrics,
+                [
+                    ("gameweek", "GW", "d"),
+                    ("evaluation_split", "Split", None),
+                    ("n_player_games", "Campioni", "d"),
+                    ("mae", "MAE", ".2f"),
+                    ("rmse", "RMSE", ".2f"),
+                    ("bias", "Bias", ".2f"),
+                    ("interval_80_coverage", "Copertura P10-P90", ".1%"),
+                    ("mean_interval_width", "Ampiezza media", ".2f"),
+                ],
+            )
+            forecast_path = settings.data_path / "backtests" / (
+                f"gw{args.from_gw}_{args.to_gw}_forecast_metrics.parquet"
+            )
+            forecast_path.parent.mkdir(parents=True, exist_ok=True)
+            forecast_metrics.to_parquet(forecast_path, index=False)
+            CONSOLE.print(f"[dim]Metriche predittive salvate[/dim]  {forecast_path}")
+
         risk_comparison = extras.get("risk_comparison", pd.DataFrame())
         if not risk_comparison.empty:
             comparison_rows = []
-            for (objective, risk_lambda), group in risk_comparison.groupby(
-                ["objective", "risk_lambda"], dropna=False, sort=True
+            group_columns = ["objective", "risk_lambda"]
+            if "evaluation_split" in risk_comparison.columns:
+                group_columns = ["evaluation_split", *group_columns]
+            for group_key, group in risk_comparison.groupby(
+                group_columns, dropna=False, sort=True
             ):
+                if len(group_columns) == 3:
+                    evaluation_split, objective, risk_lambda = group_key
+                else:
+                    objective, risk_lambda = group_key
+                    evaluation_split = "all"
                 scores = pd.to_numeric(
                     group["realized_player_score"], errors="coerce"
                 ).dropna()
                 comparison_rows.append({
+                    "evaluation_split": evaluation_split,
                     "objective": objective,
                     "risk_lambda": risk_lambda,
                     "scored_weeks": int(scores.size),
@@ -283,6 +316,7 @@ def main() -> None:
                 "Confronto cronologico expected-value / risk-adjusted",
                 pd.DataFrame(comparison_rows),
                 [
+                    ("evaluation_split", "Split", None),
                     ("objective", "Obiettivo", None),
                     ("risk_lambda", "Lambda", ".2f"),
                     ("scored_weeks", "Settimane valide", "d"),
