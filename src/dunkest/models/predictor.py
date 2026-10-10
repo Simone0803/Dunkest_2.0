@@ -228,6 +228,7 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
                 continue
             fold_X, fold_medians = _fit_matrix(df.loc[train_idx], cols)
             val_X = df.loc[val_idx, cols].apply(pd.to_numeric, errors="coerce")
+            val_X = val_X.replace([np.inf, -np.inf], np.nan)
             val_X = val_X.fillna(fold_medians).fillna(0.0)
             for name, model in zoo.items():
                 model.fit(fold_X, y.loc[train_idx])
@@ -279,7 +280,7 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
             "prior": pd.to_numeric(
                 df.get("pdk_season_mean", pd.Series(np.nan, index=df.index)),
                 errors="coerce",
-            ),
+            ).replace([np.inf, -np.inf], np.nan),
         },
         index=df.index,
     )
