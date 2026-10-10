@@ -129,6 +129,7 @@ def _model_zoo(settings: Settings) -> dict:
 def _fit_matrix(df: pd.DataFrame, cols: list[str]) -> tuple[pd.DataFrame, pd.Series]:
     validate_prematch_features(df, cols)
     X = df[cols].apply(pd.to_numeric, errors="coerce")
+    X = X.replace([np.inf, -np.inf], np.nan)
     medians = X.median()
     X = X.fillna(medians).fillna(0.0)
     return X, medians
@@ -201,7 +202,7 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
     baseline = pd.to_numeric(
         df.get("expected_pdk_minutes_model", pd.Series(0.0, index=df.index)),
         errors="coerce",
-    ).fillna(0.0).clip(lower=0.0)
+    ).replace([np.inf, -np.inf], np.nan).fillna(0.0).clip(lower=0.0)
     y = target_pdk - baseline
     y_min = df["target_min"] if "target_min" in df else pd.Series(np.nan, index=df.index)
     X, medians = _fit_matrix(df, cols)
@@ -392,6 +393,7 @@ def _ensemble_predict(models: dict, latest: pd.DataFrame) -> np.ndarray:
         if c not in X.columns:
             X[c] = np.nan
     X = X[cols].apply(pd.to_numeric, errors="coerce")
+    X = X.replace([np.inf, -np.inf], np.nan)
     medians = models.get("_feature_medians")
     if medians is not None:
         X = X.fillna(medians)
