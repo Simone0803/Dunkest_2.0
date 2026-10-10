@@ -246,10 +246,6 @@ def train_models(settings: Settings, features: pd.DataFrame) -> tuple[dict, pd.S
                     alpha=selected_ridge_alpha, random_state=settings.random_state
                 )
                 ridge_tuning_fold_index = 0
-        oof_predictions["_selected_ridge_alpha"] = pd.Series(
-            selected_ridge_alpha, index=df.index, dtype=float
-        )
-        oof_predictions.pop("_selected_ridge_alpha")
         for fold_index, validation_dates in enumerate(validation_date_folds):
             if not len(validation_dates):
                 continue
