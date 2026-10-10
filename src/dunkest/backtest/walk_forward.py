@@ -160,10 +160,15 @@ def _compare_risk_objectives(
         if risk_lambda is not None:
             comparison_settings.risk_lambda = risk_lambda
         try:
-            solutions = optimize_top_k_lineups(
-                players, coaches, comparison_settings,
-                current_roster=current_roster, current_coach=current_coach, k=1
-            )
+            if current_roster is None and current_coach is None:
+                solutions = optimize_top_k_lineups(
+                    players, coaches, comparison_settings, k=1
+                )
+            else:
+                solutions = optimize_top_k_lineups(
+                    players, coaches, comparison_settings,
+                    current_roster=current_roster, current_coach=current_coach, k=1
+                )
         except ValueError as exc:
             rows.append({
                 "gameweek": gameweek,
