@@ -206,11 +206,13 @@ def main() -> None:
                  ("status", "Esito", None), ("details", "Evidenza", None)],
                 max_rows=100,
             )
-            return
+            raise SystemExit(2)
         metrics = pd.DataFrame(
             [
                 {"metric": "Player score medio", "value": report.average_player_score},
                 {"metric": "Player score mediano", "value": report.median_player_score},
+                {"metric": "Punteggio squadra reale medio", "value": report.average_team_score},
+                {"metric": "Punteggio squadra reale mediano", "value": report.median_team_score},
                 {"metric": "Best-of-3 player score", "value": report.best_of_3_player_score},
                 {"metric": "Top-1 vs oracle player", "value": report.top1_hit_rate},
                 {"metric": "Top-3 include oracle", "value": report.top3_hit_rate},
