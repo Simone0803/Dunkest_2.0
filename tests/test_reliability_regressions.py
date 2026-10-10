@@ -8,7 +8,7 @@ import httpx
 from dunkest.config import Settings
 from dunkest.data import cache
 from dunkest.data.http_client import _is_retryable_http_error
-from dunkest.models.predictor import train_models
+from dunkest.models.predictor import _fit_matrix, train_models
 
 
 def test_http_retry_policy_retries_only_transient_status_codes():
@@ -74,3 +74,19 @@ def test_training_rejects_missing_usable_features():
 
     with pytest.raises(ValueError, match="No usable model features"):
         train_models(Settings(), features)
+
+
+
+def test_fit_matrix_replaces_infinite_values_with_training_median():
+    frame = pd.DataFrame(
+        {
+            "feature": [1.0, np.inf, 3.0, -np.inf],
+            "target_pdk": [10.0, 12.0, 14.0, 16.0],
+        }
+    )
+
+    matrix, medians = _fit_matrix(frame, ["feature"])
+
+    assert np.isfinite(matrix.to_numpy()).all()
+    assert medians["feature"] == 2.0
+    assert matrix["feature"].tolist() == [1.0, 2.0, 3.0, 2.0]
