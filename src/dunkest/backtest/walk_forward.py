@@ -26,6 +26,28 @@ from dunkest.rules.roster import player_contribution_multiplier
 MIN_HISTORICAL_MARKET_PLAYERS = 250
 
 
+def _realized_player_scores(dk: pd.DataFrame) -> dict[str, float]:
+    """Return only finite realized scores with valid normalized player identities."""
+    required = {"actual_pdk", "player_name", "gameweek_stats_available"}
+    if not required.issubset(dk.columns):
+        return {}
+    if not dk["gameweek_stats_available"].fillna(False).astype(bool).any():
+        return {}
+    actual_pdk = pd.to_numeric(dk["actual_pdk"], errors="coerce")
+    keys = dk["player_name"].map(player_key)
+    valid = keys.ne("") & np.isfinite(actual_pdk.to_numpy(dtype=float, na_value=np.nan))
+    valid_rows = pd.DataFrame({"key": keys.loc[valid], "score": actual_pdk.loc[valid].astype(float)})
+    # Duplicate normalized identities with conflicting outcomes are ambiguous;
+    # exclude them instead of silently letting row order choose the score.
+    duplicated = valid_rows["key"].duplicated(keep=False)
+    if duplicated.any():
+        conflicting = valid_rows.loc[duplicated].groupby("key")["score"].nunique()
+        ambiguous = set(conflicting[conflicting > 1].index)
+        valid_rows = valid_rows.loc[~valid_rows["key"].isin(ambiguous)]
+        valid_rows = valid_rows.drop_duplicates("key", keep="last")
+    return dict(zip(valid_rows["key"], valid_rows["score"]))
+
+
 def _realized_player_score(
     solution, realized_map: dict[str, float], transfer_penalty: float
 ) -> tuple[float, bool]:
@@ -282,20 +304,7 @@ def run_walk_forward_backtest(
         )
         if dk.empty:
             continue
-        realized_map: dict[str, float] = {}
-        if (
-            {"actual_pdk", "player_name", "gameweek_stats_available"}.issubset(dk.columns)
-            and dk["gameweek_stats_available"].fillna(False).astype(bool).any()
-        ):
-            actual_pdk = pd.to_numeric(dk["actual_pdk"], errors="coerce")
-            valid_actuals = (
-                dk["player_name"].map(player_key).ne("")
-                & np.isfinite(actual_pdk.to_numpy(dtype=float, na_value=np.nan))
-            )
-            realized_map = dict(zip(
-                dk.loc[valid_actuals, "player_name"].map(player_key),
-                actual_pdk.loc[valid_actuals].astype(float),
-            ))
+        realized_map = _realized_player_scores(dk)
         # The GW table contains outcomes. Do not pass those scores into inference.
         dk_for_prediction = dk.copy()
         if "pdk" in dk_for_prediction:
