@@ -261,6 +261,16 @@ def main() -> None:
             results.to_parquet(out, index=False)
             CONSOLE.print(f"[bold green]Risultati salvati[/bold green]  {out}")
 
+        selected_strategy = extras.get("selected_holdout_strategy")
+        if selected_strategy:
+            CONSOLE.print(
+                "[bold]Strategia scelta solo sulla validazione[/bold]  "
+                f"objective={selected_strategy['objective']}  "
+                f"risk_lambda={selected_strategy['risk_lambda']}  "
+                f"media player score validazione={selected_strategy['selection_mean_realized_player_score']:.2f}  "
+                f"giornate={selected_strategy['selection_gameweeks']}"
+            )
+
         forecast_metrics = extras.get("forecast_metrics", pd.DataFrame())
         if not forecast_metrics.empty:
             print_dataframe(
