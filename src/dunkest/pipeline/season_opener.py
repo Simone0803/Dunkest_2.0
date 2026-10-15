@@ -25,7 +25,7 @@ from dunkest.data.cache import (
 from dunkest.data.dunkest.opening import fetch_opening_coach_market, fetch_opening_market_pool
 from dunkest.data.dunkest.official_pdk import attach_official_pdk_labels
 from dunkest.data.nba import collector as nba
-from dunkest.data.dunkest.fixtures import ensure_gameweek1_fixture_mapping
+from dunkest.data.dunkest.fixtures import ensure_gameweek1_fixture_mapping, parse_fixture_bool
 from dunkest.data.nba.collector import require_complete_collection
 from dunkest.data.nba.prior_season import fetch_prior_season_game_logs
 from dunkest.features.builder import build_feature_matrix
@@ -202,8 +202,10 @@ def _verified_gameweek_teams(fixtures: pd.DataFrame) -> set[str]:
             ("home_team", "home_team_eligible"),
             ("away_team", "away_team_eligible"),
         ):
-            value = fixture.get(eligible_column, fixture.get("fantasy_eligible", False))
-            if pd.notna(value) and bool(value):
+            value = parse_fixture_bool(
+                fixture.get(eligible_column, fixture.get("fantasy_eligible", False))
+            )
+            if value is True:
                 team = str(fixture.get(team_column, "")).strip().upper()
                 if team:
                     verified.add(team)
@@ -227,9 +229,11 @@ def _require_complete_score_bearing_teams(
                 ("home_team", "home_team_eligible"),
                 ("away_team", "away_team_eligible"),
             ):
-                value = fixture.get(eligible_column, fixture.get("fantasy_eligible", None))
+                value = parse_fixture_bool(
+                    fixture.get(eligible_column, fixture.get("fantasy_eligible", None))
+                )
                 team = str(fixture.get(team_column, "")).strip().upper()
-                if team and pd.notna(value) and isinstance(value, (bool, int)):
+                if team and value is not None:
                     observed.add(team)
     missing = sorted(market_teams - observed)
     if not market_teams or missing:
@@ -249,9 +253,9 @@ def _verified_matchups_by_team(fixtures: pd.DataFrame) -> dict[str, dict[str, ob
     if fixtures is None or fixtures.empty:
         return matchups
     for _, fixture in fixtures.iterrows():
-        if not bool(fixture.get("mapping_verified", False)):
+        if parse_fixture_bool(fixture.get("mapping_verified", False)) is not True:
             continue
-        if not bool(fixture.get("fantasy_eligible", False)):
+        if parse_fixture_bool(fixture.get("fantasy_eligible", False)) is not True:
             continue
         turn_value = pd.to_numeric(fixture.get("dunkest_turn"), errors="coerce")
         if pd.isna(turn_value):
@@ -260,8 +264,8 @@ def _verified_matchups_by_team(fixtures: pd.DataFrame) -> dict[str, dict[str, ob
             ("home_team", "home_team_eligible", "away_team"),
             ("away_team", "away_team_eligible", "home_team"),
         ):
-            eligible = fixture.get(eligible_column, False)
-            if pd.isna(eligible) or not bool(eligible):
+            eligible = parse_fixture_bool(fixture.get(eligible_column, False))
+            if eligible is not True:
                 continue
             team = str(fixture.get(team_column, "")).strip().upper()
             opponent = str(fixture.get(opponent_column, "")).strip().upper()

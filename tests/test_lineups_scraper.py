@@ -1050,3 +1050,42 @@ def test_selected_dark_fixture_tile_is_not_misread_as_black_team_text():
                 pixels[idx:idx + 3] = bytes([175, 175, 175])
 
     assert _visible_word_luminance((width, height, pixels), (6, 3, 15, 9)) is None
+
+
+def test_market_deduplication_keeps_one_canonical_fixture_player_and_preserves_name_collisions():
+    rows = [
+        {"player_name": "Player One", "team": "BOS", "role": "G", "cr": 5.0},
+        {"player_name": "Player One", "team": "BOS", "role": "G", "cr": 5.0},
+        {"player_name": "Player One", "team": "NYK", "role": "G", "cr": 5.0},
+        {"player_name": "Player Two", "team": "BOS", "role": "G", "cr": 5.0},
+    ]
+    result = _deduplicate_market_rows(rows)
+    assert len(result) == 3
+    assert {(row["team"], row["player_name"]) for row in result} == {
+        ("BOS", "Player One"), ("NYK", "Player One"), ("BOS", "Player Two")
+    }
+
+
+def test_incomplete_or_unknown_lineup_coverage_fails_closed():
+    partial = {"BOS": {"players": 8, "starters": 5}, "DET": {"players": 7, "starters": 4}}
+    assert not _fixture_lineup_coverage_ok(partial)
+    assert not _fixture_lineup_coverage_ok({"BOS": {"players": 8, "starters": 5}}, {"BOS", "DET"})
+    assert not _fixture_lineup_coverage_ok({"BOS": {"players": 8, "starters": 5},
+                                           "DET": {"players": 0, "starters": 0}}, {"BOS", "DET"})
+
+
+def test_unknown_fixture_eligibility_requires_both_sides_for_coverage():
+    fixture = "20/10 BOS @ DET"
+    assert _fixture_required_lineup_teams(fixture, {"20/10|BOS|DET": {"BOS": True, "DET": None}}) == {"BOS", "DET"}
+    assert _fixture_required_lineup_teams(fixture, {"20/10|BOS|DET": {"BOS": None, "DET": False}}) == {"BOS"}
+
+
+def test_duplicate_fixture_labels_across_lazy_batches_are_counted_once():
+    batches = [
+        [{"label": "TURNO 1", "y": 5}, {"label": "20/10 BOS @ DET", "y": 15}],
+        [{"label": "TURNO 1", "y": 5}, {"label": "20/10 BOS @ DET", "y": 15},
+         {"label": "21/10 PHI @ NYK", "y": 25}],
+    ]
+    all_fixtures, target = _fixture_labels_from_batches(batches, 1)
+    assert all_fixtures == ["20/10 BOS @ DET", "21/10 PHI @ NYK"]
+    assert target == all_fixtures

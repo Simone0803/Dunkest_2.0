@@ -45,3 +45,24 @@ def test_yaml_rejects_unknown_or_misspelled_keys(tmp_path):
 
     with pytest.raises(ValueError, match="Unknown configuration key.*optimiser_top_k"):
         Settings.from_yaml(config)
+
+
+def test_yaml_boolean_strings_are_parsed_explicitly(tmp_path):
+    config = tmp_path / "boolean.yaml"
+    config.write_text(
+        "use_injuries: false\nuse_matchup: 'False'\n"
+        "use_coach_model: 'true'\noptimize_captain: off\n",
+        encoding="utf-8",
+    )
+    settings = Settings.from_yaml(config)
+    assert settings.use_injuries is False
+    assert settings.use_matchup is False
+    assert settings.use_coach_model is True
+    assert settings.optimize_captain is False
+
+
+def test_invalid_yaml_boolean_is_rejected_instead_of_truthy_coercion(tmp_path):
+    config = tmp_path / "boolean.yaml"
+    config.write_text("use_injuries: definitely\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="use_injuries.*must be a boolean"):
+        Settings.from_yaml(config)

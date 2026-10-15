@@ -353,8 +353,8 @@ def test_market_opponent_selects_matching_game_over_first_week_fixture():
                 "PTS": 115.0, "GAME_DATE": date,
             })
     schedule = pd.DataFrame([
-        {"nba_game_id": "ac", "game_datetime_utc": "2026-10-20T00:00:00Z", "home_team": "A", "away_team": "C", "dunkest_gameweek": 1, "dunkest_turn": 1, "fantasy_eligible": False},
-        {"nba_game_id": "ab", "game_datetime_utc": "2026-10-22T00:00:00Z", "home_team": "A", "away_team": "B", "dunkest_gameweek": 1, "dunkest_turn": 2, "fantasy_eligible": True},
+        {"nba_game_id": "ac", "game_datetime_utc": "2026-10-20T00:00:00Z", "home_team": "A", "away_team": "C", "dunkest_gameweek": 1, "dunkest_turn": 1, "fantasy_eligible": False, "mapping_verified": True},
+        {"nba_game_id": "ab", "game_datetime_utc": "2026-10-22T00:00:00Z", "home_team": "A", "away_team": "B", "dunkest_gameweek": 1, "dunkest_turn": 2, "fantasy_eligible": True, "mapping_verified": True},
     ])
 
     result = predict_coach_points(coaches, pd.DataFrame(logs), schedule, gameweek=1)

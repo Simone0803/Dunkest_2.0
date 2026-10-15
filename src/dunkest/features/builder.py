@@ -11,6 +11,25 @@ from dunkest.names import player_key
 
 logger = logging.getLogger(__name__)
 
+
+def _fixture_bool_series(series: pd.Series) -> pd.Series:
+    """Parse fixture booleans conservatively; unknown source values are false."""
+    def parse(value):
+        if isinstance(value, (bool, np.bool_)):
+            return bool(value)
+        if value is None or pd.isna(value):
+            return False
+        if isinstance(value, (int, np.integer)) and value in (0, 1):
+            return bool(value)
+        if isinstance(value, str):
+            token = value.strip().casefold()
+            if token in {"true", "1", "yes", "y", "on"}:
+                return True
+            if token in {"false", "0", "no", "n", "off"}:
+                return False
+        return False
+    return series.map(parse).astype(bool)
+
 def _to_naive_utc(series_or_value):
     """Normalize datetimes to tz-naive UTC so comparisons never mix tz-aware/naive."""
     values = pd.to_datetime(series_or_value, errors="coerce", utc=True)
@@ -730,7 +749,7 @@ def _attach_next_game_schedule(
     if target_gameweek is not None:
         required_mapping = {
             "nba_game_id", "dunkest_gameweek", "dunkest_turn",
-            "fantasy_eligible", "game_datetime_utc", "home_team", "away_team",
+            "fantasy_eligible", "mapping_verified", "game_datetime_utc", "home_team", "away_team",
         }
         if not required_mapping.issubset(schedule_rows.columns):
             logger.warning(
@@ -742,7 +761,8 @@ def _attach_next_game_schedule(
             pd.to_numeric(schedule_rows["dunkest_gameweek"], errors="coerce").eq(
                 int(target_gameweek)
             )
-            & schedule_rows["fantasy_eligible"].fillna(False).astype(bool)
+            & _fixture_bool_series(schedule_rows["fantasy_eligible"])
+            & _fixture_bool_series(schedule_rows["mapping_verified"])
         ].rename(
             columns={
                 "game_datetime_utc": "GAME_DATE",
@@ -753,12 +773,12 @@ def _attach_next_game_schedule(
                 "dunkest_turn": "DUNKEST_TURN",
             }
         )
-        schedule_rows["HOME_TEAM_ELIGIBLE"] = schedule_rows.get(
-            "home_team_eligible", schedule_rows["fantasy_eligible"]
-        ).fillna(False).astype(bool)
-        schedule_rows["AWAY_TEAM_ELIGIBLE"] = schedule_rows.get(
-            "away_team_eligible", schedule_rows["fantasy_eligible"]
-        ).fillna(False).astype(bool)
+        schedule_rows["HOME_TEAM_ELIGIBLE"] = _fixture_bool_series(
+            schedule_rows.get("home_team_eligible", schedule_rows["fantasy_eligible"])
+        )
+        schedule_rows["AWAY_TEAM_ELIGIBLE"] = _fixture_bool_series(
+            schedule_rows.get("away_team_eligible", schedule_rows["fantasy_eligible"])
+        )
         if schedule_rows.empty:
             logger.warning("No fantasy-eligible fixture mapping for Dunkest GW%s.", target_gameweek)
     elif "NBA_GAME_ID" not in schedule_rows and "GAME_ID" in schedule_rows:

@@ -215,3 +215,30 @@ def test_unknown_team_eligibility_still_blocks_roster_generation():
     ])
     with pytest.raises(RuntimeError, match="stato eleggibilità esplicito"):
         _require_complete_score_bearing_teams(fixtures, {"BOS", "DET"})
+
+
+def test_string_boolean_fixture_statuses_are_parsed_semantically():
+    fixtures = pd.DataFrame([{
+        "home_team": "BOS", "away_team": "DET",
+        "home_team_eligible": "true", "away_team_eligible": "False",
+        "mapping_verified": "true", "fantasy_eligible": "true",
+        "dunkest_turn": 1, "nba_game_id": "g1",
+    }])
+
+    assert _verified_gameweek_teams(fixtures) == {"BOS"}
+    assert _require_complete_score_bearing_teams(fixtures, {"BOS", "DET"}) == {"BOS"}
+    assert season_opener._verified_matchups_by_team(fixtures) == {
+        "BOS": {"opponent": "DET", "dunkest_turn": 1, "nba_game_id": "g1"}
+    }
+
+
+def test_unrecognized_fixture_boolean_does_not_create_verified_matchup():
+    fixtures = pd.DataFrame([{
+        "home_team": "BOS", "away_team": "DET",
+        "home_team_eligible": "unknown", "away_team_eligible": "False",
+        "mapping_verified": "yes-ish", "fantasy_eligible": "true",
+        "dunkest_turn": 1, "nba_game_id": "g1",
+    }])
+
+    assert _verified_gameweek_teams(fixtures) == set()
+    assert season_opener._verified_matchups_by_team(fixtures) == {}

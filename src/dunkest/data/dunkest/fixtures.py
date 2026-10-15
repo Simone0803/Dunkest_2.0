@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 
 from dunkest.config import Settings
+from dunkest.data.http_client import get_json
 
 
 FIXTURE_COLUMNS = [
@@ -41,6 +42,178 @@ FIXTURE_COLUMNS = [
 REQUIRED_FIXTURE_COLUMNS = set(FIXTURE_COLUMNS).difference(
     {"home_team_eligible", "away_team_eligible"}
 )
+
+DUNKEST_SCHEDULE_API_BASE = "https://fantaking-api.dunkest.com/api/v1"
+DUNKEST_NBA_LEAGUE_ID = 1
+
+
+def fetch_official_dunkest_gameweek_calendar(
+    gameweek: int, *, timeout: float = 20.0
+) -> tuple[pd.DataFrame, dict]:
+    """Fetch official Dunkest matchday/round/team-validity data read-only.
+
+    The public league config exposes the active schedule and current matchday.
+    Candidate matchday IDs are only locators: the returned payload's `number`
+    is checked against the requested Dunkest Giornata before any row is used.
+    The endpoint does not expose NBA GAME_ID, so a separate identity join is
+    required before this calendar can become a fixture bridge.
+    """
+    gw = int(gameweek)
+    if gw < 1:
+        raise ValueError("Dunkest gameweek must be a positive integer.")
+    config_url = f"{DUNKEST_SCHEDULE_API_BASE}/leagues/{DUNKEST_NBA_LEAGUE_ID}/config"
+    config_payload = get_json(config_url, timeout=timeout)
+    config = config_payload.get("data", config_payload) if isinstance(config_payload, dict) else {}
+    current = config.get("current_matchday") or {}
+    schedule_id = config.get("current_schedule_id")
+    current_id = current.get("id")
+    current_number = current.get("number")
+    if schedule_id is None or current_id is None or current_number is None:
+        raise ValueError("Official Dunkest league config lacks current schedule/matchday identity.")
+    candidate_id = int(current_id) + (gw - int(current_number))
+    matchday_url = f"{DUNKEST_SCHEDULE_API_BASE}/schedules/{int(schedule_id)}/matchdays/{candidate_id}"
+    payload = get_json(matchday_url, timeout=timeout)
+    matchday = payload.get("data", payload) if isinstance(payload, dict) else {}
+    if int(matchday.get("number", -1)) != gw:
+        raise ValueError(
+            f"Official API returned matchday number {matchday.get('number')!r}, expected Giornata {gw}; refusing inferred ID."
+        )
+    rows: list[dict] = []
+    for round_data in matchday.get("rounds", []):
+        round_number = round_data.get("number")
+        for match in round_data.get("matches", []):
+            home = match.get("home_team") or {}
+            away = match.get("away_team") or {}
+            started_at = pd.to_datetime(match.get("started_at"), errors="coerce", utc=True)
+            home_valid = parse_fixture_bool(home.get("is_valid"))
+            away_valid = parse_fixture_bool(away.get("is_valid"))
+            if (
+                pd.isna(started_at)
+                or not home.get("abbreviation")
+                or not away.get("abbreviation")
+                or home.get("abbreviation") == away.get("abbreviation")
+                or round_number is None
+            ):
+                raise ValueError(f"Malformed official Dunkest match record: match_id={match.get('id')!r}.")
+            rows.append({
+                "dunkest_schedule_id": int(schedule_id),
+                "dunkest_matchday_id": int(matchday["id"]),
+                "dunkest_gameweek": gw,
+                "dunkest_round_id": int(round_data["id"]),
+                "dunkest_turn": int(round_number),
+                "dunkest_match_id": int(match["id"]),
+                "game_datetime_utc": started_at,
+                "home_team": str(home["abbreviation"]).strip().upper(),
+                "away_team": str(away["abbreviation"]).strip().upper(),
+                "home_team_eligible": home_valid,
+                "away_team_eligible": away_valid,
+                "fantasy_eligible": home_valid is True or away_valid is True,
+                "match_status": str(match.get("status", "unknown")),
+            })
+    if not rows:
+        raise ValueError(f"Official Dunkest API returned no matches for Giornata {gw}.")
+    calendar = pd.DataFrame(rows)
+    if calendar["dunkest_match_id"].duplicated().any():
+        raise ValueError(f"Official Dunkest Giornata {gw} contains duplicate match IDs.")
+    metadata = {
+        "source": "official_fantaking_dunkest_api",
+        "config_url": config_url,
+        "matchday_url": matchday_url,
+        "schedule_id": int(schedule_id),
+        "matchday_id": int(matchday["id"]),
+        "gameweek": gw,
+        "match_count": len(calendar),
+        "retrieved_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
+        "raw_payload_sha256": hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest(),
+    }
+    return calendar, metadata
+
+
+def build_gameweek_mapping_from_official_calendar(
+    settings: Settings,
+    nba_schedule: pd.DataFrame,
+    official_calendar: pd.DataFrame,
+    *,
+    gameweek: int,
+    mapping_version: str | None = None,
+) -> pd.DataFrame:
+    """Join official Dunkest matchday/turn/eligibility to unique NBA game IDs.
+
+    The official API is authoritative for Giornata, Turno and per-side validity;
+    the NBA schedule contributes only the NBA game identity. A team-pair match
+    must be unique within 36 hours of the official tipoff. Missing or ambiguous
+    identities abort the whole bridge rather than silently creating a partial map.
+    """
+    gw = int(gameweek)
+    required = {
+        "dunkest_schedule_id", "dunkest_matchday_id", "dunkest_gameweek", "dunkest_turn",
+        "dunkest_match_id", "game_datetime_utc", "home_team", "away_team",
+        "home_team_eligible", "away_team_eligible",
+    }
+    if official_calendar.empty or not required.issubset(official_calendar.columns):
+        raise ValueError("Official Dunkest calendar is empty or missing required fields.")
+    if not pd.to_numeric(official_calendar["dunkest_gameweek"], errors="coerce").eq(gw).all():
+        raise ValueError("Official calendar contains rows from a different Dunkest Giornata.")
+    schedule = validate_nba_schedule(nba_schedule).copy()
+    schedule["_datetime"] = pd.to_datetime(schedule["GAME_DATE"], errors="coerce", utc=True)
+    observed_at = pd.Timestamp.now(tz="UTC")
+    version = mapping_version or f"official_api_gw{gw}_v1"
+    payload: list[dict] = []
+    unmatched: list[int] = []
+    for _, official in official_calendar.iterrows():
+        start = pd.to_datetime(official["game_datetime_utc"], errors="coerce", utc=True)
+        home = str(official["home_team"]).strip().upper()
+        away = str(official["away_team"]).strip().upper()
+        pair = schedule["HOME_TEAM"].eq(home) & schedule["AWAY_TEAM"].eq(away)
+        delta = (schedule["_datetime"] - start).abs()
+        candidates = schedule.loc[pair & delta.le(pd.Timedelta(hours=36))].copy()
+        if len(candidates) != 1:
+            unmatched.append(int(official["dunkest_match_id"]))
+            continue
+        game = candidates.iloc[0]
+        home_valid = parse_fixture_bool(official["home_team_eligible"])
+        away_valid = parse_fixture_bool(official["away_team_eligible"])
+        eligible = home_valid is True or away_valid is True
+        payload.append({
+            "season_id": str(settings.season_id),
+            "nba_season": str(settings.season),
+            "nba_game_id": str(game["GAME_ID"]),
+            "game_datetime_utc": start,
+            "game_date_local": start.tz_convert("Europe/Rome").date(),
+            "home_team": home, "away_team": away,
+            "home_team_eligible": home_valid, "away_team_eligible": away_valid,
+            "dunkest_gameweek": gw, "dunkest_turn": int(official["dunkest_turn"]),
+            "fantasy_eligible": eligible,
+            "mapping_verified": home_valid is not None and away_valid is not None,
+            "eligibility_reason": f"official_matchday_{int(official['dunkest_matchday_id'])}_match_{int(official['dunkest_match_id'])}",
+            "source": "official_fantaking_dunkest_api",
+            "source_url_or_endpoint": (
+                f"{DUNKEST_SCHEDULE_API_BASE}/schedules/{int(official['dunkest_schedule_id'])}"
+                f"/matchdays/{int(official['dunkest_matchday_id'])}"
+            ),
+            "source_retrieved_at_utc": observed_at,
+            "mapping_version": version,
+            "raw_payload_sha256": "",
+        })
+    if unmatched:
+        raise ValueError(
+            f"Cannot uniquely join official Dunkest matches to NBA GAME_ID for Giornata {gw}; "
+            f"unmatched/ambiguous Dunkest match IDs: {unmatched[:20]}"
+        )
+    frame = pd.DataFrame(payload)
+    if frame["nba_game_id"].duplicated().any():
+        ids = frame.loc[frame["nba_game_id"].duplicated(keep=False), "nba_game_id"].astype(str).tolist()
+        raise ValueError(f"Official Dunkest calendar maps duplicate NBA game IDs: {ids[:20]}")
+    digest = hashlib.sha256(
+        "|".join(
+            f"{row['nba_game_id']}:{row['dunkest_match_id'] if 'dunkest_match_id' in row else row['eligibility_reason']}:{row['dunkest_turn']}:{row['home_team_eligible']}:{row['away_team_eligible']}"
+            for row in frame.sort_values(["game_datetime_utc", "nba_game_id"]).to_dict("records")
+        ).encode("utf-8")
+    ).hexdigest()
+    frame["raw_payload_sha256"] = digest
+    return validate_fixture_mapping(frame)
 
 
 def validate_nba_schedule(schedule: pd.DataFrame) -> pd.DataFrame:
@@ -187,10 +360,10 @@ def get_fixture_mapping(
     # Provisional NBA-schedule proxies are useful for diagnostics only. They
     # must not be presented as confirmed Dunkest matchups or drive forecasts.
     mapping = mapping.loc[
-        mapping["mapping_verified"].fillna(False).astype(bool)
+        mapping["mapping_verified"].map(parse_fixture_bool).fillna(False).astype(bool)
         & (
-            mapping["home_team_eligible"].fillna(False).astype(bool)
-            | mapping["away_team_eligible"].fillna(False).astype(bool)
+            mapping["home_team_eligible"].map(parse_fixture_bool).fillna(False).astype(bool)
+            | mapping["away_team_eligible"].map(parse_fixture_bool).fillna(False).astype(bool)
         )
     ]
     return mapping.reset_index(drop=True)
@@ -377,8 +550,8 @@ def build_gameweek_mapping_from_lineups(
             continue
         game = candidates.iloc[0]
         eligibility_by_team = {
-            first: _parse_fixture_bool(observation.get("team_a_eligible")),
-            second: _parse_fixture_bool(observation.get("team_b_eligible")),
+            first: parse_fixture_bool(observation.get("team_a_eligible")),
+            second: parse_fixture_bool(observation.get("team_b_eligible")),
         }
         home_eligible = eligibility_by_team.get(str(game["HOME_TEAM"]).upper())
         away_eligible = eligibility_by_team.get(str(game["AWAY_TEAM"]).upper())
@@ -663,7 +836,7 @@ def save_current_capture_fixture_mapping(
     return get_fixture_mapping(settings, gw)
 
 
-def _parse_fixture_bool(value: object) -> bool | None:
+def parse_fixture_bool(value: object) -> bool | None:
     if pd.isna(value):
         return None
     if isinstance(value, bool):
@@ -820,7 +993,7 @@ def load_pre_match_snapshot(
             lock = pd.to_datetime(mapping["game_datetime_utc"], errors="coerce", utc=True)
             if (
                 mapping.empty or lock.isna().any() or lock.min() <= captured
-                or not mapping["mapping_verified"].fillna(False).astype(bool).all()
+                or not mapping["mapping_verified"].map(parse_fixture_bool).fillna(False).astype(bool).all()
                 or mapping["dunkest_turn"].isna().any()
                 or mapping["nba_game_id"].astype(str).str.strip().eq("").any()
             ):
@@ -953,7 +1126,7 @@ def check_backtest_readiness(
             "game_datetime_utc": "game_datetime_utc",
         })
         mapping_ok = bool(
-            mapping["mapping_verified"].fillna(False).astype(bool).all()
+            mapping["mapping_verified"].map(parse_fixture_bool).fillna(False).astype(bool).all()
             and mapping["dunkest_turn"].notna().all()
             and mapping["nba_game_id"].astype(str).str.strip().ne("").all()
         )

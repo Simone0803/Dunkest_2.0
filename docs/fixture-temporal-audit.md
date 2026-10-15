@@ -137,3 +137,41 @@ Manifest: source/endpoint, fetched-at UTC, coverage, raw+normalized hash, schema
 ## 8. Metriche
 
 Nomi richiesti nei report: `player_game_pdk_mae` (unità PDK/player NBA game, stagione/split espliciti), `dunkest_gameweek_player_pdk_mae` (PDK/player Dunkest GW), `capital_gain_delta_cr_mae` (CR/player/GW), e `official_plus_sign_accuracy` (segno della PLUS realizzata, campione e fonte espliciti). Ogni metrica documenta target source, unità, copertura, split, cutoff e baseline; vietato chiamare genericamente una misura `MAE` senza il target.
+
+
+## 7. Esito audit e classificazione delle associazioni (2026-10-15)
+
+Questa sezione aggiorna le conclusioni operative: la tabella iniziale descrive i rischi storicamente individuati, non certifica che il bridge ufficiale sia stato acquisito.
+
+| Associazione | Classificazione | Uso consentito |
+|---|---|---|
+| NBA `GAME_ID` ↔ data/ora, squadre casa/trasferta e stato NBA | **Ufficiale NBA** quando proviene da ScheduleLeagueV2/box score con identità coerente | Identità e calendario della partita NBA; non dimostra validità Dunkest |
+| Dunkest Giornata ↔ numero passato all'API Dunkest `week/rounds` | **Ufficiale Dunkest a livello di giornata/statistica** per la risposta dell'endpoint; non è automaticamente un bridge a una singola partita NBA | Aggregati della giornata; non assegnare un NBA game ID senza evidenza aggiuntiva |
+| Dunkest Turno ↔ intestazione `TURNO N` osservata in Lineups | **Osservazione UI** con fixture label/data; utile per la sessione acquisita, non basta da sola a certificare l'identità NBA | Conservare label, turno, timestamp e status osservato; validare team+data contro schedule NBA |
+| NBA `WEEK_NUMBER` ↔ Dunkest Giornata | **Proxy non valido come mapping** | Non usare per filtrare forecast Dunkest, assegnare matchup coach o certificare backtest |
+| Ordinamento cronologico NBA ↔ Dunkest Turno/Giornata | **Proxy** | Diagnostica soltanto; mai promuovere a mapping ufficiale |
+| Team pair + data mostrata in Lineups ↔ NBA `GAME_ID` | **Associazione osservata/risolta**, verificabile se univoca e con data compatibile; non è fonte ufficiale Dunkest di eleggibilità | Uso solo con `mapping_verified=true`, status espliciti e provenienza/cutoff registrati |
+| Colore/status eleggibilità DOM o screenshot Lineups | **Evidenza osservata**, con `unknown` se DOM/OCR discordano o sono illeggibili | Non interpretare unknown come false o true; lato unknown resta soggetto ai gate di copertura |
+
+### Gate implementati in questa tornata
+
+- Il modello coach, quando riceve una Giornata Dunkest, filtra il bridge su `mapping_verified=true` e `fantasy_eligible=true`; valori testuali come `"False"` non sono truthy. Se la verifica manca, il bridge non alimenta il forecast. Un matchup passato esplicitamente dal chiamante è accettato solo se marcato verificato.
+- Il feature builder richiede il campo `mapping_verified` nel bridge per associare matchup alla Giornata target; le feature di eleggibilità interpretano in modo conservativo le stringhe booleane e i valori sconosciuti. Le colonne `target_pdk` e `target_pdk_official` restano target POST_MATCH e non vengono trasformate in feature PRE_MATCH. I target possono essere usati per training/evaluation soltanto con le trasformazioni rolling shiftate e con dati precedenti alla partita target.
+- Lo scraper Lineups mantiene il controllo di copertura per ogni lato richiesto: 5 starter e almeno 8 giocatori risolti sul mercato canonico. Fixture duplicate nelle risposte API vengono deduplicate per team/ruolo/nome; collisioni tra identità diverse sono conservate per il gate downstream. Copertura parziale e status sconosciuto non vengono certificati come completi.
+
+### Esito aggiornato: endpoint ufficiale trovato per il calendario attivo
+
+Il 2026-10-15 è stato recuperato il calendario attivo dall'API pubblica ufficiale Fantaking/Dunkest:
+
+- Config lega NBA: `https://fantaking-api.dunkest.com/api/v1/leagues/1/config`
+- Dettaglio giornata: `https://fantaking-api.dunkest.com/api/v1/schedules/{schedule_id}/matchdays/{matchday_id}`
+- La configurazione attiva restituisce `schedule_id=57`, Giornata 1 `matchday_id=1858`, con 3 turni.
+- Il payload per la Giornata 1 contiene 16 partite, `round.number` (Turno), data/ora, squadre e flag `home_team.is_valid` / `away_team.is_valid`.
+- Tutte le **16/16 partite** sono state collegate univocamente a `NBA GAME_ID` usando identità delle squadre e prossimità del tip-off entro 36 ore; nessuna riga è stata dedotta da `NBA_WEEK_NUMBER` o dall'ordine cronologico.
+- L'acquisizione e la bridge sono archiviate in `reports/audit/dunkest_official_calendar_bridge_20261015_v2.{md,json}` e `_rows.csv`, con hash del payload e delle righe. La bridge è stata confrontata con la cattura Lineups locale: **16/16 fixture coincidono** per coppia squadre, Turno e data visualizzata (`Europe/Rome`), e tutti i **32/32 stati di eleggibilità** coincidono (30 lati validi, 2 non validi).
+
+La funzione `fetch_official_dunkest_gameweek_calendar()` ora acquisisce il calendario ufficiale e valida che il numero di Giornata restituito corrisponda a quello richiesto; `build_gameweek_mapping_from_official_calendar()` unisce le fixture all'identità NBA e fallisce se una partita è assente o ambigua. Test offline coprono parsing, validazione dell'ID/numero giornata e associazione a `GAME_ID`.
+
+**Limite residuo:** il config pubblico espone la schedule attiva; `GET /api/v1/schedules` richiede autenticazione e non è stato recuperato un enumeratore pubblico delle schedule storiche. Quindi l'API risolve il bridge per la stagione attiva, ma non prova da sola la copertura ufficiale completa 2018/19–2025/26. I backtest storici restano non certificati quando mancano bridge pre-lock, roster, crediti, indisponibilità o risultati collegati.
+
+La bridge appena costruita è stata salvata solo come artefatto di audit. Non è stata scritta nella directory di produzione `data/processed`, non sono stati sovrascritti snapshot mercato, e non sono state eseguite previsioni o tuning sulla GW1 congelata.

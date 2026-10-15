@@ -4,6 +4,8 @@ import pytest
 from dunkest.config import Settings
 from dunkest.data.dunkest.fixtures import (
     build_gameweek1_mapping_from_lineups,
+    build_gameweek_mapping_from_official_calendar,
+    fetch_official_dunkest_gameweek_calendar,
     ensure_gameweek1_fixture_mapping,
     get_fixture_mapping,
     save_fixture_mapping,
@@ -76,6 +78,23 @@ def test_player_game_join_checks_team_opponent_home_away_and_game_identity():
     wrong_side = good.assign(home_away="AWAY")
     with pytest.raises(ValueError, match="team/opponent/home-away"):
         validate_player_fixture_associations(wrong_side, fixture)
+
+
+def test_player_fixture_association_rejects_explicitly_ineligible_side_and_parses_strings():
+    fixture = pd.DataFrame([{
+        **_fixture("001", "BOS", "NYK"),
+        "home_team_eligible": "False",
+        "away_team_eligible": "true",
+    }])
+    player = pd.DataFrame([{
+        "nba_game_id": "001", "team": "BOS", "opponent": "NYK",
+        "home_away": "HOME", "game_datetime_utc": "2026-10-20T23:00:00Z",
+    }])
+    with pytest.raises(ValueError, match="non-valid/unknown team fixture"):
+        validate_player_fixture_associations(player, fixture)
+
+    eligible_away = player.assign(team="NYK", opponent="BOS", home_away="AWAY")
+    assert len(validate_player_fixture_associations(eligible_away, fixture)) == 1
 
 
 def test_fixture_mapping_not_available_at_prediction_cutoff_is_rejected():
@@ -231,3 +250,70 @@ def test_prematch_feature_guard_rejects_postmatch_target_and_late_data():
     })
     with pytest.raises(ValueError, match="post-cutoff"):
         validate_prematch_features(late, ["pdk_mean_5"])
+
+
+def test_fetch_official_dunkest_calendar_uses_current_schedule_and_validates_matchday_number(monkeypatch):
+    import dunkest.data.dunkest.fixtures as fixtures
+
+    calls = []
+    def fake_get_json(url, timeout):
+        calls.append(url)
+        if url.endswith("/leagues/1/config"):
+            return {"data": {"current_schedule_id": 57, "current_matchday": {"id": 1858, "number": 1}}}
+        return {"data": {"id": 1858, "number": 1, "rounds": [{
+            "id": 2890, "number": 1, "matches": [{
+                "id": 14067, "status": "scheduled", "started_at": "2026-10-20T19:00:00Z",
+                "home_team": {"abbreviation": "DET", "is_valid": True},
+                "away_team": {"abbreviation": "BOS", "is_valid": False},
+            }]
+        }]}}
+    monkeypatch.setattr(fixtures, "get_json", fake_get_json)
+
+    calendar, metadata = fetch_official_dunkest_gameweek_calendar(1)
+
+    assert calls == [
+        "https://fantaking-api.dunkest.com/api/v1/leagues/1/config",
+        "https://fantaking-api.dunkest.com/api/v1/schedules/57/matchdays/1858",
+    ]
+    assert metadata["schedule_id"] == 57 and metadata["matchday_id"] == 1858
+    assert calendar.loc[0, "dunkest_turn"] == 1
+    assert bool(calendar.loc[0, "home_team_eligible"]) is True
+    assert bool(calendar.loc[0, "away_team_eligible"]) is False
+
+
+def test_fetch_official_dunkest_calendar_rejects_wrong_matchday_id(monkeypatch):
+    import dunkest.data.dunkest.fixtures as fixtures
+    def fake_get_json(url, timeout):
+        if url.endswith("/leagues/1/config"):
+            return {"data": {"current_schedule_id": 57, "current_matchday": {"id": 1858, "number": 1}}}
+        return {"data": {"id": 1859, "number": 2, "rounds": []}}
+    monkeypatch.setattr(fixtures, "get_json", fake_get_json)
+    with pytest.raises(ValueError, match="expected Giornata 1"):
+        fetch_official_dunkest_gameweek_calendar(1)
+
+
+def test_official_calendar_bridge_uses_official_turn_and_team_validity():
+    settings = Settings()
+    schedule = pd.DataFrame([
+        {"GAME_ID": "0022600001", "GAME_DATE": "2026-10-20", "HOME_TEAM": "DET", "AWAY_TEAM": "BOS"},
+        {"GAME_ID": "0022600002", "GAME_DATE": "2026-10-21", "HOME_TEAM": "NYK", "AWAY_TEAM": "PHI"},
+    ])
+    calendar = pd.DataFrame([
+        {"dunkest_schedule_id": 57, "dunkest_matchday_id": 1858, "dunkest_gameweek": 1,
+         "dunkest_turn": 1, "dunkest_match_id": 14067, "game_datetime_utc": "2026-10-20T19:00:00Z",
+         "home_team": "DET", "away_team": "BOS", "home_team_eligible": True, "away_team_eligible": False},
+        {"dunkest_schedule_id": 57, "dunkest_matchday_id": 1858, "dunkest_gameweek": 1,
+         "dunkest_turn": 1, "dunkest_match_id": 14068, "game_datetime_utc": "2026-10-20T23:00:00Z",
+         "home_team": "NYK", "away_team": "PHI", "home_team_eligible": True, "away_team_eligible": True},
+    ])
+
+    mapping = build_gameweek_mapping_from_official_calendar(
+        settings, schedule, calendar, gameweek=1
+    ).sort_values("nba_game_id")
+
+    assert mapping["nba_game_id"].tolist() == ["0022600001", "0022600002"]
+    assert mapping["dunkest_turn"].tolist() == [1, 1]
+    assert mapping["home_team_eligible"].tolist() == [True, True]
+    assert mapping["away_team_eligible"].tolist() == [False, True]
+    assert mapping["source"].eq("official_fantaking_dunkest_api").all()
+    assert mapping["mapping_verified"].all()

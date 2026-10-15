@@ -15,6 +15,27 @@ MAX_ROSTER_POINTS_ADJUSTMENT = 6.0
 logger = logging.getLogger(__name__)
 
 
+def _fixture_bool(value, *, unknown=None):
+    """Parse source booleans without Python truthiness (e.g. bool("False"))."""
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    if value is None or pd.isna(value):
+        return unknown
+    if isinstance(value, (int, np.integer)) and value in (0, 1):
+        return bool(value)
+    if isinstance(value, str):
+        token = value.strip().casefold()
+        if token in {"true", "1", "yes", "y", "on"}:
+            return True
+        if token in {"false", "0", "no", "n", "off"}:
+            return False
+    return unknown
+
+
+def _fixture_bool_series(series: pd.Series) -> pd.Series:
+    return series.map(_fixture_bool).astype("boolean")
+
+
 def _recent_shrunk_mean(
     group: pd.DataFrame,
     column: str,
@@ -231,20 +252,22 @@ def _normalize_schedule_frame(schedule: pd.DataFrame, gameweek: int | None) -> p
     if schedule is None or schedule.empty:
         return pd.DataFrame(columns=["GAME_DATE", "HOME_TEAM", "AWAY_TEAM"])
     games = schedule.copy()
-    if gameweek is not None and not {"dunkest_gameweek", "fantasy_eligible"}.issubset(games.columns):
-        # A raw NBA calendar has no authoritative Dunkest GW bridge. A caller
-        # may pass a single explicitly verified matchup, but never an unlinked
-        # season schedule that would make the last arbitrary game look current.
+    if gameweek is not None and not {"dunkest_gameweek", "fantasy_eligible", "mapping_verified"}.issubset(games.columns):
+        # A requested Dunkest Giornata needs an explicit, verified bridge.
+        # A raw NBA schedule or a bridge missing verification must not produce
+        # a coach score that downstream reports could present as reliable.
         explicitly_verified = (
             "mapping_verified" in games.columns
-            and games["mapping_verified"].fillna(False).astype(bool).all()
+            and _fixture_bool_series(games["mapping_verified"]).eq(True).all()
         )
         if not explicitly_verified:
             return pd.DataFrame(columns=["GAME_DATE", "HOME_TEAM", "AWAY_TEAM"])
-    if gameweek is not None and {"dunkest_gameweek", "fantasy_eligible"}.issubset(games.columns):
+    if gameweek is not None and {"dunkest_gameweek", "fantasy_eligible", "mapping_verified"}.issubset(games.columns):
+        verified = _fixture_bool_series(games["mapping_verified"]).eq(True)
+        eligible = _fixture_bool_series(games["fantasy_eligible"]).eq(True)
         games = games.loc[
             pd.to_numeric(games["dunkest_gameweek"], errors="coerce").eq(int(gameweek))
-            & games["fantasy_eligible"].fillna(False).astype(bool)
+            & eligible & verified
         ].copy()
         games = games.rename(columns={
             "nba_game_id": "NBA_GAME_ID",
@@ -252,12 +275,12 @@ def _normalize_schedule_frame(schedule: pd.DataFrame, gameweek: int | None) -> p
             "home_team": "HOME_TEAM",
             "away_team": "AWAY_TEAM",
         })
-        games["HOME_TEAM_ELIGIBLE"] = games.get(
-            "home_team_eligible", games["fantasy_eligible"]
-        ).fillna(False).astype(bool)
-        games["AWAY_TEAM_ELIGIBLE"] = games.get(
-            "away_team_eligible", games["fantasy_eligible"]
-        ).fillna(False).astype(bool)
+        games["HOME_TEAM_ELIGIBLE"] = _fixture_bool_series(
+            games.get("home_team_eligible", games["fantasy_eligible"])
+        ).eq(True)
+        games["AWAY_TEAM_ELIGIBLE"] = _fixture_bool_series(
+            games.get("away_team_eligible", games["fantasy_eligible"])
+        ).eq(True)
     else:
         games = games.rename(columns={
             "nba_game_id": "NBA_GAME_ID",
@@ -330,7 +353,7 @@ def _next_game_context(
                 out.at[idx, "matchup_projection_available"] = False
                 out.at[idx, "coach_projection_source"] = (
                     "missing_team_history"
-                    if bool(game.get("mapping_verified", False))
+                    if _fixture_bool(game.get("mapping_verified")) is True
                     else "unverified_matchup_missing_team_history"
                 )
                 if "NBA_GAME_ID" in game.index:
@@ -512,9 +535,9 @@ def _next_game_context(
     matchups: dict[str, tuple[str, pd.Series]] = {}
     for _, game in games.iterrows():
         sides = []
-        if bool(game.get("HOME_TEAM_ELIGIBLE", True)):
+        if _fixture_bool(game.get("HOME_TEAM_ELIGIBLE"), unknown=False) is True:
             sides.append((game["HOME_TEAM"], game["AWAY_TEAM"]))
-        if bool(game.get("AWAY_TEAM_ELIGIBLE", True)):
+        if _fixture_bool(game.get("AWAY_TEAM_ELIGIBLE"), unknown=False) is True:
             sides.append((game["AWAY_TEAM"], game["HOME_TEAM"]))
         for team, opponent in sides:
             matchups[team] = (opponent, game)
@@ -648,7 +671,7 @@ def _next_game_context(
         out.at[idx, "matchup_projection_available"] = True
         out.at[idx, "coach_projection_source"] = (
             "verified_matchup"
-            if bool(game.get("mapping_verified", False))
+            if _fixture_bool(game.get("mapping_verified")) is True
             else "unverified_matchup"
         )
         out.at[idx, "team_score_sd"] = team_score_sds.get(team, score_sd)

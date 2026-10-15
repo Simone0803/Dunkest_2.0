@@ -10,6 +10,22 @@ class DataTiming:
     UNKNOWN = "UNKNOWN"
 
 
+def _parse_bool_series(values: pd.Series) -> pd.Series:
+    """Parse boolean-like values without treating non-empty strings as true."""
+    def parse(value: object) -> bool | None:
+        if pd.isna(value):
+            return None
+        if isinstance(value, bool):
+            return value
+        normalized = str(value).strip().casefold()
+        if normalized in {"true", "1", "yes"}:
+            return True
+        if normalized in {"false", "0", "no"}:
+            return False
+        return None
+    return values.map(parse).astype("boolean")
+
+
 POST_MATCH_COLUMNS = {
     "target_pdk", "target_pdk_official", "target_min", "actual_pdk", "pdk", "plus",
     "official_plusvalenza", "minutes", "min", "pts", "reb", "ast",
@@ -60,6 +76,7 @@ def validate_player_fixture_associations(
         column for column in (
             "nba_game_id", "home_team", "away_team", "game_datetime_utc",
             "source_retrieved_at_utc", "dunkest_gameweek", "dunkest_turn", "fantasy_eligible",
+            "home_team_eligible", "away_team_eligible",
         ) if column in fixtures
     ]
     out = player_games.merge(fixtures[fixture_columns], on="nba_game_id", how="left", validate="many_to_one", indicator=True)
@@ -75,8 +92,8 @@ def validate_player_fixture_associations(
     if not correct.all():
         raise ValueError(f"{int((~correct).sum())} player-game row(s) mismatch fixture team/opponent/home-away.")
     if {"home_team_eligible", "away_team_eligible"}.issubset(out.columns):
-        home_eligible = out["home_team_eligible"].fillna(False).astype(bool)
-        away_eligible = out["away_team_eligible"].fillna(False).astype(bool)
+        home_eligible = _parse_bool_series(out["home_team_eligible"]).fillna(False).astype(bool)
+        away_eligible = _parse_bool_series(out["away_team_eligible"]).fillna(False).astype(bool)
         player_eligible = (team.eq(home) & home_eligible) | (team.eq(away) & away_eligible)
         if not player_eligible.all():
             raise ValueError(

@@ -161,10 +161,10 @@ def test_fixture_bridge_selects_official_valid_game_not_earliest_nba_game():
     bridge = pd.DataFrame([
         {"nba_game_id": "later_valid", "game_datetime_utc": "2026-10-22T00:00:00Z",
          "home_team": "NYK", "away_team": "BOS", "dunkest_gameweek": 1,
-         "dunkest_turn": 2, "fantasy_eligible": True},
+         "dunkest_turn": 2, "fantasy_eligible": True, "mapping_verified": True},
         {"nba_game_id": "earlier_invalid", "game_datetime_utc": "2026-10-20T00:00:00Z",
          "home_team": "BOS", "away_team": "NYK", "dunkest_gameweek": 1,
-         "dunkest_turn": 1, "fantasy_eligible": False},
+         "dunkest_turn": 1, "fantasy_eligible": False, "mapping_verified": True},
     ])
     result = _attach_next_game_schedule(
         features, bridge, None, None, pd.DataFrame(), target_gameweek=1
@@ -190,3 +190,29 @@ def test_player_opponent_rate_is_shrunk_toward_season_rate():
 
     assert rate == 100.0 / 140.0
     assert games == 1.0
+
+
+def test_fixture_bridge_string_booleans_fail_closed_in_feature_engineering():
+    features = pd.DataFrame([{
+        "PLAYER_NAME": "Player A", "GAME_DATE": pd.Timestamp("2026-10-01"),
+        "TEAM_ABBREVIATION": "BOS", "OPPONENT": "", "is_inference": True,
+        "is_home": np.nan, "rest_days": 3.0, "is_b2b": 0,
+    }])
+    bridge = pd.DataFrame([{
+        "nba_game_id": "unverified", "game_datetime_utc": "2026-10-22T00:00:00Z",
+        "home_team": "BOS", "away_team": "NYK", "dunkest_gameweek": 1,
+        "dunkest_turn": 1, "fantasy_eligible": "true", "mapping_verified": "False",
+        "home_team_eligible": "true", "away_team_eligible": "true",
+    }, {
+        "nba_game_id": "eligible", "game_datetime_utc": "2026-10-23T00:00:00Z",
+        "home_team": "MIA", "away_team": "BOS", "dunkest_gameweek": 1,
+        "dunkest_turn": 2, "fantasy_eligible": "true", "mapping_verified": "true",
+        "home_team_eligible": "False", "away_team_eligible": "true",
+    }])
+    result = _attach_next_game_schedule(
+        features, bridge, None, None, pd.DataFrame(), target_gameweek=1
+    )
+    inference = result.iloc[0]
+    assert inference["NBA_GAME_ID"] == "eligible"
+    assert inference["OPPONENT"] == "MIA"
+    assert inference["is_home"] == 0.0

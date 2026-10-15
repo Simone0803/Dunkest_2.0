@@ -12,6 +12,23 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _parse_bool(value: Any, *, setting: str) -> bool:
+    """Parse YAML booleans explicitly; never treat the string 'false' as true."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int) and value in (0, 1):
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().casefold()
+        if normalized in {"true", "yes", "1", "on"}:
+            return True
+        if normalized in {"false", "no", "0", "off"}:
+            return False
+    raise ValueError(
+        f"Configuration setting {setting!r} must be a boolean (true/false), got {value!r}."
+    )
+
+
 @dataclass
 class Settings:
     season: str = "2026-27"
@@ -185,11 +202,11 @@ class Settings:
             model_type=str(data.get("model_type", cls.model_type)),
             training_target=str(data.get("training_target", cls.training_target)),
             rolling_windows=[int(x) for x in rolling],
-            use_betting_lines=bool(data.get("use_betting_lines", cls.use_betting_lines)),
-            use_injuries=bool(data.get("use_injuries", cls.use_injuries)),
-            use_matchup=bool(data.get("use_matchup", cls.use_matchup)),
-            use_coach_model=bool(data.get("use_coach_model", cls.use_coach_model)),
-            use_schedule=bool(data.get("use_schedule", cls.use_schedule)),
+            use_betting_lines=_parse_bool(data.get("use_betting_lines", cls.use_betting_lines), setting="use_betting_lines"),
+            use_injuries=_parse_bool(data.get("use_injuries", cls.use_injuries), setting="use_injuries"),
+            use_matchup=_parse_bool(data.get("use_matchup", cls.use_matchup), setting="use_matchup"),
+            use_coach_model=_parse_bool(data.get("use_coach_model", cls.use_coach_model), setting="use_coach_model"),
+            use_schedule=_parse_bool(data.get("use_schedule", cls.use_schedule), setting="use_schedule"),
             data_dir=str(data.get("data_dir", cls.data_dir)),
             nba_season_start=str(data.get("nba_season_start", cls.nba_season_start)),
             nba_season_end=str(data.get("nba_season_end", cls.nba_season_end)),
@@ -204,7 +221,7 @@ class Settings:
             optimizer_sixth_min_minutes=float(data.get("optimizer_sixth_min_minutes", cls.optimizer_sixth_min_minutes)),
             optimizer_captain_min_minutes=float(data.get("optimizer_captain_min_minutes", cls.optimizer_captain_min_minutes)),
             optimizer_min_starter_play_probability=float(data.get("optimizer_min_starter_play_probability", cls.optimizer_min_starter_play_probability)),
-            optimize_captain=bool(data.get("optimize_captain", cls.optimize_captain)),
+            optimize_captain=_parse_bool(data.get("optimize_captain", cls.optimize_captain), setting="optimize_captain"),
             min_different_players_top_k=int(
                 data.get("min_different_players_top_k", cls.min_different_players_top_k)
             ),
@@ -230,16 +247,18 @@ class Settings:
             max_player_log_entries=int(
                 data.get("max_player_log_entries", cls.max_player_log_entries)
             ),
-            use_nba_api_logs=bool(data.get("use_nba_api_logs", cls.use_nba_api_logs)),
-            allow_synthetic_logs=bool(
-                data.get("allow_synthetic_logs", cls.allow_synthetic_logs)
+            use_nba_api_logs=_parse_bool(data.get("use_nba_api_logs", cls.use_nba_api_logs), setting="use_nba_api_logs"),
+            allow_synthetic_logs=_parse_bool(
+                data.get("allow_synthetic_logs", cls.allow_synthetic_logs),
+                setting="allow_synthetic_logs",
             ),
-            impute_missing_cr=bool(data.get("impute_missing_cr", cls.impute_missing_cr)),
+            impute_missing_cr=_parse_bool(data.get("impute_missing_cr", cls.impute_missing_cr), setting="impute_missing_cr"),
             feature_season=str(opener.get("prior_season", data.get("feature_season", cls.feature_season))),
-            opening_multiseason_training=bool(data.get("opening_multiseason_training", cls.opening_multiseason_training)),
+            opening_multiseason_training=_parse_bool(data.get("opening_multiseason_training", cls.opening_multiseason_training), setting="opening_multiseason_training"),
             opening_prior_season_id=str(data.get("opening_prior_season_id", cls.opening_prior_season_id)),
-            opening_use_pdk_cr_proxy=bool(
-                opener.get("use_pdk_cr_proxy", data.get("opening_use_pdk_cr_proxy", cls.opening_use_pdk_cr_proxy))
+            opening_use_pdk_cr_proxy=_parse_bool(
+                opener.get("use_pdk_cr_proxy", data.get("opening_use_pdk_cr_proxy", cls.opening_use_pdk_cr_proxy)),
+                setting="opening_use_pdk_cr_proxy",
             ),
             opening_pdk_cr_scale=float(
                 opener.get("pdk_cr_scale", data.get("opening_pdk_cr_scale", cls.opening_pdk_cr_scale))
