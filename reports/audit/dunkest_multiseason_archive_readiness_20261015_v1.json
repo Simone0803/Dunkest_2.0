@@ -1,0 +1,10 @@
+{
+  "audit": "multi-season-immutable-archive-readiness",
+  "data_root": "/Users/simone/Documents/Dunkest/data",
+  "read_only": true,
+  "season_count": 0,
+  "seasons": [],
+  "certification_rule": "A gameweek is replayable only if check_backtest_readiness passes all required gates, including hash-verified PRE_MATCH inputs and hash-verified POST_MATCH player and coach outcomes. No retrospective reconstruction is treated as a pre-lock snapshot.",
+  "total_replay_ready_gameweeks": 0,
+  "multi_season_validation_possible": false
+}

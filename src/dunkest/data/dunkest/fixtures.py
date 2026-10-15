@@ -401,7 +401,7 @@ def build_gameweek_mapping_from_lineups(
             "dunkest_gameweek": int(gameweek),
             "dunkest_turn": turn,
             "fantasy_eligible": any_eligible,
-            "mapping_verified": True,
+            "mapping_verified": home_eligible is not None and away_eligible is not None,
             "eligibility_reason": (
                 "official_lineups_black_gray_status_observed"
                 if home_eligible is not None and away_eligible is not None
@@ -765,6 +765,91 @@ def _fixture_mapping_temporal_validity(
     return True, "fixture mapping captured before each fixture lock"
 
 
+def load_pre_match_snapshot(
+    settings: Settings, dunkest_gameweek: int, *, season_id: str | None = None
+) -> dict | None:
+    """Load the newest hash-verified PRE_MATCH archive captured before tipoff.
+
+    This reader is intentionally strict: a valid hash alone is insufficient if
+    the capture occurred after the first fixture started or its mapping cannot
+    establish the gameweek and turn. Invalid archives are ignored, never repaired.
+    """
+    sid = str(season_id or settings.season_id)
+    root = settings.data_path / "archive" / sid / f"gw{int(dunkest_gameweek)}"
+    if not root.is_dir():
+        return None
+    valid: list[tuple[pd.Timestamp, Path, dict, dict[str, pd.DataFrame]]] = []
+    for archive in root.glob("pre_match_*"):
+        try:
+            manifest = json.loads((archive / "manifest.json").read_text(encoding="utf-8"))
+            if (
+                str(manifest.get("season_id")) != sid
+                or int(manifest.get("dunkest_gameweek", -1)) != int(dunkest_gameweek)
+                or int(manifest.get("schema_version", -1)) != 1
+                or not str(manifest.get("source", "")).strip()
+            ):
+                continue
+            captured = pd.to_datetime(manifest.get("captured_at_utc"), errors="coerce", utc=True)
+            hashes = manifest.get("sha256", {})
+            if pd.isna(captured) or not hashes:
+                continue
+            tables: dict[str, pd.DataFrame] = {}
+            valid_hashes = True
+            for name, expected_hash in hashes.items():
+                path = archive / str(name)
+                if (
+                    Path(str(name)).name != str(name)
+                    or not str(name).endswith(".parquet")
+                    or not path.is_file()
+                    or hashlib.sha256(path.read_bytes()).hexdigest() != expected_hash
+                ):
+                    valid_hashes = False
+                    break
+                tables[str(name)] = pd.read_parquet(path)
+            if not valid_hashes or not {
+                "player_market.parquet", "fixture_mapping.parquet", "injuries.parquet", "coach_market.parquet"
+            }.issubset(tables):
+                continue
+            mapping = tables["fixture_mapping.parquet"]
+            needed_mapping = {"nba_game_id", "game_datetime_utc", "dunkest_gameweek", "dunkest_turn", "mapping_verified", "fantasy_eligible", "home_team", "away_team"}
+            if mapping.empty or not needed_mapping.issubset(mapping.columns):
+                continue
+            mapping = mapping.loc[
+                pd.to_numeric(mapping["dunkest_gameweek"], errors="coerce").eq(int(dunkest_gameweek))
+            ].copy()
+            lock = pd.to_datetime(mapping["game_datetime_utc"], errors="coerce", utc=True)
+            if (
+                mapping.empty or lock.isna().any() or lock.min() <= captured
+                or not mapping["mapping_verified"].fillna(False).astype(bool).all()
+                or mapping["dunkest_turn"].isna().any()
+                or mapping["nba_game_id"].astype(str).str.strip().eq("").any()
+            ):
+                continue
+            market = tables["player_market.parquet"]
+            aliases = {"team_code": "team", "role": "position", "gameweek": "dunkest_gameweek"}
+            for destination, source_column in aliases.items():
+                if destination not in market and source_column in market:
+                    market[destination] = market[source_column]
+            if "gameweek" not in market:
+                market["gameweek"] = int(dunkest_gameweek)
+            if "role" not in market and "position" in market:
+                market["role"] = market["position"]
+            if "lineup_group" not in market or "status" not in market:
+                # Those fields influence lineup eligibility; they cannot be
+                # fabricated for an archive and therefore fail readiness.
+                continue
+            required_market = {"player_name", "team_code", "role", "cr", "gameweek", "lineup_group", "status"}
+            if not required_market.issubset(market.columns) or market.empty:
+                continue
+            valid.append((captured, archive, manifest, tables | {"_normalized_player_market": market, "_verified_fixture_mapping": mapping}))
+        except Exception:
+            continue
+    if not valid:
+        return None
+    captured, path, manifest, tables = max(valid, key=lambda row: (row[0], row[1].name))
+    return {"path": path, "captured_at_utc": captured, "manifest": manifest, "tables": tables}
+
+
 def load_post_match_results_archive(
     settings: Settings, dunkest_gameweek: int, *, season_id: str | None = None
 ) -> dict | None:
@@ -859,21 +944,39 @@ def check_backtest_readiness(
     processed = settings.data_path / "processed"
     checks: dict[str, dict[str, str | bool]] = {}
 
+    prematch_archive = load_pre_match_snapshot(settings, dunkest_gameweek, season_id=sid)
     mapping_path = settings.data_path / "processed" / f"dunkest_fixture_mapping_{sid}_*.parquet"
-    mapping = get_fixture_mapping(settings, dunkest_gameweek, season_id=sid)
-    mapping_fresh, mapping_fresh_reason = _fixture_mapping_temporal_validity(mapping)
-    mapping_ok = bool(
-        not mapping.empty
-        and mapping["fantasy_eligible"].notna().all()
-        and mapping["mapping_verified"].fillna(False).all()
-        and mapping["dunkest_gameweek"].notna().all()
-        and mapping["dunkest_turn"].notna().all()
-        and mapping_fresh
-        and mapping["source"].astype(str).str.strip().ne("").all()
-        and mapping["raw_payload_sha256"].astype(str).str.strip().ne("").all()
-    )
+    if prematch_archive is not None:
+        mapping = prematch_archive["tables"]["_verified_fixture_mapping"].copy()
+        mapping = mapping.rename(columns={
+            "nba_game_id": "nba_game_id",
+            "game_datetime_utc": "game_datetime_utc",
+        })
+        mapping_ok = bool(
+            mapping["mapping_verified"].fillna(False).astype(bool).all()
+            and mapping["dunkest_turn"].notna().all()
+            and mapping["nba_game_id"].astype(str).str.strip().ne("").all()
+        )
+        mapping_fresh, mapping_fresh_reason = True, "verified immutable PRE_MATCH fixture mapping captured before tipoff"
+    else:
+        mapping = get_fixture_mapping(settings, dunkest_gameweek, season_id=sid)
+        mapping_fresh, mapping_fresh_reason = _fixture_mapping_temporal_validity(mapping)
+        mapping_ok = bool(
+            not mapping.empty
+            and mapping["fantasy_eligible"].notna().all()
+            and mapping["mapping_verified"].fillna(False).all()
+            and mapping["dunkest_gameweek"].notna().all()
+            and mapping["dunkest_turn"].notna().all()
+            and mapping_fresh
+            and mapping["source"].astype(str).str.strip().ne("").all()
+            and mapping["raw_payload_sha256"].astype(str).str.strip().ne("").all()
+        )
     if mapping_ok:
-        mapping_reason = "provenance-bearing bridge verified before tipoff and fresh within 36h"
+        mapping_reason = (
+            "immutable PRE_MATCH archive verified before tipoff"
+            if prematch_archive is not None
+            else "provenance-bearing bridge verified before tipoff and fresh within 36h"
+        )
     elif not mapping_fresh:
         mapping_reason = f"{mapping_fresh_reason}: {mapping_path}"
     else:
@@ -888,7 +991,11 @@ def check_backtest_readiness(
         if not mapping.empty else pd.NaT
     )
     market_fresh, market_fresh_reason = _snapshot_freshness_as_of(price_path, lock_time)
-    if price_path.is_file():
+    if prematch_archive is not None:
+        market = prematch_archive["tables"]["_normalized_player_market"].copy()
+        roster_ok = {"player_name", "team_code", "role", "gameweek", "lineup_group", "status"}.issubset(market.columns) and not market.empty
+        price_ok = roster_ok and "cr" in market and pd.to_numeric(market["cr"], errors="coerce").notna().all()
+    elif price_path.is_file():
         market = pd.read_parquet(price_path)
         roster_ok = {"player_name", "team_code", "role", "gameweek"}.issubset(market.columns) and not market.empty and market_fresh
         price_ok = roster_ok and "cr" in market and pd.to_numeric(market["cr"], errors="coerce").notna().all()
@@ -904,7 +1011,10 @@ def check_backtest_readiness(
     injury_path = processed / f"injuries_{sid}_gw{dunkest_gameweek}.parquet"
     injury_ok = False
     injury_fresh, injury_fresh_reason = _snapshot_freshness_as_of(injury_path, lock_time)
-    if injury_path.is_file():
+    if prematch_archive is not None:
+        injuries = prematch_archive["tables"]["injuries.parquet"]
+        injury_ok = {"player_name", "team", "status"}.issubset(injuries.columns)
+    elif injury_path.is_file():
         injuries = pd.read_parquet(injury_path)
         injury_ok = {"player_name", "team", "status", "gameweek"}.issubset(injuries.columns) and injury_fresh
     checks["INJURY_SNAPSHOT"] = {
@@ -915,7 +1025,14 @@ def check_backtest_readiness(
     coach_path = processed / f"coach_market_{sid}_gw{dunkest_gameweek}.parquet"
     coach_ok = False
     coach_fresh, coach_fresh_reason = _snapshot_freshness_as_of(coach_path, lock_time)
-    if coach_path.is_file():
+    if prematch_archive is not None:
+        coaches = prematch_archive["tables"]["coach_market.parquet"]
+        coach_ok = {"coach", "team", "coach_cr", "opponent", "nba_game_id"}.issubset(coaches.columns) and not coaches.empty
+        if coach_ok:
+            fixture_ids = set(mapping["nba_game_id"].astype(str))
+            coach_ids = coaches["nba_game_id"].astype(str)
+            coach_ok = coach_ids.isin(fixture_ids).all() and coaches["opponent"].astype(str).str.strip().ne("").all()
+    elif coach_path.is_file():
         coaches = pd.read_parquet(coach_path)
         coach_ok = {"coach", "team", "coach_cr", "opponent", "date"}.issubset(coaches.columns) and not coaches.empty and coach_fresh
         # Legacy generated coach rows are not proof of a Dunkest fixture.

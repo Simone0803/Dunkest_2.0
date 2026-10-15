@@ -86,6 +86,8 @@ def fetch_opening_coach_market(credits_file: Path | None) -> pd.DataFrame:
         base = _load_credits_csv(snapshot).rename(
             columns={"player_name": "coach", "team_code": "team", "cr_file": "coach_cr"}
         )[["coach", "team", "coach_cr"]]
+        base["coach_cr_source"] = "static_snapshot_2026-09-29"
+        base["coach_cr_is_live"] = False
 
     if credits_file is not None and credits_file.exists():
         market = _load_credits_csv(credits_file)
@@ -96,14 +98,16 @@ def fetch_opening_coach_market(credits_file: Path | None) -> pd.DataFrame:
             out = market.loc[is_coach, ["player_name", "team_code", "cr_file"]].copy()
             if not out.empty:
                 out = out.rename(columns={"player_name": "coach", "team_code": "team", "cr_file": "coach_cr"})
+                out["coach_cr_source"] = "live_lineups_capture"
+                out["coach_cr_is_live"] = True
                 out["team"] = out["team"].astype(str).str.strip().str.upper()
                 out["coach_cr"] = pd.to_numeric(out["coach_cr"], errors="coerce")
                 overrides = out.dropna(subset=["coach_cr"]).drop_duplicates("team", keep="last")
                 base = base[~base["team"].isin(overrides["team"])]
                 return pd.concat([base, overrides], ignore_index=True).drop_duplicates("team", keep="last")
 
-    # Snapshot scraped from Dunkest Lineups on 2026-09-29; refreshed rows above
-    # replace matching teams while preserving the rest of this complete market.
+    # Snapshot scraped from Dunkest Lineups on 2026-09-29; retained only as an
+    # explicitly marked fallback when the live capture has no quote for a team.
     return base.drop_duplicates("team", keep="last")
 
 

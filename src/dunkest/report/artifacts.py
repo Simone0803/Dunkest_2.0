@@ -289,6 +289,29 @@ def save_run_artifacts(
         },
         "dataset_identifier": _json_hash(input_fingerprints),
         "run_metadata": dict(run_metadata or {}),
+        "degradations": sorted(set(
+            (run_metadata or {}).get("degradations", predictions.attrs.get("forecast_degradations", []))
+        )),
+        "verification": {
+            "fixture_mapping_present": any(
+                entry["path"].startswith("dunkest_fixture_mapping_") for entry in snapshot_files
+            ),
+            "fixture_mapping_source_verified": bool(
+                (run_metadata or {}).get("fixture_mapping_source_verified", False)
+            ),
+            "coach_matchups_verified": bool(
+                (run_metadata or {}).get("coach_matchups_verified", all(
+                    bool(solution.meta.get("coach_matchup", {}).get("matchup_projection_available", False))
+                    for solution in solutions
+                ) and bool(solutions))
+            ),
+            "injury_snapshot_verified": bool(
+                (run_metadata or {}).get("injury_snapshot_verified", bool(
+                    settings.use_injuries
+                    and "injury_snapshot_missing_or_empty" not in predictions.attrs.get("forecast_degradations", [])
+                ))
+            ),
+        },
         "model_details": {
             "effective_models": sorted(
                 key for key in fitted_models if not key.startswith("_")
@@ -349,6 +372,68 @@ def save_run_artifacts(
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return out_dir
 
+
+
+def save_pre_match_snapshot(
+    settings: Settings,
+    gameweek: int,
+    tables: dict[str, pd.DataFrame],
+    *,
+    source: str,
+    metadata: dict | None = None,
+) -> Path:
+    """Persist immutable, hash-verified point-in-time inputs for a gameweek.
+
+    Outcome-bearing fields are rejected so realized scores cannot accidentally
+    enter a pre-match archive. The caller must pass sanitized market/context
+    tables and explicitly state their provenance.
+    """
+    if not source.strip():
+        raise ValueError("Pre-match snapshot source must be explicit.")
+    if not tables:
+        raise ValueError("Pre-match snapshot requires at least one input table.")
+    forbidden = {
+        "actual_pdk", "actual_coach_pdk", "target_pdk", "pdk_official_valid",
+        "pdk_official_raw", "gameweek_stats_available", "realized_score",
+    }
+    normalized_tables: dict[str, pd.DataFrame] = {}
+    for name, frame in tables.items():
+        safe_name = str(name).strip()
+        if not safe_name or Path(safe_name).name != safe_name or not safe_name.endswith(".parquet"):
+            raise ValueError(f"Invalid pre-match table name: {name!r}")
+        if not isinstance(frame, pd.DataFrame):
+            raise TypeError(f"Pre-match input {safe_name} must be a DataFrame.")
+        leaked = sorted(forbidden.intersection(str(column).strip().casefold() for column in frame.columns))
+        if leaked:
+            raise ValueError(f"Outcome-bearing column(s) forbidden in pre-match archive {safe_name}: {leaked}")
+        normalized_tables[safe_name] = frame.copy()
+    extra = dict(metadata or {})
+    reserved = {"season_id", "dunkest_gameweek", "captured_at_utc", "source", "schema_version", "sha256"}
+    conflicts = sorted(reserved.intersection(extra))
+    if conflicts:
+        raise ValueError(f"Pre-match metadata cannot override reserved fields: {conflicts}")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    root = settings.data_path / "archive" / str(settings.season_id) / f"gw{int(gameweek)}"
+    root.mkdir(parents=True, exist_ok=True)
+    out = root / f"pre_match_{stamp}_{uuid4().hex[:8]}"
+    out.mkdir(parents=False, exist_ok=False)
+    hashes: dict[str, str] = {}
+    for name, frame in sorted(normalized_tables.items()):
+        path = out / name
+        frame.to_parquet(path, index=False)
+        hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest = {
+        "season_id": settings.season_id,
+        "dunkest_gameweek": int(gameweek),
+        "captured_at_utc": datetime.now(timezone.utc).isoformat(),
+        "source": source,
+        "schema_version": 1,
+        "sha256": hashes,
+        "table_rows": {name: int(len(frame)) for name, frame in normalized_tables.items()},
+    }
+    manifest.update(extra)
+    (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return out
 
 def save_post_match_snapshot(
     settings: Settings,

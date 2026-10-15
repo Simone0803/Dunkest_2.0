@@ -41,6 +41,7 @@ from dunkest.names import player_key
 from dunkest.optimize.milp import LineupSolution
 from dunkest.pipeline.optimize import run_optimize
 from dunkest.rules.eligibility import filter_injured, unavailable_mask
+from dunkest.report.artifacts import save_pre_match_snapshot
 
 
 def _build_opening_market_value_history(
@@ -212,15 +213,32 @@ def _verified_gameweek_teams(fixtures: pd.DataFrame) -> set[str]:
 def _require_complete_score_bearing_teams(
     fixtures: pd.DataFrame, market_teams: set[str]
 ) -> set[str]:
+    """Require an explicit eligible/ineligible state for every market team.
+
+    Teams explicitly marked ineligible (for example, at rest) are validly
+    accounted for but are not returned as score-bearing teams. Unknown status
+    is different from an explicit rest status and still blocks the run.
+    """
     verified = _verified_gameweek_teams(fixtures)
-    missing = sorted(market_teams - verified)
+    observed: set[str] = set()
+    if fixtures is not None and not fixtures.empty:
+        for _, fixture in fixtures.iterrows():
+            for team_column, eligible_column in (
+                ("home_team", "home_team_eligible"),
+                ("away_team", "away_team_eligible"),
+            ):
+                value = fixture.get(eligible_column, fixture.get("fantasy_eligible", None))
+                team = str(fixture.get(team_column, "")).strip().upper()
+                if team and pd.notna(value) and isinstance(value, (bool, int)):
+                    observed.add(team)
+    missing = sorted(market_teams - observed)
     if not market_teams or missing:
         raise RuntimeError(
-            "Calendario Dunkest G1 non verificato: matchup valido acquisito per "
-            f"{len(market_teams.intersection(verified))}/{len(market_teams)} squadre. "
+            "Calendario Dunkest G1 non verificato: stato eleggibilità esplicito per "
+            f"{len(market_teams.intersection(observed))}/{len(market_teams)} squadre. "
             f"Stati mancanti/non validi: {', '.join(missing[:12]) or 'listino squadre assente'}. "
             "Non genero rose con fixture o coach non verificati. Riesegui lo scraping "
-            "Lineups; se Dunkest indica squadre a riposo, acquisisci anche quella sezione."
+            "Lineups e verifica gli stati delle squadre."
         )
     return verified
 
@@ -688,7 +706,7 @@ def run_season_opener(
         )
         plusvalenza_history = pd.DataFrame()
 
-    preds = predict_players(
+    forecast = build_player_forecast(
         settings,
         models,
         features,
@@ -697,13 +715,15 @@ def run_season_opener(
         market_value_history=credit_history,
         plusvalenza_history=plusvalenza_history,
         college_rookie_priors=rookie_priors,
+        require_injury_snapshot=settings.use_injuries,
     )
-    preds = _require_finite_player_forecasts(preds)
+    preds = _require_finite_player_forecasts(forecast.raw)
     # Preserve hard-outs as zero-value team members for coach-strength
     # estimates; filtering them first can make a whole franchise disappear.
     coach_strength_forecasts = preds.copy()
     predicted_count = len(preds)
-    preds = filter_injured(preds, injuries)
+    preds = forecast.eligible.copy()
+    preds.attrs["forecast_degradations"] = list(forecast.degradations)
     preds = _attach_verified_player_matchups(preds, future_schedule)
     available_keys = set(preds["player_name"].map(player_key))
     excluded = ~coach_strength_forecasts["player_name"].map(player_key).isin(available_keys)
@@ -748,6 +768,35 @@ def run_season_opener(
         )
     save_coach_market_snapshot(
         settings, coach_data if not coach_data.empty else coach_df, 1
+    )
+    prematch_market_columns = [
+        column for column in (
+            "player_name", "team_code", "team", "cr", "role", "position", "prior_pdk", "opponent",
+            "dunkest_turn", "nba_game_id", "game_datetime_utc", "is_home", "gameweek",
+            "lineup_group", "status", "starter", "lineup_group_turn1", "lineup_group_turn2",
+            "lineup_group_turn3", "starter_turn1", "starter_turn2", "starter_turn3",
+            "status_turn1", "status_turn2", "status_turn3",
+        ) if column in market.columns
+    ]
+    save_pre_match_snapshot(
+        settings, 1,
+        {
+            "player_market.parquet": market[prematch_market_columns].copy(),
+            "fixture_mapping.parquet": future_schedule.copy(),
+            "injuries.parquet": injuries.copy(),
+            "coach_market.parquet": coach_data.copy(),
+            "market_value_history.parquet": credit_history.copy(),
+            "plusvalenza_history.parquet": plusvalenza_history.copy(),
+            "rookie_priors.parquet": rookie_priors.copy(),
+        },
+        source="dunkest_season_opener_forecast_inputs",
+        metadata={
+            "fixture_mapping_verified": bool(
+                not future_schedule.empty
+                and future_schedule.get("mapping_verified", pd.Series(False, index=future_schedule.index)).fillna(False).all()
+            ),
+            "injury_snapshot_rows": int(len(injuries)),
+        },
     )
     if not coach_df.empty:
         coach_df = coach_df.groupby("team", as_index=False).first()

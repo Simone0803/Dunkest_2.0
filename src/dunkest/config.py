@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from math import isfinite
 from pathlib import Path
 from typing import Any
@@ -40,6 +40,10 @@ class Settings:
     http_retries: int = 3
     market_cache_max_age_hours: float = 6.0
     optimizer_top_k: int = 3
+    optimizer_starter_min_minutes: float = 18.0
+    optimizer_sixth_min_minutes: float = 12.0
+    optimizer_captain_min_minutes: float = 22.0
+    optimizer_min_starter_play_probability: float = 0.5
     # When false, optimize the roster/slots without assigning a captain bonus.
     # Captain choice is manual and the displayed expected score excludes +50%.
     optimize_captain: bool = True
@@ -114,6 +118,12 @@ class Settings:
             raise ValueError("market_cache_max_age_hours must be positive.")
         if self.optimizer_top_k < 1:
             raise ValueError("optimizer_top_k must be positive.")
+        for name in ("optimizer_starter_min_minutes", "optimizer_sixth_min_minutes", "optimizer_captain_min_minutes"):
+            value = getattr(self, name)
+            if not isfinite(value) or value < 0.0:
+                raise ValueError(f"{name} must be finite and nonnegative.")
+        if not isfinite(self.optimizer_min_starter_play_probability) or not 0.0 <= self.optimizer_min_starter_play_probability <= 1.0:
+            raise ValueError("optimizer_min_starter_play_probability must be in [0, 1].")
         if not 1 <= self.min_different_players_top_k <= 10:
             raise ValueError("min_different_players_top_k must be between 1 and 10.")
         if not 0.0 <= self.optimizer_relative_gap < 1.0:
@@ -143,7 +153,18 @@ class Settings:
         if path.exists():
             with path.open(encoding="utf-8") as f:
                 data = yaml.safe_load(f) or {}
+        if not isinstance(data, dict):
+            raise ValueError(f"Configuration must be a YAML mapping: {path}")
         data.update(overrides)
+        # Fail fast on misspelled settings instead of silently running with
+        # defaults. `season_opener` is a legacy nested section consumed by the
+        # season-opener command; all other top-level keys must map to Settings.
+        allowed = {item.name for item in fields(cls)} | {"rolling_windows", "season_opener"}
+        unknown = sorted(set(data) - allowed)
+        if unknown:
+            raise ValueError(
+                f"Unknown configuration key(s) in {path}: {', '.join(unknown)}"
+            )
         opener = data.get("season_opener") or {}
         rolling = data.get("rolling_windows", [3, 5, 10, 15])
         return cls(
@@ -179,6 +200,10 @@ class Settings:
                 data.get("market_cache_max_age_hours", cls.market_cache_max_age_hours)
             ),
             optimizer_top_k=int(data.get("optimizer_top_k", cls.optimizer_top_k)),
+            optimizer_starter_min_minutes=float(data.get("optimizer_starter_min_minutes", cls.optimizer_starter_min_minutes)),
+            optimizer_sixth_min_minutes=float(data.get("optimizer_sixth_min_minutes", cls.optimizer_sixth_min_minutes)),
+            optimizer_captain_min_minutes=float(data.get("optimizer_captain_min_minutes", cls.optimizer_captain_min_minutes)),
+            optimizer_min_starter_play_probability=float(data.get("optimizer_min_starter_play_probability", cls.optimizer_min_starter_play_probability)),
             optimize_captain=bool(data.get("optimize_captain", cls.optimize_captain)),
             min_different_players_top_k=int(
                 data.get("min_different_players_top_k", cls.min_different_players_top_k)

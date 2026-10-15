@@ -124,7 +124,9 @@ def test_lineups_matchup_maps_to_the_unique_nba_game_on_display_date():
 
     assert mapping["nba_game_id"].tolist() == ["first"]
     assert mapping.loc[0, "home_team"] == "DET"
-    assert bool(mapping.loc[0, "mapping_verified"])
+    # The date-to-NBA-game identity is resolved, but eligibility remains
+    # unverified until both teams have explicit Lineups status observations.
+    assert not bool(mapping.loc[0, "mapping_verified"])
     assert pd.isna(mapping.loc[0, "fantasy_eligible"])
 
 

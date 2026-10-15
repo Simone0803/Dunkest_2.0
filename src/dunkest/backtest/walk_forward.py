@@ -17,9 +17,12 @@ from dunkest.data.dunkest.fixtures import (
     check_backtest_readiness,
     get_fixture_mapping,
     load_post_match_results_archive,
+    load_pre_match_snapshot,
 )
 from dunkest.features.builder import build_feature_matrix
-from dunkest.models.predictor import predict_players, train_models
+from dunkest.models.predictor import train_models
+from dunkest.models.rookie_prior import load_college_rookie_priors
+from dunkest.pipeline.forecast import build_player_forecast
 from dunkest.models.coach import predict_coach_points
 from dunkest.names import player_key
 from dunkest.optimize.milp import optimize_top_k_lineups
@@ -189,22 +192,26 @@ def _neutral_coaches(games: pd.DataFrame, minimum_cr: float) -> pd.DataFrame:
     })
 
 
-def _load_historical_market_snapshot(path: Path, gameweek: int) -> pd.DataFrame:
+def _load_historical_market_snapshot(path: Path | pd.DataFrame, gameweek: int) -> pd.DataFrame:
     required = {
         "player_name", "team_code", "role", "cr", "gameweek", "lineup_group", "status"
     }
-    if not path.exists():
-        raise ValueError(
-            f"Backtest non valido per GW{gameweek}: snapshot listino mancante ({path}). "
-            "Raccogli il listino prepartita per questo turno prima di eseguire il backtest."
-        )
-
-    snapshot = pd.read_parquet(path)
+    if isinstance(path, pd.DataFrame):
+        snapshot = path.copy()
+        source_label = "immutable PRE_MATCH player_market.parquet"
+    else:
+        if not path.exists():
+            raise ValueError(
+                f"Backtest non valido per GW{gameweek}: snapshot listino mancante ({path}). "
+                "Raccogli il listino prepartita per questo turno prima di eseguire il backtest."
+            )
+        snapshot = pd.read_parquet(path)
+        source_label = str(path)
     missing = sorted(required.difference(snapshot.columns))
     if missing:
         raise ValueError(
             f"Backtest non valido per GW{gameweek}: snapshot listino incompleto "
-            f"({path}); colonne mancanti: {', '.join(missing)}."
+            f"({source_label}); colonne mancanti: {', '.join(missing)}."
         )
 
     snapshot = snapshot.copy()
@@ -225,7 +232,7 @@ def _load_historical_market_snapshot(path: Path, gameweek: int) -> pd.DataFrame:
     if invalid.any() or duplicate_names.any() or len(snapshot) < MIN_HISTORICAL_MARKET_PLAYERS:
         raise ValueError(
             f"Backtest non valido per GW{gameweek}: snapshot listino incompleto o non valido "
-            f"({path}); {len(snapshot)} righe, minimo {MIN_HISTORICAL_MARKET_PLAYERS}. "
+            f"({source_label}); {len(snapshot)} righe, minimo {MIN_HISTORICAL_MARKET_PLAYERS}. "
             "Verifica nomi, team, ruoli, CR e gameweek archiviati."
         )
     return snapshot.set_index("_key", drop=False)
@@ -261,6 +268,18 @@ def run_walk_forward_backtest(
         gw: check_backtest_readiness(settings, gw)
         for gw in range(from_gw, to_gw + 1)
     }
+    # Starting after GW1 without a fixture-linked carried roster would make
+    # the first evaluated round appear transfer-free. Fail closed instead of
+    # publishing an optimistic score with an unknown starting state.
+    if from_gw > 1 and (not settings.current_roster or not settings.current_coach):
+        readiness[from_gw]["backtest_ready"] = False
+        readiness[from_gw].setdefault("checks", {})["INITIAL_ROSTER"] = {
+            "pass": False,
+            "reason": (
+                "backtest starts after GW1 but no explicit initial current_roster/current_coach "
+                "was supplied; transfer malus cannot be reconstructed"
+            ),
+        }
     if any(not item["backtest_ready"] for item in readiness.values()):
         # A partial dataset must not be turned into apparently valid lineup
         # metrics. Keep the per-input evidence visible to the caller.
@@ -281,8 +300,10 @@ def run_walk_forward_backtest(
         )
     schedule = get_fixture_mapping(settings)
     rows: list[dict] = []
+    selected_strategy = None
     forecast_metric_rows: list[dict] = []
     risk_comparison_rows: list[dict] = []
+    selected_strategy = None
     carried_roster: list[str] = []
     carried_coach: str | None = None
     carried_roster_known = from_gw == 1
@@ -301,12 +322,32 @@ def run_walk_forward_backtest(
     schedule["AWAY_TEAM"] = schedule["away_team"].astype(str).str.upper()
 
     for gw in range(from_gw, to_gw + 1):
-        gw_games = schedule.loc[
-            pd.to_numeric(schedule["dunkest_gameweek"], errors="coerce").eq(gw)
-            & schedule["fantasy_eligible"].fillna(False).astype(bool)
+        prematch_archive = load_pre_match_snapshot(settings, gw)
+        if prematch_archive is None:
+            # Readiness should already have failed closed; retain a defensive
+            # guard in case the archive changes between preflight and replay.
+            raise RuntimeError(f"GW{gw}: immutable PRE_MATCH archive disappeared or failed hash/timing validation")
+        archive_tables = prematch_archive["tables"]
+        archived_mapping = archive_tables["_verified_fixture_mapping"].copy()
+        archived_mapping = archived_mapping.rename(columns={
+            "game_datetime_utc": "GAME_DATE",
+            "nba_game_id": "NBA_GAME_ID",
+        })
+        archived_mapping["GAME_ID"] = archived_mapping["NBA_GAME_ID"].astype(str)
+        archived_mapping["HOME_TEAM"] = archived_mapping["home_team"].astype(str).str.upper()
+        archived_mapping["AWAY_TEAM"] = archived_mapping["away_team"].astype(str).str.upper()
+        archived_mapping["GAME_DATE"] = pd.to_datetime(archived_mapping["GAME_DATE"], errors="coerce", utc=True)
+        archived_gw = pd.to_numeric(archived_mapping["dunkest_gameweek"], errors="coerce").eq(gw)
+        round_schedule = pd.concat([
+            schedule.loc[pd.to_numeric(schedule["dunkest_gameweek"], errors="coerce").ne(gw)],
+            archived_mapping.loc[archived_gw],
+        ], ignore_index=True, sort=False)
+        gw_games = round_schedule.loc[
+            pd.to_numeric(round_schedule["dunkest_gameweek"], errors="coerce").eq(gw)
+            & round_schedule["fantasy_eligible"].fillna(False).astype(bool)
         ]
         if gw_games.empty:
-            continue
+            raise RuntimeError(f"GW{gw}: verified PRE_MATCH archive contains no eligible fixture rows")
         cutoff = gw_games["GAME_DATE"].min()
         cutoff_date = cutoff.date()
         prior_players = player_logs.loc[
@@ -323,7 +364,7 @@ def run_walk_forward_backtest(
         # Current injury reports cannot be applied to historical rounds.
         feats = build_feature_matrix(
             round_settings, prior_players, prior_teams, pd.DataFrame(),
-            schedule=schedule,
+            schedule=round_schedule,
             team_overrides=None,
             target_gameweek=gw,
             include_completed_schedule=True,
@@ -344,30 +385,38 @@ def run_walk_forward_backtest(
         outcome_archive = load_post_match_results_archive(settings, gw)
         if outcome_archive is None:
             continue
-        market_snapshot_path = settings.data_path / "processed" / (
-            f"player_credits_{settings.season_id}_gw{gw}.parquet"
+        market_snapshot = _load_historical_market_snapshot(
+            archive_tables["_normalized_player_market"], gw
         )
-        market_snapshot = _load_historical_market_snapshot(market_snapshot_path, gw)
-        # Keep prediction candidates and realized outcomes separate. The
-        # season-stat response may omit market-listed players with no stats;
-        # only the frozen pregame market defines the selectable universe.
-        injury_snapshot_path = settings.data_path / "processed" / (
-            f"injuries_{settings.season_id}_gw{gw}.parquet"
-        )
-        historical_injuries_available = injury_snapshot_path.exists()
-        historical_injuries = (
-            pd.read_parquet(injury_snapshot_path)
-            if historical_injuries_available else pd.DataFrame()
-        )
+        # The market and injuries are read from the exact same immutable
+        # pre-lock archive. Mutable processed/current snapshots are never used
+        # as fallback for an archive-backed replay.
+        historical_injuries = archive_tables["injuries.parquet"].copy()
         archived_player_results = outcome_archive["players"].copy()
         archived_player_results["gameweek_stats_available"] = True
         realized_map = _realized_player_scores(archived_player_results)
         # Keep archived outcomes out of inference, and do not let result-row
         # coverage shrink the candidate pool from the pregame market snapshot.
         historical_candidate_pool = _historical_candidate_pool(market_snapshot)
-        preds = predict_players(
-            round_settings, models, feats, historical_candidate_pool, historical_injuries
+        # The same forecast/filter function is used live and in backtests.
+        # Only archived point-in-time priors may be supplied here; current
+        # market/PLUS state is intentionally not backfilled into old rounds.
+        historical_rookie_priors = load_college_rookie_priors(
+            settings.data_path / "rookie_college.csv"
         )
+        historical_market_value = historical_candidate_pool.copy()
+        forecast = build_player_forecast(
+            round_settings,
+            models,
+            feats,
+            historical_candidate_pool,
+            historical_injuries,
+            market_value_history=historical_market_value,
+            plusvalenza_history=pd.DataFrame(),
+            college_rookie_priors=historical_rookie_priors,
+            require_injury_snapshot=True,
+        )
+        preds = forecast.eligible.copy()
         metric_frame = preds.copy()
         if "player_name" in metric_frame and "expected_pdk" in metric_frame:
             metric_frame["expected_pdk"] = pd.to_numeric(metric_frame["expected_pdk"], errors="coerce")
@@ -403,15 +452,10 @@ def run_walk_forward_backtest(
                     "p90_coverage": float(metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"]).mean()) if not valid_interval.empty else float("nan"),
                     "interval_80_coverage": float((metric_frame.loc[valid_interval.index, "actual_pdk"].ge(valid_interval["p10"]) & metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"])).mean()) if not valid_interval.empty else float("nan"),
                     "mean_interval_width": float((valid_interval["p90"] - valid_interval["p10"]).mean()) if not valid_interval.empty else float("nan"),
+                    "forecast_degradations": ";".join(forecast.degradations),
                 })
 
-        coach_snapshot_path = settings.data_path / "processed" / (
-            f"coach_market_{settings.season_id}_gw{gw}.parquet"
-        )
-        coach_market = (
-            pd.read_parquet(coach_snapshot_path)
-            if coach_snapshot_path.exists() else pd.DataFrame()
-        )
+        coach_market = archive_tables["coach_market.parquet"].copy()
         historical_coach_market_available = not coach_market.empty
         if historical_coach_market_available:
             # Keep the historical matchup row even though the NBA schedule
@@ -474,7 +518,17 @@ def run_walk_forward_backtest(
                 round_settings.optimizer_objective = selected_strategy["objective"]
                 if selected_strategy["risk_lambda"] is not None:
                     round_settings.risk_lambda = selected_strategy["risk_lambda"]
-        lineups = optimize_top_k_lineups(preds, coach_df, round_settings, k=3)
+        # Evaluate the same stateful transfer policy as the live optimizer.
+        # GW1 has no previous roster; subsequent rounds must pay for every
+        # incoming player and coach using the roster carried from the prior GW.
+        lineups = optimize_top_k_lineups(
+            preds,
+            coach_df,
+            round_settings,
+            current_roster=round_settings.current_roster if carried_roster_known else None,
+            current_coach=round_settings.current_coach if carried_roster_known else None,
+            k=3,
+        )
         # An ex-post optimum is meaningful only if every candidate in the
         # prediction universe has a finite realized score. Assigning missing
         # outcomes zero would silently bias the hindsight optimum.
@@ -518,12 +572,18 @@ def run_walk_forward_backtest(
         oracle_settings.optimizer_objective = "expected_value"
         oracle_settings.risk_lambda = 0.0
         ex_post_lineups = optimize_top_k_lineups(
-            hindsight, coach_hindsight, oracle_settings, k=1
+            hindsight,
+            coach_hindsight,
+            oracle_settings,
+            current_roster=round_settings.current_roster if carried_roster_known else None,
+            current_coach=round_settings.current_coach if carried_roster_known else None,
+            k=1,
         ) if not hindsight.empty and coach_hindsight_complete and carried_roster_known else []
         ex_post_score = float("nan")
+        ex_post_player_score = float("nan")
         if ex_post_lineups:
             ex_sol = ex_post_lineups[0]
-            ex_post_score = -ex_sol.num_transfers * round_settings.transfer_penalty
+            ex_post_player_score = -ex_sol.num_transfers * round_settings.transfer_penalty
             for _, player in ex_sol.players.iterrows():
                 slot = str(player.get("slot", "Bench"))
                 value = realized_map.get(player_key(player["player_name"]))
@@ -536,8 +596,10 @@ def run_walk_forward_backtest(
                             slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
                         )
                     )
-                    ex_post_score += float(value) * multiplier
-            ex_post_score += float(realized_coach_map[player_key(ex_sol.coach)])
+                    ex_post_player_score += float(value) * multiplier
+            ex_post_score = ex_post_player_score + float(
+                realized_coach_map[player_key(ex_sol.coach)]
+            )
 
 
         for rank, sol in enumerate(lineups, start=1):
@@ -580,7 +642,7 @@ def run_walk_forward_backtest(
                 expected_minutes = pd.to_numeric(sol.players["expected_min"], errors="coerce")
                 for turn, captain_name in captain_schedule.items():
                     eligible = sol.players.loc[
-                        player_turns.ge(int(turn)) & expected_minutes.ge(22.0)
+                        player_turns.ge(int(turn)) & expected_minutes.ge(round_settings.optimizer_captain_min_minutes)
                     ]
                     cap_key = player_key(captain_name)
                     eligible_scores = eligible["player_name"].map(player_key).map(actuals).dropna()
@@ -590,7 +652,7 @@ def run_walk_forward_backtest(
                 captain_row = sol.players.loc[sol.players["slot"].eq("Captain")]
                 eligible = sol.players.loc[
                     sol.players["slot"].isin({"Starter", "Captain"})
-                    & pd.to_numeric(sol.players["expected_min"], errors="coerce").ge(22.0)
+                    & pd.to_numeric(sol.players["expected_min"], errors="coerce").ge(round_settings.optimizer_captain_min_minutes)
                 ]
                 if not captain_row.empty:
                     cap_key = player_key(captain_row.iloc[0]["player_name"])
@@ -611,7 +673,7 @@ def run_walk_forward_backtest(
                 "transfer_malus": transfer_malus,
                 "realized_team_score": team_score,
                 "ex_post_optimum": ex_post_score,
-                "ex_post_player_optimum": ex_post_score,
+                "ex_post_player_optimum": ex_post_player_score,
                 "captain": sol.captain,
                 "captain_schedule": json.dumps(captain_schedule, ensure_ascii=False, sort_keys=True),
                 "coach": sol.coach,
@@ -653,6 +715,6 @@ def run_walk_forward_backtest(
         "holdout_start_gameweek": holdout_start_gw,
         "selection_gameweeks": list(range(from_gw, holdout_start_gw)),
         "holdout_gameweeks": list(range(holdout_start_gw, to_gw + 1)),
-        "selected_holdout_strategy": selected_strategy if "selected_strategy" in locals() else None,
+        "selected_holdout_strategy": selected_strategy,
     }
     return results, report, extras

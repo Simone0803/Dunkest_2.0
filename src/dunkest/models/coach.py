@@ -231,6 +231,16 @@ def _normalize_schedule_frame(schedule: pd.DataFrame, gameweek: int | None) -> p
     if schedule is None or schedule.empty:
         return pd.DataFrame(columns=["GAME_DATE", "HOME_TEAM", "AWAY_TEAM"])
     games = schedule.copy()
+    if gameweek is not None and not {"dunkest_gameweek", "fantasy_eligible"}.issubset(games.columns):
+        # A raw NBA calendar has no authoritative Dunkest GW bridge. A caller
+        # may pass a single explicitly verified matchup, but never an unlinked
+        # season schedule that would make the last arbitrary game look current.
+        explicitly_verified = (
+            "mapping_verified" in games.columns
+            and games["mapping_verified"].fillna(False).astype(bool).all()
+        )
+        if not explicitly_verified:
+            return pd.DataFrame(columns=["GAME_DATE", "HOME_TEAM", "AWAY_TEAM"])
     if gameweek is not None and {"dunkest_gameweek", "fantasy_eligible"}.issubset(games.columns):
         games = games.loc[
             pd.to_numeric(games["dunkest_gameweek"], errors="coerce").eq(int(gameweek))

@@ -37,3 +37,11 @@ def test_season_opener_defaults_to_certified_multiseason_training():
     settings = Settings.from_yaml(Settings().root / "config" / "season_opener.yaml")
     assert settings.opening_multiseason_training is True
     assert settings.training_target == "target_pdk_official"
+
+
+def test_yaml_rejects_unknown_or_misspelled_keys(tmp_path):
+    config = tmp_path / "bad.yaml"
+    config.write_text("optimiser_top_k: 4\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Unknown configuration key.*optimiser_top_k"):
+        Settings.from_yaml(config)

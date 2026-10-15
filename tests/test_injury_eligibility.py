@@ -17,7 +17,7 @@ def test_injured_players_are_removed_but_questionable_stay_eligible():
     assert eligible["player_name"].tolist() == ["Questionable Player", "Healthy Player"]
 
 
-def test_lineups_surname_only_out_row_removes_unique_player_even_when_column_team_is_wrong():
+def test_team_specific_surname_only_out_never_removes_player_from_another_team():
     predictions = pd.DataFrame({
         "player_name": ["Jimmy Butler", "Healthy Player"],
         "team": ["GSW", "BOS"],
@@ -26,7 +26,7 @@ def test_lineups_surname_only_out_row_removes_unique_player_even_when_column_tea
 
     eligible = filter_injured(predictions, injuries)
 
-    assert eligible["player_name"].tolist() == ["Healthy Player"]
+    assert eligible["player_name"].tolist() == ["Jimmy Butler", "Healthy Player"]
 
 
 def test_abbreviated_out_excludes_only_matching_initial_when_teammates_share_surname():

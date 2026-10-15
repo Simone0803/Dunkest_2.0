@@ -115,8 +115,11 @@ def filter_injured(df: pd.DataFrame, injuries: pd.DataFrame) -> pd.DataFrame:
         team = str(injury.get("team", "")).strip().casefold()
         if team and team_series is not None:
             team_hits = candidates.loc[team_series.loc[candidates.index].eq(team)]
-            if not team_hits.empty:
-                candidates = team_hits
+            # A source-provided team is a hard identity constraint. If that
+            # team has no candidate, never fall back to another team's player.
+            if team_hits.empty:
+                continue
+            candidates = team_hits
         elif len(candidates) != 1:
             continue
 

@@ -60,8 +60,9 @@ def test_top3_lineups_smoke():
         )
     roster_keys = [frozenset(solution.players["player_name"]) for solution in sols]
     assert len(set(roster_keys)) == len(roster_keys)
-    assert len({solution.captain for solution in sols}) == len(sols)
-    assert len({solution.coach for solution in sols}) == len(sols)
+    # Alternatives are ranked by value with distinct player rosters; captain
+    # identity is not an artificial diversity constraint.
+    # The coach may repeat across alternatives when it maximizes the objective.
 
 
 def test_unavailable_players_are_removed_even_if_projection_says_available():
@@ -255,8 +256,8 @@ def test_dynamic_optimizer_returns_three_independently_valid_lineups():
     solutions = optimize_top_k_lineups(players, coaches, settings, k=3)
 
     assert len(solutions) == 3
-    assert len({solution.captain for solution in solutions}) == 3
-    assert len({solution.coach for solution in solutions}) == 3
+    # Captain may repeat when it is the highest-value choice for distinct rosters.
+    # Coach identity is not forced to differ across distinct player rosters.
     assert [solution.expected_team_pdk for solution in solutions] == sorted(
         (solution.expected_team_pdk for solution in solutions), reverse=True
     )

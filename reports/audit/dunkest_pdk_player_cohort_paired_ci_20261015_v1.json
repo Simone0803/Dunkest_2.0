@@ -1,0 +1,622 @@
+{
+  "generated_at_utc": "2026-10-15T13:47:42+00:00",
+  "source": "reports/audit/dunkest_pdk_lag_rotation_feature_ablation_20261014_v1_predictions.csv",
+  "seasons": [
+    "2022/23",
+    "2023/24",
+    "2024/25"
+  ],
+  "excluded": [
+    "2025/26 final holdout",
+    "2026/27 GW1 prospective frozen test"
+  ],
+  "paired_rows": 115364,
+  "date_clusters": 475,
+  "bootstrap_resamples": 2000,
+  "bootstrap_unit": "target game date, resampled within season, paired predictions kept together",
+  "delta": "rotation_aware minus expanded_lags; negative MAE/RMSE is better",
+  "minimum_cohort_n": 50,
+  "caveats": [
+    "Only existing saved OOS predictions; no retraining.",
+    "Cohort labels use target minutes/score for post-hoc error diagnosis, not model inputs.",
+    "Actual-score cohorts describe error conditional on realized outcome, not a pre-match actionable segment.",
+    "Does not certify lineup realized-score improvement or causal effect.",
+    "No production feature or weight changes."
+  ],
+  "results": [
+    {
+      "model": "et12",
+      "axis": "all",
+      "cohort": "all",
+      "n": 57682,
+      "players": 671,
+      "date_clusters": 475,
+      "expanded_mae": 7.56963002012624,
+      "rotation_mae": 7.578196937519891,
+      "delta_mae": 0.008566917393650897,
+      "delta_mae_ci95": [
+        0.00342381179113016,
+        0.01355330630728013
+      ],
+      "expanded_rmse": 9.84561848869878,
+      "rotation_rmse": 9.844638360911993,
+      "delta_rmse": -0.0009801277867858005,
+      "delta_rmse_ci95": [
+        -0.006447324686714229,
+        0.004497335665386303
+      ],
+      "delta_bias": 0.0562783555608153,
+      "delta_bias_ci95": [
+        0.05090475279798947,
+        0.0614511562719352
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "history",
+      "cohort": "history_1_4",
+      "n": 973,
+      "players": 250,
+      "date_clusters": 290,
+      "expanded_mae": 5.152784114998031,
+      "rotation_mae": 5.1558733539278405,
+      "delta_mae": 0.0030892389298093903,
+      "delta_mae_ci95": [
+        -0.024754343630759346,
+        0.03158725635383952
+      ],
+      "expanded_rmse": 7.099080153768463,
+      "rotation_rmse": 7.109500423397944,
+      "delta_rmse": 0.010420269629481282,
+      "delta_rmse_ci95": [
+        -0.01979272329520936,
+        0.03994442709813367
+      ],
+      "delta_bias": -0.015953450344987408,
+      "delta_bias_ci95": [
+        -0.04204254597896017,
+        0.010102658239526096
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "history",
+      "cohort": "history_20_plus",
+      "n": 53187,
+      "players": 597,
+      "date_clusters": 475,
+      "expanded_mae": 7.738055208474716,
+      "rotation_mae": 7.747399154925332,
+      "delta_mae": 0.00934394645061598,
+      "delta_mae_ci95": [
+        0.004076082806531401,
+        0.01426847818024006
+      ],
+      "expanded_rmse": 10.020851819631872,
+      "rotation_rmse": 10.019695881319405,
+      "delta_rmse": -0.0011559383124666311,
+      "delta_rmse_ci95": [
+        -0.006630041663483022,
+        0.004409983921453485
+      ],
+      "delta_bias": 0.0625003706776895,
+      "delta_bias_ci95": [
+        0.05701220105200042,
+        0.06794324305685753
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "history",
+      "cohort": "history_5_19",
+      "n": 3273,
+      "players": 257,
+      "date_clusters": 441,
+      "expanded_mae": 5.740852178901928,
+      "rotation_mae": 5.738262787116052,
+      "delta_mae": -0.0025893917858761384,
+      "delta_mae_ci95": [
+        -0.01780843328878361,
+        0.011278887118288393
+      ],
+      "expanded_rmse": 7.619760676266381,
+      "rotation_rmse": 7.61860148186592,
+      "delta_rmse": -0.0011591944004614163,
+      "delta_rmse_ci95": [
+        -0.01750123555074401,
+        0.01558255771009327
+      ],
+      "delta_bias": -0.01958371192595308,
+      "delta_bias_ci95": [
+        -0.03611247346394876,
+        -0.0030774636301623736
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "history",
+      "cohort": "no_prior_games",
+      "n": 249,
+      "players": 249,
+      "date_clusters": 101,
+      "expanded_mae": 5.0762583226422935,
+      "rotation_mae": 5.086899684361933,
+      "delta_mae": 0.010641361719639697,
+      "delta_mae_ci95": [
+        -0.01000699281328501,
+        0.030765656505341125
+      ],
+      "expanded_rmse": 6.796225107874017,
+      "rotation_rmse": 6.805868961672315,
+      "delta_rmse": 0.009643853798298352,
+      "delta_rmse_ci95": [
+        -0.009105100751630268,
+        0.02575849085392629
+      ],
+      "delta_bias": 0.006671030297171365,
+      "delta_bias_ci95": [
+        -0.013166289853321508,
+        0.025470099108601842
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "minutes",
+      "cohort": "minutes_15_29",
+      "n": 25081,
+      "players": 628,
+      "date_clusters": 475,
+      "expanded_mae": 7.140944870355532,
+      "rotation_mae": 7.148332888457792,
+      "delta_mae": 0.0073880181022598634,
+      "delta_mae_ci95": [
+        1.4328173397348831e-05,
+        0.014487041948622402
+      ],
+      "expanded_rmse": 9.146512869386362,
+      "rotation_rmse": 9.144628900004712,
+      "delta_rmse": -0.0018839693816499192,
+      "delta_rmse_ci95": [
+        -0.009634566538641564,
+        0.005586857860956404
+      ],
+      "delta_bias": 0.057830151342407876,
+      "delta_bias_ci95": [
+        0.05046168445688894,
+        0.06523104834399462
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "minutes",
+      "cohort": "minutes_ge30",
+      "n": 19008,
+      "players": 531,
+      "date_clusters": 475,
+      "expanded_mae": 9.654607982155724,
+      "rotation_mae": 9.64406098535157,
+      "delta_mae": -0.010546996804153608,
+      "delta_mae_ci95": [
+        -0.02014469098667604,
+        -0.0011782641322929702
+      ],
+      "expanded_rmse": 12.287010795782686,
+      "rotation_rmse": 12.270452080962004,
+      "delta_rmse": -0.016558714820682496,
+      "delta_rmse_ci95": [
+        -0.026276651025535315,
+        -0.007385209375354055
+      ],
+      "delta_bias": 0.056942065413917664,
+      "delta_bias_ci95": [
+        0.04742225087472211,
+        0.06627561903905263
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "minutes",
+      "cohort": "minutes_lt15",
+      "n": 13593,
+      "players": 625,
+      "date_clusters": 475,
+      "expanded_mae": 5.4450505409194925,
+      "rotation_mae": 5.482520956746108,
+      "delta_mae": 0.0374704158266157,
+      "delta_mae_ci95": [
+        0.0291706099289607,
+        0.04610777711720786
+      ],
+      "expanded_rmse": 6.773117270603858,
+      "rotation_rmse": 6.813621476110697,
+      "delta_rmse": 0.04050420550683942,
+      "delta_rmse_ci95": [
+        0.030719454440190485,
+        0.05075028237570436
+      ],
+      "delta_bias": 0.05248696389702623,
+      "delta_bias_ci95": [
+        0.044131815768813844,
+        0.060762688080360866
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "actual",
+      "cohort": "actual_pdk_10_24_99",
+      "n": 21721,
+      "players": 630,
+      "date_clusters": 475,
+      "expanded_mae": 5.642488526924967,
+      "rotation_mae": 5.634871239151127,
+      "delta_mae": -0.007617287773840076,
+      "delta_mae_ci95": [
+        -0.015268993589996848,
+        0.00019053549522751717
+      ],
+      "expanded_rmse": 7.120373762824806,
+      "rotation_rmse": 7.111409233677698,
+      "delta_rmse": -0.008964529147108102,
+      "delta_rmse_ci95": [
+        -0.017663761205486073,
+        -0.0005466247939530251
+      ],
+      "delta_bias": 0.060114776135681586,
+      "delta_bias_ci95": [
+        0.051183655294328334,
+        0.06898980069247028
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "actual",
+      "cohort": "actual_pdk_ge25",
+      "n": 13104,
+      "players": 508,
+      "date_clusters": 475,
+      "expanded_mae": 12.22409081896665,
+      "rotation_mae": 12.191982190180838,
+      "delta_mae": -0.03210862878581189,
+      "delta_mae_ci95": [
+        -0.044229524354137295,
+        -0.01980041169251266
+      ],
+      "expanded_rmse": 14.735108320585349,
+      "rotation_rmse": 14.696236809046749,
+      "delta_rmse": -0.038871511538600245,
+      "delta_rmse_ci95": [
+        -0.049740607013936525,
+        -0.027461481380489296
+      ],
+      "delta_bias": 0.054417505653713505,
+      "delta_bias_ci95": [
+        0.042393346164914456,
+        0.06613749570722702
+      ]
+    },
+    {
+      "model": "et12",
+      "axis": "actual",
+      "cohort": "actual_pdk_lt10",
+      "n": 22857,
+      "players": 666,
+      "date_clusters": 475,
+      "expanded_mae": 6.7325729288990495,
+      "rotation_mae": 6.779839127807282,
+      "delta_mae": 0.04726619890823258,
+      "delta_mae_ci95": [
+        0.040131142373958074,
+        0.05456676794513856
+      ],
+      "expanded_rmse": 8.483569799778431,
+      "rotation_rmse": 8.526392950531386,
+      "delta_rmse": 0.042823150752955286,
+      "delta_rmse_ci95": [
+        0.03488160870650936,
+        0.051338269788981566
+      ],
+      "delta_bias": 0.053699438199657834,
+      "delta_bias_ci95": [
+        0.046768546335443514,
+        0.061043197785690936
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "all",
+      "cohort": "all",
+      "n": 57682,
+      "players": 671,
+      "date_clusters": 475,
+      "expanded_mae": 7.561490767285976,
+      "rotation_mae": 7.563727369846045,
+      "delta_mae": 0.0022366025600693007,
+      "delta_mae_ci95": [
+        -0.00410273572847224,
+        0.008602107191268386
+      ],
+      "expanded_rmse": 9.824134508335073,
+      "rotation_rmse": 9.827880270676394,
+      "delta_rmse": 0.0037457623413210683,
+      "delta_rmse_ci95": [
+        -0.003534485184236713,
+        0.011179476395553715
+      ],
+      "delta_bias": 0.0024599926516144927,
+      "delta_bias_ci95": [
+        -0.004652498365362753,
+        0.009364510590579475
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "history",
+      "cohort": "history_1_4",
+      "n": 973,
+      "players": 250,
+      "date_clusters": 290,
+      "expanded_mae": 5.143736946692487,
+      "rotation_mae": 5.145185559266268,
+      "delta_mae": 0.0014486125737809274,
+      "delta_mae_ci95": [
+        -0.016076123617054107,
+        0.020584570808476175
+      ],
+      "expanded_rmse": 7.113442947660571,
+      "rotation_rmse": 7.121620506156317,
+      "delta_rmse": 0.00817755849574553,
+      "delta_rmse_ci95": [
+        -0.014153321583150325,
+        0.03089281406795331
+      ],
+      "delta_bias": -0.04020983532858452,
+      "delta_bias_ci95": [
+        -0.06355978416998315,
+        -0.015752487719910724
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "history",
+      "cohort": "history_20_plus",
+      "n": 53187,
+      "players": 597,
+      "date_clusters": 475,
+      "expanded_mae": 7.733133678556751,
+      "rotation_mae": 7.736103460610246,
+      "delta_mae": 0.0029697820534950736,
+      "delta_mae_ci95": [
+        -0.004015655114235739,
+        0.009925686247945872
+      ],
+      "expanded_rmse": 9.99929070439142,
+      "rotation_rmse": 10.003280237691593,
+      "delta_rmse": 0.00398953330017271,
+      "delta_rmse_ci95": [
+        -0.0038459030326030595,
+        0.011691431018492206
+      ],
+      "delta_bias": 0.004784186458607436,
+      "delta_bias_ci95": [
+        -0.002539664252568847,
+        0.01284945519966336
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "history",
+      "cohort": "history_5_19",
+      "n": 3273,
+      "players": 257,
+      "date_clusters": 441,
+      "expanded_mae": 5.658565961902447,
+      "rotation_mae": 5.648439131749852,
+      "delta_mae": -0.01012683015259519,
+      "delta_mae_ci95": [
+        -0.021306262925655607,
+        0.0004305260382104266
+      ],
+      "expanded_rmse": 7.585286637682967,
+      "rotation_rmse": 7.583090981199074,
+      "delta_rmse": -0.0021956564838925274,
+      "delta_rmse_ci95": [
+        -0.01640238014381412,
+        0.011057628560960953
+      ],
+      "delta_bias": -0.024113408193833896,
+      "delta_bias_ci95": [
+        -0.03484846334239824,
+        -0.012573892185802812
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "history",
+      "cohort": "no_prior_games",
+      "n": 249,
+      "players": 249,
+      "date_clusters": 101,
+      "expanded_mae": 5.3589840753144875,
+      "rotation_mae": 5.370203054615101,
+      "delta_mae": 0.01121897930061344,
+      "delta_mae_ci95": [
+        -0.03339985097778344,
+        0.06283980952639676
+      ],
+      "expanded_rmse": 6.825711735824383,
+      "rotation_rmse": 6.824959625823663,
+      "delta_rmse": -0.0007521100007199522,
+      "delta_rmse_ci95": [
+        -0.03876861469869079,
+        0.04754431307410889
+      ],
+      "delta_bias": 0.022040665661068992,
+      "delta_bias_ci95": [
+        -0.08321419975736791,
+        0.15166031333921454
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "minutes",
+      "cohort": "minutes_15_29",
+      "n": 25081,
+      "players": 628,
+      "date_clusters": 475,
+      "expanded_mae": 7.136068645379416,
+      "rotation_mae": 7.133494515028329,
+      "delta_mae": -0.0025741303510873337,
+      "delta_mae_ci95": [
+        -0.01073341171769171,
+        0.005346591688669818
+      ],
+      "expanded_rmse": 9.13179765283724,
+      "rotation_rmse": 9.13424741123368,
+      "delta_rmse": 0.00244975839643935,
+      "delta_rmse_ci95": [
+        -0.006312910134571537,
+        0.011863921640262018
+      ],
+      "delta_bias": -0.0025107579118175405,
+      "delta_bias_ci95": [
+        -0.01229565968813159,
+        0.00739855446291305
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "minutes",
+      "cohort": "minutes_ge30",
+      "n": 19008,
+      "players": 531,
+      "date_clusters": 475,
+      "expanded_mae": 9.614347009651214,
+      "rotation_mae": 9.626695869680276,
+      "delta_mae": 0.012348860029062436,
+      "delta_mae_ci95": [
+        -0.0004918432075812439,
+        0.02614091229061159
+      ],
+      "expanded_rmse": 12.237637497972175,
+      "rotation_rmse": 12.244134800691496,
+      "delta_rmse": 0.006497302719321141,
+      "delta_rmse_ci95": [
+        -0.007115978537503986,
+        0.01993160419498178
+      ],
+      "delta_bias": 0.01453119630800126,
+      "delta_bias_ci95": [
+        -0.0006571061432432689,
+        0.029709225201847902
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "minutes",
+      "cohort": "minutes_lt15",
+      "n": 13593,
+      "players": 625,
+      "date_clusters": 475,
+      "expanded_mae": 5.4758084885145495,
+      "rotation_mae": 5.4727809258553215,
+      "delta_mae": -0.003027562659227989,
+      "delta_mae_ci95": [
+        -0.012267513104775984,
+        0.00633826120928933
+      ],
+      "expanded_rmse": 6.8023079289221595,
+      "rotation_rmse": 6.802850002293077,
+      "delta_rmse": 0.0005420733709176062,
+      "delta_rmse_ci95": [
+        -0.01155818903900494,
+        0.012908125413594472
+      ],
+      "delta_bias": -0.005248242779795298,
+      "delta_bias_ci95": [
+        -0.01503078760909582,
+        0.004522722420289903
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "actual",
+      "cohort": "actual_pdk_10_24_99",
+      "n": 21721,
+      "players": 630,
+      "date_clusters": 475,
+      "expanded_mae": 5.652851313335079,
+      "rotation_mae": 5.66143649036003,
+      "delta_mae": 0.008585177024951207,
+      "delta_mae_ci95": [
+        -0.002096438209089224,
+        0.019015249970239703
+      ],
+      "expanded_rmse": 7.141102358684059,
+      "rotation_rmse": 7.154704322718593,
+      "delta_rmse": 0.013601964034533509,
+      "delta_rmse_ci95": [
+        0.001254421927983196,
+        0.02626783483219159
+      ],
+      "delta_bias": 0.011260924012285733,
+      "delta_bias_ci95": [
+        0.00034338237059989733,
+        0.022028520575201223
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "actual",
+      "cohort": "actual_pdk_ge25",
+      "n": 13104,
+      "players": 508,
+      "date_clusters": 475,
+      "expanded_mae": 12.12448246519172,
+      "rotation_mae": 12.131964344266388,
+      "delta_mae": 0.0074818790746675745,
+      "delta_mae_ci95": [
+        -0.009263686777702862,
+        0.024535095168033327
+      ],
+      "expanded_rmse": 14.63832658492374,
+      "rotation_rmse": 14.643513630175194,
+      "delta_rmse": 0.005187045251453526,
+      "delta_rmse_ci95": [
+        -0.010280081734405222,
+        0.020155130828103822
+      ],
+      "delta_bias": 0.01426254078279321,
+      "delta_bias_ci95": [
+        -0.0029268565249835447,
+        0.032228092313787586
+      ]
+    },
+    {
+      "model": "hgb",
+      "axis": "actual",
+      "cohort": "actual_pdk_lt10",
+      "n": 22857,
+      "players": 666,
+      "date_clusters": 475,
+      "expanded_mae": 6.7592907572195,
+      "rotation_mae": 6.752487175617214,
+      "delta_mae": -0.006803581602286002,
+      "delta_mae_ci95": [
+        -0.014919069852610645,
+        0.0010748322284857182
+      ],
+      "expanded_rmse": 8.500199236678569,
+      "rotation_rmse": 8.49513332993883,
+      "delta_rmse": -0.00506590673973939,
+      "delta_rmse_ci95": [
+        -0.01481647751037154,
+        0.005414018754723882
+      ],
+      "delta_bias": -0.012669972820497755,
+      "delta_bias_ci95": [
+        -0.020845589256286323,
+        -0.0046833866761932155
+      ]
+    }
+  ]
+}

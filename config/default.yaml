@@ -25,6 +25,11 @@ http_timeout: 30
 http_retries: 3
 market_cache_max_age_hours: 6
 optimizer_top_k: 3
+# Explicit lineup-selection heuristics; these are configurable, not Dunkest rules.
+optimizer_starter_min_minutes: 18.0
+optimizer_sixth_min_minutes: 12.0
+optimizer_captain_min_minutes: 22.0
+optimizer_min_starter_play_probability: 0.5
 min_different_players_top_k: 1
 optimizer_objective: expected_value
 capital_gain_history_seasons: 5

@@ -1,0 +1,88 @@
+{
+  "audit": "chronological_proxy_to_official_pdk_calibration",
+  "source": "data/processed/player_game_logs_2025-26_official_pdk_overlay_v4.parquet",
+  "target": "PDK_OFFICIAL_VALID; rows with invalid/missing official labels excluded",
+  "proxy": "existing reconstructed PDK; preserved without mutation",
+  "split": {
+    "method": "first 70% distinct dates fit; final 30% distinct dates held out",
+    "train_first_date": "2025-10-21",
+    "train_last_date": "2026-02-21",
+    "test_first_date": "2026-02-22",
+    "test_last_date": "2026-04-10",
+    "train_rows": 12751,
+    "test_rows": 5661,
+    "train_dates": 112,
+    "test_dates": 48
+  },
+  "calibration": {
+    "model": "ordinary least squares: official PDK ~ proxy PDK",
+    "intercept": 0.20050610064905605,
+    "slope": 1.0197921620464165,
+    "fit_only_on_training_dates": true
+  },
+  "test_metrics": {
+    "raw_proxy": {
+      "mae": 0.5086959017841368,
+      "rmse": 0.7282650857405135,
+      "bias": -0.5029866631337216
+    },
+    "affine_calibration": {
+      "mae": 0.4091146241468023,
+      "rmse": 0.46455962783426585,
+      "bias": 0.007305975028583587
+    }
+  },
+  "paired_date_cluster_bootstrap": {
+    "replicates": 1000,
+    "seed": 20261015,
+    "estimand": "calibrated MAE minus raw proxy MAE; negative favors calibration",
+    "mean_difference": -0.09979587378891633,
+    "ci_95_percentile": [
+      -0.10796056843174522,
+      -0.0919027801453631
+    ]
+  },
+  "test_bias_by_realized_minutes_descriptive_only": [
+    {
+      "minutes_bucket": "<=12",
+      "n": 948,
+      "proxy_bias": -0.04433280590717292,
+      "calibrated_bias": 0.21417836986380787,
+      "proxy_mae": 0.04873154008438822,
+      "calibrated_mae": 0.2646940203005708
+    },
+    {
+      "minutes_bucket": "12-20",
+      "n": 1116,
+      "proxy_bias": -0.15680331541218614,
+      "calibrated_bias": 0.23432538088721058,
+      "proxy_mae": 0.16186603942652328,
+      "calibrated_mae": 0.42411900403023667
+    },
+    {
+      "minutes_bucket": "20-28",
+      "n": 1701,
+      "proxy_bias": -0.5330526161081712,
+      "calibrated_bias": -0.017566793853479444,
+      "proxy_mae": 0.5444282774838327,
+      "calibrated_mae": 0.4999761687058541
+    },
+    {
+      "minutes_bucket": "28-36",
+      "n": 1441,
+      "proxy_bias": -0.8759836918806378,
+      "calibrated_bias": -0.21161458854027837,
+      "proxy_mae": 0.8781696738376122,
+      "calibrated_mae": 0.41640051435333075
+    },
+    {
+      "minutes_bucket": ">36",
+      "n": 455,
+      "proxy_bias": -1.014005494505494,
+      "calibrated_bias": -0.19422276183053955,
+      "proxy_mae": 1.014005494505494,
+      "calibrated_mae": 0.31045833714407733
+    }
+  ],
+  "production_change": "none; use calibration only if held-out paired evidence is robust and season-replicated"
+}

@@ -13,10 +13,6 @@ from dunkest.names import player_key
 from dunkest.rules.eligibility import unavailable_mask
 from dunkest.rules.roster import FORMATIONS, RosterRules, player_contribution_multiplier
 
-STARTER_MIN_MINUTES = 18.0
-SIXTH_MIN_MINUTES = 12.0
-CAPTAIN_MIN_MINUTES = 22.0
-MIN_STARTER_PLAY_PROB = 0.5
 # Confirmed outs are excluded by unavailable_mask / p_play == 0. Players with
 # uncertain participation remain candidates: expected_pdk already includes
 # P(play), and P10/P50/P90 use the zero-if-absent mixture from uncertainty.py.
@@ -291,12 +287,10 @@ def optimize_top_k_lineups(
             sol.overlap_with_previous = len(sel_idx & prev)
         solutions.append(sol)
         forbidden_player_sets.append(sel_idx)
-        # Each suggested roster is an alternative, so keep coach choices
-        # distinct while the market contains feasible alternatives.
-        forbidden_coaches.add(int(coach_index))
-        captain_idx = sol.meta.get("captain_index")
-        if settings.optimize_captain and captain_idx is not None:
-            forbidden_captains.add(int(captain_idx))
+        # Top-k ranks distinct player rosters by objective value. Coach and
+        # captain are decision variables, not diversity constraints: forcing
+        # them to differ can suppress a genuinely higher-valued alternative.
+        # The next solve may reuse either if that is the best feasible choice.
         if solver_diagnostics["status"] != "Optimal":
             # A feasible timeout incumbent is usable, but subsequent solves
             # cannot be claimed to be the next-best ranked alternatives.
@@ -308,12 +302,6 @@ def optimize_top_k_lineups(
         ),
         reverse=True,
     )
-    selected_coaches = [solution.coach for solution in solutions]
-    if len(selected_coaches) != len(set(selected_coaches)):
-        raise ValueError(
-            "Optimizer returned duplicate coaches across alternative lineups; "
-            "refusing to present repeated coach recommendations."
-        )
     for rank, solution in enumerate(solutions, start=1):
         selected_indices = set(solution.meta.get("selected_indices", []))
         overlaps = {
@@ -441,7 +429,7 @@ def _solve_once(
                     not settings.optimize_captain
                     or turn != player_turn_by_index[i]
                     or pd.isna(captain_min)
-                    or float(captain_min) < CAPTAIN_MIN_MINUTES
+                    or float(captain_min) < settings.optimizer_captain_min_minutes
                 ):
                     prob += captain_by_turn[(i, turn)] == 0
             if settings.optimize_captain and i in forbidden_captains:
@@ -455,11 +443,11 @@ def _solve_once(
         p_play = float(pd.to_numeric(df.loc[i, "p_play"], errors="coerce") if "p_play" in df.columns else 1.0)
         if pd.isna(p_play):
             p_play = 1.0
-        if emin < STARTER_MIN_MINUTES or p_play < MIN_STARTER_PLAY_PROB:
+        if emin < settings.optimizer_starter_min_minutes or p_play < settings.optimizer_min_starter_play_probability:
             prob += starter[i] == 0
-        if emin < SIXTH_MIN_MINUTES or p_play < MIN_STARTER_PLAY_PROB:
+        if emin < settings.optimizer_sixth_min_minutes or p_play < settings.optimizer_min_starter_play_probability:
             prob += sixth[i] == 0
-        if not dynamic_turn_mode and emin < CAPTAIN_MIN_MINUTES:
+        if not dynamic_turn_mode and emin < settings.optimizer_captain_min_minutes:
             prob += captain[i] == 0
         if dynamic_turn_mode:
             final_turn = turn_values[-1]
@@ -832,7 +820,7 @@ def validate_solution(
         errors.append("lineup contains a confirmed unavailable player")
     if "p_play" in selected:
         play_probabilities = pd.to_numeric(selected["p_play"], errors="coerce").fillna(1.0)
-        if play_probabilities.lt(MIN_PLAY_PROB).any():
+        if play_probabilities.lt(0.0).any():
             errors.append("lineup contains a player with an injury/availability doubt")
     if len(selected) != rules.total_players:
         errors.append(f"roster size {len(selected)} != {rules.total_players}")

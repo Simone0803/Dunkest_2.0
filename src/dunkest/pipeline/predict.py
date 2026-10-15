@@ -16,10 +16,10 @@ from dunkest.data.access import (
 )
 from dunkest.models.coach import predict_coach_points
 from dunkest.data.access import get_coach_data
-from dunkest.models.predictor import predict_players
+from dunkest.pipeline.forecast import build_player_forecast
 from dunkest.models.rookie_prior import load_college_rookie_priors
+from dunkest.report.artifacts import save_pre_match_snapshot
 from dunkest.names import player_key
-from dunkest.rules.eligibility import filter_injured
 
 
 def _verified_team_context(fixtures: pd.DataFrame) -> dict[str, dict]:
@@ -166,7 +166,7 @@ def run_predict(
         pd.read_parquet(price_history_path) if price_history_path.exists() else pd.DataFrame()
     )
     rookie_priors = load_college_rookie_priors(settings.data_path / "rookie_college.csv")
-    preds = predict_players(
+    forecast = build_player_forecast(
         settings,
         models,
         features,
@@ -175,7 +175,9 @@ def run_predict(
         market_value_history=market_value_history,
         plusvalenza_history=plusvalenza_history,
         college_rookie_priors=rookie_priors,
+        require_injury_snapshot=settings.use_injuries,
     )
+    preds = forecast.raw.copy()
     # Override historical last-opponent fields with the verified upcoming matchup.
     if not preds.empty and {"team", "player_name"}.issubset(preds.columns):
         team_context = _verified_team_context(fixture_schedule)
@@ -188,7 +190,8 @@ def run_predict(
     # zero availability-adjusted PDK; dropping rows here can erase a team from
     # the roster-strength comparison entirely.
     coach_strength_forecasts = preds.copy()
-    preds = filter_injured(preds, injuries)
+    preds = forecast.eligible.copy()
+    preds.attrs["forecast_degradations"] = list(forecast.degradations)
     available_keys = set(preds["player_name"].map(player_key))
     excluded = ~coach_strength_forecasts["player_name"].map(player_key).isin(available_keys)
     coach_strength_forecasts.loc[excluded, "expected_pdk"] = 0.0
@@ -212,6 +215,37 @@ def run_predict(
     upcoming_schedule = fixture_schedule
     coach_data = get_coach_data(settings, gw)
     save_coach_market_snapshot(settings, coach_data, gw)
+    # Freeze sanitized point-in-time inputs separately from mutable processed
+    # caches. Never persist realized/current-week target columns as market data.
+    market_columns = [
+        column for column in (
+            "player_name", "team_code", "team", "cr", "role", "position", "prior_pdk", "opponent",
+            "dunkest_turn", "nba_game_id", "game_datetime_utc", "is_home", "gameweek",
+            "lineup_group", "status", "starter", "lineup_group_turn1", "lineup_group_turn2",
+            "lineup_group_turn3", "starter_turn1", "starter_turn2", "starter_turn3",
+            "status_turn1", "status_turn2", "status_turn3",
+        ) if column in dk.columns
+    ]
+    snapshot_path = save_pre_match_snapshot(
+        settings, gw,
+        {
+            "player_market.parquet": dk[market_columns].copy(),
+            "fixture_mapping.parquet": fixture_schedule.copy(),
+            "injuries.parquet": injuries.copy(),
+            "coach_market.parquet": coach_data.copy(),
+            "market_value_history.parquet": market_value_history.copy(),
+            "plusvalenza_history.parquet": plusvalenza_history.copy(),
+            "rookie_priors.parquet": rookie_priors.copy(),
+        },
+        source="dunkest_live_forecast_inputs",
+        metadata={
+            "fixture_mapping_verified": bool(
+                not fixture_schedule.empty
+                and fixture_schedule.get("mapping_verified", pd.Series(False, index=fixture_schedule.index)).fillna(False).all()
+            ),
+            "injury_snapshot_rows": int(len(injuries)),
+        },
+    )
     coach_df = predict_coach_points(
         coach_data,
         team_logs=team_logs if not team_logs.empty else None,

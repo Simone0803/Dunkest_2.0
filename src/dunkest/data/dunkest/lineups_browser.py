@@ -1746,12 +1746,13 @@ def _page_diagnostic(page, responses: list[tuple[str, int, Any]]) -> str:
     try:
         url = page.url
         title = page.title()
-        body = re.sub(r"\s+", " ", page.locator("body").inner_text(timeout=2000))[:500]
+        # Never include page text in diagnostics: authenticated UI content can
+        # contain account-specific or personal information.
         roles = page.locator("[role], flt-semantics").count()
     except Exception as exc:
         return f"pagina non leggibile ({type(exc).__name__})"
     api = ", ".join(f"HTTP {status}" for _, status, _ in responses[-5:]) or "nessuna risposta API lineups"
-    return f"URL={url!r}; titolo={title!r}; nodi accessibili={roles}; API={api}; testo={body!r}"
+    return f"URL={url!r}; titolo={title!r}; nodi accessibili={roles}; API={api}"
 
 
 def _team_code(value: Any) -> str:

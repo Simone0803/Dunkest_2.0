@@ -6,7 +6,8 @@ import pytest
 
 from dunkest.config import Settings
 from dunkest.pipeline.season_opener import _model_artifact_metadata
-from dunkest.report.artifacts import save_post_match_snapshot, save_run_artifacts
+from dunkest.report.artifacts import save_post_match_snapshot, save_pre_match_snapshot, save_run_artifacts
+from dunkest.data.dunkest.fixtures import load_pre_match_snapshot
 
 
 def test_run_manifest_captures_reproducibility_metadata(tmp_path):
@@ -229,3 +230,78 @@ def test_post_match_snapshot_rejects_reserved_metadata_before_creating_archive(t
             metadata={"sha256": {"fake": "hash"}},
         )
     assert not (tmp_path / "archive").exists()
+
+
+def test_pre_match_archive_is_immutable_and_rejects_realized_targets(tmp_path):
+    from dunkest.report.artifacts import save_pre_match_snapshot
+
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    path = save_pre_match_snapshot(
+        settings,
+        2,
+        {
+            "player_market.parquet": pd.DataFrame({
+                "player_name": ["Player One"], "cr": [8.5], "team_code": ["BOS"]
+            }),
+            "injuries.parquet": pd.DataFrame({
+                "player_name": ["Player Two"], "status": ["OUT"]
+            }),
+        },
+        source="unit_test",
+    )
+    manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["season_id"] == "26"
+    assert manifest["dunkest_gameweek"] == 2
+    assert set(manifest["sha256"]) == {"player_market.parquet", "injuries.parquet"}
+    assert all(len(value) == 64 for value in manifest["sha256"].values())
+
+    with pytest.raises(ValueError, match="Outcome-bearing column"):
+        save_pre_match_snapshot(
+            settings, 2,
+            {"player_market.parquet": pd.DataFrame({"player_name": ["Player One"], "actual_pdk": [19.0]})},
+            source="unit_test",
+        )
+
+
+def test_pre_match_archive_loader_requires_hashes_and_capture_before_tipoff(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    lock = pd.Timestamp.now(tz="UTC") + pd.Timedelta(days=2)
+    market = pd.DataFrame({
+        "player_name": [f"Player {i}" for i in range(250)],
+        "team_code": ["BOS"] * 250,
+        "role": ["G"] * 250,
+        "cr": [6.0] * 250,
+        "gameweek": [1] * 250,
+        "lineup_group": ["G"] * 250,
+        "status": ["AVAILABLE"] * 250,
+    })
+    mapping = pd.DataFrame({
+        "nba_game_id": ["0022600001"],
+        "game_datetime_utc": [lock],
+        "dunkest_gameweek": [1],
+        "dunkest_turn": [1],
+        "mapping_verified": [True],
+        "fantasy_eligible": [True],
+        "home_team": ["BOS"], "away_team": ["NYK"],
+    })
+    archive = save_pre_match_snapshot(
+        settings, 1, {
+            "player_market.parquet": market,
+            "fixture_mapping.parquet": mapping,
+            "injuries.parquet": pd.DataFrame({"player_name": ["Player 0"], "team": ["BOS"], "status": ["OUT"]}),
+            "coach_market.parquet": pd.DataFrame({
+                "coach": ["Coach BOS"], "team": ["BOS"], "coach_cr": [6.0],
+                "opponent": ["NYK"], "nba_game_id": ["0022600001"],
+            }),
+        },
+        source="unit_test",
+    )
+    loaded = load_pre_match_snapshot(settings, 1)
+    assert loaded is not None
+    assert loaded["path"] == archive
+    assert len(loaded["tables"]["_normalized_player_market"]) == 250
+
+    # Tampering with a single archived parquet invalidates the entire snapshot.
+    with (archive / "player_market.parquet").open("ab") as stream:
+        stream.write(b"tampered")
+    assert load_pre_match_snapshot(settings, 1) is None

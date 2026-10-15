@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import tempfile
 from datetime import datetime, timezone
@@ -8,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 def _meta_path(path: Path) -> Path:
@@ -19,9 +22,12 @@ def read_parquet(path: Path) -> pd.DataFrame | None:
         return None
     try:
         return pd.read_parquet(path)
-    except Exception:
-        # Parquet engines expose several exception types for corrupt or incompatible files.
-        # A broken cache must behave like a cache miss, not crash the data-loading pipeline.
+    except Exception as exc:
+        # Preserve the cache-miss behavior, but make data corruption observable.
+        logger.warning(
+            "Parquet cache could not be read (%s; %s); treating it as a cache miss.",
+            path, type(exc).__name__,
+        )
         return None
 
 

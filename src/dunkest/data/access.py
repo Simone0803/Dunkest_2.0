@@ -301,7 +301,11 @@ def get_plusvalenza_history(
 
     samples: list[pd.DataFrame] = []
     for historical_season in selected_seasons:
-        cutoff = active_cutoff if historical_season == active_season and through_gameweek > 0 else 91
+        cutoff = (
+            active_cutoff
+            if historical_season == active_season and through_gameweek > 0
+            else max(PLUSVALENZA_SAMPLE_GAMEWEEKS)
+        )
         season_path = _processed(settings, f"plusvalenza_history_nba_{historical_season}_through_gw{cutoff}_v4.parquet")
         cached_season = None if force_refresh or not cache_valid(season_path) else read_parquet(season_path)
         if cached_season is not None and not cached_season.empty and _has_complete_plusvalenza_season(cached_season):
@@ -322,17 +326,32 @@ def get_plusvalenza_history(
                         logger.warning("Dunkest PLUS history unavailable for NBA season %s GW%s: %s", historical_season, gameweek, exc)
                     consecutive_misses += 1
                     if consecutive_misses >= 3:
+                        logger.warning(
+                            "Truncating Dunkest PLUS history for season %s at GW%s after "
+                            "three consecutive unavailable/invalid rounds; collected %s rounds of %s requested.",
+                            historical_season, gameweek, len(season_samples), cutoff,
+                        )
                         break
                     continue
                 if weekly.empty or not {"player_name", "team_code", "cr", "pdk", "plus"}.issubset(weekly.columns):
                     consecutive_misses += 1
                     if consecutive_misses >= 3:
+                        logger.warning(
+                            "Truncating Dunkest PLUS history for season %s at GW%s after "
+                            "three consecutive unavailable/invalid rounds; collected %s rounds of %s requested.",
+                            historical_season, gameweek, len(season_samples), cutoff,
+                        )
                         break
                     continue
                 weekly = weekly.loc[weekly["team_code"].astype(str).str.upper().isin(NBA_TEAM_CODES)].copy()
                 if weekly.empty:
                     consecutive_misses += 1
                     if consecutive_misses >= 3:
+                        logger.warning(
+                            "Truncating Dunkest PLUS history for season %s at GW%s after "
+                            "three consecutive unavailable/invalid rounds; collected %s rounds of %s requested.",
+                            historical_season, gameweek, len(season_samples), cutoff,
+                        )
                         break
                     continue
             consecutive_misses = 0
