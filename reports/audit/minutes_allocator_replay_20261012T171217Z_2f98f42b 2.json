@@ -1,0 +1,22 @@
+{
+  "run_id": "20261012T171217Z_2f98f42b",
+  "source_predictions": "/Users/simone/Documents/Dunkest/data/predictions/20261012T171217Z_2f98f42b/predictions.parquet",
+  "rows": 552,
+  "unique_players": 552,
+  "old_zero_expected_pdk": 128,
+  "new_zero_expected_pdk": 2,
+  "old_zero_expected_pdk_playable": 126,
+  "new_zero_expected_pdk_playable": 0,
+  "old_zero_minutes_playable": 126,
+  "new_zero_minutes_playable": 0,
+  "players_with_positive_request_and_play_probability": 550,
+  "players_still_zero_despite_positive_request": 0,
+  "old_median_expected_pdk": 2.876363724079231,
+  "new_median_expected_pdk": 3.6832430348305376,
+  "old_p95_expected_pdk": 23.571351573375416,
+  "new_p95_expected_pdk": 21.42438888619148,
+  "max_absolute_player_score_delta": 7.584850968258772,
+  "mean_absolute_player_score_delta": 1.0364650706982201,
+  "role_budget_violations": [],
+  "scope": "Deterministic replay of the frozen run's saved pre-allocation minute requests and saved model components; not a new end-to-end forecast or an out-of-sample accuracy result."
+}

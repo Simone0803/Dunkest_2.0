@@ -1,0 +1,180 @@
+{
+  "generated_at_utc": "2026-10-13T10:51:37.280567+00:00",
+  "input": "reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v2_rounds.csv",
+  "matched_rounds_all_scenarios": 409,
+  "seasons": [
+    "13",
+    "19",
+    "9"
+  ],
+  "comparisons": [
+    {
+      "comparison": "optimizer_penalty_2.5_minus_5",
+      "penalty_a": 2.5,
+      "penalty_b": 5.0,
+      "matched_rounds": 409,
+      "mean_official_net_delta": 0.32312958435207745,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.32273838630806845,
+      "ci95_low": -2.424603606356968,
+      "ci95_high": 3.009457212713934,
+      "bootstrap_replicates": 10000,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_13_penalty_2.5_minus_5",
+      "penalty_a": 2.5,
+      "penalty_b": 5.0,
+      "matched_rounds": 132,
+      "mean_official_net_delta": -0.5792424242424246,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.3333333333333333,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_19_penalty_2.5_minus_5",
+      "penalty_a": 2.5,
+      "penalty_b": 5.0,
+      "matched_rounds": 138,
+      "mean_official_net_delta": 2.8849275362318823,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.30434782608695654,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_9_penalty_2.5_minus_5",
+      "penalty_a": 2.5,
+      "penalty_b": 5.0,
+      "matched_rounds": 139,
+      "mean_official_net_delta": -1.3633093525179858,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.33093525179856115,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "optimizer_penalty_2.5_minus_0",
+      "penalty_a": 2.5,
+      "penalty_b": 0.0,
+      "matched_rounds": 409,
+      "mean_official_net_delta": 2.6612591687041562,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.40097799511002447,
+      "ci95_low": 0.036044009779951355,
+      "ci95_high": 5.313366442542787,
+      "bootstrap_replicates": 10000,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_13_penalty_2.5_minus_0",
+      "penalty_a": 2.5,
+      "penalty_b": 0.0,
+      "matched_rounds": 132,
+      "mean_official_net_delta": 4.25371212121212,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.3787878787878788,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_19_penalty_2.5_minus_0",
+      "penalty_a": 2.5,
+      "penalty_b": 0.0,
+      "matched_rounds": 138,
+      "mean_official_net_delta": 2.0191304347826087,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.391304347826087,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_9_penalty_2.5_minus_0",
+      "penalty_a": 2.5,
+      "penalty_b": 0.0,
+      "matched_rounds": 139,
+      "mean_official_net_delta": 1.7865107913669067,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.4316546762589928,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "optimizer_penalty_0_minus_5",
+      "penalty_a": 0.0,
+      "penalty_b": 5.0,
+      "matched_rounds": 409,
+      "mean_official_net_delta": -2.3381295843520786,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.30317848410757947,
+      "ci95_low": -5.572543398533009,
+      "ci95_high": 0.7975687652811729,
+      "bootstrap_replicates": 10000,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_13_penalty_0_minus_5",
+      "penalty_a": 0.0,
+      "penalty_b": 5.0,
+      "matched_rounds": 132,
+      "mean_official_net_delta": -4.832954545454544,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.25,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_19_penalty_0_minus_5",
+      "penalty_a": 0.0,
+      "penalty_b": 5.0,
+      "matched_rounds": 138,
+      "mean_official_net_delta": 0.8657971014492735,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.3695652173913043,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    },
+    {
+      "comparison": "season_9_penalty_0_minus_5",
+      "penalty_a": 0.0,
+      "penalty_b": 5.0,
+      "matched_rounds": 139,
+      "mean_official_net_delta": -3.1498201438848916,
+      "median_official_net_delta": 0.0,
+      "fraction_rounds_a_better": 0.28776978417266186,
+      "ci95_low": NaN,
+      "ci95_high": NaN,
+      "bootstrap_replicates": 0,
+      "seed": 20261013
+    }
+  ],
+  "status_counts": {
+    "evaluated": 1227,
+    "optimization_failed": 147,
+    "candidate_pool_too_small": 6
+  },
+  "bootstrap": {
+    "method": "Paired round bootstrap, stratified by season; resample rounds with replacement within each season, preserve paired scenario outcomes.",
+    "replicates": 10000,
+    "seed": 20261013
+  },
+  "scoring": "All scenarios are evaluated with fixed 5-point official proxy malus; the varied coefficient only changes optimizer selection.",
+  "production_changed": false
+}

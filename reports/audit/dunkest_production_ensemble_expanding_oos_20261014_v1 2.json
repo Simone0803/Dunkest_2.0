@@ -1,0 +1,273 @@
+{
+  "created_utc": "2026-10-14T11:20:27.162605+00:00",
+  "dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "label": "certified official Dunkest PDK targets only",
+  "test_seasons": [
+    "2021-22",
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "folds": [
+    {
+      "test_season": "2021-22",
+      "train_seasons": [
+        "2020-21"
+      ],
+      "train_rows": 17662,
+      "test_rows": 18422,
+      "train_end": "2021-05-16",
+      "test_start": "2021-10-19",
+      "model_weights": {
+        "ridge": 0.33341678603913166,
+        "rf": 0.33364365554187203,
+        "gbr": 0.3329395584189963
+      },
+      "projection_weights": {
+        "minutes": 0.0,
+        "ensemble": 0.8825896125817436,
+        "prior": 0.11741038741825642
+      },
+      "calibration_samples_inside_fold_trainer": 7418,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "min_mean_5",
+        "pdk_per_min_season",
+        "expected_pdk_minutes_model",
+        "pts_mean_5",
+        "reb_mean_5",
+        "ast_mean_5",
+        "stl_per36_5",
+        "blk_per36_5",
+        "tov_per36_5",
+        "oreb_per36_5",
+        "dreb_per36_5",
+        "fg3m_per36_5",
+        "fga_per36_5",
+        "rest_days",
+        "is_b2b",
+        "is_home",
+        "player_opp_pdk_per_min",
+        "player_opp_games"
+      ]
+    },
+    {
+      "test_season": "2022-23",
+      "train_seasons": [
+        "2020-21",
+        "2021-22"
+      ],
+      "train_rows": 36084,
+      "test_rows": 19165,
+      "train_end": "2022-04-10",
+      "test_start": "2022-10-18",
+      "model_weights": {
+        "ridge": 0.3338167756603692,
+        "rf": 0.3320074651283845,
+        "gbr": 0.33417575921124615
+      },
+      "projection_weights": {
+        "minutes": 6.762477515824468e-17,
+        "ensemble": 1.0,
+        "prior": 0.0
+      },
+      "calibration_samples_inside_fold_trainer": 13241,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "min_mean_5",
+        "pdk_per_min_season",
+        "expected_pdk_minutes_model",
+        "pts_mean_5",
+        "reb_mean_5",
+        "ast_mean_5",
+        "stl_per36_5",
+        "blk_per36_5",
+        "tov_per36_5",
+        "oreb_per36_5",
+        "dreb_per36_5",
+        "fg3m_per36_5",
+        "fga_per36_5",
+        "rest_days",
+        "is_b2b",
+        "is_home",
+        "player_opp_pdk_per_min",
+        "player_opp_games"
+      ]
+    },
+    {
+      "test_season": "2023-24",
+      "train_seasons": [
+        "2020-21",
+        "2021-22",
+        "2022-23"
+      ],
+      "train_rows": 55249,
+      "test_rows": 18927,
+      "train_end": "2023-04-09",
+      "test_start": "2023-10-24",
+      "model_weights": {
+        "ridge": 0.33372841265656306,
+        "rf": 0.3317857628956194,
+        "gbr": 0.33448582444781744
+      },
+      "projection_weights": {
+        "minutes": 0.0,
+        "ensemble": 0.9827448024451939,
+        "prior": 0.01725519755480613
+      },
+      "calibration_samples_inside_fold_trainer": 21901,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "min_mean_5",
+        "pdk_per_min_season",
+        "expected_pdk_minutes_model",
+        "pts_mean_5",
+        "reb_mean_5",
+        "ast_mean_5",
+        "stl_per36_5",
+        "blk_per36_5",
+        "tov_per36_5",
+        "oreb_per36_5",
+        "dreb_per36_5",
+        "fg3m_per36_5",
+        "fga_per36_5",
+        "rest_days",
+        "is_b2b",
+        "is_home",
+        "player_opp_pdk_per_min",
+        "player_opp_games"
+      ]
+    },
+    {
+      "test_season": "2024-25",
+      "train_seasons": [
+        "2020-21",
+        "2021-22",
+        "2022-23",
+        "2023-24"
+      ],
+      "train_rows": 74176,
+      "test_rows": 19590,
+      "train_end": "2024-04-12",
+      "test_start": "2024-10-22",
+      "model_weights": {
+        "ridge": 0.3335913939840143,
+        "rf": 0.3320869317000964,
+        "gbr": 0.33432167431588933
+      },
+      "projection_weights": {
+        "minutes": 1.2622864675557835e-16,
+        "ensemble": 0.9736913327042035,
+        "prior": 0.0263086672957964
+      },
+      "calibration_samples_inside_fold_trainer": 29749,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "min_mean_5",
+        "pdk_per_min_season",
+        "expected_pdk_minutes_model",
+        "pts_mean_5",
+        "reb_mean_5",
+        "ast_mean_5",
+        "stl_per36_5",
+        "blk_per36_5",
+        "tov_per36_5",
+        "oreb_per36_5",
+        "dreb_per36_5",
+        "fg3m_per36_5",
+        "fga_per36_5",
+        "rest_days",
+        "is_b2b",
+        "is_home",
+        "player_opp_pdk_per_min",
+        "player_opp_games"
+      ]
+    },
+    {
+      "test_season": "2025-26",
+      "train_seasons": [
+        "2020-21",
+        "2021-22",
+        "2022-23",
+        "2023-24",
+        "2024-25"
+      ],
+      "train_rows": 93766,
+      "test_rows": 18412,
+      "train_end": "2025-04-11",
+      "test_start": "2025-10-21",
+      "model_weights": {
+        "ridge": 0.33343837383982233,
+        "rf": 0.3322594049458695,
+        "gbr": 0.33430222121430825
+      },
+      "projection_weights": {
+        "minutes": 0.0,
+        "ensemble": 1.0,
+        "prior": 0.0
+      },
+      "calibration_samples_inside_fold_trainer": 38517,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "min_mean_5",
+        "pdk_per_min_season",
+        "expected_pdk_minutes_model",
+        "pts_mean_5",
+        "reb_mean_5",
+        "ast_mean_5",
+        "stl_per36_5",
+        "blk_per36_5",
+        "tov_per36_5",
+        "oreb_per36_5",
+        "dreb_per36_5",
+        "fg3m_per36_5",
+        "fga_per36_5",
+        "rest_days",
+        "is_b2b",
+        "is_home",
+        "player_opp_pdk_per_min",
+        "player_opp_games"
+      ]
+    }
+  ],
+  "method": "Exact production train_models model zoo and production feature adapter; per-season model trained only on earlier certified seasons; projection weights fitted only on that training window; interval quantiles fit only on prior-season OOS residuals.",
+  "interval_sign_convention": "residual = prediction - actual; score lower = prediction - q90(residual); score upper = prediction - q10(residual).",
+  "limits": [
+    "This audits the core production model-zoo ensemble and its training-window projection layer, not the final market-specific forecast after current-role minutes allocation, historical-PDK model blending, rookie priors, and availability weighting. Those post-processing inputs lack complete authentic historical pre-lock snapshots and cannot be reconstructed without inventing data.",
+    "2025/26 has already been examined in earlier project experiments and is not a globally untouched holdout.",
+    "No production model, calibrator, configuration, or optimizer objective was changed."
+  ],
+  "production_changed": false,
+  "artifacts": {
+    "report": "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1.md",
+    "metrics": "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1_metrics.csv",
+    "predictions": "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1_predictions.csv",
+    "intervals": "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1_intervals.csv"
+  }
+}

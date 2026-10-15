@@ -1,0 +1,178 @@
+{
+  "created_date": "2026-10-12",
+  "season": "2025-26",
+  "evaluation_target": "Official PDK; all rows have finite official labels and gameValidForDunkest=True.",
+  "comparison": "Both target modes and both baselines are evaluated on the same rows and same date-level out-of-fold cutoffs.",
+  "source_predictions": "reports/audit/proxy_vs_official_target_oof_2025-26_v1.csv",
+  "counts": {
+    "source_common_oof_rows": 7407,
+    "rows_with_both_models_and_both_baselines": 7384,
+    "rows_excluded_only_due_to_missing_baseline": 23,
+    "unique_dates": 64,
+    "date_min": "2026-01-30",
+    "date_max": "2026-04-10",
+    "duplicate_identities": 0
+  },
+  "metrics": [
+    {
+      "model": "trained_on_proxy__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.550978491943619,
+      "rmse": 9.878195627604866,
+      "bias_pred_minus_actual": -0.6782588344976611,
+      "r2": 0.4049405781375385,
+      "p90_absolute_error": 15.918882713789428
+    },
+    {
+      "model": "trained_on_official__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.56510937605246,
+      "rmse": 9.84613581274008,
+      "bias_pred_minus_actual": -0.16787882424028946,
+      "r2": 0.40879685664936094,
+      "p90_absolute_error": 15.947330185377616
+    },
+    {
+      "model": "trained_on_proxy__evaluated_vs_proxy",
+      "n": 7384,
+      "mae": 7.5126750438974605,
+      "rmse": 9.78491648595082,
+      "bias_pred_minus_actual": -0.17424982853883134,
+      "r2": 0.3922379265484027,
+      "p90_absolute_error": 15.741262742614591
+    },
+    {
+      "model": "proxy_previous_10_mean__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.722291819157466,
+      "rmse": 10.171813471794412,
+      "bias_pred_minus_actual": -0.7172568403207704,
+      "r2": 0.3690399447891608,
+      "p90_absolute_error": 16.383874999999996
+    },
+    {
+      "model": "minutes_projection__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.574252082172515,
+      "rmse": 9.959797134647678,
+      "bias_pred_minus_actual": -0.9107612525300609,
+      "r2": 0.395068672449827,
+      "p90_absolute_error": 16.102620385351358
+    }
+  ],
+  "cohort_metrics_by_official_target_band": [
+    {
+      "model": "trained_on_proxy",
+      "n": 1527,
+      "mae": 7.923779047289664,
+      "rmse": 9.530038336492657,
+      "bias_pred_minus_actual": 7.867654530618833,
+      "r2": -17.488944638575234,
+      "p90_absolute_error": 15.267083411304172,
+      "official_target_band": "<5"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1527,
+      "mae": 8.168681634897554,
+      "rmse": 9.845515224945235,
+      "bias_pred_minus_actual": 8.110682550900673,
+      "r2": -18.733300204217205,
+      "p90_absolute_error": 15.74192044361442,
+      "official_target_band": "<5"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1251,
+      "mae": 5.68755142317435,
+      "rmse": 7.243012873672361,
+      "bias_pred_minus_actual": 4.797754371804264,
+      "r2": -23.254960381234664,
+      "p90_absolute_error": 11.93169407553085,
+      "official_target_band": "5-10"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1251,
+      "mae": 6.04105891316565,
+      "rmse": 7.666226270449707,
+      "bias_pred_minus_actual": 5.180969178252997,
+      "r2": -26.172232511237773,
+      "p90_absolute_error": 12.74931570430044,
+      "official_target_band": "5-10"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 2146,
+      "mae": 4.662662001863833,
+      "rmse": 5.936308285443923,
+      "bias_pred_minus_actual": 0.5378362137818101,
+      "r2": -3.3518674336455003,
+      "p90_absolute_error": 9.747651567183125,
+      "official_target_band": "10-20"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 2146,
+      "mae": 4.879493192297002,
+      "rmse": 6.218184345654283,
+      "bias_pred_minus_actual": 1.0619120264842064,
+      "r2": -3.7749623346435923,
+      "p90_absolute_error": 10.159339062571188,
+      "official_target_band": "10-20"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1425,
+      "mae": 7.227590412571814,
+      "rmse": 8.669180457194276,
+      "bias_pred_minus_actual": -5.7300952162682774,
+      "r2": -8.537031336675545,
+      "p90_absolute_error": 13.732545997377773,
+      "official_target_band": "20-30"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1425,
+      "mae": 6.936847010480287,
+      "rmse": 8.419363571716385,
+      "bias_pred_minus_actual": -5.063689695203647,
+      "r2": -7.995299979900658,
+      "p90_absolute_error": 13.332040689697337,
+      "official_target_band": "20-30"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1035,
+      "mae": 15.687245173907856,
+      "rmse": 17.950223618330384,
+      "bias_pred_minus_actual": -15.471471741938444,
+      "r2": -2.987047571339017,
+      "p90_absolute_error": 27.280714260037975,
+      "official_target_band": "30+"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1035,
+      "mae": 14.950170720105117,
+      "rmse": 17.31554762734301,
+      "bias_pred_minus_actual": -14.656161670125638,
+      "r2": -2.7100875099122157,
+      "p90_absolute_error": 26.638806807497556,
+      "official_target_band": "30+"
+    }
+  ],
+  "proxy_minus_official_label_difference": {
+    "mean": -0.5040090059588298,
+    "mae": 0.5099366874322859,
+    "rmse": 0.7289163489107453,
+    "p90_absolute_difference": 1.0525000000000002
+  },
+  "interpretation": [
+    "The two target-mode models use the same pre-game features and temporal cutoffs; only the supervised target changes.",
+    "Proxy-trained predictions have slightly lower MAE versus official PDK, while official-target-trained predictions have slightly lower RMSE and less negative bias; differences are small and do not establish a clear overall winner.",
+    "Both models beat the proxy previous-10 mean baseline on this OOF subset when evaluated against official PDK.",
+    "This comparison isolates target choice under production-style proxy-derived lag features; it is not the same as the multi-season V3 experiment, which rebuilds lag features from official targets.",
+    "No production config, code path, source parquet, saved model, or existing backtest was changed."
+  ]
+}

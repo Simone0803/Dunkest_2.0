@@ -1,0 +1,14 @@
+{
+  "runs": [
+    {
+      "date": "2026-10-14T13:26:32.935374+00:00",
+      "input_tokens": 7880,
+      "output_tokens": 9320,
+      "files": 670,
+      "token_counts_partial": true
+    }
+  ],
+  "total_input_tokens": 7880,
+  "total_output_tokens": 9320,
+  "token_accounting_note": "Partial: semantic agent tool did not expose token usage for chunks 3–11."
+}

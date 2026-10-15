@@ -1,0 +1,247 @@
+{
+  "audit": "paired-date-cluster-CI-for-PDK-rotation-ablation",
+  "generated_at_utc": "2026-10-15T13:42:55+00:00",
+  "read_only_sources": true,
+  "source_predictions": "reports/audit/dunkest_pdk_lag_rotation_feature_ablation_20261014_v1_predictions.csv",
+  "seasons_included": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "final_holdout_2025_26_loaded": false,
+  "prospective_2026_27_GW1_loaded": false,
+  "n_source_rows_each_variant": {
+    "expanded_lags": 115364,
+    "rotation_aware": 115364
+  },
+  "n_paired_rows": 115364,
+  "date_clusters": 475,
+  "bootstrap_resamples": 2000,
+  "seed": 20261015,
+  "bootstrap_unit": "target game date, resampled within season; paired variant predictions remain together",
+  "delta_convention": "rotation_aware minus expanded_lags; negative MAE/RMSE delta favours rotation-aware",
+  "limitations": [
+    "This compares saved OOS predictions from existing experiment, not a fresh training run.",
+    "It does not establish team-change causality because source rows have no verified team-change label.",
+    "It evaluates player-game prediction, not selected lineup realized score.",
+    "2025/26 holdout and frozen 2026/27 GW1 are excluded."
+  ],
+  "comparisons": [
+    {
+      "model": "et12",
+      "cohort": "all",
+      "n_paired": 57682,
+      "date_clusters": 475,
+      "expanded_mae": 7.56963002012624,
+      "rotation_mae": 7.578196937519891,
+      "delta_mae_rotation_minus_expanded": 0.008566917393650897,
+      "delta_mae_ci95": [
+        0.00342381179113016,
+        0.01355330630728013
+      ],
+      "expanded_rmse": 9.84561848869878,
+      "rotation_rmse": 9.844638360911993,
+      "delta_rmse_rotation_minus_expanded": -0.0009801277867858005,
+      "delta_rmse_ci95": [
+        -0.006447324686714229,
+        0.004497335665386303
+      ],
+      "expanded_bias": -0.12737038516117724,
+      "rotation_bias": -0.07109202960036194,
+      "delta_bias_rotation_minus_expanded": 0.0562783555608153,
+      "delta_bias_ci95": [
+        0.05090475279798947,
+        0.0614511562719352
+      ]
+    },
+    {
+      "model": "et12",
+      "cohort": "actual_pdk_ge_25",
+      "n_paired": 13104,
+      "date_clusters": 475,
+      "expanded_mae": 12.22409081896665,
+      "rotation_mae": 12.191982190180838,
+      "delta_mae_rotation_minus_expanded": -0.03210862878581189,
+      "delta_mae_ci95": [
+        -0.044199150681541656,
+        -0.019637236541714002
+      ],
+      "expanded_rmse": 14.735108320585349,
+      "rotation_rmse": 14.696236809046749,
+      "delta_rmse_rotation_minus_expanded": -0.038871511538600245,
+      "delta_rmse_ci95": [
+        -0.04975889426549607,
+        -0.02788768470287808
+      ],
+      "expanded_bias": -11.180290097728488,
+      "rotation_bias": -11.125872592074774,
+      "delta_bias_rotation_minus_expanded": 0.054417505653713505,
+      "delta_bias_ci95": [
+        0.04245424271112928,
+        0.06554903288851323
+      ]
+    },
+    {
+      "model": "et12",
+      "cohort": "history_games_lt_5",
+      "n_paired": 1222,
+      "date_clusters": 318,
+      "expanded_mae": 5.137190888896084,
+      "rotation_mae": 5.1418189809966535,
+      "delta_mae_rotation_minus_expanded": 0.004628092100569248,
+      "delta_mae_ci95": [
+        -0.01744069248896496,
+        0.026180799983549097
+      ],
+      "expanded_rmse": 7.038426323690791,
+      "rotation_rmse": 7.04869226762994,
+      "delta_rmse_rotation_minus_expanded": 0.01026594393914948,
+      "delta_rmse_ci95": [
+        -0.01333039862751877,
+        0.03423139674111181
+      ],
+      "expanded_bias": -0.13430418072300015,
+      "rotation_bias": -0.14564756913681123,
+      "delta_bias_rotation_minus_expanded": -0.011343388413811079,
+      "delta_bias_ci95": [
+        -0.031630317310450795,
+        0.009204378656793685
+      ]
+    },
+    {
+      "model": "et12",
+      "cohort": "no_prior_games",
+      "n_paired": 249,
+      "date_clusters": 101,
+      "expanded_mae": 5.0762583226422935,
+      "rotation_mae": 5.086899684361933,
+      "delta_mae_rotation_minus_expanded": 0.010641361719639697,
+      "delta_mae_ci95": [
+        -0.010271839699616914,
+        0.03104283483331437
+      ],
+      "expanded_rmse": 6.796225107874017,
+      "rotation_rmse": 6.805868961672315,
+      "delta_rmse_rotation_minus_expanded": 0.009643853798298352,
+      "delta_rmse_ci95": [
+        -0.009421638021621036,
+        0.026530860467421587
+      ],
+      "expanded_bias": 0.3306056449525238,
+      "rotation_bias": 0.3372766752496952,
+      "delta_bias_rotation_minus_expanded": 0.006671030297171365,
+      "delta_bias_ci95": [
+        -0.011486707646871598,
+        0.0260843417286497
+      ]
+    },
+    {
+      "model": "hgb",
+      "cohort": "all",
+      "n_paired": 57682,
+      "date_clusters": 475,
+      "expanded_mae": 7.561490767285976,
+      "rotation_mae": 7.563727369846045,
+      "delta_mae_rotation_minus_expanded": 0.0022366025600693007,
+      "delta_mae_ci95": [
+        -0.004299164357430008,
+        0.00877161615793604
+      ],
+      "expanded_rmse": 9.824134508335073,
+      "rotation_rmse": 9.827880270676394,
+      "delta_rmse_rotation_minus_expanded": 0.0037457623413210683,
+      "delta_rmse_ci95": [
+        -0.00347028792819577,
+        0.011350098229133462
+      ],
+      "expanded_bias": -0.04801125108249937,
+      "rotation_bias": -0.04555125843088488,
+      "delta_bias_rotation_minus_expanded": 0.0024599926516144927,
+      "delta_bias_ci95": [
+        -0.004673054113021646,
+        0.009352453321650009
+      ]
+    },
+    {
+      "model": "hgb",
+      "cohort": "actual_pdk_ge_25",
+      "n_paired": 13104,
+      "date_clusters": 475,
+      "expanded_mae": 12.12448246519172,
+      "rotation_mae": 12.131964344266388,
+      "delta_mae_rotation_minus_expanded": 0.0074818790746675745,
+      "delta_mae_ci95": [
+        -0.01045533682118487,
+        0.02503513954756191
+      ],
+      "expanded_rmse": 14.63832658492374,
+      "rotation_rmse": 14.643513630175194,
+      "delta_rmse_rotation_minus_expanded": 0.005187045251453526,
+      "delta_rmse_ci95": [
+        -0.011007292103625188,
+        0.020854561232706233
+      ],
+      "expanded_bias": -11.013695255626777,
+      "rotation_bias": -10.999432714843984,
+      "delta_bias_rotation_minus_expanded": 0.01426254078279321,
+      "delta_bias_ci95": [
+        -0.003995487803400488,
+        0.0334524828362403
+      ]
+    },
+    {
+      "model": "hgb",
+      "cohort": "history_games_lt_5",
+      "n_paired": 1222,
+      "date_clusters": 318,
+      "expanded_mae": 5.1875966316571995,
+      "rotation_mae": 5.191036096370899,
+      "delta_mae_rotation_minus_expanded": 0.0034394647136997136,
+      "delta_mae_ci95": [
+        -0.015187986919788354,
+        0.0228846093384208
+      ],
+      "expanded_rmse": 7.055765509283893,
+      "rotation_rmse": 7.062182606470175,
+      "delta_rmse_rotation_minus_expanded": 0.006417097186282028,
+      "delta_rmse_ci95": [
+        -0.013654829036019177,
+        0.02742542702503463
+      ],
+      "expanded_bias": -0.01664380398539437,
+      "rotation_bias": -0.044169208261258905,
+      "delta_bias_rotation_minus_expanded": -0.027525404275864536,
+      "delta_bias_ci95": [
+        -0.05756184549314686,
+        0.006718573290539811
+      ]
+    },
+    {
+      "model": "hgb",
+      "cohort": "no_prior_games",
+      "n_paired": 249,
+      "date_clusters": 101,
+      "expanded_mae": 5.3589840753144875,
+      "rotation_mae": 5.370203054615101,
+      "delta_mae_rotation_minus_expanded": 0.01121897930061344,
+      "delta_mae_ci95": [
+        -0.033378052978459014,
+        0.06249014785099239
+      ],
+      "expanded_rmse": 6.825711735824383,
+      "rotation_rmse": 6.824959625823663,
+      "delta_rmse_rotation_minus_expanded": -0.0007521100007199522,
+      "delta_rmse_ci95": [
+        -0.03854646659412479,
+        0.04239989414452436
+      ],
+      "expanded_bias": 1.2293504431503344,
+      "rotation_bias": 1.2513911088114034,
+      "delta_bias_rotation_minus_expanded": 0.022040665661068992,
+      "delta_bias_ci95": [
+        -0.08367443417357137,
+        0.15278343112165707
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+BASE_URL = "https://www.dunkest.com"
+STATS_URL = (
+    "https://www.dunkest.com/it/nba/statistiche/"
+    "giocatori/tabellone?iframe=yes"
+)
+OUT_DIR = Path("data/raw/dunkest_stats_inspection")
+
+
+def save_json(name: str, data: object) -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    path = OUT_DIR / name
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"Salvato: {path}")
+
+
+def describe_json(label: str, data: object) -> None:
+    print(f"\n--- {label} ---")
+    print("Tipo:", type(data).__name__)
+
+    if isinstance(data, dict):
+        print("Chiavi:", list(data.keys()))
+        for key, value in data.items():
+            print(f"  {key}: {type(value).__name__}")
+            if isinstance(value, list):
+                print(f"    Elementi: {len(value)}")
+                if value:
+                    print("    Primo elemento:", repr(value[0])[:1200])
+            elif isinstance(value, dict):
+                print("    Sottochiavi:", list(value.keys())[:40])
+    elif isinstance(data, list):
+        print("Elementi:", len(data))
+        if data:
+            print("Primo elemento:", repr(data[0])[:1200])
+    else:
+        print(repr(data)[:2000])
+
+
+def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            locale="it-IT",
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            ),
+        )
+        page = context.new_page()
+
+        print("Apro la pagina ufficiale delle statistiche...")
+        response = page.goto(
+            STATS_URL,
+            wait_until="domcontentloaded",
+            timeout=60000,
+        )
+        page.wait_for_timeout(3000)
+
+        print("HTTP pagina:", response.status if response else None)
+        print("URL finale:", page.url)
+
+        # Legge le opzioni HTML reali, senza indovinare gli ID.
+        selects = page.locator("select").evaluate_all(
+            """els => els.map((el, index) => ({
+                index,
+                name: el.name,
+                id: el.id,
+                options: Array.from(el.options).map(o => ({
+                    text: o.textContent.trim(),
+                    value: o.value,
+                    selected: o.selected
+                }))
+            }))"""
+        )
+
+        save_json("select_options.json", selects)
+        print("\n--- SELECT E OPZIONI ---")
+        for select in selects:
+            print(
+                f"\nSelect #{select['index']}: "
+                f"name={select['name']!r}, id={select['id']!r}"
+            )
+            for option in select["options"]:
+                print(
+                    f"  value={option['value']!r} "
+                    f"text={option['text']!r} "
+                    f"selected={option['selected']}"
+                )
+
+        # Riproduce la richiesta API già osservata nell'output.
+        params = [
+            ("season_id", "25"),
+            ("mode", "dunkest"),
+            ("stats_type", "tot"),
+            ("weeks[]", "91"),
+            ("rounds[]", "1"),
+            *[("teams[]", str(i)) for i in range(1, 31)],
+            ("positions[]", "1"),
+            ("positions[]", "2"),
+            ("positions[]", "3"),
+            ("player_search", ""),
+            ("min_cr", "4"),
+            ("max_cr", "35"),
+            ("sort_by", "pdk"),
+            ("sort_order", "desc"),
+            ("iframe", "yes"),
+        ]
+
+        print("\nRichiedo il JSON della tabella...")
+        table_response = context.request.get(
+            f"{BASE_URL}/api/stats/table",
+            params=params,
+            timeout=60000,
+        )
+        print("HTTP tabella:", table_response.status)
+
+        table_text = table_response.text()
+        try:
+            table_data = table_response.json()
+        except Exception:
+            table_data = {"_raw_response": table_text}
+
+        save_json("table_payload.json", table_data)
+        describe_json("JSON TABELLA", table_data)
+
+        print("\nRichiedo le giornate disponibili...")
+        rounds_response = context.request.get(
+            f"{BASE_URL}/api/stats/dunkest/week/rounds",
+            params={"season_id": "25", "week_number": "91"},
+            timeout=60000,
+        )
+        print("HTTP giornate:", rounds_response.status)
+
+        try:
+            rounds_data = rounds_response.json
+        except Exception:
+            rounds_data = {"_raw_response": rounds_response.text()}
+
+
+        save_json("week_rounds_payload.json", rounds_

@@ -1,0 +1,21 @@
+{
+  "candidate": {
+    "family": "history_flags_trends",
+    "model": "et_leaf12",
+    "mae": 7.56075361636743
+  },
+  "comparator": {
+    "family": "base",
+    "model": "et_leaf12",
+    "mae": 7.563226906701188
+  },
+  "n_paired": 57682,
+  "date_clusters": 475,
+  "bootstrap_replicates": 4000,
+  "delta_mae": -0.0024732903337580936,
+  "ci95": [
+    -0.0067833631187222965,
+    0.0018174722678514284
+  ],
+  "selected_candidate_from_same_folds": true
+}

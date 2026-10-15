@@ -1,0 +1,21 @@
+{
+  "generated_at_utc": "2026-10-14T13:38:03.698625+00:00",
+  "selected_player_rows": 9160,
+  "recovery_status_counts": {
+    "weekly_round_score_observed": 5872,
+    "team_played_player_row_absent_zero_candidate": 1930,
+    "explicit_nonvalid_game_row_zero_candidate": 1235,
+    "team_did_not_play_identity_or_candidate_mismatch": 123
+  },
+  "lineup_strategy_rows": 916,
+  "rows_with_no_unknown_player_outcomes": 808,
+  "weekly_observed": 5872,
+  "gamelevel_valid_recovered": 0,
+  "zero_candidates_not_certified": 3165,
+  "unknown_or_team_mismatch": 123,
+  "limitations": [
+    "Zero candidates are not promoted to certified official scores; the team schedule is inferred from player-game logs.",
+    "A prior team may be stale after trades, so a no-fixture result can expose team-link errors rather than a true invalid lineup.",
+    "The official weekly archive remains authoritative for observed outcomes; missing rows remain unknown unless the scenario explicitly assumes zero."
+  ]
+}

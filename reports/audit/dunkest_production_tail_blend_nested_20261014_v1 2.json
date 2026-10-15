@@ -1,0 +1,227 @@
+{
+  "created_utc": "2026-10-14T20:15:29.363557+00:00",
+  "source_dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "target": "certified official Dunkest PDK",
+  "outer_folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "inner_weight_candidates": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "inner_validation_fraction": 0.2,
+  "holdout_2025_26_loaded": false,
+  "prospective_2026_27_loaded": false,
+  "fold_audit": [
+    {
+      "season": "2022-23",
+      "outer_train_rows": 36084,
+      "outer_test_rows": 19165,
+      "inner_train_rows": 29188,
+      "inner_valid_rows": 6896,
+      "inner_cutoff_utc": "2022-02-02T00:00:00",
+      "inner_blend_scores": [
+        {
+          "tail_weight": 0.0,
+          "mae": 7.92900523072502,
+          "rmse": 10.292191114332473
+        },
+        {
+          "tail_weight": 0.25,
+          "mae": 7.92130826226971,
+          "rmse": 10.27792428990539
+        },
+        {
+          "tail_weight": 0.5,
+          "mae": 7.922056681306375,
+          "rmse": 10.27274738129619
+        },
+        {
+          "tail_weight": 0.75,
+          "mae": 7.928947881074525,
+          "rmse": 10.2766741257396
+        },
+        {
+          "tail_weight": 1.0,
+          "mae": 7.941542172065051,
+          "rmse": 10.289694100855543
+        }
+      ],
+      "selected_tail_weight": 0.25,
+      "direct_model_weights": {
+        "ridge": 0.33438470930071806,
+        "rf": 0.33180521420229286,
+        "gbr": 0.3338100764969891
+      },
+      "production_feature_count": 50,
+      "inner_tail": {
+        "tail_train_rows": 29188,
+        "tail_high_rows": 5537,
+        "tail_low_rows": 23651,
+        "tail_feature_count": 50
+      },
+      "outer_tail": {
+        "tail_train_rows": 36084,
+        "tail_high_rows": 7034,
+        "tail_low_rows": 29050,
+        "tail_feature_count": 50
+      }
+    },
+    {
+      "season": "2023-24",
+      "outer_train_rows": 55249,
+      "outer_test_rows": 18927,
+      "inner_train_rows": 44546,
+      "inner_valid_rows": 10703,
+      "inner_cutoff_utc": "2022-12-30T00:00:00",
+      "inner_blend_scores": [
+        {
+          "tail_weight": 0.0,
+          "mae": 7.5913602606693455,
+          "rmse": 9.952092275635358
+        },
+        {
+          "tail_weight": 0.25,
+          "mae": 7.5867047602092015,
+          "rmse": 9.945649981139898
+        },
+        {
+          "tail_weight": 0.5,
+          "mae": 7.58740023944509,
+          "rmse": 9.945550779876879
+        },
+        {
+          "tail_weight": 0.75,
+          "mae": 7.5924780146857405,
+          "rmse": 9.951794861533555
+        },
+        {
+          "tail_weight": 1.0,
+          "mae": 7.601520632756783,
+          "rmse": 9.964370301236114
+        }
+      ],
+      "selected_tail_weight": 0.25,
+      "direct_model_weights": {
+        "ridge": 0.3332244783204819,
+        "rf": 0.3324871383157729,
+        "gbr": 0.3342883833637452
+      },
+      "production_feature_count": 50,
+      "inner_tail": {
+        "tail_train_rows": 44546,
+        "tail_high_rows": 8856,
+        "tail_low_rows": 35690,
+        "tail_feature_count": 50
+      },
+      "outer_tail": {
+        "tail_train_rows": 55249,
+        "tail_high_rows": 11344,
+        "tail_low_rows": 43905,
+        "tail_feature_count": 50
+      }
+    },
+    {
+      "season": "2024-25",
+      "outer_train_rows": 74176,
+      "outer_test_rows": 19590,
+      "inner_train_rows": 58600,
+      "inner_valid_rows": 15576,
+      "inner_cutoff_utc": "2023-11-24T00:00:00",
+      "inner_blend_scores": [
+        {
+          "tail_weight": 0.0,
+          "mae": 7.561021926937658,
+          "rmse": 9.830381096977941
+        },
+        {
+          "tail_weight": 0.25,
+          "mae": 7.55033102724041,
+          "rmse": 9.825491077070197
+        },
+        {
+          "tail_weight": 0.5,
+          "mae": 7.54556418040549,
+          "rmse": 9.829331471119591
+        },
+        {
+          "tail_weight": 0.75,
+          "mae": 7.547316382178477,
+          "rmse": 9.841892059075288
+        },
+        {
+          "tail_weight": 1.0,
+          "mae": 7.555069643891681,
+          "rmse": 9.863139525811626
+        }
+      ],
+      "selected_tail_weight": 0.5,
+      "direct_model_weights": {
+        "ridge": 0.33347698522147456,
+        "rf": 0.3329838533863463,
+        "gbr": 0.33353916139217915
+      },
+      "production_feature_count": 50,
+      "inner_tail": {
+        "tail_train_rows": 58600,
+        "tail_high_rows": 12065,
+        "tail_low_rows": 46535,
+        "tail_feature_count": 50
+      },
+      "outer_tail": {
+        "tail_train_rows": 74176,
+        "tail_high_rows": 15713,
+        "tail_low_rows": 58463,
+        "tail_feature_count": 50
+      }
+    }
+  ],
+  "pooled_metrics": [
+    {
+      "candidate": "production_ensemble",
+      "n": 57682,
+      "mae": 7.557268669042192,
+      "rmse": 9.822990097225235,
+      "bias_pred_minus_actual": -0.10673045376908992,
+      "mae_actual_ge25": 12.188839834270755,
+      "mae_actual_ge30": 14.180231063513759,
+      "mae_history_lt5": 5.2229480849349725
+    },
+    {
+      "candidate": "tail_mixture25",
+      "n": 57682,
+      "mae": 7.557993625747474,
+      "rmse": 9.827072874690304,
+      "bias_pred_minus_actual": -0.053610027447768355,
+      "mae_actual_ge25": 12.087447212610956,
+      "mae_actual_ge30": 14.051634726730876,
+      "mae_history_lt5": 5.191417823593675
+    },
+    {
+      "candidate": "nested_blend",
+      "n": 57682,
+      "mae": 7.547691442212453,
+      "rmse": 9.811857650010442,
+      "bias_pred_minus_actual": -0.1013537432005789,
+      "mae_actual_ge25": 12.15476820303949,
+      "mae_actual_ge30": 14.14088339934375,
+      "mae_history_lt5": 5.199329449505967
+    },
+    {
+      "candidate": "baseline_prev10",
+      "n": 57682,
+      "mae": 7.775553380039879,
+      "rmse": 10.131621545219817,
+      "bias_pred_minus_actual": -0.03070107088233623,
+      "mae_actual_ge25": 12.017639428177008,
+      "mae_actual_ge30": 13.709759660684336,
+      "mae_history_lt5": 6.347649742206842
+    }
+  ],
+  "production_changed": false
+}

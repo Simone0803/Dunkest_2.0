@@ -1,0 +1,6 @@
+feature_family,common_rows,max_absolute_prediction_difference,predictions_equal_within_1e-12
+baseline_last_round,56159,0.0,True
+baseline_previous5_mean,56159,0.0,True
+baseline_train_median,57662,0.0,True
+historical_form_plus_lagged_credit_and_expanded_matchup_v2,57662,2.1316282072803006e-14,True
+historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6,57662,2.842170943040401e-14,True

@@ -1,0 +1,102 @@
+{
+  "created_utc": "2026-10-15T07:22:36.389725+00:00",
+  "source": "data/processed/plusvalenza_history_multiseason_26_pre_gw0_5y_nba_v4.parquet",
+  "source_rows": 93744,
+  "model_rows": 87626,
+  "walk_forward_validation_rows": 17256,
+  "season_team_coverage": {
+    "5": 30,
+    "7": 30,
+    "9": 30,
+    "13": 30,
+    "19": 30
+  },
+  "gameweeks_by_season_id": {
+    "5": 59,
+    "7": 64,
+    "9": 64,
+    "13": 62,
+    "19": 64
+  },
+  "excluded_incomplete_seasons": [],
+  "delta_cr_mae": 0.06951203048414405,
+  "delta_cr_baseline_mae": 0.18297465220958023,
+  "probability_calibration_training_rows": 16509,
+  "probability_calibration_diagnostics": {
+    "n": 15451,
+    "actual_gain_rate": 0.3872241278881626,
+    "raw_gain_probability_mean": 0.424089952843579,
+    "raw_gain_bias_percentage_points": 3.68658249554164,
+    "calibrated_gain_probability_mean": 0.3892744925813218,
+    "calibrated_gain_bias_percentage_points": 0.20503646931592234,
+    "raw_multiclass_brier": 0.3186553599299603,
+    "calibrated_multiclass_brier": 0.3146603991225286,
+    "raw_multiclass_log_loss": 0.6446841325722248,
+    "calibrated_multiclass_log_loss": 0.5620632025971323,
+    "method": "sequential_past_only_multinomial_logistic_conversion_only",
+    "by_season_id": {
+      "5": {
+        "n": 1083,
+        "actual_gain_rate": 0.3047091412742382,
+        "raw_gain_bias_percentage_points": 13.167494034722033,
+        "calibrated_gain_bias_percentage_points": 11.164630692140886,
+        "raw_multiclass_brier": 0.482572318557656,
+        "calibrated_multiclass_brier": 0.4628585502595602,
+        "raw_multiclass_log_loss": 1.899981690312476,
+        "calibrated_multiclass_log_loss": 1.249000089977956
+      },
+      "7": {
+        "n": 3386,
+        "actual_gain_rate": 0.42528056704075606,
+        "raw_gain_bias_percentage_points": 1.2611627376559242,
+        "calibrated_gain_bias_percentage_points": -3.6827509534519463,
+        "raw_multiclass_brier": 0.27513233272880777,
+        "calibrated_multiclass_brier": 0.2802636123246248,
+        "raw_multiclass_log_loss": 0.48698364385929105,
+        "calibrated_multiclass_log_loss": 0.48201724715963185
+      },
+      "9": {
+        "n": 3697,
+        "actual_gain_rate": 0.4108736813632675,
+        "raw_gain_bias_percentage_points": 1.5632155587752439,
+        "calibrated_gain_bias_percentage_points": -1.1440558239054155,
+        "raw_multiclass_brier": 0.28990512235046617,
+        "calibrated_multiclass_brier": 0.28778691504753195,
+        "raw_multiclass_log_loss": 0.5050055995464526,
+        "calibrated_multiclass_log_loss": 0.48866300639202404
+      },
+      "13": {
+        "n": 3499,
+        "actual_gain_rate": 0.35924549871391825,
+        "raw_gain_bias_percentage_points": 6.556611648589838,
+        "calibrated_gain_bias_percentage_points": 3.215021741984586,
+        "raw_multiclass_brier": 0.34362971043948615,
+        "calibrated_multiclass_brier": 0.33489079279254125,
+        "raw_multiclass_log_loss": 0.6064118648367133,
+        "calibrated_multiclass_log_loss": 0.5499408763264512
+      },
+      "19": {
+        "n": 3786,
+        "actual_gain_rate": 0.3795562599049128,
+        "raw_gain_bias_percentage_points": 2.564685945615164,
+        "calibrated_gain_bias_percentage_points": -0.9173979181261671,
+        "raw_multiclass_brier": 0.31568422411587316,
+        "calibrated_multiclass_brier": 0.31057536097941846,
+        "raw_multiclass_log_loss": 0.598406478359899,
+        "calibrated_multiclass_log_loss": 0.520029262044925
+      }
+    }
+  },
+  "season_labels": {
+    "5": "2020-21",
+    "7": "2021-22",
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "interpretation": {
+    "probability_calibration_scope": "past-only OOF calibration of gain/flat/loss conversion probabilities using observed official PDK as input",
+    "not_certified": "end-to-end plusvalenza probabilities from predicted PDK quantiles; historical pre-lock score forecasts are not available in this dataset",
+    "data_policy": "official observed Dunkest stats only; no synthetic missing gameweeks or reconstructed CR values"
+  }
+}

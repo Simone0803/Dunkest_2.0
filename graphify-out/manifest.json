@@ -1,0 +1,4022 @@
+{
+  "opencode.json": {
+    "mtime": 1790954899.1647952,
+    "seen": 1791984392.917471,
+    "ast_hash": "84653ac7e2903d2cf4d389de58cb72cb",
+    "semantic_hash": "84653ac7e2903d2cf4d389de58cb72cb"
+  },
+  "pyproject.toml": {
+    "mtime": 1790869565.434323,
+    "seen": 1791984392.917472,
+    "ast_hash": "3020398dba5c455a9d4b85c8d1f4882a",
+    "semantic_hash": "3020398dba5c455a9d4b85c8d1f4882a"
+  },
+  "reports/audit/baseline_20261007.json": {
+    "mtime": 1791386589.747923,
+    "seen": 1791984392.917473,
+    "ast_hash": "3430d5fe0ace382431c13c0261323f00",
+    "semantic_hash": "3430d5fe0ace382431c13c0261323f00"
+  },
+  "reports/audit/baseline_segments_20261007.json": {
+    "mtime": 1791386805.594384,
+    "seen": 1791984392.917473,
+    "ast_hash": "95273ed1e33b8931ac2555136119130c",
+    "semantic_hash": "95273ed1e33b8931ac2555136119130c"
+  },
+  "reports/audit/coach_points_model_tuning_walk_forward_2018-26_v3.json": {
+    "mtime": 1791875302.3596854,
+    "seen": 1791984392.917474,
+    "ast_hash": "9f2ebf979f54102f00ec1123eed1013a",
+    "semantic_hash": "9f2ebf979f54102f00ec1123eed1013a"
+  },
+  "reports/audit/coach_roster_strength_proxy_walk_forward_2020-26_v1.json": {
+    "mtime": 1791875140.1035683,
+    "seen": 1791984392.917475,
+    "ast_hash": "5bc21cb0f06ed7cbfa4f4980f8b28c18",
+    "semantic_hash": "5bc21cb0f06ed7cbfa4f4980f8b28c18"
+  },
+  "reports/audit/coach_score_models_walk_forward_2018-26_v2.json": {
+    "mtime": 1791875196.1544435,
+    "seen": 1791984392.917475,
+    "ast_hash": "9316d1aafae0014259f08dec9f45de47",
+    "semantic_hash": "9316d1aafae0014259f08dec9f45de47"
+  },
+  "reports/audit/coach_win_probability_walk_forward_2018-26_v1.json": {
+    "mtime": 1791804335.39741,
+    "seen": 1791984392.9174762,
+    "ast_hash": "ca4aa870a38d3dfe3b3225779418ae8d",
+    "semantic_hash": "ca4aa870a38d3dfe3b3225779418ae8d"
+  },
+  "reports/audit/coach_win_probability_walk_forward_2025-26.json": {
+    "mtime": 1791804051.640743,
+    "seen": 1791984392.9174771,
+    "ast_hash": "876b5852d1e17f2758653a2f2bc0c6b6",
+    "semantic_hash": "876b5852d1e17f2758653a2f2bc0c6b6"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_blend_v1.json": {
+    "mtime": 1791900581.4935405,
+    "seen": 1791984392.9174771,
+    "ast_hash": "ee255fe463ff38c6f0ffec2b704299d4",
+    "semantic_hash": "ee255fe463ff38c6f0ffec2b704299d4"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_model_v1.json": {
+    "mtime": 1791900080.974519,
+    "seen": 1791984392.9174778,
+    "ast_hash": "9b6f7670fbccc4ddaca97a3ef33f5c04",
+    "semantic_hash": "9b6f7670fbccc4ddaca97a3ef33f5c04"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_model_v2.json": {
+    "mtime": 1791900198.0848758,
+    "seen": 1791984392.9174788,
+    "ast_hash": "8440e61ff8a6cc25fcfffc71ad7194d6",
+    "semantic_hash": "8440e61ff8a6cc25fcfffc71ad7194d6"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_paired_bootstrap_v1.json": {
+    "mtime": 1791900399.6911812,
+    "seen": 1791984392.9174788,
+    "ast_hash": "2644446155da8eb05d70cf4cf6f13c85",
+    "semantic_hash": "2644446155da8eb05d70cf4cf6f13c85"
+  },
+  "reports/audit/dunkest_20261013_minutes_rate_decomposition_v1.json": {
+    "mtime": 1791899957.7609458,
+    "seen": 1791984392.91748,
+    "ast_hash": "0c074e77a4b28de1dd6a422e45756c49",
+    "semantic_hash": "0c074e77a4b28de1dd6a422e45756c49"
+  },
+  "reports/audit/dunkest_20261013_past_only_residual_correction_v1.json": {
+    "mtime": 1791899383.4023077,
+    "seen": 1791984392.91748,
+    "ast_hash": "e0f74f5500a07e59e7a9f3c172d106fe",
+    "semantic_hash": "e0f74f5500a07e59e7a9f3c172d106fe"
+  },
+  "reports/audit/dunkest_blend_sequential_weight_validation_20261013_v1.json": {
+    "mtime": 1791900950.353946,
+    "seen": 1791984392.917481,
+    "ast_hash": "49c5898ed51aa2f0344aa6f3203e102e",
+    "semantic_hash": "49c5898ed51aa2f0344aa6f3203e102e"
+  },
+  "reports/audit/dunkest_bos_cle_validity_cross_endpoint_check_v1.json": {
+    "mtime": 1791812210.108405,
+    "seen": 1791984392.917482,
+    "ast_hash": "960c80ef99268204ae51f16486647818",
+    "semantic_hash": "960c80ef99268204ae51f16486647818"
+  },
+  "reports/audit/dunkest_calendar_api_endpoint_audit_v1.json": {
+    "mtime": 1791807301.2389343,
+    "seen": 1791984392.917482,
+    "ast_hash": "eb9e92b2032ca0f4c43dc6d682196867",
+    "semantic_hash": "eb9e92b2032ca0f4c43dc6d682196867"
+  },
+  "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1.json": {
+    "mtime": 1791879467.2486832,
+    "seen": 1791984392.917483,
+    "ast_hash": "79bdff38319e7b5b8b72dc6fc28070c9",
+    "semantic_hash": "79bdff38319e7b5b8b72dc6fc28070c9"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v1.json": {
+    "mtime": 1791881424.2656355,
+    "seen": 1791984392.917484,
+    "ast_hash": "7ef13f6f8ab373dbfde3c6c3a821d713",
+    "semantic_hash": "7ef13f6f8ab373dbfde3c6c3a821d713"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v2.json": {
+    "mtime": 1791881452.0345302,
+    "seen": 1791984392.917484,
+    "ast_hash": "5a6bce8b2457e364d9081e4612276533",
+    "semantic_hash": "5a6bce8b2457e364d9081e4612276533"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v3.json": {
+    "mtime": 1791881483.020967,
+    "seen": 1791984392.917485,
+    "ast_hash": "b21ec55d3968f099a68ed091d6335b86",
+    "semantic_hash": "b21ec55d3968f099a68ed091d6335b86"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v1.json": {
+    "mtime": 1791882181.7312806,
+    "seen": 1791984392.9174862,
+    "ast_hash": "488d52d957a55c0c0b527aa5a620afeb",
+    "semantic_hash": "488d52d957a55c0c0b527aa5a620afeb"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v2.json": {
+    "mtime": 1791882235.3219285,
+    "seen": 1791984392.9174862,
+    "ast_hash": "c554ad6ddd0cc039363faac4b505a1e4",
+    "semantic_hash": "c554ad6ddd0cc039363faac4b505a1e4"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v3.json": {
+    "mtime": 1791882319.361962,
+    "seen": 1791984392.9174871,
+    "ast_hash": "2407d044e3d24c2bcb2940e713455fce",
+    "semantic_hash": "2407d044e3d24c2bcb2940e713455fce"
+  },
+  "reports/audit/dunkest_coach_score_monte_carlo_paired_bootstrap_2018-26_v1.json": {
+    "mtime": 1791882266.984523,
+    "seen": 1791984392.917488,
+    "ast_hash": "e6b57c6a24ec02bf5655b0029fd53728",
+    "semantic_hash": "e6b57c6a24ec02bf5655b0029fd53728"
+  },
+  "reports/audit/dunkest_coach_score_monte_carlo_paired_bootstrap_2018-26_v2.json": {
+    "mtime": 1791882342.315033,
+    "seen": 1791984392.917488,
+    "ast_hash": "d365918942d66e756c8829b310e1ac68",
+    "semantic_hash": "d365918942d66e756c8829b310e1ac68"
+  },
+  "reports/audit/dunkest_current_season_id_resolution_2026-27_v2.json": {
+    "mtime": 1791838348.103433,
+    "seen": 1791984392.9174888,
+    "ast_hash": "a07360e7b2fc62a38c7e4c23575dacfe",
+    "semantic_hash": "a07360e7b2fc62a38c7e4c23575dacfe"
+  },
+  "reports/audit/dunkest_date_assisted_link_paired_eval_20261013_v1.json": {
+    "mtime": 1791893022.048372,
+    "seen": 1791984392.9174888,
+    "ast_hash": "39824239cfe5d883b2b6a1288f162382",
+    "semantic_hash": "39824239cfe5d883b2b6a1288f162382"
+  },
+  "reports/audit/dunkest_ensemble_weights_walk_forward_20261012T172631Z.json": {
+    "mtime": 1791825991.9896324,
+    "seen": 1791984392.91749,
+    "ast_hash": "f631c59c1da8b42d63d589d8179e27ec",
+    "semantic_hash": "f631c59c1da8b42d63d589d8179e27ec"
+  },
+  "reports/audit/dunkest_gw1_strategy_variants_20261013_v1.json": {
+    "mtime": 1791960735.7179632,
+    "seen": 1791984392.917491,
+    "ast_hash": "0297e5c4fcecd5b6eb82e73317109625",
+    "semantic_hash": "0297e5c4fcecd5b6eb82e73317109625"
+  },
+  "reports/audit/dunkest_gw1_strategy_variants_20261013_v2.json": {
+    "mtime": 1791961026.9704537,
+    "seen": 1791984392.917491,
+    "ast_hash": "afc5dbd8ad0e9146c95338d9788c73ec",
+    "semantic_hash": "afc5dbd8ad0e9146c95338d9788c73ec"
+  },
+  "reports/audit/dunkest_h2h_final_holdout_2025-26_v1.json": {
+    "mtime": 1791883784.9376032,
+    "seen": 1791984392.917492,
+    "ast_hash": "17a321710a50f2d9e187c196b98b9b25",
+    "semantic_hash": "17a321710a50f2d9e187c196b98b9b25"
+  },
+  "reports/audit/dunkest_h2h_paired_bootstrap_20261013_v1.json": {
+    "mtime": 1791883567.519209,
+    "seen": 1791984392.917492,
+    "ast_hash": "9702b84c00ad9473f2af93127b93ae2e",
+    "semantic_hash": "9702b84c00ad9473f2af93127b93ae2e"
+  },
+  "reports/audit/dunkest_historical_backtest_reframed_20261013_v1.json": {
+    "mtime": 1791880438.680727,
+    "seen": 1791984392.917493,
+    "ast_hash": "6eff55dc5b8c6b7bb2204bd720b1c37d",
+    "semantic_hash": "6eff55dc5b8c6b7bb2204bd720b1c37d"
+  },
+  "reports/audit/dunkest_historical_endpoint_discovery_v1.json": {
+    "mtime": 1791812452.987792,
+    "seen": 1791984392.917493,
+    "ast_hash": "a32648e4b8461b92be35228fa2d964c8",
+    "semantic_hash": "a32648e4b8461b92be35228fa2d964c8"
+  },
+  "reports/audit/dunkest_historical_game_linked_rows_20261013_v2.json": {
+    "mtime": 1791891352.0344524,
+    "seen": 1791984392.917494,
+    "ast_hash": "235bb8d57e24fab91c01c95ff49f8e60",
+    "semantic_hash": "235bb8d57e24fab91c01c95ff49f8e60"
+  },
+  "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.json": {
+    "mtime": 1791893408.6931493,
+    "seen": 1791984392.917495,
+    "ast_hash": "350b0b3239cdaa5df77666f2b9cf71ef",
+    "semantic_hash": "350b0b3239cdaa5df77666f2b9cf71ef"
+  },
+  "reports/audit/dunkest_historical_lineup_infeasibility_20261013_v1.json": {
+    "mtime": 1791889666.3968031,
+    "seen": 1791984392.917495,
+    "ast_hash": "924d7b4628638315921ff9cac55f8cf6",
+    "semantic_hash": "924d7b4628638315921ff9cac55f8cf6"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v1.json": {
+    "mtime": 1791978394.7994504,
+    "seen": 1791984392.917496,
+    "ast_hash": "64d405f3c583c313d251cf4e3508fff4",
+    "semantic_hash": "64d405f3c583c313d251cf4e3508fff4"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v1_bootstrap.json": {
+    "mtime": 1791978450.5915532,
+    "seen": 1791984392.9174972,
+    "ast_hash": "2c421eb99ce16fb10beda370dad7328a",
+    "semantic_hash": "2c421eb99ce16fb10beda370dad7328a"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v2.json": {
+    "mtime": 1791978875.1604307,
+    "seen": 1791984392.9174972,
+    "ast_hash": "d2bfd3825285a854c616329cc6284bdf",
+    "semantic_hash": "d2bfd3825285a854c616329cc6284bdf"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v2_bootstrap.json": {
+    "mtime": 1791978886.3089237,
+    "seen": 1791984392.917498,
+    "ast_hash": "0dddea569d512c404929e4da12c0c0be",
+    "semantic_hash": "0dddea569d512c404929e4da12c0c0be"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v3.json": {
+    "mtime": 1791979701.8620715,
+    "seen": 1791984392.9174988,
+    "ast_hash": "9235c6c4e4e5afe764b7329bee5f6901",
+    "semantic_hash": "9235c6c4e4e5afe764b7329bee5f6901"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v3_bootstrap.json": {
+    "mtime": 1791979476.7817457,
+    "seen": 1791984392.9175,
+    "ast_hash": "cb69576fc6c632406331989321e23b97",
+    "semantic_hash": "cb69576fc6c632406331989321e23b97"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v4.json": {
+    "mtime": 1791981580.9143376,
+    "seen": 1791984392.9175,
+    "ast_hash": "b69b7b24d6ecd902a9b8546ef5627e3d",
+    "semantic_hash": "b69b7b24d6ecd902a9b8546ef5627e3d"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v5.json": {
+    "mtime": 1791981833.933727,
+    "seen": 1791984392.917501,
+    "ast_hash": "e8cbffb9076b187fa16d3f5da04d6ff7",
+    "semantic_hash": "e8cbffb9076b187fa16d3f5da04d6ff7"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v5_proxy_bootstrap.json": {
+    "mtime": 1791981749.8251204,
+    "seen": 1791984392.917501,
+    "ast_hash": "13d3b81d7adcff4b42c0cb554ba80684",
+    "semantic_hash": "13d3b81d7adcff4b42c0cb554ba80684"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v6.json": {
+    "mtime": 1791983280.3234565,
+    "seen": 1791984392.917502,
+    "ast_hash": "38d4dcb3f3099e8c03e945611d7f4c83",
+    "semantic_hash": "38d4dcb3f3099e8c03e945611d7f4c83"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7.json": {
+    "mtime": 1791983846.7521353,
+    "seen": 1791984392.9175029,
+    "ast_hash": "326b12ca3e3a41772d73538314b92e50",
+    "semantic_hash": "326b12ca3e3a41772d73538314b92e50"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7_proxy_bootstrap.json": {
+    "mtime": 1791983734.2747903,
+    "seen": 1791984392.9175029,
+    "ast_hash": "d899881984cdaab4c82ff1fb847f5483",
+    "semantic_hash": "d899881984cdaab4c82ff1fb847f5483"
+  },
+  "reports/audit/dunkest_historical_lineups_h2h_20261013_v6.json": {
+    "mtime": 1791884610.057783,
+    "seen": 1791984392.917504,
+    "ast_hash": "72ced28415bcafb0eac918499a8a797b",
+    "semantic_hash": "72ced28415bcafb0eac918499a8a797b"
+  },
+  "reports/audit/dunkest_historical_lineups_h2h_20261013_v6_paired_bootstrap.json": {
+    "mtime": 1791884668.02856,
+    "seen": 1791984392.917504,
+    "ast_hash": "0cd85eb7dd1648b58c0b4eefc9cd3748",
+    "semantic_hash": "0cd85eb7dd1648b58c0b4eefc9cd3748"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v1.json": {
+    "mtime": 1791879741.7678404,
+    "seen": 1791984392.917505,
+    "ast_hash": "03f9c183a67bde783525d5a2ea5db756",
+    "semantic_hash": "03f9c183a67bde783525d5a2ea5db756"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v2.json": {
+    "mtime": 1791879818.0226018,
+    "seen": 1791984392.917505,
+    "ast_hash": "3f1448099253b8ddfe4dc6b2b083b0b5",
+    "semantic_hash": "3f1448099253b8ddfe4dc6b2b083b0b5"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v4.json": {
+    "mtime": 1791880074.391706,
+    "seen": 1791984392.917506,
+    "ast_hash": "bd4d6e3165042026979a4fb66e508eb9",
+    "semantic_hash": "bd4d6e3165042026979a4fb66e508eb9"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v5.json": {
+    "mtime": 1791880329.973537,
+    "seen": 1791984392.9175072,
+    "ast_hash": "5bdfa2a9c9199644ae0253a296cd5d6f",
+    "semantic_hash": "5bdfa2a9c9199644ae0253a296cd5d6f"
+  },
+  "reports/audit/dunkest_historical_lineups_rest_schedule_20261013_v1.json": {
+    "mtime": 1791886294.880074,
+    "seen": 1791984392.9175072,
+    "ast_hash": "2bad1d2cd4de5244c43de62ab38dc108",
+    "semantic_hash": "2bad1d2cd4de5244c43de62ab38dc108"
+  },
+  "reports/audit/dunkest_historical_lineups_rest_schedule_paired_bootstrap_20261013_v1.json": {
+    "mtime": 1791885829.8657596,
+    "seen": 1791984392.9175081,
+    "ast_hash": "59b0bfb4c86076d29634716e1e983e29",
+    "semantic_hash": "59b0bfb4c86076d29634716e1e983e29"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v1.json": {
+    "mtime": 1791888346.7885027,
+    "seen": 1791984392.917509,
+    "ast_hash": "faae48fd545e37cea1b3edfb3cf8dd17",
+    "semantic_hash": "faae48fd545e37cea1b3edfb3cf8dd17"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v2.json": {
+    "mtime": 1791888714.9836187,
+    "seen": 1791984392.917509,
+    "ast_hash": "fcf2407c268c30460cf3237ad1dde09f",
+    "semantic_hash": "fcf2407c268c30460cf3237ad1dde09f"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_paired_bootstrap_20261013_v1.json": {
+    "mtime": 1791888697.2847755,
+    "seen": 1791984392.9175098,
+    "ast_hash": "3e93d7b64d6334f4d9b8758747900d61",
+    "semantic_hash": "3e93d7b64d6334f4d9b8758747900d61"
+  },
+  "reports/audit/dunkest_historical_lineups_strict_actual_coverage_20261014_v1.json": {
+    "mtime": 1791977652.0598562,
+    "seen": 1791984392.9175098,
+    "ast_hash": "5f3dd7db9e73d51e4143f4341405416f",
+    "semantic_hash": "5f3dd7db9e73d51e4143f4341405416f"
+  },
+  "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1.json": {
+    "mtime": 1791891647.3191698,
+    "seen": 1791984392.917511,
+    "ast_hash": "1f419d0b787aa1b203a3eb8b335e9038",
+    "semantic_hash": "1f419d0b787aa1b203a3eb8b335e9038"
+  },
+  "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1.json": {
+    "mtime": 1791891898.227426,
+    "seen": 1791984392.917512,
+    "ast_hash": "d17337c936637d547288b9f7d7726962",
+    "semantic_hash": "d17337c936637d547288b9f7d7726962"
+  },
+  "reports/audit/dunkest_historical_round_game_mapping_20261013_v1.json": {
+    "mtime": 1791890069.305592,
+    "seen": 1791984392.917512,
+    "ast_hash": "784362f5a110d09f6a7e0dec77b39798",
+    "semantic_hash": "784362f5a110d09f6a7e0dec77b39798"
+  },
+  "reports/audit/dunkest_historical_round_game_residuals_20261013_v1.json": {
+    "mtime": 1791890783.880685,
+    "seen": 1791984392.917513,
+    "ast_hash": "97a492d3154ed1f4833c60e8aee19cf1",
+    "semantic_hash": "97a492d3154ed1f4833c60e8aee19cf1"
+  },
+  "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2.json": {
+    "mtime": 1791890448.5682957,
+    "seen": 1791984392.917513,
+    "ast_hash": "0d57dd7cbe858bb761950dbc0d142aec",
+    "semantic_hash": "0d57dd7cbe858bb761950dbc0d142aec"
+  },
+  "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.json": {
+    "mtime": 1791890629.2283325,
+    "seen": 1791984392.917514,
+    "ast_hash": "7f350cda17f30f4d931b2e9fbd2ce301",
+    "semantic_hash": "7f350cda17f30f4d931b2e9fbd2ce301"
+  },
+  "reports/audit/dunkest_historical_schedule_coarse_survey_v1.json": {
+    "mtime": 1791812281.4016306,
+    "seen": 1791984392.917515,
+    "ast_hash": "5d97f6d09ac62954738873651ef481f6",
+    "semantic_hash": "5d97f6d09ac62954738873651ef481f6"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v1.json": {
+    "mtime": 1791879372.3102255,
+    "seen": 1791984392.917515,
+    "ast_hash": "f41777f085121693f62dd94812c63b05",
+    "semantic_hash": "f41777f085121693f62dd94812c63b05"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v2.json": {
+    "mtime": 1791882904.6045141,
+    "seen": 1791984392.917516,
+    "ast_hash": "feaad74ed92bb1baf04ef1fff961cc5d",
+    "semantic_hash": "feaad74ed92bb1baf04ef1fff961cc5d"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v3.json": {
+    "mtime": 1791883379.7613158,
+    "seen": 1791984392.917516,
+    "ast_hash": "da5bb63b18f91e15bdb614383114df56",
+    "semantic_hash": "da5bb63b18f91e15bdb614383114df56"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v4.json": {
+    "mtime": 1791883538.5783663,
+    "seen": 1791984392.917517,
+    "ast_hash": "f8fe9da300616d28b458d21ae9e664e3",
+    "semantic_hash": "f8fe9da300616d28b458d21ae9e664e3"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v5_role_interactions.json": {
+    "mtime": 1791885188.5634449,
+    "seen": 1791984392.9175181,
+    "ast_hash": "357528ff1a25d07d41178e29906b04b3",
+    "semantic_hash": "357528ff1a25d07d41178e29906b04b3"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v6_rest_schedule.json": {
+    "mtime": 1791885418.1048694,
+    "seen": 1791984392.9175181,
+    "ast_hash": "4a1f214f46de5ffd4e040315df1eb351",
+    "semantic_hash": "4a1f214f46de5ffd4e040315df1eb351"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v7_corrected_team_link.json": {
+    "mtime": 1791891814.0978522,
+    "seen": 1791984392.917519,
+    "ast_hash": "4049761e7eb4479ab2ec5d80ecb5f72a",
+    "semantic_hash": "4049761e7eb4479ab2ec5d80ecb5f72a"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v8_date_assisted_link.json": {
+    "mtime": 1791893042.7739706,
+    "seen": 1791984392.917519,
+    "ast_hash": "07daf862ae0a4555846dccb604823917",
+    "semantic_hash": "07daf862ae0a4555846dccb604823917"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v9_persisted_date_link.json": {
+    "mtime": 1791893729.023333,
+    "seen": 1791984392.9175198,
+    "ast_hash": "e51dbd9a5011dbd1a7e25101bf9a67d3",
+    "semantic_hash": "e51dbd9a5011dbd1a7e25101bf9a67d3"
+  },
+  "reports/audit/dunkest_lagged_credit_walk_forward_20261013_v1.json": {
+    "mtime": 1791879204.7092419,
+    "seen": 1791984392.917521,
+    "ast_hash": "c06c163743154560b05357e1835a51ba",
+    "semantic_hash": "c06c163743154560b05357e1835a51ba"
+  },
+  "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.json": {
+    "mtime": 1791892844.1592357,
+    "seen": 1791984392.917521,
+    "ast_hash": "a8403a8b595db2f7b06c7fbbffb4a403",
+    "semantic_hash": "a8403a8b595db2f7b06c7fbbffb4a403"
+  },
+  "reports/audit/dunkest_lineup_backtest_readiness_v1.json": {
+    "mtime": 1791826876.8445983,
+    "seen": 1791984392.917522,
+    "ast_hash": "4ee2af4ae14dd3f3cedcbbaf1e3cf661",
+    "semantic_hash": "4ee2af4ae14dd3f3cedcbbaf1e3cf661"
+  },
+  "reports/audit/dunkest_lineup_backtest_readiness_v2.json": {
+    "mtime": 1791826899.652999,
+    "seen": 1791984392.917522,
+    "ast_hash": "defe9ada1c115b5139ebb63f4211bcdb",
+    "semantic_hash": "defe9ada1c115b5139ebb63f4211bcdb"
+  },
+  "reports/audit/dunkest_lineup_backtest_resolution_20261013_v1.json": {
+    "mtime": 1791878320.112337,
+    "seen": 1791984392.917523,
+    "ast_hash": "47e4846c93a16e560b7f11afe7affe57",
+    "semantic_hash": "47e4846c93a16e560b7f11afe7affe57"
+  },
+  "reports/audit/dunkest_lineup_postselection_calibration_20261014_v1.json": {
+    "mtime": 1791983803.2836635,
+    "seen": 1791984392.9175239,
+    "ast_hash": "458cf9e4deb833512d66c66152de7774",
+    "semantic_hash": "458cf9e4deb833512d66c66152de7774"
+  },
+  "reports/audit/dunkest_lineups_internal_id_semantics_v1.json": {
+    "mtime": 1791839451.4877238,
+    "seen": 1791984392.9175239,
+    "ast_hash": "0fb4159bc50eec7d4926b6e1e053c5be",
+    "semantic_hash": "0fb4159bc50eec7d4926b6e1e053c5be"
+  },
+  "reports/audit/dunkest_matchup_expanded_paired_bootstrap_20261013_v1.json": {
+    "mtime": 1791882984.2268815,
+    "seen": 1791984392.917525,
+    "ast_hash": "3f07f3549588acb8a5e6ee5b99f7a8f5",
+    "semantic_hash": "3f07f3549588acb8a5e6ee5b99f7a8f5"
+  },
+  "reports/audit/dunkest_model_comparison_20261014_v1.json": {
+    "mtime": 1791975018.3391254,
+    "seen": 1791984392.917526,
+    "ast_hash": "6021490593a9705422e8b5221b8157ac",
+    "semantic_hash": "6021490593a9705422e8b5221b8157ac"
+  },
+  "reports/audit/dunkest_model_comparison_20261014_v2.json": {
+    "mtime": 1791975331.6903362,
+    "seen": 1791984392.917526,
+    "ast_hash": "e1ccdc7226eecb9704111b99366196d5",
+    "semantic_hash": "e1ccdc7226eecb9704111b99366196d5"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v1.json": {
+    "mtime": 1791973880.6419222,
+    "seen": 1791984392.917527,
+    "ast_hash": "a1ffebc908e9016ccb3eeda5c8798777",
+    "semantic_hash": "a1ffebc908e9016ccb3eeda5c8798777"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v2.json": {
+    "mtime": 1791973914.4489489,
+    "seen": 1791984392.9175282,
+    "ast_hash": "5a98a57ff7e4cc2776b5d8a1ca41c84a",
+    "semantic_hash": "5a98a57ff7e4cc2776b5d8a1ca41c84a"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v3.json": {
+    "mtime": 1791974043.0062268,
+    "seen": 1791984392.9175282,
+    "ast_hash": "4c240dbe5430a068e8bac84bf97840f8",
+    "semantic_hash": "4c240dbe5430a068e8bac84bf97840f8"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v1.json": {
+    "mtime": 1791887197.0582767,
+    "seen": 1791984392.917529,
+    "ast_hash": "18e4a6624b12377c91a495dea0b7bb83",
+    "semantic_hash": "18e4a6624b12377c91a495dea0b7bb83"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v2.json": {
+    "mtime": 1791887300.144028,
+    "seen": 1791984392.917529,
+    "ast_hash": "4d6d4e1d2f7d62fedca3dfc3b3d3de7c",
+    "semantic_hash": "4d6d4e1d2f7d62fedca3dfc3b3d3de7c"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v3.json": {
+    "mtime": 1791888893.2974827,
+    "seen": 1791984392.91753,
+    "ast_hash": "53feecff00c22748b39147493bb0109f",
+    "semantic_hash": "53feecff00c22748b39147493bb0109f"
+  },
+  "reports/audit/dunkest_official_schedule_vs_archive_validation_v1.json": {
+    "mtime": 1791810035.830018,
+    "seen": 1791984392.9175308,
+    "ast_hash": "dddcff0ae65f302946abc04419404b33",
+    "semantic_hash": "dddcff0ae65f302946abc04419404b33"
+  },
+  "reports/audit/dunkest_official_schedule_vs_archive_validation_v2.json": {
+    "mtime": 1791812132.529466,
+    "seen": 1791984392.9175308,
+    "ast_hash": "8fdf695ebd63bf5de550529804574f7b",
+    "semantic_hash": "8fdf695ebd63bf5de550529804574f7b"
+  },
+  "reports/audit/dunkest_official_vs_proxy_pdk_history_features_20261014_v1.json": {
+    "mtime": 1791964211.5631163,
+    "seen": 1791984392.917532,
+    "ast_hash": "54a79f63455d3210500470466c54ed03",
+    "semantic_hash": "54a79f63455d3210500470466c54ed03"
+  },
+  "reports/audit/dunkest_participation_label_readiness_20261013_v1.json": {
+    "mtime": 1791886226.0531163,
+    "seen": 1791984392.917533,
+    "ast_hash": "2ed9d4c3f6ed3db4db3035c8c706a8b2",
+    "semantic_hash": "2ed9d4c3f6ed3db4db3035c8c706a8b2"
+  },
+  "reports/audit/dunkest_pdk_backtest_summary_20261013_v1.json": {
+    "mtime": 1791875317.8745973,
+    "seen": 1791984392.917533,
+    "ast_hash": "8236e48737cf94811375cc782e92eb00",
+    "semantic_hash": "8236e48737cf94811375cc782e92eb00"
+  },
+  "reports/audit/dunkest_pdk_calibration_error_audit_20261012T172805Z.json": {
+    "mtime": 1791826085.6033847,
+    "seen": 1791984392.9175339,
+    "ast_hash": "1a0c5c679dbb7019aa6c8b63e6558688",
+    "semantic_hash": "1a0c5c679dbb7019aa6c8b63e6558688"
+  },
+  "reports/audit/dunkest_pdk_feature_families_audit_20261013_v1.json": {
+    "mtime": 1791877676.6744642,
+    "seen": 1791984392.9175339,
+    "ast_hash": "cecebe4dc6aec96383919fe0b64d94bc",
+    "semantic_hash": "cecebe4dc6aec96383919fe0b64d94bc"
+  },
+  "reports/audit/dunkest_pdk_score_calibration_20261012T172819Z.json": {
+    "mtime": 1791826099.879036,
+    "seen": 1791984392.917535,
+    "ast_hash": "88fb41077c742a4cf9aba7914502a7e0",
+    "semantic_hash": "88fb41077c742a4cf9aba7914502a7e0"
+  },
+  "reports/audit/dunkest_pdk_train_only_search_20261013_train_only_v1.json": {
+    "mtime": 1791899052.2771044,
+    "seen": 1791984392.917535,
+    "ast_hash": "d2bee413b96f9f629967575e9837613a",
+    "semantic_hash": "d2bee413b96f9f629967575e9837613a"
+  },
+  "reports/audit/dunkest_pdk_train_only_search_20261013_train_only_v1_paired_bootstrap.json": {
+    "mtime": 1791899140.2892783,
+    "seen": 1791984392.917536,
+    "ast_hash": "d42731f2cd4e8d6bba78a24324e53345",
+    "semantic_hash": "d42731f2cd4e8d6bba78a24324e53345"
+  },
+  "reports/audit/dunkest_persisted_v3_vs_v8_prediction_parity_20261013_v1.json": {
+    "mtime": 1791893665.1551387,
+    "seen": 1791984392.917537,
+    "ast_hash": "48aabe30cd788663e0ea6eb1a19f51f6",
+    "semantic_hash": "48aabe30cd788663e0ea6eb1a19f51f6"
+  },
+  "reports/audit/dunkest_phase_b_model_strategy_comparison_20261013_v1.json": {
+    "mtime": 1791877796.830208,
+    "seen": 1791984392.917537,
+    "ast_hash": "df2241ed96db9a0774a892e6e3266c03",
+    "semantic_hash": "df2241ed96db9a0774a892e6e3266c03"
+  },
+  "reports/audit/dunkest_pre_match_snapshot_authenticity_v1.json": {
+    "mtime": 1791838091.4233608,
+    "seen": 1791984392.9175382,
+    "ast_hash": "8e0fcfb34d28dab84fa6e5659c4f7f53",
+    "semantic_hash": "8e0fcfb34d28dab84fa6e5659c4f7f53"
+  },
+  "reports/audit/dunkest_pre_match_snapshot_authenticity_v2.json": {
+    "mtime": 1791838113.8740017,
+    "seen": 1791984392.9175382,
+    "ast_hash": "8c25eb6e7406028d3407ab8bed31d735",
+    "semantic_hash": "8c25eb6e7406028d3407ab8bed31d735"
+  },
+  "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1.json": {
+    "mtime": 1791976827.1630237,
+    "seen": 1791984392.9175391,
+    "ast_hash": "b9837e50b1fcf83fb876d524c1257329",
+    "semantic_hash": "b9837e50b1fcf83fb876d524c1257329"
+  },
+  "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1.json": {
+    "mtime": 1791886041.128002,
+    "seen": 1791984392.91754,
+    "ast_hash": "18c5bc8d5e9f33bdd193149d557b9618",
+    "semantic_hash": "18c5bc8d5e9f33bdd193149d557b9618"
+  },
+  "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v2_multiseason.json": {
+    "mtime": 1791886526.8401954,
+    "seen": 1791984392.91754,
+    "ast_hash": "f723ec817af3325cbe503641dc17fb9a",
+    "semantic_hash": "f723ec817af3325cbe503641dc17fb9a"
+  },
+  "reports/audit/dunkest_profile_games_api_verification_v1.json": {
+    "mtime": 1791805832.5747793,
+    "seen": 1791984392.917541,
+    "ast_hash": "26bdaee090e2d6f9aa1f80da9f89410a",
+    "semantic_hash": "26bdaee090e2d6f9aa1f80da9f89410a"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v3.json": {
+    "mtime": 1791814204.362789,
+    "seen": 1791984392.917541,
+    "ast_hash": "3d84796eec03e2c44c50ce3367834f69",
+    "semantic_hash": "3d84796eec03e2c44c50ce3367834f69"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v4.json": {
+    "mtime": 1791814600.1276753,
+    "seen": 1791984392.917542,
+    "ast_hash": "0bd428b43633a543b9ddbe3b8ebe7f7f",
+    "semantic_hash": "0bd428b43633a543b9ddbe3b8ebe7f7f"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v5.json": {
+    "mtime": 1791817361.7576284,
+    "seen": 1791984392.917543,
+    "ast_hash": "317c90ba5838515862ee3ec7ece38d32",
+    "semantic_hash": "317c90ba5838515862ee3ec7ece38d32"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v6.json": {
+    "mtime": 1791817527.8391075,
+    "seen": 1791984392.917543,
+    "ast_hash": "f3708cf5e4ab9a7d5d0c90c710c1716a",
+    "semantic_hash": "f3708cf5e4ab9a7d5d0c90c710c1716a"
+  },
+  "reports/audit/dunkest_prospective_gw1_preflight_20261013_v1.json": {
+    "mtime": 1791876617.1643186,
+    "seen": 1791984392.917544,
+    "ast_hash": "6d0e3bd0cdd89fec7f46187f60c5a1f4",
+    "semantic_hash": "6d0e3bd0cdd89fec7f46187f60c5a1f4"
+  },
+  "reports/audit/dunkest_rest_schedule_paired_bootstrap_20261013_v1.json": {
+    "mtime": 1791885422.9091074,
+    "seen": 1791984392.917544,
+    "ast_hash": "d31d17166767e056e19087c9254a09f3",
+    "semantic_hash": "d31d17166767e056e19087c9254a09f3"
+  },
+  "reports/audit/dunkest_rookie_balance_comparison_20261012T171217Z_2f98f42b_v1.json": {
+    "mtime": 1791825188.0444007,
+    "seen": 1791984392.9175448,
+    "ast_hash": "910063b206ecc2afc9c558c8fd0cb8ea",
+    "semantic_hash": "910063b206ecc2afc9c558c8fd0cb8ea"
+  },
+  "reports/audit/dunkest_rookie_pdk_walk_forward_audit_20261012_v1.json": {
+    "mtime": 1791825761.616263,
+    "seen": 1791984392.917546,
+    "ast_hash": "f37d62d110e29317cd9ad77c31a257e4",
+    "semantic_hash": "f37d62d110e29317cd9ad77c31a257e4"
+  },
+  "reports/audit/dunkest_round_calendar_linkage_v1.json": {
+    "mtime": 1791806639.4820306,
+    "seen": 1791984392.917546,
+    "ast_hash": "0fb478c28915d36678e80e70b0687cf2",
+    "semantic_hash": "0fb478c28915d36678e80e70b0687cf2"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v1.json": {
+    "mtime": 1791811076.301328,
+    "seen": 1791984392.917547,
+    "ast_hash": "644650d8fe30c9552a74d8e70680f8e6",
+    "semantic_hash": "644650d8fe30c9552a74d8e70680f8e6"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v2.json": {
+    "mtime": 1791811221.1549861,
+    "seen": 1791984392.917547,
+    "ast_hash": "2e0e648768830b81a9f738455dfe2c62",
+    "semantic_hash": "2e0e648768830b81a9f738455dfe2c62"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v3.json": {
+    "mtime": 1791811270.947732,
+    "seen": 1791984392.917548,
+    "ast_hash": "4cdc62a6361943962222364efcb8a616",
+    "semantic_hash": "4cdc62a6361943962222364efcb8a616"
+  },
+  "reports/audit/dunkest_schedule_history_endpoint_scan_v1.json": {
+    "mtime": 1791809819.9186156,
+    "seen": 1791984392.9175491,
+    "ast_hash": "84192c6584c39a5cf6abd89a052f3d55",
+    "semantic_hash": "84192c6584c39a5cf6abd89a052f3d55"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v1.json": {
+    "mtime": 1791811147.5702198,
+    "seen": 1791984392.9175491,
+    "ast_hash": "c2c677e31314318225bf6ec5f211f83e",
+    "semantic_hash": "c2c677e31314318225bf6ec5f211f83e"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v2.json": {
+    "mtime": 1791811221.1631224,
+    "seen": 1791984392.91755,
+    "ast_hash": "968372ee4e36d8187fa9ccd7d0be2d24",
+    "semantic_hash": "968372ee4e36d8187fa9ccd7d0be2d24"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v3.json": {
+    "mtime": 1791811270.957516,
+    "seen": 1791984392.91755,
+    "ast_hash": "8e5f9eaaa111273993e474041c793483",
+    "semantic_hash": "8e5f9eaaa111273993e474041c793483"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v4.json": {
+    "mtime": 1791811369.4052272,
+    "seen": 1791984392.917551,
+    "ast_hash": "fa64f913dee41f28f9219f568a1c94a5",
+    "semantic_hash": "fa64f913dee41f28f9219f568a1c94a5"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v5.json": {
+    "mtime": 1791812132.5299525,
+    "seen": 1791984392.917551,
+    "ast_hash": "2c295aefebfd5150b38e9494e0cfba73",
+    "semantic_hash": "2c295aefebfd5150b38e9494e0cfba73"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v6.json": {
+    "mtime": 1791812243.3124285,
+    "seen": 1791984392.9175522,
+    "ast_hash": "1789575ecab6ed32f4d327f979081582",
+    "semantic_hash": "1789575ecab6ed32f4d327f979081582"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v7.json": {
+    "mtime": 1791812391.153882,
+    "seen": 1791984392.917553,
+    "ast_hash": "6836ff9b9507d2f664095dd54b08603c",
+    "semantic_hash": "6836ff9b9507d2f664095dd54b08603c"
+  },
+  "reports/audit/dunkest_single_vs_multiseason_train_window_20261014_v1.json": {
+    "mtime": 1791972559.5441272,
+    "seen": 1791984392.917553,
+    "ast_hash": "f46efed3c2c69af09b7fa3532b571929",
+    "semantic_hash": "f46efed3c2c69af09b7fa3532b571929"
+  },
+  "reports/audit/dunkest_stats_endpoint_scope_v1.json": {
+    "mtime": 1791817241.6949763,
+    "seen": 1791984392.917554,
+    "ast_hash": "1df2e763611459dd92771b1ac35e0ec0",
+    "semantic_hash": "1df2e763611459dd92771b1ac35e0ec0"
+  },
+  "reports/audit/dunkest_tail_hybrid_vs_v9_20261013_v1.json": {
+    "mtime": 1791901297.8388233,
+    "seen": 1791984392.917554,
+    "ast_hash": "be08a9b18ce2253d883dee1c29820c96",
+    "semantic_hash": "be08a9b18ce2253d883dee1c29820c96"
+  },
+  "reports/audit/dunkest_temporal_leakage_audit_20261013_v1.json": {
+    "mtime": 1791877151.8816369,
+    "seen": 1791984392.9175549,
+    "ast_hash": "8e7de3d43c53edc103d50dc72d32e359",
+    "semantic_hash": "8e7de3d43c53edc103d50dc72d32e359"
+  },
+  "reports/audit/dunkest_temporal_leakage_audit_20261013_v2.json": {
+    "mtime": 1791877195.1354692,
+    "seen": 1791984392.917556,
+    "ast_hash": "2cd9b7d986e815ec9eb5c6376c51f8a0",
+    "semantic_hash": "2cd9b7d986e815ec9eb5c6376c51f8a0"
+  },
+  "reports/audit/dunkest_transfer_malus_sensitivity_sequential_lineup_proxy_20261013_v1.json": {
+    "mtime": 1791887213.8586566,
+    "seen": 1791984392.917556,
+    "ast_hash": "3bada0869918c120dcee68306133b796",
+    "semantic_hash": "3bada0869918c120dcee68306133b796"
+  },
+  "reports/audit/dunkest_uncertainty_expanding_oos_20261014_v1.json": {
+    "mtime": 1791975656.2990906,
+    "seen": 1791984392.917557,
+    "ast_hash": "f4e4d6d1a0c0819723bc66184f4ea551",
+    "semantic_hash": "f4e4d6d1a0c0819723bc66184f4ea551"
+  },
+  "reports/audit/dunkest_uncertainty_expanding_oos_20261014_v2.json": {
+    "mtime": 1791975675.7562404,
+    "seen": 1791984392.917557,
+    "ast_hash": "f3cf530e48df5993b24c0594c105c17a",
+    "semantic_hash": "f3cf530e48df5993b24c0594c105c17a"
+  },
+  "reports/audit/dunkest_v6_v7_lineup_strategy_paired_bootstrap_20261014_v1.json": {
+    "mtime": 1791983803.7326074,
+    "seen": 1791984392.917558,
+    "ast_hash": "7ee7ea6a2a16e9dc45776cb578e7f802",
+    "semantic_hash": "7ee7ea6a2a16e9dc45776cb578e7f802"
+  },
+  "reports/audit/dunkest_v9_past_only_calibration_20261013_v1.json": {
+    "mtime": 1791894162.2145429,
+    "seen": 1791984392.9175591,
+    "ast_hash": "8ddf0dd15680dc8f7428a6fd07eb4997",
+    "semantic_hash": "8ddf0dd15680dc8f7428a6fd07eb4997"
+  },
+  "reports/audit/dunkest_v9_residual_segments_20261013_v1.json": {
+    "mtime": 1791894130.5516794,
+    "seen": 1791984392.9175591,
+    "ast_hash": "7b24adde7521cb50abb0acf13c2a1b84",
+    "semantic_hash": "7b24adde7521cb50abb0acf13c2a1b84"
+  },
+  "reports/audit/dunkest_validity_flag_official_source_v1.json": {
+    "mtime": 1791806893.8961773,
+    "seen": 1791984392.91756,
+    "ast_hash": "52a1a72dee71d2d0c707f5024cb8c4c0",
+    "semantic_hash": "52a1a72dee71d2d0c707f5024cb8c4c0"
+  },
+  "reports/audit/dunkest_validity_flag_semantics_v1.json": {
+    "mtime": 1791806148.8886702,
+    "seen": 1791984392.91756,
+    "ast_hash": "71a8b1e39bd6752aeaa68b69fd6876bf",
+    "semantic_hash": "71a8b1e39bd6752aeaa68b69fd6876bf"
+  },
+  "reports/audit/dunkest_week_round_audit_derivative_v1.json": {
+    "mtime": 1791817472.992823,
+    "seen": 1791984392.917561,
+    "ast_hash": "c269e4f621edf4f12dcf99563475562c",
+    "semantic_hash": "c269e4f621edf4f12dcf99563475562c"
+  },
+  "reports/audit/dunkest_week_round_audit_derivative_v2.json": {
+    "mtime": 1791840080.3518603,
+    "seen": 1791984392.917562,
+    "ast_hash": "07678109f4c37129ef13ae9380834de8",
+    "semantic_hash": "07678109f4c37129ef13ae9380834de8"
+  },
+  "reports/audit/dunkest_week_round_boxscore_signature_corroboration_v1.json": {
+    "mtime": 1791814539.4544613,
+    "seen": 1791984392.917562,
+    "ast_hash": "536a71fbbaff4e982a964c73a73cc4ab",
+    "semantic_hash": "536a71fbbaff4e982a964c73a73cc4ab"
+  },
+  "reports/audit/dunkest_week_round_collection_audit_v1.json": {
+    "mtime": 1791812816.141426,
+    "seen": 1791984392.917563,
+    "ast_hash": "70284788bb70007c7b0ceeb46a1c872c",
+    "semantic_hash": "70284788bb70007c7b0ceeb46a1c872c"
+  },
+  "reports/audit/dunkest_week_round_confirmed_contamination_rows_v1.json": {
+    "mtime": 1791838775.158031,
+    "seen": 1791984392.917563,
+    "ast_hash": "3a721a8b75e03f2a22d0f7ef73820a03",
+    "semantic_hash": "3a721a8b75e03f2a22d0f7ef73820a03"
+  },
+  "reports/audit/dunkest_week_round_contamination_impact_v1.json": {
+    "mtime": 1791838541.55423,
+    "seen": 1791984392.917564,
+    "ast_hash": "68602123aa11ef640262079273172615",
+    "semantic_hash": "68602123aa11ef640262079273172615"
+  },
+  "reports/audit/dunkest_week_round_contamination_impact_v2.json": {
+    "mtime": 1791839172.8667333,
+    "seen": 1791984392.917564,
+    "ast_hash": "d2d82edb213e64ae6c7a85feb2fc8dac",
+    "semantic_hash": "d2d82edb213e64ae6c7a85feb2fc8dac"
+  },
+  "reports/audit/dunkest_week_round_cross_season_integrity_v1.json": {
+    "mtime": 1791813862.2166662,
+    "seen": 1791984392.9175649,
+    "ast_hash": "ff97aff8816f8e827fa0b174d082c265",
+    "semantic_hash": "ff97aff8816f8e827fa0b174d082c265"
+  },
+  "reports/audit/dunkest_week_round_cross_season_integrity_v2.json": {
+    "mtime": 1791813977.697975,
+    "seen": 1791984392.917566,
+    "ast_hash": "53a9e8f747a4cff288e5719c16527e01",
+    "semantic_hash": "53a9e8f747a4cff288e5719c16527e01"
+  },
+  "reports/audit/dunkest_week_round_history_corroboration_v1.json": {
+    "mtime": 1791814468.3569734,
+    "seen": 1791984392.917566,
+    "ast_hash": "6aa31d1970ccea240a46d356c220389a",
+    "semantic_hash": "6aa31d1970ccea240a46d356c220389a"
+  },
+  "reports/audit/dunkest_week_round_quarantine_manifest_v1.json": {
+    "mtime": 1791814271.4655213,
+    "seen": 1791984392.917567,
+    "ast_hash": "53b1c79b71a662f6550ea13030648d6f",
+    "semantic_hash": "53b1c79b71a662f6550ea13030648d6f"
+  },
+  "reports/audit/dunkest_week_round_quarantine_manifest_v2.json": {
+    "mtime": 1791817361.7553666,
+    "seen": 1791984392.917567,
+    "ast_hash": "8b16e1608a226db2e78fe4f77b4e41ee",
+    "semantic_hash": "8b16e1608a226db2e78fe4f77b4e41ee"
+  },
+  "reports/audit/dunkest_week_round_season5_contamination_v1.json": {
+    "mtime": 1791814046.6517622,
+    "seen": 1791984392.917568,
+    "ast_hash": "6febd444e2ed8ed7da3f796175849480",
+    "semantic_hash": "6febd444e2ed8ed7da3f796175849480"
+  },
+  "reports/audit/dunkest_week_round_season5_contamination_v2.json": {
+    "mtime": 1791814078.2732835,
+    "seen": 1791984392.917569,
+    "ast_hash": "8991c5272dde257b867789265c330b89",
+    "semantic_hash": "8991c5272dde257b867789265c330b89"
+  },
+  "reports/audit/historical_dunkest_market_snapshot_inventory_v1.json": {
+    "mtime": 1791804918.7290864,
+    "seen": 1791984392.917569,
+    "ast_hash": "58c79224a020e186809bd5e6873b81eb",
+    "semantic_hash": "58c79224a020e186809bd5e6873b81eb"
+  },
+  "reports/audit/minutes_allocator_replay_20261012T171217Z_2f98f42b.json": {
+    "mtime": 1791828578.4493659,
+    "seen": 1791984392.91757,
+    "ast_hash": "21449536bcc2f74f0d27211400394727",
+    "semantic_hash": "21449536bcc2f74f0d27211400394727"
+  },
+  "reports/audit/official_pdk_target_mode_review_v1.json": {
+    "mtime": 1791811595.2693655,
+    "seen": 1791984392.91757,
+    "ast_hash": "d23ad63b3db5fcc5653143150e1ad2bc",
+    "semantic_hash": "d23ad63b3db5fcc5653143150e1ad2bc"
+  },
+  "reports/audit/official_pdk_target_mode_review_v2.json": {
+    "mtime": 1791811642.569872,
+    "seen": 1791984392.917571,
+    "ast_hash": "f2f0e0e8c43bd990bc64375d65c01840",
+    "semantic_hash": "f2f0e0e8c43bd990bc64375d65c01840"
+  },
+  "reports/audit/proxy_vs_official_target_comparison_2025-26_v1.json": {
+    "mtime": 1791811847.4135962,
+    "seen": 1791984392.917572,
+    "ast_hash": "5bd4ce8049c4d884c366633e02e780d6",
+    "semantic_hash": "5bd4ce8049c4d884c366633e02e780d6"
+  },
+  "reports/audit/proxy_vs_official_target_comparison_2025-26_v2.json": {
+    "mtime": 1791811880.5103643,
+    "seen": 1791984392.917572,
+    "ast_hash": "05a0ff42bc59b30b32ae1df4be05bd3a",
+    "semantic_hash": "05a0ff42bc59b30b32ae1df4be05bd3a"
+  },
+  "reports/backtest/post_match_evaluation_20261012T171217Z_2f98f42b.json": {
+    "mtime": 1791828379.735094,
+    "seen": 1791984392.9175732,
+    "ast_hash": "9a52ef5637b31c72ed6a45676a406a34",
+    "semantic_hash": "9a52ef5637b31c72ed6a45676a406a34"
+  },
+  "run-backtest.sh": {
+    "mtime": 1791648955.693281,
+    "seen": 1791984392.9175732,
+    "ast_hash": "773e9b0ae88b35d9a585fdbc5631987f",
+    "semantic_hash": "773e9b0ae88b35d9a585fdbc5631987f"
+  },
+  "run-season-opener.sh": {
+    "mtime": 1790871649.4810295,
+    "seen": 1791984392.917574,
+    "ast_hash": "8d9b625d7598ac2eb16b8cc7ac2a7cb0",
+    "semantic_hash": "8d9b625d7598ac2eb16b8cc7ac2a7cb0"
+  },
+  "scripts/archive_dunkest_prelock_run_v1.py": {
+    "mtime": 1791978297.9291615,
+    "seen": 1791984392.917574,
+    "ast_hash": "8b6c2720ce401ba858109c4d4387a7de",
+    "semantic_hash": "8b6c2720ce401ba858109c4d4387a7de"
+  },
+  "scripts/audit_coach_roster_strength_proxy_walk_forward_2020-26_v1.py": {
+    "mtime": 1791804721.2668898,
+    "seen": 1791984392.917575,
+    "ast_hash": "44d6b0c20fd6bad239f10bbce55cde10",
+    "semantic_hash": "44d6b0c20fd6bad239f10bbce55cde10"
+  },
+  "scripts/audit_coach_score_models_walk_forward_2018-26_v2.py": {
+    "mtime": 1791804476.7266836,
+    "seen": 1791984392.9175758,
+    "ast_hash": "4ed9d67104feb225f311cecc4f551b4a",
+    "semantic_hash": "4ed9d67104feb225f311cecc4f551b4a"
+  },
+  "scripts/audit_coach_win_probability_walk_forward.py": {
+    "mtime": 1791804042.451196,
+    "seen": 1791984392.917577,
+    "ast_hash": "9c5f5491b8f01b060ac0db3bc03c1b0c",
+    "semantic_hash": "9c5f5491b8f01b060ac0db3bc03c1b0c"
+  },
+  "scripts/audit_coach_win_probability_walk_forward_2018-26_v1.py": {
+    "mtime": 1791804300.5074103,
+    "seen": 1791984392.917577,
+    "ast_hash": "0556a93f4897166b4dbe5bf29ea5cc23",
+    "semantic_hash": "0556a93f4897166b4dbe5bf29ea5cc23"
+  },
+  "scripts/audit_dunkest_blend_sequential_weight_validation_v1.py": {
+    "mtime": 1791900934.8841298,
+    "seen": 1791984392.917578,
+    "ast_hash": "0f20629c5a6e2df456cdf0e621f68971",
+    "semantic_hash": "0f20629c5a6e2df456cdf0e621f68971"
+  },
+  "scripts/audit_dunkest_coach_official_multiplier_sensitivity_v1.py": {
+    "mtime": 1791881422.956983,
+    "seen": 1791984392.917579,
+    "ast_hash": "3f60298234267d723f74a683709902e9",
+    "semantic_hash": "3f60298234267d723f74a683709902e9"
+  },
+  "scripts/audit_dunkest_coach_official_multiplier_sensitivity_v2.py": {
+    "mtime": 1791881449.8852162,
+    "seen": 1791984392.917579,
+    "ast_hash": "5eacc94ce061c772bea08f030ba5a72c",
+    "semantic_hash": "5eacc94ce061c772bea08f030ba5a72c"
+  },
+  "scripts/audit_dunkest_coach_official_multiplier_sensitivity_v3.py": {
+    "mtime": 1791881522.3713343,
+    "seen": 1791984392.9175801,
+    "ast_hash": "83bcc526662c29b2103e0c9ac82d1440",
+    "semantic_hash": "83bcc526662c29b2103e0c9ac82d1440"
+  },
+  "scripts/audit_dunkest_coach_score_forecast_monte_carlo_walk_forward_v1.py": {
+    "mtime": 1791882159.9396126,
+    "seen": 1791984392.9175801,
+    "ast_hash": "f2adfe0d8370ef2c855f88b58206a71a",
+    "semantic_hash": "f2adfe0d8370ef2c855f88b58206a71a"
+  },
+  "scripts/audit_dunkest_coach_score_forecast_monte_carlo_walk_forward_v2.py": {
+    "mtime": 1791882212.2897644,
+    "seen": 1791984392.917581,
+    "ast_hash": "c1ad089f8e7f31a29c45fb854caddae5",
+    "semantic_hash": "c1ad089f8e7f31a29c45fb854caddae5"
+  },
+  "scripts/audit_dunkest_coach_score_forecast_monte_carlo_walk_forward_v3.py": {
+    "mtime": 1791882288.621886,
+    "seen": 1791984392.917581,
+    "ast_hash": "140e58aff32b902af5ce6d3afffcc4a2",
+    "semantic_hash": "140e58aff32b902af5ce6d3afffcc4a2"
+  },
+  "scripts/audit_dunkest_coach_score_monte_carlo_paired_bootstrap_v1.py": {
+    "mtime": 1791882259.5999918,
+    "seen": 1791984392.917582,
+    "ast_hash": "7ef65aa6826058a1e43388de47906c63",
+    "semantic_hash": "7ef65aa6826058a1e43388de47906c63"
+  },
+  "scripts/audit_dunkest_coach_score_monte_carlo_paired_bootstrap_v2.py": {
+    "mtime": 1791882302.540273,
+    "seen": 1791984392.917583,
+    "ast_hash": "604108a937f94e2646b801ca2e7fecfc",
+    "semantic_hash": "604108a937f94e2646b801ca2e7fecfc"
+  },
+  "scripts/audit_dunkest_conditional_tail_paired_bootstrap_v1.py": {
+    "mtime": 1791900390.2456055,
+    "seen": 1791984392.917583,
+    "ast_hash": "7bef4de17ea0252c6a8843a082624b69",
+    "semantic_hash": "7bef4de17ea0252c6a8843a082624b69"
+  },
+  "scripts/audit_dunkest_current_season_id_resolution_v2.py": {
+    "mtime": 1791838338.851104,
+    "seen": 1791984392.917584,
+    "ast_hash": "090442a19f3da3f60415f42f33c88524",
+    "semantic_hash": "090442a19f3da3f60415f42f33c88524"
+  },
+  "scripts/audit_dunkest_date_assisted_link_paired_evaluation_v1.py": {
+    "mtime": 1791893019.6924653,
+    "seen": 1791984392.917584,
+    "ast_hash": "670ed74091a0a4c219c6ac0b342dde24",
+    "semantic_hash": "670ed74091a0a4c219c6ac0b342dde24"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v1.py": {
+    "mtime": 1791978443.675225,
+    "seen": 1791984392.917585,
+    "ast_hash": "3522e8e851b40adef8961aacd4921f4a",
+    "semantic_hash": "3522e8e851b40adef8961aacd4921f4a"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v2.py": {
+    "mtime": 1791978602.2470853,
+    "seen": 1791984392.9175858,
+    "ast_hash": "997359d53a79572396f874bd87bb2fbe",
+    "semantic_hash": "997359d53a79572396f874bd87bb2fbe"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v3.py": {
+    "mtime": 1791979589.197149,
+    "seen": 1791984392.9175858,
+    "ast_hash": "e174345d1a547f0e929a42d066a37ffd",
+    "semantic_hash": "e174345d1a547f0e929a42d066a37ffd"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v4.py": {
+    "mtime": 1791981307.656739,
+    "seen": 1791984392.917587,
+    "ast_hash": "f34cbd5558fcefec6d21432fe157a168",
+    "semantic_hash": "f34cbd5558fcefec6d21432fe157a168"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v5.py": {
+    "mtime": 1791981509.8754482,
+    "seen": 1791984392.917587,
+    "ast_hash": "512e370894618308b2fac326c54b4b71",
+    "semantic_hash": "512e370894618308b2fac326c54b4b71"
+  },
+  "scripts/audit_dunkest_gamelevel_lineup_bootstrap_v7.py": {
+    "mtime": 1791983444.9697888,
+    "seen": 1791984392.917588,
+    "ast_hash": "656a982f6d8cc43b29b957b9f83e18a0",
+    "semantic_hash": "656a982f6d8cc43b29b957b9f83e18a0"
+  },
+  "scripts/audit_dunkest_h2h_final_holdout_2025-26_v1.py": {
+    "mtime": 1791883847.80059,
+    "seen": 1791984392.917589,
+    "ast_hash": "7c6581956e5a12ea23b452290b4c237c",
+    "semantic_hash": "7c6581956e5a12ea23b452290b4c237c"
+  },
+  "scripts/audit_dunkest_h2h_paired_bootstrap_v1.py": {
+    "mtime": 1791883562.6834533,
+    "seen": 1791984392.917589,
+    "ast_hash": "edd8198034fd3082a015201892ee8137",
+    "semantic_hash": "edd8198034fd3082a015201892ee8137"
+  },
+  "scripts/audit_dunkest_historical_lineup_infeasibility_v1.py": {
+    "mtime": 1791889655.8636024,
+    "seen": 1791984392.91759,
+    "ast_hash": "523a67b59ff59ca95ae87b7ff3aed3b4",
+    "semantic_hash": "523a67b59ff59ca95ae87b7ff3aed3b4"
+  },
+  "scripts/audit_dunkest_historical_lineups_rest_schedule_paired_bootstrap_v1.py": {
+    "mtime": 1791885670.5285425,
+    "seen": 1791984392.91759,
+    "ast_hash": "d23f135317bb2e90b33214c7a835c97a",
+    "semantic_hash": "d23f135317bb2e90b33214c7a835c97a"
+  },
+  "scripts/audit_dunkest_historical_lineups_sequential_transfer_paired_bootstrap_v1.py": {
+    "mtime": 1791888692.6833522,
+    "seen": 1791984392.917591,
+    "ast_hash": "142a70cbadbfffa004ad227d2c3c5082",
+    "semantic_hash": "142a70cbadbfffa004ad227d2c3c5082"
+  },
+  "scripts/audit_dunkest_historical_lineups_strict_actual_coverage_v1.py": {
+    "mtime": 1791977628.6185288,
+    "seen": 1791984392.917592,
+    "ast_hash": "f436446ea1723ce07bd0c1b0baf2b149",
+    "semantic_hash": "f436446ea1723ce07bd0c1b0baf2b149"
+  },
+  "scripts/audit_dunkest_historical_matchup_team_link_coverage_v1.py": {
+    "mtime": 1791891636.6742198,
+    "seen": 1791984392.917592,
+    "ast_hash": "542b6785ef0a9709a308844eb5a03147",
+    "semantic_hash": "542b6785ef0a9709a308844eb5a03147"
+  },
+  "scripts/audit_dunkest_historical_matchup_team_link_paired_evaluation_v1.py": {
+    "mtime": 1791891889.0076258,
+    "seen": 1791984392.917593,
+    "ast_hash": "e73e285de92846dd25a7d2882c1a7392",
+    "semantic_hash": "e73e285de92846dd25a7d2882c1a7392"
+  },
+  "scripts/audit_dunkest_historical_round_game_mapping_v1.py": {
+    "mtime": 1791890061.4957967,
+    "seen": 1791984392.917593,
+    "ast_hash": "3c85883ce9d6a5913c752ea5fd778bf3",
+    "semantic_hash": "3c85883ce9d6a5913c752ea5fd778bf3"
+  },
+  "scripts/audit_dunkest_historical_round_game_residuals_v1.py": {
+    "mtime": 1791890778.1144104,
+    "seen": 1791984392.9175942,
+    "ast_hash": "1aab78fd5e455de1bce3a8f35a8d2a23",
+    "semantic_hash": "1aab78fd5e455de1bce3a8f35a8d2a23"
+  },
+  "scripts/audit_dunkest_historical_round_game_unmatched_v2.py": {
+    "mtime": 1791890446.8343794,
+    "seen": 1791984392.917595,
+    "ast_hash": "6d50f840362c0ef4701bd77075519d24",
+    "semantic_hash": "6d50f840362c0ef4701bd77075519d24"
+  },
+  "scripts/audit_dunkest_historical_round_game_unmatched_v3.py": {
+    "mtime": 1791890621.7255383,
+    "seen": 1791984392.917595,
+    "ast_hash": "1c6d3e33524dec314d1699824ebdae8a",
+    "semantic_hash": "1c6d3e33524dec314d1699824ebdae8a"
+  },
+  "scripts/audit_dunkest_legacy_only_opponent_rows_v1.py": {
+    "mtime": 1791893042.773382,
+    "seen": 1791984392.9175959,
+    "ast_hash": "0b7a6196a47b98fbba788e7403370e47",
+    "semantic_hash": "0b7a6196a47b98fbba788e7403370e47"
+  },
+  "scripts/audit_dunkest_lineup_backtest_readiness_v1.py": {
+    "mtime": 1791826899.1829712,
+    "seen": 1791984392.9175959,
+    "ast_hash": "69354211dbab4e9f720587ce16d47744",
+    "semantic_hash": "69354211dbab4e9f720587ce16d47744"
+  },
+  "scripts/audit_dunkest_lineups_internal_id_semantics_v1.py": {
+    "mtime": 1791839337.8434167,
+    "seen": 1791984392.9175968,
+    "ast_hash": "cab2de77f6d9fdaf8957351bf2bb284a",
+    "semantic_hash": "cab2de77f6d9fdaf8957351bf2bb284a"
+  },
+  "scripts/audit_dunkest_matchup_expanded_paired_bootstrap_v1.py": {
+    "mtime": 1791882978.8156192,
+    "seen": 1791984392.9175968,
+    "ast_hash": "1680bd475445121265ac2071e5077a29",
+    "semantic_hash": "1680bd475445121265ac2071e5077a29"
+  },
+  "scripts/audit_dunkest_nba_appearance_probability_proxy_walk_forward_v1.py": {
+    "mtime": 1791887164.239921,
+    "seen": 1791984392.917598,
+    "ast_hash": "42a28853e810b9c7fc3069f6e98e0ddf",
+    "semantic_hash": "42a28853e810b9c7fc3069f6e98e0ddf"
+  },
+  "scripts/audit_dunkest_nba_appearance_probability_proxy_walk_forward_v2.py": {
+    "mtime": 1791887270.61475,
+    "seen": 1791984392.917599,
+    "ast_hash": "fc48f93e808065bc77b7c535b39034fa",
+    "semantic_hash": "fc48f93e808065bc77b7c535b39034fa"
+  },
+  "scripts/audit_dunkest_nba_appearance_probability_proxy_walk_forward_v3.py": {
+    "mtime": 1791888863.8782516,
+    "seen": 1791984392.917599,
+    "ast_hash": "ebc239756ca71d12668949becb69c1cc",
+    "semantic_hash": "ebc239756ca71d12668949becb69c1cc"
+  },
+  "scripts/audit_dunkest_official_vs_proxy_history_features_v1.py": {
+    "mtime": 1791964317.3108828,
+    "seen": 1791984392.9176,
+    "ast_hash": "d3ae269ee848eae0207a6a0a4dba41ad",
+    "semantic_hash": "d3ae269ee848eae0207a6a0a4dba41ad"
+  },
+  "scripts/audit_dunkest_participation_label_readiness_v1.py": {
+    "mtime": 1791886221.6521637,
+    "seen": 1791984392.9176,
+    "ast_hash": "aefb673f15a591cdf021b475fefbe927",
+    "semantic_hash": "aefb673f15a591cdf021b475fefbe927"
+  },
+  "scripts/audit_dunkest_pdk_calibration_error_v1.py": {
+    "mtime": 1791826081.5059388,
+    "seen": 1791984392.917601,
+    "ast_hash": "19a7ffe7ee1a0df157e3a1aecfc1e3b3",
+    "semantic_hash": "19a7ffe7ee1a0df157e3a1aecfc1e3b3"
+  },
+  "scripts/audit_dunkest_persisted_v3_vs_v8_predictions_v1.py": {
+    "mtime": 1791893664.146875,
+    "seen": 1791984392.917602,
+    "ast_hash": "81b5e45c990b163ee0ec7f149634f5cf",
+    "semantic_hash": "81b5e45c990b163ee0ec7f149634f5cf"
+  },
+  "scripts/audit_dunkest_prelock_archive_inventory_v1.py": {
+    "mtime": 1791898541.0590773,
+    "seen": 1791984392.917602,
+    "ast_hash": "8f28e134e8faacd54739ad9953bd0f6f",
+    "semantic_hash": "8f28e134e8faacd54739ad9953bd0f6f"
+  },
+  "scripts/audit_dunkest_production_ensemble_expanding_oos_v1.py": {
+    "mtime": 1791976566.1473107,
+    "seen": 1791984392.917603,
+    "ast_hash": "d5c226d8757a542c3e6b08432f94997d",
+    "semantic_hash": "d5c226d8757a542c3e6b08432f94997d"
+  },
+  "scripts/audit_dunkest_production_pdk_history_source_ablation_v1.py": {
+    "mtime": 1791885965.4695451,
+    "seen": 1791984392.917603,
+    "ast_hash": "6bd2933f8de23144532b76ca72773a7d",
+    "semantic_hash": "6bd2933f8de23144532b76ca72773a7d"
+  },
+  "scripts/audit_dunkest_production_pdk_history_source_ablation_v2_multiseason.py": {
+    "mtime": 1791886155.3250875,
+    "seen": 1791984392.9176042,
+    "ast_hash": "df986d7bd20b03f2ba3f1fd577590656",
+    "semantic_hash": "df986d7bd20b03f2ba3f1fd577590656"
+  },
+  "scripts/audit_dunkest_profile_games_api_v1.py": {
+    "mtime": 1791805831.9313986,
+    "seen": 1791984392.9176052,
+    "ast_hash": "9f2e14267d4bdf7c24ecbef887cf9ab1",
+    "semantic_hash": "9f2e14267d4bdf7c24ecbef887cf9ab1"
+  },
+  "scripts/audit_dunkest_rest_schedule_paired_bootstrap_v1.py": {
+    "mtime": 1791885392.6606307,
+    "seen": 1791984392.9176052,
+    "ast_hash": "a372cce94235933179267945c8821ebb",
+    "semantic_hash": "a372cce94235933179267945c8821ebb"
+  },
+  "scripts/audit_dunkest_round_calendar_linkage_v1.py": {
+    "mtime": 1791806638.282662,
+    "seen": 1791984392.9176059,
+    "ast_hash": "c67ea4c564ec02eff107b450eea092cb",
+    "semantic_hash": "c67ea4c564ec02eff107b450eea092cb"
+  },
+  "scripts/audit_dunkest_stats_endpoint_scope_v1.py": {
+    "mtime": 1791817232.5165246,
+    "seen": 1791984392.9176059,
+    "ast_hash": "2613119b6b1f13901969277c43bb6d1e",
+    "semantic_hash": "2613119b6b1f13901969277c43bb6d1e"
+  },
+  "scripts/audit_dunkest_tail_hybrid_vs_v9_v1.py": {
+    "mtime": 1791901286.2847888,
+    "seen": 1791984392.9176068,
+    "ast_hash": "565eae39946bcd896fd7e999bdc659b4",
+    "semantic_hash": "565eae39946bcd896fd7e999bdc659b4"
+  },
+  "scripts/audit_dunkest_temporal_leakage_v1.py": {
+    "mtime": 1791877194.0458248,
+    "seen": 1791984392.917608,
+    "ast_hash": "8bd00b2da81a3962dfb98a6b0ce9d2df",
+    "semantic_hash": "8bd00b2da81a3962dfb98a6b0ce9d2df"
+  },
+  "scripts/audit_dunkest_transfer_malus_sensitivity_sequential_lineup_proxy_v1.py": {
+    "mtime": 1791887209.8241332,
+    "seen": 1791984392.917608,
+    "ast_hash": "25b760222f48ccc25a1bd18cfbb02396",
+    "semantic_hash": "25b760222f48ccc25a1bd18cfbb02396"
+  },
+  "scripts/audit_dunkest_uncertainty_expanding_oos_v1.py": {
+    "mtime": 1791975670.5801206,
+    "seen": 1791984392.917609,
+    "ast_hash": "8dad471b1517bd69a7bd210b320f7792",
+    "semantic_hash": "8dad471b1517bd69a7bd210b320f7792"
+  },
+  "scripts/audit_dunkest_v6_v7_lineup_strategy_paired_bootstrap_v1.py": {
+    "mtime": 1791983802.5470312,
+    "seen": 1791984392.917609,
+    "ast_hash": "935896b62a740b432a15713aeefd7dd8",
+    "semantic_hash": "935896b62a740b432a15713aeefd7dd8"
+  },
+  "scripts/audit_dunkest_v9_past_only_residual_calibration_v1.py": {
+    "mtime": 1791894159.8607278,
+    "seen": 1791984392.91761,
+    "ast_hash": "8d443cd7fa07e99c5d404d4d6afc4403",
+    "semantic_hash": "8d443cd7fa07e99c5d404d4d6afc4403"
+  },
+  "scripts/audit_dunkest_v9_residual_segments_v1.py": {
+    "mtime": 1791894127.669009,
+    "seen": 1791984392.9176111,
+    "ast_hash": "77f27f3e03836dc9fb445c572e1688c4",
+    "semantic_hash": "77f27f3e03836dc9fb445c572e1688c4"
+  },
+  "scripts/audit_dunkest_validity_flag_official_source_v1.py": {
+    "mtime": 1791806893.3060865,
+    "seen": 1791984392.9176111,
+    "ast_hash": "a29d9ae28f5fa11940b9659ce9ddcc3f",
+    "semantic_hash": "a29d9ae28f5fa11940b9659ce9ddcc3f"
+  },
+  "scripts/audit_dunkest_validity_flag_semantics_v1.py": {
+    "mtime": 1791806147.8606648,
+    "seen": 1791984392.917612,
+    "ast_hash": "747c5be164dc0db0be6c837584303498",
+    "semantic_hash": "747c5be164dc0db0be6c837584303498"
+  },
+  "scripts/audit_dunkest_week_round_boxscore_signature_corroboration_v1.py": {
+    "mtime": 1791814537.1737592,
+    "seen": 1791984392.917612,
+    "ast_hash": "a8bbc0799a63541818cfc80caf6c55b5",
+    "semantic_hash": "a8bbc0799a63541818cfc80caf6c55b5"
+  },
+  "scripts/audit_dunkest_week_round_collection_v1.py": {
+    "mtime": 1791812812.889797,
+    "seen": 1791984392.917613,
+    "ast_hash": "3148311cc22d424eb8813b352aeec9a3",
+    "semantic_hash": "3148311cc22d424eb8813b352aeec9a3"
+  },
+  "scripts/audit_dunkest_week_round_contamination_impact_v1.py": {
+    "mtime": 1791838523.4757214,
+    "seen": 1791984392.917613,
+    "ast_hash": "28d878f059ac0e5d55f7995fbf6def86",
+    "semantic_hash": "28d878f059ac0e5d55f7995fbf6def86"
+  },
+  "scripts/audit_dunkest_week_round_contamination_impact_v2.py": {
+    "mtime": 1791839158.8990815,
+    "seen": 1791984392.917614,
+    "ast_hash": "7dec48e9eff20dc776202cb505ba44b2",
+    "semantic_hash": "7dec48e9eff20dc776202cb505ba44b2"
+  },
+  "scripts/audit_dunkest_week_round_cross_season_integrity_v1.py": {
+    "mtime": 1791813831.8467314,
+    "seen": 1791984392.917614,
+    "ast_hash": "1a63c929e1685583b08b0b8046fc553c",
+    "semantic_hash": "1a63c929e1685583b08b0b8046fc553c"
+  },
+  "scripts/audit_dunkest_week_round_cross_season_integrity_v2.py": {
+    "mtime": 1791813949.0217378,
+    "seen": 1791984392.9176152,
+    "ast_hash": "0b7c62cc55c63dfdfc4616f493bd04e2",
+    "semantic_hash": "0b7c62cc55c63dfdfc4616f493bd04e2"
+  },
+  "scripts/audit_dunkest_week_round_history_corroboration_v1.py": {
+    "mtime": 1791814467.897896,
+    "seen": 1791984392.9176161,
+    "ast_hash": "53367d2f38d920cb1974f7302dc118a8",
+    "semantic_hash": "53367d2f38d920cb1974f7302dc118a8"
+  },
+  "scripts/audit_dunkest_week_round_season5_contamination_v1.py": {
+    "mtime": 1791814046.2567883,
+    "seen": 1791984392.9176161,
+    "ast_hash": "5bffa83a248dcc4f128dc81196f41342",
+    "semantic_hash": "5bffa83a248dcc4f128dc81196f41342"
+  },
+  "scripts/audit_dunkest_week_round_season5_contamination_v2.py": {
+    "mtime": 1791814077.9276233,
+    "seen": 1791984392.9176168,
+    "ast_hash": "cc9095e3b971946fe366599e162fad88",
+    "semantic_hash": "cc9095e3b971946fe366599e162fad88"
+  },
+  "scripts/audit_historical_dunkest_market_snapshots_v1.py": {
+    "mtime": 1791804917.930134,
+    "seen": 1791984392.9176168,
+    "ast_hash": "816f1a4c9491331c7788c621b7a9abe3",
+    "semantic_hash": "816f1a4c9491331c7788c621b7a9abe3"
+  },
+  "scripts/audit_historical_overlap.py": {
+    "mtime": 1791725488.4274569,
+    "seen": 1791984392.917618,
+    "ast_hash": "6ead91a4d49c0b19a3e09c0e93344448",
+    "semantic_hash": "6ead91a4d49c0b19a3e09c0e93344448"
+  },
+  "scripts/audit_player_backtest_data.py": {
+    "mtime": 1791650670.9064941,
+    "seen": 1791984392.917619,
+    "ast_hash": "f14d7810fd75924c9e87f05f08a5ce64",
+    "semantic_hash": "f14d7810fd75924c9e87f05f08a5ce64"
+  },
+  "scripts/audit_pre_match_snapshot_authenticity_v1.py": {
+    "mtime": 1791838106.4448888,
+    "seen": 1791984392.917619,
+    "ast_hash": "7bf5bc14d973a79dd05d75513431115f",
+    "semantic_hash": "7bf5bc14d973a79dd05d75513431115f"
+  },
+  "scripts/audit_pre_match_snapshot_authenticity_v2.py": {
+    "mtime": 1791838113.2513425,
+    "seen": 1791984392.91762,
+    "ast_hash": "f28c1d6ee2f99882595d51f8cfc86f1c",
+    "semantic_hash": "f28c1d6ee2f99882595d51f8cfc86f1c"
+  },
+  "scripts/audit_prediction_minutes_allocation_v1.py": {
+    "mtime": 1791828572.8595629,
+    "seen": 1791984392.91762,
+    "ast_hash": "a83e58b509e5502abf3310c9626479b2",
+    "semantic_hash": "a83e58b509e5502abf3310c9626479b2"
+  },
+  "scripts/backtest_dunkest_coach_base_points_walk_forward_v1.py": {
+    "mtime": 1791879459.6433818,
+    "seen": 1791984392.917621,
+    "ast_hash": "f53559a122c9529a59e36f2e1f7e81c9",
+    "semantic_hash": "f53559a122c9529a59e36f2e1f7e81c9"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v1.py": {
+    "mtime": 1791879318.6228237,
+    "seen": 1791984392.917621,
+    "ast_hash": "e602b30be1257f5d7fbc80b798f2dc15",
+    "semantic_hash": "e602b30be1257f5d7fbc80b798f2dc15"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v2.py": {
+    "mtime": 1791882828.8527997,
+    "seen": 1791984392.917622,
+    "ast_hash": "c0fff35fa8188320ffbd700c091d00ca",
+    "semantic_hash": "c0fff35fa8188320ffbd700c091d00ca"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v3.py": {
+    "mtime": 1791883272.7716641,
+    "seen": 1791984392.917623,
+    "ast_hash": "ad7c6afdac40623fdfb1dd473a9f7c20",
+    "semantic_hash": "ad7c6afdac40623fdfb1dd473a9f7c20"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v4.py": {
+    "mtime": 1791883404.0718327,
+    "seen": 1791984392.917623,
+    "ast_hash": "68ed44ac16f4cc81ec23c617ea303d5f",
+    "semantic_hash": "68ed44ac16f4cc81ec23c617ea303d5f"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v5_role_interactions.py": {
+    "mtime": 1791885028.739128,
+    "seen": 1791984392.917624,
+    "ast_hash": "d7a78751da35d9cc233c3fdb6d16dcd7",
+    "semantic_hash": "d7a78751da35d9cc233c3fdb6d16dcd7"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v6_rest_schedule.py": {
+    "mtime": 1791885352.349495,
+    "seen": 1791984392.917624,
+    "ast_hash": "36fc86e33d5ffabde2abad08558999bc",
+    "semantic_hash": "36fc86e33d5ffabde2abad08558999bc"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v7_corrected_team_link.py": {
+    "mtime": 1791891864.3752358,
+    "seen": 1791984392.9176252,
+    "ast_hash": "d51174742c8c7dbb9ce55f9365ca1c3b",
+    "semantic_hash": "d51174742c8c7dbb9ce55f9365ca1c3b"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v8_date_assisted_link.py": {
+    "mtime": 1791893042.7737489,
+    "seen": 1791984392.9176261,
+    "ast_hash": "5e1bd6882b3cc273f5fcadf1d6ba3650",
+    "semantic_hash": "5e1bd6882b3cc273f5fcadf1d6ba3650"
+  },
+  "scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v9_persisted_date_link.py": {
+    "mtime": 1791893729.022657,
+    "seen": 1791984392.9176261,
+    "ast_hash": "197637deaf588b455909062e9ba88cdd",
+    "semantic_hash": "197637deaf588b455909062e9ba88cdd"
+  },
+  "scripts/backtest_dunkest_historical_credits_walk_forward_v1.py": {
+    "mtime": 1791879157.028444,
+    "seen": 1791984392.9176269,
+    "ast_hash": "c097682e06b9715d05c91a2be1601003",
+    "semantic_hash": "c097682e06b9715d05c91a2be1601003"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v1.py": {
+    "mtime": 1791978462.1729982,
+    "seen": 1791984392.9176269,
+    "ast_hash": "5a7a72be0e3de25b7bd424760899ed26",
+    "semantic_hash": "5a7a72be0e3de25b7bd424760899ed26"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v2.py": {
+    "mtime": 1791978934.544109,
+    "seen": 1791984392.9176278,
+    "ast_hash": "da2dd848e55845faa03f8bd0acd7fc4e",
+    "semantic_hash": "da2dd848e55845faa03f8bd0acd7fc4e"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v3.py": {
+    "mtime": 1791979690.681989,
+    "seen": 1791984392.917629,
+    "ast_hash": "356b0e3867b345e4a3c6884d13b4b71e",
+    "semantic_hash": "356b0e3867b345e4a3c6884d13b4b71e"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v4.py": {
+    "mtime": 1791981399.3584154,
+    "seen": 1791984392.917629,
+    "ast_hash": "bc1168437848dbaaedb4d51fea280498",
+    "semantic_hash": "bc1168437848dbaaedb4d51fea280498"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v5.py": {
+    "mtime": 1791981821.6605878,
+    "seen": 1791984392.91763,
+    "ast_hash": "57228aeece46ee710659981e62116136",
+    "semantic_hash": "57228aeece46ee710659981e62116136"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v6.py": {
+    "mtime": 1791983059.0496528,
+    "seen": 1791984392.91763,
+    "ast_hash": "9b01e952082dc2ab467560ba50598c19",
+    "semantic_hash": "9b01e952082dc2ab467560ba50598c19"
+  },
+  "scripts/backtest_dunkest_historical_lineups_gamelevel_actuals_v7.py": {
+    "mtime": 1791983397.4758434,
+    "seen": 1791984392.917631,
+    "ast_hash": "c80658a3bd5fa24cbd0144e2286cc778",
+    "semantic_hash": "c80658a3bd5fa24cbd0144e2286cc778"
+  },
+  "scripts/backtest_dunkest_historical_lineups_h2h_v6.py": {
+    "mtime": 1791884313.5741224,
+    "seen": 1791984392.917631,
+    "ast_hash": "3a2c8016d3c8becef5dec4b1e524cd81",
+    "semantic_hash": "3a2c8016d3c8becef5dec4b1e524cd81"
+  },
+  "scripts/backtest_dunkest_historical_lineups_lagged_market_v1.py": {
+    "mtime": 1791879689.6948185,
+    "seen": 1791984392.917632,
+    "ast_hash": "2f315632710b2b3a408f780ff128fd9e",
+    "semantic_hash": "2f315632710b2b3a408f780ff128fd9e"
+  },
+  "scripts/backtest_dunkest_historical_lineups_lagged_market_v2.py": {
+    "mtime": 1791879766.146334,
+    "seen": 1791984392.917633,
+    "ast_hash": "659380b4f1602b3bd0beb002e0c0edbe",
+    "semantic_hash": "659380b4f1602b3bd0beb002e0c0edbe"
+  },
+  "scripts/backtest_dunkest_historical_lineups_lagged_market_v3.py": {
+    "mtime": 1791879851.0688422,
+    "seen": 1791984392.917633,
+    "ast_hash": "551c3384bcbb89ba3f0d38cf3d36b53b",
+    "semantic_hash": "551c3384bcbb89ba3f0d38cf3d36b53b"
+  },
+  "scripts/backtest_dunkest_historical_lineups_lagged_market_v4.py": {
+    "mtime": 1791880000.7537367,
+    "seen": 1791984392.917634,
+    "ast_hash": "ce9b6fec067bfe6aca741674fea4b1ef",
+    "semantic_hash": "ce9b6fec067bfe6aca741674fea4b1ef"
+  },
+  "scripts/backtest_dunkest_historical_lineups_lagged_market_v5.py": {
+    "mtime": 1791880364.2855058,
+    "seen": 1791984392.917634,
+    "ast_hash": "847475518d62ff30e7467dfa4c6c3eeb",
+    "semantic_hash": "847475518d62ff30e7467dfa4c6c3eeb"
+  },
+  "scripts/backtest_dunkest_historical_lineups_rest_schedule_v1.py": {
+    "mtime": 1791886289.4842308,
+    "seen": 1791984392.917635,
+    "ast_hash": "d77003f998460dbb66da6cfc43d4ae59",
+    "semantic_hash": "d77003f998460dbb66da6cfc43d4ae59"
+  },
+  "scripts/backtest_dunkest_historical_lineups_sequential_transfer_v1.py": {
+    "mtime": 1791888060.913628,
+    "seen": 1791984392.917635,
+    "ast_hash": "fb31cfdd7a60c88df594c7305f1e32a1",
+    "semantic_hash": "fb31cfdd7a60c88df594c7305f1e32a1"
+  },
+  "scripts/backtest_dunkest_historical_lineups_sequential_transfer_v2.py": {
+    "mtime": 1791888714.8012605,
+    "seen": 1791984392.9176362,
+    "ast_hash": "12bfd3233a0d724cfaa8358e7b4b136d",
+    "semantic_hash": "12bfd3233a0d724cfaa8358e7b4b136d"
+  },
+  "scripts/build_dunkest_gw1_strategy_variants_v1.py": {
+    "mtime": 1791960702.6725988,
+    "seen": 1791984392.917637,
+    "ast_hash": "163424c39afc4e7811f0cfa81e81a23c",
+    "semantic_hash": "163424c39afc4e7811f0cfa81e81a23c"
+  },
+  "scripts/build_dunkest_gw1_strategy_variants_v2.py": {
+    "mtime": 1791961044.5302162,
+    "seen": 1791984392.917637,
+    "ast_hash": "bd4eef776665241b0bc890185c512fb8",
+    "semantic_hash": "bd4eef776665241b0bc890185c512fb8"
+  },
+  "scripts/build_dunkest_gw1_strategy_variants_v3.py": {
+    "mtime": 1791961044.5307152,
+    "seen": 1791984392.9176378,
+    "ast_hash": "1a7df95838c9549a991d06be29b81074",
+    "semantic_hash": "1a7df95838c9549a991d06be29b81074"
+  },
+  "scripts/build_dunkest_historical_game_linked_rows_v2.py": {
+    "mtime": 1791891398.826021,
+    "seen": 1791984392.9176378,
+    "ast_hash": "9e04a32b7790bf3267c54f62c4a6c602",
+    "semantic_hash": "9e04a32b7790bf3267c54f62c4a6c602"
+  },
+  "scripts/build_dunkest_historical_game_linked_rows_v3_date_assisted.py": {
+    "mtime": 1791893407.328866,
+    "seen": 1791984392.917639,
+    "ast_hash": "258d33cefe6d9b5d0975254d3c17b5b5",
+    "semantic_hash": "258d33cefe6d9b5d0975254d3c17b5b5"
+  },
+  "scripts/build_dunkest_pdk_training_dataset_v2.py": {
+    "mtime": 1791737444.2036026,
+    "seen": 1791984392.917639,
+    "ast_hash": "6515bb790405848d09f54aa99dd1c919",
+    "semantic_hash": "6515bb790405848d09f54aa99dd1c919"
+  },
+  "scripts/build_dunkest_pdk_training_dataset_v3.py": {
+    "mtime": 1791738751.8364122,
+    "seen": 1791984392.91764,
+    "ast_hash": "4c1871ceb43061bee2f94ef4c46ba1e4",
+    "semantic_hash": "4c1871ceb43061bee2f94ef4c46ba1e4"
+  },
+  "scripts/build_dunkest_post_match_results_v1.py": {
+    "mtime": 1791878271.3400214,
+    "seen": 1791984392.917641,
+    "ast_hash": "9a2a12933e5d909cbf212c46fb1ed14b",
+    "semantic_hash": "9a2a12933e5d909cbf212c46fb1ed14b"
+  },
+  "scripts/build_dunkest_week_round_audit_derivative_v1.py": {
+    "mtime": 1791817467.7367992,
+    "seen": 1791984392.917641,
+    "ast_hash": "f8f04fbfc77ba6d12900b818c5e1a04f",
+    "semantic_hash": "f8f04fbfc77ba6d12900b818c5e1a04f"
+  },
+  "scripts/build_dunkest_week_round_audit_derivative_v2.py": {
+    "mtime": 1791840072.0528371,
+    "seen": 1791984392.9176419,
+    "ast_hash": "9e3861fcb3d08997e792fa43e1ee4fc7",
+    "semantic_hash": "9e3861fcb3d08997e792fa43e1ee4fc7"
+  },
+  "scripts/build_dunkest_week_round_confirmed_row_quarantine_v1.py": {
+    "mtime": 1791838764.8902664,
+    "seen": 1791984392.9176419,
+    "ast_hash": "0e68c576446df1172d270c3461ee99de",
+    "semantic_hash": "0e68c576446df1172d270c3461ee99de"
+  },
+  "scripts/build_official_rookie_pdk_labels_v1.py": {
+    "mtime": 1791917421.7488132,
+    "seen": 1791984392.917643,
+    "ast_hash": "5b9e32bea3f8f8c909065dde6e44317c",
+    "semantic_hash": "5b9e32bea3f8f8c909065dde6e44317c"
+  },
+  "scripts/build_rookie_college_data.py": {
+    "mtime": 1790806802.901486,
+    "seen": 1791984392.917643,
+    "ast_hash": "a78dfd06dad91c05a4aaf7c9d5e525c9",
+    "semantic_hash": "a78dfd06dad91c05a4aaf7c9d5e525c9"
+  },
+  "scripts/calibrate_dunkest_lineup_scores_expanding_v1.py": {
+    "mtime": 1791983802.545362,
+    "seen": 1791984392.917644,
+    "ast_hash": "7a658c23a857543f5b3410213f922be5",
+    "semantic_hash": "7a658c23a857543f5b3410213f922be5"
+  },
+  "scripts/check_dunkest_stats_render.py": {
+    "mtime": 1791729355.184995,
+    "seen": 1791984392.917645,
+    "ast_hash": "10e488558ccd363767296e6574991c0d",
+    "semantic_hash": "10e488558ccd363767296e6574991c0d"
+  },
+  "scripts/collect_dunkest_historical_player_games.py": {
+    "mtime": 1791838803.6951754,
+    "seen": 1791984392.917645,
+    "ast_hash": "6b2f7455402a9d8aea07abd02b36f3ef",
+    "semantic_hash": "6b2f7455402a9d8aea07abd02b36f3ef"
+  },
+  "scripts/collect_dunkest_historical_stats.py": {
+    "mtime": 1791734712.7849293,
+    "seen": 1791984392.9176462,
+    "ast_hash": "fa4c8d2ae81b5fd7b4198e80e17f39c9",
+    "semantic_hash": "fa4c8d2ae81b5fd7b4198e80e17f39c9"
+  },
+  "scripts/collect_dunkest_player_games_current_season_v1.py": {
+    "mtime": 1791873529.0969143,
+    "seen": 1791984392.9176462,
+    "ast_hash": "9e68cb49f9f6d421942b2b8fddf50ec6",
+    "semantic_hash": "9e68cb49f9f6d421942b2b8fddf50ec6"
+  },
+  "scripts/collect_team_game_logs_2018-26_v1.py": {
+    "mtime": 1791804143.748177,
+    "seen": 1791984392.9176471,
+    "ast_hash": "501519eea12e84d43f6c264c7147a767",
+    "semantic_hash": "501519eea12e84d43f6c264c7147a767"
+  },
+  "scripts/compare_dunkest_models_by_season_cohort_v1.py": {
+    "mtime": 1791975299.579798,
+    "seen": 1791984392.9176471,
+    "ast_hash": "fce6c0e1c52dcd3627b05d46bb4097a4",
+    "semantic_hash": "fce6c0e1c52dcd3627b05d46bb4097a4"
+  },
+  "scripts/compare_dunkest_nba_history.py": {
+    "mtime": 1791650782.0544376,
+    "seen": 1791984392.9176478,
+    "ast_hash": "d410ea82a962b7052643c3e105c0f189",
+    "semantic_hash": "d410ea82a962b7052643c3e105c0f189"
+  },
+  "scripts/compare_dunkest_pdk_feature_families_walk_forward_v1.py": {
+    "mtime": 1791877719.0575018,
+    "seen": 1791984392.9176478,
+    "ast_hash": "13e2e5735b61a26bb118f841e2cf9bfe",
+    "semantic_hash": "13e2e5735b61a26bb118f841e2cf9bfe"
+  },
+  "scripts/compare_dunkest_single_vs_multiseason_train_window_v1.py": {
+    "mtime": 1791972443.9047775,
+    "seen": 1791984392.9176488,
+    "ast_hash": "1bb451bb6be93db48f3f1601acf8fa11",
+    "semantic_hash": "1bb451bb6be93db48f3f1601acf8fa11"
+  },
+  "scripts/compare_proxy_vs_official_target_v1.py": {
+    "mtime": 1791811784.086017,
+    "seen": 1791984392.91765,
+    "ast_hash": "e0312da735a8ff63f4319cdd774ec06f",
+    "semantic_hash": "e0312da735a8ff63f4319cdd774ec06f"
+  },
+  "scripts/diagnose_dunkest_flutter.py": {
+    "mtime": 1791728723.858743,
+    "seen": 1791984392.91765,
+    "ast_hash": "c61d6c51db0420bfca9c8cafb72d2f63",
+    "semantic_hash": "c61d6c51db0420bfca9c8cafb72d2f63"
+  },
+  "scripts/enable_dunkest_stats_accessibility.py": {
+    "mtime": 1791728934.3182538,
+    "seen": 1791984392.917651,
+    "ast_hash": "b2829da02ffa7925c472ef9b87c0961c",
+    "semantic_hash": "b2829da02ffa7925c472ef9b87c0961c"
+  },
+  "scripts/evaluate_archived_run_post_match_v1.py": {
+    "mtime": 1791878189.5964696,
+    "seen": 1791984392.917651,
+    "ast_hash": "df3ad6e2b1ad92d6d8a0167dcd098c05",
+    "semantic_hash": "df3ad6e2b1ad92d6d8a0167dcd098c05"
+  },
+  "scripts/evaluate_dunkest_pdk_score_calibration_v1.py": {
+    "mtime": 1791826096.5333939,
+    "seen": 1791984392.917652,
+    "ast_hash": "4a360dceb80c5aca8d8c3c309efcfaa6",
+    "semantic_hash": "4a360dceb80c5aca8d8c3c309efcfaa6"
+  },
+  "scripts/experiment_dunkest_conditional_tail_blend_v1.py": {
+    "mtime": 1791900571.6631677,
+    "seen": 1791984392.917653,
+    "ast_hash": "584588d79cf0b23023fd52748a48a8a9",
+    "semantic_hash": "584588d79cf0b23023fd52748a48a8a9"
+  },
+  "scripts/experiment_dunkest_conditional_tail_model_v1.py": {
+    "mtime": 1791900027.3704145,
+    "seen": 1791984392.917653,
+    "ast_hash": "e27666dca5b9d85cbfd727956884bc87",
+    "semantic_hash": "e27666dca5b9d85cbfd727956884bc87"
+  },
+  "scripts/experiment_dunkest_conditional_tail_model_v2.py": {
+    "mtime": 1791900158.1782029,
+    "seen": 1791984392.917654,
+    "ast_hash": "322eb9590216316eb7e084ac5ff0e40c",
+    "semantic_hash": "322eb9590216316eb7e084ac5ff0e40c"
+  },
+  "scripts/experiment_dunkest_minutes_rate_decomposition_v1.py": {
+    "mtime": 1791899792.0835268,
+    "seen": 1791984392.917654,
+    "ast_hash": "3a7190520d14034772e30ea3bf2062f5",
+    "semantic_hash": "3a7190520d14034772e30ea3bf2062f5"
+  },
+  "scripts/experiment_dunkest_past_only_residual_correction_v1.py": {
+    "mtime": 1791899370.9155982,
+    "seen": 1791984392.917655,
+    "ast_hash": "f80c7b5f0fae66ecb640030c68bfb037",
+    "semantic_hash": "f80c7b5f0fae66ecb640030c68bfb037"
+  },
+  "scripts/inspect_dunkest_player_games_api_v2.py": {
+    "mtime": 1791805715.7354994,
+    "seen": 1791984392.917655,
+    "ast_hash": "a3d1156ac0c9466db879a3514f280ada",
+    "semantic_hash": "a3d1156ac0c9466db879a3514f280ada"
+  },
+  "scripts/inspect_dunkest_player_profile_api_v1.py": {
+    "mtime": 1791805018.4866974,
+    "seen": 1791984392.917656,
+    "ast_hash": "889042c90b1cfd40de23640ae697fb8d",
+    "semantic_hash": "889042c90b1cfd40de23640ae697fb8d"
+  },
+  "scripts/inspect_dunkest_stats.py": {
+    "mtime": 1791728400.283571,
+    "seen": 1791984392.9176571,
+    "ast_hash": "e5c36c591ce8b288a1a2b46b7f7a94ed",
+    "semantic_hash": "e5c36c591ce8b288a1a2b46b7f7a94ed"
+  },
+  "scripts/inspect_dunkest_stats_iframe.py": {
+    "mtime": 1791729557.9608138,
+    "seen": 1791984392.9176571,
+    "ast_hash": "17f87da824c17da37b93b41d780ce3a9",
+    "semantic_hash": "17f87da824c17da37b93b41d780ce3a9"
+  },
+  "scripts/inspect_dunkest_stats_payload.py": {
+    "mtime": 1791730266.4652827,
+    "seen": 1791984392.917658,
+    "ast_hash": "9de869201addeff0438234bb8258c1b1",
+    "semantic_hash": "9de869201addeff0438234bb8258c1b1"
+  },
+  "scripts/inspect_dunkest_stats_ui.py": {
+    "mtime": 1791728654.8101351,
+    "seen": 1791984392.917658,
+    "ast_hash": "d25adb6a75fd246116d3aec34faef97e",
+    "semantic_hash": "d25adb6a75fd246116d3aec34faef97e"
+  },
+  "scripts/optimize_dunkest_pdk_model_walk_forward_20261012_v1.py": {
+    "mtime": 1791826267.6869047,
+    "seen": 1791984392.9176588,
+    "ast_hash": "30f2a1494fa12d9e27249aec7c86e328",
+    "semantic_hash": "30f2a1494fa12d9e27249aec7c86e328"
+  },
+  "scripts/render_dunkest_pdk_feature_families_report_v1.py": {
+    "mtime": 1791877676.1267874,
+    "seen": 1791984392.91766,
+    "ast_hash": "ed51fb80c0542734973b9d14dbb27181",
+    "semantic_hash": "ed51fb80c0542734973b9d14dbb27181"
+  },
+  "scripts/run_prospective_gw1_backtest.sh": {
+    "mtime": 1791876577.8302186,
+    "seen": 1791984392.91766,
+    "ast_hash": "8b2ff28c2f250e78814a15d1d2e86843",
+    "semantic_hash": "8b2ff28c2f250e78814a15d1d2e86843"
+  },
+  "scripts/run_prospective_gw1_strategy_comparison.sh": {
+    "mtime": 1791961054.9924204,
+    "seen": 1791984392.917661,
+    "ast_hash": "2e80c008f3483429da9fcee724619af2",
+    "semantic_hash": "2e80c008f3483429da9fcee724619af2"
+  },
+  "scripts/train_dunkest_historical_pdk_model.py": {
+    "mtime": 1791737094.973449,
+    "seen": 1791984392.917661,
+    "ast_hash": "32d7754139670913f77c5631d396922f",
+    "semantic_hash": "32d7754139670913f77c5631d396922f"
+  },
+  "scripts/train_dunkest_historical_pdk_model_v2.py": {
+    "mtime": 1791737621.4370704,
+    "seen": 1791984392.917662,
+    "ast_hash": "2c273dd64a75e7c6978397959fadfe17",
+    "semantic_hash": "2c273dd64a75e7c6978397959fadfe17"
+  },
+  "scripts/train_dunkest_historical_pdk_model_v3.py": {
+    "mtime": 1791738913.7245514,
+    "seen": 1791984392.9176629,
+    "ast_hash": "f243fbb164b6df0ba17f2b769d1c2044",
+    "semantic_hash": "f243fbb164b6df0ba17f2b769d1c2044"
+  },
+  "scripts/train_test_dunkest_pdk_holdout_2025-26_v1.py": {
+    "mtime": 1791820279.4681103,
+    "seen": 1791984392.9176629,
+    "ast_hash": "a351e79806236eff6b2182a7e15b303b",
+    "semantic_hash": "a351e79806236eff6b2182a7e15b303b"
+  },
+  "scripts/tune_coach_points_model_walk_forward_2018-26_v3.py": {
+    "mtime": 1791804572.9824035,
+    "seen": 1791984392.917664,
+    "ast_hash": "ee96abd5eb7d1566f7c139ae27104bb6",
+    "semantic_hash": "ee96abd5eb7d1566f7c139ae27104bb6"
+  },
+  "scripts/tune_dunkest_ensemble_weights_walk_forward_v1.py": {
+    "mtime": 1791825987.3053038,
+    "seen": 1791984392.917664,
+    "ast_hash": "a6ce779827e10f285945fe20fb2ebb81",
+    "semantic_hash": "a6ce779827e10f285945fe20fb2ebb81"
+  },
+  "scripts/tune_dunkest_pdk_predictor_train_only_v1.py": {
+    "mtime": 1791899069.361572,
+    "seen": 1791984392.917665,
+    "ast_hash": "7531bac6f5a3838b4da3ce16ef9cba18",
+    "semantic_hash": "7531bac6f5a3838b4da3ce16ef9cba18"
+  },
+  "scripts/validate_dunkest_historical_pdk_training.py": {
+    "mtime": 1791736984.1120656,
+    "seen": 1791984392.917666,
+    "ast_hash": "7b64483598dd1d3ff5acb6ae7a1ccc23",
+    "semantic_hash": "7b64483598dd1d3ff5acb6ae7a1ccc23"
+  },
+  "scripts/validate_dunkest_historical_pdk_training_v2.py": {
+    "mtime": 1791737543.0686295,
+    "seen": 1791984392.917666,
+    "ast_hash": "aee316eebabbc643847b0eb1e8983fc4",
+    "semantic_hash": "aee316eebabbc643847b0eb1e8983fc4"
+  },
+  "scripts/validate_dunkest_historical_pdk_training_v3.py": {
+    "mtime": 1791738787.4223344,
+    "seen": 1791984392.9176672,
+    "ast_hash": "f2f80830da410922c285347de083595e",
+    "semantic_hash": "f2f80830da410922c285347de083595e"
+  },
+  "scripts/validate_dunkest_multiseason_production_adapter_v3.py": {
+    "mtime": 1791973988.1475031,
+    "seen": 1791984392.9176672,
+    "ast_hash": "8579d8b4157cc89cb66b302c6d3c008e",
+    "semantic_hash": "8579d8b4157cc89cb66b302c6d3c008e"
+  },
+  "scripts/validate_dunkest_rookie_pdk_walk_forward_2020-26_v1.py": {
+    "mtime": 1791825761.6130116,
+    "seen": 1791984392.917668,
+    "ast_hash": "83a30275c4f1d1f6c289837c8eca320a",
+    "semantic_hash": "83a30275c4f1d1f6c289837c8eca320a"
+  },
+  "src/dunkest/__init__.py": {
+    "mtime": 1790712997.9776285,
+    "seen": 1791984392.917669,
+    "ast_hash": "363e5e4786de3ca06ad104b13585754b",
+    "semantic_hash": "363e5e4786de3ca06ad104b13585754b"
+  },
+  "src/dunkest/__main__.py": {
+    "mtime": 1791970661.9178817,
+    "seen": 1791984392.917669,
+    "ast_hash": "a280433342609119212652ba3c929969",
+    "semantic_hash": "a280433342609119212652ba3c929969"
+  },
+  "src/dunkest/backtest/__init__.py": {
+    "mtime": 1790713055.936606,
+    "seen": 1791984392.9176698,
+    "ast_hash": "68eb19e491665e572942a981a8b56968",
+    "semantic_hash": "68eb19e491665e572942a981a8b56968"
+  },
+  "src/dunkest/backtest/metrics.py": {
+    "mtime": 1791648955.693943,
+    "seen": 1791984392.9176698,
+    "ast_hash": "14509d3813453a337b9a6abb7e32a612",
+    "semantic_hash": "14509d3813453a337b9a6abb7e32a612"
+  },
+  "src/dunkest/backtest/realized_scoring.py": {
+    "mtime": 1791974035.5006804,
+    "seen": 1791984392.917671,
+    "ast_hash": "086fa0b6e332e5681b9b9dba03020ff4",
+    "semantic_hash": "086fa0b6e332e5681b9b9dba03020ff4"
+  },
+  "src/dunkest/backtest/timing.py": {
+    "mtime": 1791876459.183813,
+    "seen": 1791984392.917671,
+    "ast_hash": "bcd91f896e1713cf638a2fbb6b82aff4",
+    "semantic_hash": "bcd91f896e1713cf638a2fbb6b82aff4"
+  },
+  "src/dunkest/backtest/walk_forward.py": {
+    "mtime": 1791974069.3526843,
+    "seen": 1791984392.917672,
+    "ast_hash": "f83f5aa6ef05b65a20b55c0675d2db1c",
+    "semantic_hash": "f83f5aa6ef05b65a20b55c0675d2db1c"
+  },
+  "src/dunkest/config.py": {
+    "mtime": 1791973657.5364335,
+    "seen": 1791984392.9176729,
+    "ast_hash": "5f72c288e914f079a00465096ecf45f6",
+    "semantic_hash": "5f72c288e914f079a00465096ecf45f6"
+  },
+  "src/dunkest/data/__init__.py": {
+    "mtime": 1790713001.3718185,
+    "seen": 1791984392.9176729,
+    "ast_hash": "bc8b0573a54341404d15813ab9e5358d",
+    "semantic_hash": "bc8b0573a54341404d15813ab9e5358d"
+  },
+  "src/dunkest/data/access.py": {
+    "mtime": 1791799388.926659,
+    "seen": 1791984392.917674,
+    "ast_hash": "8e7dcd78610b759430bf4323ff02f82c",
+    "semantic_hash": "8e7dcd78610b759430bf4323ff02f82c"
+  },
+  "src/dunkest/data/cache.py": {
+    "mtime": 1791648955.6946974,
+    "seen": 1791984392.917674,
+    "ast_hash": "553b788da51b7e0f5da96cae4362da83",
+    "semantic_hash": "553b788da51b7e0f5da96cae4362da83"
+  },
+  "src/dunkest/data/dunkest/__init__.py": {
+    "mtime": 1790713019.2566617,
+    "seen": 1791984392.917675,
+    "ast_hash": "ea33c8da8857d01ece7c2234bbb2598b",
+    "semantic_hash": "ea33c8da8857d01ece7c2234bbb2598b"
+  },
+  "src/dunkest/data/dunkest/client.py": {
+    "mtime": 1791802824.262881,
+    "seen": 1791984392.917675,
+    "ast_hash": "7d969a61c69f0df0bb89740d60436fdb",
+    "semantic_hash": "7d969a61c69f0df0bb89740d60436fdb"
+  },
+  "src/dunkest/data/dunkest/fixtures.py": {
+    "mtime": 1791740525.375224,
+    "seen": 1791984392.9176772,
+    "ast_hash": "692aa75a9b30351dc9ec5ff1aeecc936",
+    "semantic_hash": "692aa75a9b30351dc9ec5ff1aeecc936"
+  },
+  "src/dunkest/data/dunkest/lineups_browser.py": {
+    "mtime": 1791972882.2548683,
+    "seen": 1791984392.917678,
+    "ast_hash": "acc719a59e64f04a2973135f2c0d9ce4",
+    "semantic_hash": "acc719a59e64f04a2973135f2c0d9ce4"
+  },
+  "src/dunkest/data/dunkest/official_pdk.py": {
+    "mtime": 1791796875.2323027,
+    "seen": 1791984392.917678,
+    "ast_hash": "0b4f148725ea7c1e87c8c6c667e6e918",
+    "semantic_hash": "0b4f148725ea7c1e87c8c6c667e6e918"
+  },
+  "src/dunkest/data/dunkest/opening.py": {
+    "mtime": 1791971131.0652597,
+    "seen": 1791984392.917679,
+    "ast_hash": "cbb1d77fd7821321f59e523e18e0a1f5",
+    "semantic_hash": "cbb1d77fd7821321f59e523e18e0a1f5"
+  },
+  "src/dunkest/data/http_client.py": {
+    "mtime": 1791648955.6948211,
+    "seen": 1791984392.917679,
+    "ast_hash": "5a23dac4447c50c9300b0dbd55870ffa",
+    "semantic_hash": "5a23dac4447c50c9300b0dbd55870ffa"
+  },
+  "src/dunkest/data/nba/__init__.py": {
+    "mtime": 1790713019.256666,
+    "seen": 1791984392.91768,
+    "ast_hash": "c0e7606be383e815821e56df9fef21ad",
+    "semantic_hash": "c0e7606be383e815821e56df9fef21ad"
+  },
+  "src/dunkest/data/nba/collector.py": {
+    "mtime": 1791388708.180025,
+    "seen": 1791984392.917681,
+    "ast_hash": "d3552136e55b12050b34e4d96e7ac0d2",
+    "semantic_hash": "d3552136e55b12050b34e4d96e7ac0d2"
+  },
+  "src/dunkest/data/nba/fallback_logs.py": {
+    "mtime": 1790798373.7191646,
+    "seen": 1791984392.917681,
+    "ast_hash": "f51db3af350cae822167801828dfd388",
+    "semantic_hash": "f51db3af350cae822167801828dfd388"
+  },
+  "src/dunkest/data/nba/prior_season.py": {
+    "mtime": 1790862070.1273665,
+    "seen": 1791984392.917682,
+    "ast_hash": "35bb76d1b4af670981512e187601cdb4",
+    "semantic_hash": "35bb76d1b4af670981512e187601cdb4"
+  },
+  "src/dunkest/data/temporal.py": {
+    "mtime": 1791797078.6603222,
+    "seen": 1791984392.917682,
+    "ast_hash": "4a63fad84705417c8ef50aaa190be48d",
+    "semantic_hash": "4a63fad84705417c8ef50aaa190be48d"
+  },
+  "src/dunkest/experiments/official_pdk.py": {
+    "mtime": 1791717747.0916493,
+    "seen": 1791984392.917683,
+    "ast_hash": "384e45b2e1937e61520a0d98e32d0e47",
+    "semantic_hash": "384e45b2e1937e61520a0d98e32d0e47"
+  },
+  "src/dunkest/features/__init__.py": {
+    "mtime": 1790713027.455012,
+    "seen": 1791984392.917683,
+    "ast_hash": "ac1fa9dedece859e6116983f44efba60",
+    "semantic_hash": "ac1fa9dedece859e6116983f44efba60"
+  },
+  "src/dunkest/features/builder.py": {
+    "mtime": 1791964370.9924781,
+    "seen": 1791984392.917684,
+    "ast_hash": "befb56d6f3c7f4623cb6d710ac608cdb",
+    "semantic_hash": "befb56d6f3c7f4623cb6d710ac608cdb"
+  },
+  "src/dunkest/features/minutes.py": {
+    "mtime": 1790869191.8329637,
+    "seen": 1791984392.917685,
+    "ast_hash": "0f487fdccb684f5881cc975431d32b5b",
+    "semantic_hash": "0f487fdccb684f5881cc975431d32b5b"
+  },
+  "src/dunkest/models/__init__.py": {
+    "mtime": 1790713030.6555874,
+    "seen": 1791984392.917685,
+    "ast_hash": "5fd0fc00e05ba5460687cbcabb77f5ba",
+    "semantic_hash": "5fd0fc00e05ba5460687cbcabb77f5ba"
+  },
+  "src/dunkest/models/capital_gain.py": {
+    "mtime": 1791917037.5197344,
+    "seen": 1791984392.917686,
+    "ast_hash": "00113a70214521f0e356fe618b8f2e5f",
+    "semantic_hash": "00113a70214521f0e356fe618b8f2e5f"
+  },
+  "src/dunkest/models/coach.py": {
+    "mtime": 1791964437.8229764,
+    "seen": 1791984392.917686,
+    "ast_hash": "c4bc8fcb258d47d06e80e5279f6abc92",
+    "semantic_hash": "c4bc8fcb258d47d06e80e5279f6abc92"
+  },
+  "src/dunkest/models/historical_pdk.py": {
+    "mtime": 1791826625.7052417,
+    "seen": 1791984392.917687,
+    "ast_hash": "bb827bf2e429592e4314ad5b518e66b0",
+    "semantic_hash": "bb827bf2e429592e4314ad5b518e66b0"
+  },
+  "src/dunkest/models/multiseason_training.py": {
+    "mtime": 1791973920.355044,
+    "seen": 1791984392.917687,
+    "ast_hash": "252b3dff5403ac89b4c66160a50de8b4",
+    "semantic_hash": "252b3dff5403ac89b4c66160a50de8b4"
+  },
+  "src/dunkest/models/predictor.py": {
+    "mtime": 1791974514.393487,
+    "seen": 1791984392.9176881,
+    "ast_hash": "e9dd94e147e46e6ced7df398b95c51df",
+    "semantic_hash": "e9dd94e147e46e6ced7df398b95c51df"
+  },
+  "src/dunkest/models/rookie_prior.py": {
+    "mtime": 1791916150.269032,
+    "seen": 1791984392.917689,
+    "ast_hash": "225ac8c553ff77ffbe8e6b216f9733f2",
+    "semantic_hash": "225ac8c553ff77ffbe8e6b216f9733f2"
+  },
+  "src/dunkest/names.py": {
+    "mtime": 1791963548.9806833,
+    "seen": 1791984392.917689,
+    "ast_hash": "0cf7084831ae042d176f05ab617bd09e",
+    "semantic_hash": "0cf7084831ae042d176f05ab617bd09e"
+  },
+  "src/dunkest/optimize/__init__.py": {
+    "mtime": 1790713039.649413,
+    "seen": 1791984392.91769,
+    "ast_hash": "e55f8aca4cc04ef76e6a0b2457a311a0",
+    "semantic_hash": "e55f8aca4cc04ef76e6a0b2457a311a0"
+  },
+  "src/dunkest/optimize/milp.py": {
+    "mtime": 1791798896.8259027,
+    "seen": 1791984392.91769,
+    "ast_hash": "2cf294b55a1538e43508a2ce1d1f90d9",
+    "semantic_hash": "2cf294b55a1538e43508a2ce1d1f90d9"
+  },
+  "src/dunkest/optimize/objective.py": {
+    "mtime": 1791377850.398942,
+    "seen": 1791984392.917691,
+    "ast_hash": "8d44c44b1ffddb277b7f263ea4a353fd",
+    "semantic_hash": "8d44c44b1ffddb277b7f263ea4a353fd"
+  },
+  "src/dunkest/pipeline/__init__.py": {
+    "mtime": 1790713061.9613543,
+    "seen": 1791984392.917691,
+    "ast_hash": "1d4490ee62bc17152d80d76003de693a",
+    "semantic_hash": "1d4490ee62bc17152d80d76003de693a"
+  },
+  "src/dunkest/pipeline/ablation.py": {
+    "mtime": 1790842773.6272602,
+    "seen": 1791984392.917692,
+    "ast_hash": "6e67be1992862eac08987476146bb383",
+    "semantic_hash": "6e67be1992862eac08987476146bb383"
+  },
+  "src/dunkest/pipeline/backtest.py": {
+    "mtime": 1790713179.6979878,
+    "seen": 1791984392.917692,
+    "ast_hash": "07dd96fe5db35d2a8adafc8a2d74b935",
+    "semantic_hash": "07dd96fe5db35d2a8adafc8a2d74b935"
+  },
+  "src/dunkest/pipeline/collect.py": {
+    "mtime": 1790713062.1469662,
+    "seen": 1791984392.917693,
+    "ast_hash": "67d35ff7fc2ae4aa8156d88756667b21",
+    "semantic_hash": "67d35ff7fc2ae4aa8156d88756667b21"
+  },
+  "src/dunkest/pipeline/importance.py": {
+    "mtime": 1790840057.1649225,
+    "seen": 1791984392.9176939,
+    "ast_hash": "77a59b319d630f25731994d764139e8f",
+    "semantic_hash": "77a59b319d630f25731994d764139e8f"
+  },
+  "src/dunkest/pipeline/optimize.py": {
+    "mtime": 1791645613.8001258,
+    "seen": 1791984392.9176939,
+    "ast_hash": "52c77ae7aae7a0bea8873bb814c3a4a2",
+    "semantic_hash": "52c77ae7aae7a0bea8873bb814c3a4a2"
+  },
+  "src/dunkest/pipeline/predict.py": {
+    "mtime": 1791556356.0,
+    "seen": 1791984392.917695,
+    "ast_hash": "6a9d807da34eb51c3508d25933ae6aea",
+    "semantic_hash": "6a9d807da34eb51c3508d25933ae6aea"
+  },
+  "src/dunkest/pipeline/season_opener.py": {
+    "mtime": 1791974145.0553765,
+    "seen": 1791984392.917695,
+    "ast_hash": "1e30ef893827ffd8ca566148c9208876",
+    "semantic_hash": "1e30ef893827ffd8ca566148c9208876"
+  },
+  "src/dunkest/pipeline/train.py": {
+    "mtime": 1791973687.2051709,
+    "seen": 1791984392.917696,
+    "ast_hash": "8c336fa8c19c7e5c9961f61d2c55161b",
+    "semantic_hash": "8c336fa8c19c7e5c9961f61d2c55161b"
+  },
+  "src/dunkest/report/__init__.py": {
+    "mtime": 1790713065.9408255,
+    "seen": 1791984392.917696,
+    "ast_hash": "433efaa8a12c5eadcba6dd9eae54d4bf",
+    "semantic_hash": "433efaa8a12c5eadcba6dd9eae54d4bf"
+  },
+  "src/dunkest/report/artifacts.py": {
+    "mtime": 1791974145.055735,
+    "seen": 1791984392.917697,
+    "ast_hash": "dcd05313225e9245ab51b08fc925406a",
+    "semantic_hash": "dcd05313225e9245ab51b08fc925406a"
+  },
+  "src/dunkest/report/console.py": {
+    "mtime": 1791644379.8702931,
+    "seen": 1791984392.9176981,
+    "ast_hash": "23e81e16c7b82523d8500ace2197b52a",
+    "semantic_hash": "23e81e16c7b82523d8500ace2197b52a"
+  },
+  "src/dunkest/report/season_opener.py": {
+    "mtime": 1791798910.599139,
+    "seen": 1791984392.9176981,
+    "ast_hash": "bb7266191ed547567857172ef404348f",
+    "semantic_hash": "bb7266191ed547567857172ef404348f"
+  },
+  "src/dunkest/report/terminal.py": {
+    "mtime": 1791802824.2626364,
+    "seen": 1791984392.917699,
+    "ast_hash": "99c9915db33febe3ecb95e09b10e067b",
+    "semantic_hash": "99c9915db33febe3ecb95e09b10e067b"
+  },
+  "src/dunkest/rules/__init__.py": {
+    "mtime": 1790713019.2566872,
+    "seen": 1791984392.917699,
+    "ast_hash": "14d096393510be94c5520549faa0b86a",
+    "semantic_hash": "14d096393510be94c5520549faa0b86a"
+  },
+  "src/dunkest/rules/coach.py": {
+    "mtime": 1791385143.2959597,
+    "seen": 1791984392.9177,
+    "ast_hash": "e4b39ffc5025fbd1b98c7924e52f041f",
+    "semantic_hash": "e4b39ffc5025fbd1b98c7924e52f041f"
+  },
+  "src/dunkest/rules/eligibility.py": {
+    "mtime": 1791963519.8933299,
+    "seen": 1791984392.9177,
+    "ast_hash": "44dda3196b707075780d481fb196f7f7",
+    "semantic_hash": "44dda3196b707075780d481fb196f7f7"
+  },
+  "src/dunkest/rules/pdk.py": {
+    "mtime": 1791645881.3391736,
+    "seen": 1791984392.917701,
+    "ast_hash": "883c374b16a6403871b66d0e2d7c7e6e",
+    "semantic_hash": "883c374b16a6403871b66d0e2d7c7e6e"
+  },
+  "src/dunkest/rules/roster.py": {
+    "mtime": 1791377940.6870618,
+    "seen": 1791984392.917702,
+    "ast_hash": "6adf751c9f995489210a1d5313c1b444",
+    "semantic_hash": "6adf751c9f995489210a1d5313c1b444"
+  },
+  "src/dunkest/targets/__init__.py": {
+    "mtime": 1790713077.4707832,
+    "seen": 1791984392.917702,
+    "ast_hash": "814d4cd3bb8b1c673e281ab8baa6cdab",
+    "semantic_hash": "814d4cd3bb8b1c673e281ab8baa6cdab"
+  },
+  "src/dunkest/targets/pdk_targets.py": {
+    "mtime": 1790713078.5917308,
+    "seen": 1791984392.917703,
+    "ast_hash": "c7d074dddf8b99a4a1c7e82804713b37",
+    "semantic_hash": "c7d074dddf8b99a4a1c7e82804713b37"
+  },
+  "src/dunkest/uncertainty/__init__.py": {
+    "mtime": 1790713036.4372773,
+    "seen": 1791984392.917703,
+    "ast_hash": "3c152b109d373ec67ce0b247ed32a6a6",
+    "semantic_hash": "3c152b109d373ec67ce0b247ed32a6a6"
+  },
+  "src/dunkest/uncertainty/quantiles.py": {
+    "mtime": 1791974328.042225,
+    "seen": 1791984392.9177039,
+    "ast_hash": "b7d63fd4984b8e6c83fd8bf12e0d24c3",
+    "semantic_hash": "b7d63fd4984b8e6c83fd8bf12e0d24c3"
+  },
+  "tests/test_ablation_inputs.py": {
+    "mtime": 1790844769.060411,
+    "seen": 1791984392.9177039,
+    "ast_hash": "14f41b8d55fae8be10ac73324089ef8f",
+    "semantic_hash": "14f41b8d55fae8be10ac73324089ef8f"
+  },
+  "tests/test_artifact_manifest.py": {
+    "mtime": 1791969977.3289638,
+    "seen": 1791984392.917705,
+    "ast_hash": "83b761c30de79ef35f24196772cdc1bc",
+    "semantic_hash": "83b761c30de79ef35f24196772cdc1bc"
+  },
+  "tests/test_backtest_market_snapshot.py": {
+    "mtime": 1790861726.0990365,
+    "seen": 1791984392.917706,
+    "ast_hash": "255187d2a0b7d68323cdd0e39dc214a3",
+    "semantic_hash": "255187d2a0b7d68323cdd0e39dc214a3"
+  },
+  "tests/test_backtest_metrics.py": {
+    "mtime": 1790777039.9896243,
+    "seen": 1791984392.917706,
+    "ast_hash": "237f1b03288a47c09095335cca03d977",
+    "semantic_hash": "237f1b03288a47c09095335cca03d977"
+  },
+  "tests/test_backtest_metrics_rank.py": {
+    "mtime": 1791648955.69517,
+    "seen": 1791984392.917707,
+    "ast_hash": "9d5a50ee7b37036f7a2f2473819aca9e",
+    "semantic_hash": "9d5a50ee7b37036f7a2f2473819aca9e"
+  },
+  "tests/test_backtest_risk_comparison.py": {
+    "mtime": 1790869565.434301,
+    "seen": 1791984392.917707,
+    "ast_hash": "00debd44dec596961f458a4a03d9a11d",
+    "semantic_hash": "00debd44dec596961f458a4a03d9a11d"
+  },
+  "tests/test_coach_market_snapshot.py": {
+    "mtime": 1790844752.3214455,
+    "seen": 1791984392.917708,
+    "ast_hash": "ac85b9ec0ab73d34b0af924f56cf6bd5",
+    "semantic_hash": "ac85b9ec0ab73d34b0af924f56cf6bd5"
+  },
+  "tests/test_coach_multiplier_sensitivity.py": {
+    "mtime": 1791881480.6663415,
+    "seen": 1791984392.917708,
+    "ast_hash": "d849f4104b49a49f32b880c2888ec97a",
+    "semantic_hash": "d849f4104b49a49f32b880c2888ec97a"
+  },
+  "tests/test_coach_prior_projection.py": {
+    "mtime": 1791964395.2963517,
+    "seen": 1791984392.917709,
+    "ast_hash": "32bc046ac33b3ab67ebc9f5acf6430da",
+    "semantic_hash": "32bc046ac33b3ab67ebc9f5acf6430da"
+  },
+  "tests/test_coach_probability_walk_forward.py": {
+    "mtime": 1791804350.3015988,
+    "seen": 1791984392.91771,
+    "ast_hash": "54e58f84b0aeb39c9c2e220aa9b90daa",
+    "semantic_hash": "54e58f84b0aeb39c9c2e220aa9b90daa"
+  },
+  "tests/test_coach_schedule_fallback.py": {
+    "mtime": 1791644216.3089974,
+    "seen": 1791984392.91771,
+    "ast_hash": "4338da48eb33c9e3bddcf0e3ef963e34",
+    "semantic_hash": "4338da48eb33c9e3bddcf0e3ef963e34"
+  },
+  "tests/test_coach_score_forecast_monte_carlo.py": {
+    "mtime": 1791882384.2177508,
+    "seen": 1791984392.917711,
+    "ast_hash": "0f610788a50133d7a25819a86090bce6",
+    "semantic_hash": "0f610788a50133d7a25819a86090bce6"
+  },
+  "tests/test_config_options.py": {
+    "mtime": 1791973873.9212403,
+    "seen": 1791984392.917711,
+    "ast_hash": "2a743f585e5bb2c81235a3057b6211f2",
+    "semantic_hash": "2a743f585e5bb2c81235a3057b6211f2"
+  },
+  "tests/test_current_season_collector.py": {
+    "mtime": 1791873540.4989543,
+    "seen": 1791984392.917712,
+    "ast_hash": "3fd5c8c3a3b1b222e504903634a993ec",
+    "semantic_hash": "3fd5c8c3a3b1b222e504903634a993ec"
+  },
+  "tests/test_dunkest_fixture_identity.py": {
+    "mtime": 1791740528.5856154,
+    "seen": 1791984392.917712,
+    "ast_hash": "d0b722dc6d62548fab3cef819c224ef0",
+    "semantic_hash": "d0b722dc6d62548fab3cef819c224ef0"
+  },
+  "tests/test_dunkest_historical_rounds.py": {
+    "mtime": 1791646479.7358932,
+    "seen": 1791984392.917713,
+    "ast_hash": "bd68a298ce71d355844d7ce8521e6b7d",
+    "semantic_hash": "bd68a298ce71d355844d7ce8521e6b7d"
+  },
+  "tests/test_h2h_final_holdout_features.py": {
+    "mtime": 1791883804.6683726,
+    "seen": 1791984392.9177139,
+    "ast_hash": "940d38997b7a4218dc446a69a27ca1e2",
+    "semantic_hash": "940d38997b7a4218dc446a69a27ca1e2"
+  },
+  "tests/test_h2h_history_features.py": {
+    "mtime": 1791883610.9684849,
+    "seen": 1791984392.9177139,
+    "ast_hash": "a0809429d593db0fb45a81bcd766fd45",
+    "semantic_hash": "a0809429d593db0fb45a81bcd766fd45"
+  },
+  "tests/test_h2h_lineup_features.py": {
+    "mtime": 1791884543.519725,
+    "seen": 1791984392.9177148,
+    "ast_hash": "d53af6fbd5e141fd21439eea37b373b6",
+    "semantic_hash": "d53af6fbd5e141fd21439eea37b373b6"
+  },
+  "tests/test_historical_collector_contamination_guard.py": {
+    "mtime": 1791838824.7783773,
+    "seen": 1791984392.9177148,
+    "ast_hash": "015c14b4c761a7cf750f4e0e53788b64",
+    "semantic_hash": "015c14b4c761a7cf750f4e0e53788b64"
+  },
+  "tests/test_historical_lineup_backtest.py": {
+    "mtime": 1791880364.2890077,
+    "seen": 1791984392.917716,
+    "ast_hash": "c2023374c8df03e1b8243b284dc73248",
+    "semantic_hash": "c2023374c8df03e1b8243b284dc73248"
+  },
+  "tests/test_historical_pdk_integration.py": {
+    "mtime": 1791821815.7451081,
+    "seen": 1791984392.917717,
+    "ast_hash": "eee06ff8237a339a26ae5d52a31cbf91",
+    "semantic_hash": "eee06ff8237a339a26ae5d52a31cbf91"
+  },
+  "tests/test_injury_eligibility.py": {
+    "mtime": 1791799398.6061072,
+    "seen": 1791984392.917717,
+    "ast_hash": "fa60fcc7df8c3367f5df1d1e870cb14f",
+    "semantic_hash": "fa60fcc7df8c3367f5df1d1e870cb14f"
+  },
+  "tests/test_injury_scraper.py": {
+    "mtime": 1791964046.6319222,
+    "seen": 1791984392.917718,
+    "ast_hash": "6c91aee96b575883a2caabb9b4682377",
+    "semantic_hash": "6c91aee96b575883a2caabb9b4682377"
+  },
+  "tests/test_lineup_annotation_sanity.py": {
+    "mtime": 1791971112.432607,
+    "seen": 1791984392.917718,
+    "ast_hash": "8b6c278370a5516152f7379d91dde6f1",
+    "semantic_hash": "8b6c278370a5516152f7379d91dde6f1"
+  },
+  "tests/test_lineups_scraper.py": {
+    "mtime": 1791972899.6240895,
+    "seen": 1791984392.9177191,
+    "ast_hash": "2e03e9e5f8274cc95e8d22b6e1e82208",
+    "semantic_hash": "2e03e9e5f8274cc95e8d22b6e1e82208"
+  },
+  "tests/test_multiseason_training.py": {
+    "mtime": 1791973915.231597,
+    "seen": 1791984392.9177191,
+    "ast_hash": "a5f3e6fde3edcb54d2025582b6be7b89",
+    "semantic_hash": "a5f3e6fde3edcb54d2025582b6be7b89"
+  },
+  "tests/test_names.py": {
+    "mtime": 1791963562.073909,
+    "seen": 1791984392.91772,
+    "ast_hash": "4e1c0926a8f62cadb49d28d8eb2b2c97",
+    "semantic_hash": "4e1c0926a8f62cadb49d28d8eb2b2c97"
+  },
+  "tests/test_nba_collection_integrity.py": {
+    "mtime": 1791377918.4404914,
+    "seen": 1791984392.91772,
+    "ast_hash": "7ca97d6bbac3c2d9614c2a983b5e3c2e",
+    "semantic_hash": "7ca97d6bbac3c2d9614c2a983b5e3c2e"
+  },
+  "tests/test_official_pdk_labels.py": {
+    "mtime": 1791796913.0327837,
+    "seen": 1791984392.917721,
+    "ast_hash": "0a40aa31802b4e7875ab5fdfc0fbb555",
+    "semantic_hash": "0a40aa31802b4e7875ab5fdfc0fbb555"
+  },
+  "tests/test_official_pdk_training_target_integration.py": {
+    "mtime": 1791974527.1472936,
+    "seen": 1791984392.9177222,
+    "ast_hash": "a5cb7bb4c13b5f390158cf88274202c9",
+    "semantic_hash": "a5cb7bb4c13b5f390158cf88274202c9"
+  },
+  "tests/test_opening_market_csv.py": {
+    "mtime": 1791971152.761642,
+    "seen": 1791984392.9177222,
+    "ast_hash": "a7688d0dcb4e0f6dc92351b3979bee2c",
+    "semantic_hash": "a7688d0dcb4e0f6dc92351b3979bee2c"
+  },
+  "tests/test_optimizer_smoke.py": {
+    "mtime": 1791798896.82604,
+    "seen": 1791984392.917723,
+    "ast_hash": "d6f5634c67c476da9585cd8ef133ecb9",
+    "semantic_hash": "d6f5634c67c476da9585cd8ef133ecb9"
+  },
+  "tests/test_player_stat_features.py": {
+    "mtime": 1791964377.2541544,
+    "seen": 1791984392.917723,
+    "ast_hash": "f8b0b0b3b745ca27aa817ec691a746b2",
+    "semantic_hash": "f8b0b0b3b745ca27aa817ec691a746b2"
+  },
+  "tests/test_portfolio_uncertainty.py": {
+    "mtime": 1790844698.68096,
+    "seen": 1791984392.917724,
+    "ast_hash": "dfc2ead4b2dc56d95c1b88b336f36fc7",
+    "semantic_hash": "dfc2ead4b2dc56d95c1b88b336f36fc7"
+  },
+  "tests/test_post_match_collection.py": {
+    "mtime": 1791878271.3406482,
+    "seen": 1791984392.917724,
+    "ast_hash": "a4ffb505a9c9cdf84ac50c8782d78768",
+    "semantic_hash": "a4ffb505a9c9cdf84ac50c8782d78768"
+  },
+  "tests/test_post_match_evaluator.py": {
+    "mtime": 1791878189.5970626,
+    "seen": 1791984392.9177248,
+    "ast_hash": "ea177fc851141f997f3aed8a0cab497a",
+    "semantic_hash": "ea177fc851141f997f3aed8a0cab497a"
+  },
+  "tests/test_realized_scores.py": {
+    "mtime": 1791648955.695273,
+    "seen": 1791984392.9177248,
+    "ast_hash": "3006a3d84ca8b13f59e84f3ea7ffbe14",
+    "semantic_hash": "3006a3d84ca8b13f59e84f3ea7ffbe14"
+  },
+  "tests/test_realized_scoring.py": {
+    "mtime": 1791973755.3117273,
+    "seen": 1791984392.917726,
+    "ast_hash": "993b65d6da79b434462e6805f25f826e",
+    "semantic_hash": "993b65d6da79b434462e6805f25f826e"
+  },
+  "tests/test_reliability_regressions.py": {
+    "mtime": 1791648955.6953728,
+    "seen": 1791984392.917727,
+    "ast_hash": "d7de4a74659c0b84ff9645e4a553f26f",
+    "semantic_hash": "d7de4a74659c0b84ff9645e4a553f26f"
+  },
+  "tests/test_role_minutes_projection.py": {
+    "mtime": 1791917452.1094506,
+    "seen": 1791984392.917727,
+    "ast_hash": "68bfb08f89b0850f021907a79dd26bb8",
+    "semantic_hash": "68bfb08f89b0850f021907a79dd26bb8"
+  },
+  "tests/test_rookie_prior.py": {
+    "mtime": 1791916167.533956,
+    "seen": 1791984392.917728,
+    "ast_hash": "7412f5d32924a18578bbdc24bed71d3b",
+    "semantic_hash": "7412f5d32924a18578bbdc24bed71d3b"
+  },
+  "tests/test_rules_pdk.py": {
+    "mtime": 1791645881.3602726,
+    "seen": 1791984392.917728,
+    "ast_hash": "08bf3c7fe1dc6944d30593a2a485f86b",
+    "semantic_hash": "08bf3c7fe1dc6944d30593a2a485f86b"
+  },
+  "tests/test_season_opener_credit_history.py": {
+    "mtime": 1791819066.7667694,
+    "seen": 1791984392.9177291,
+    "ast_hash": "ab9c87ffac7bcc867f0156fc2b4168f0",
+    "semantic_hash": "ab9c87ffac7bcc867f0156fc2b4168f0"
+  },
+  "tests/test_season_opener_fixture_readiness.py": {
+    "mtime": 1791971140.2471898,
+    "seen": 1791984392.9177291,
+    "ast_hash": "e01a156238df57f2ce1c2055cb0394d0",
+    "semantic_hash": "e01a156238df57f2ce1c2055cb0394d0"
+  },
+  "tests/test_temporal_validation.py": {
+    "mtime": 1791797078.660565,
+    "seen": 1791984392.91773,
+    "ast_hash": "7119ec543a8d1311a0702be31ad35c96",
+    "semantic_hash": "7119ec543a8d1311a0702be31ad35c96"
+  },
+  "tests/test_terminal_report.py": {
+    "mtime": 1791621709.7991588,
+    "seen": 1791984392.917731,
+    "ast_hash": "b1aac405d3593aaaf0e851d449debc0f",
+    "semantic_hash": "b1aac405d3593aaaf0e851d449debc0f"
+  },
+  "tests/test_uncertainty_mixture.py": {
+    "mtime": 1791974337.9920251,
+    "seen": 1791984392.917731,
+    "ast_hash": "092b02318f3470bc72886ba8229183cf",
+    "semantic_hash": "092b02318f3470bc72886ba8229183cf"
+  },
+  "tests/test_upcoming_schedule.py": {
+    "mtime": 1791388920.0285478,
+    "seen": 1791984392.917732,
+    "ast_hash": "49c5338bfd5dc206f3f4dde369cd7842",
+    "semantic_hash": "49c5338bfd5dc206f3f4dde369cd7842"
+  },
+  ".github/workflows/tests.yml": {
+    "mtime": 1791648955.6926837,
+    "seen": 1791984392.917732,
+    "ast_hash": "78d315e7e1cd0271b123a8724dbe84fd",
+    "semantic_hash": "78d315e7e1cd0271b123a8724dbe84fd"
+  },
+  "README.md": {
+    "mtime": 1791917411.2838035,
+    "seen": 1791984392.9177332,
+    "ast_hash": "f712b23ec3ff259ec086308443f6da8a",
+    "semantic_hash": "f712b23ec3ff259ec086308443f6da8a"
+  },
+  "config/backtest.example.yaml": {
+    "mtime": 1791648955.693108,
+    "seen": 1791984392.9177332,
+    "ast_hash": "696c11788c745360c413a2c3d58f2f38",
+    "semantic_hash": "696c11788c745360c413a2c3d58f2f38"
+  },
+  "config/default.yaml": {
+    "mtime": 1791973657.536976,
+    "seen": 1791984392.917734,
+    "ast_hash": "2b75abf5675c97f8575ae3cf37afb73e",
+    "semantic_hash": "2b75abf5675c97f8575ae3cf37afb73e"
+  },
+  "config/nba_coaches_2025.yaml": {
+    "mtime": 1790712994.3253202,
+    "seen": 1791984392.917734,
+    "ast_hash": "acdc76f6c28c97cd3ceedf8e1abb6480",
+    "semantic_hash": "acdc76f6c28c97cd3ceedf8e1abb6480"
+  },
+  "config/nba_coaches_2026.yaml": {
+    "mtime": 1790719406.530739,
+    "seen": 1791984392.9177349,
+    "ast_hash": "5ef84b723abb367aa5f6e2b3a19806ef",
+    "semantic_hash": "5ef84b723abb367aa5f6e2b3a19806ef"
+  },
+  "config/roster.example.yaml": {
+    "mtime": 1790712993.3389094,
+    "seen": 1791984392.917736,
+    "ast_hash": "1724ba924f0872a0a9ae4b850fffcc5c",
+    "semantic_hash": "1724ba924f0872a0a9ae4b850fffcc5c"
+  },
+  "config/season_opener.yaml": {
+    "mtime": 1791973657.5375571,
+    "seen": 1791984392.917736,
+    "ast_hash": "a37068f28fd9de96c26843b6fd91fe08",
+    "semantic_hash": "a37068f28fd9de96c26843b6fd91fe08"
+  },
+  "data/README.md": {
+    "mtime": 1791979596.6212916,
+    "seen": 1791984392.917737,
+    "ast_hash": "441d33af3172e6a183376dda4d9fefb0",
+    "semantic_hash": "441d33af3172e6a183376dda4d9fefb0"
+  },
+  "docs/data_sources.md": {
+    "mtime": 1791646587.4348252,
+    "seen": 1791984392.917737,
+    "ast_hash": "ccc1cfec170125a78e34b6f71449d2b7",
+    "semantic_hash": "ccc1cfec170125a78e34b6f71449d2b7"
+  },
+  "docs/fixture-temporal-audit.md": {
+    "mtime": 1791388554.7211897,
+    "seen": 1791984392.917738,
+    "ast_hash": "2689ed77ba3d7c8f2827111b904207cf",
+    "semantic_hash": "2689ed77ba3d7c8f2827111b904207cf"
+  },
+  "docs/implementation-plan.md": {
+    "mtime": 1791621819.1606483,
+    "seen": 1791984392.917738,
+    "ast_hash": "2e0e8fd623ec3b490906387e3e98badc",
+    "semantic_hash": "2e0e8fd623ec3b490906387e3e98badc"
+  },
+  "docs/rookie-college-prior.md": {
+    "mtime": 1790842028.8758032,
+    "seen": 1791984392.917739,
+    "ast_hash": "e43bfec894da1ac126a2a547ec3627df",
+    "semantic_hash": "e43bfec894da1ac126a2a547ec3627df"
+  },
+  "reports/audit/audit_20261007.md": {
+    "mtime": 1791386915.163361,
+    "seen": 1791984392.91774,
+    "ast_hash": "9f40e5a39620bbcb6232d04a2bf3f98e",
+    "semantic_hash": "9f40e5a39620bbcb6232d04a2bf3f98e"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_blend_v1.md": {
+    "mtime": 1791900610.2846036,
+    "seen": 1791984392.91774,
+    "ast_hash": "321eeb8197c6d1cb504e8fb9a31d4745",
+    "semantic_hash": "321eeb8197c6d1cb504e8fb9a31d4745"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_model_v1.md": {
+    "mtime": 1791900080.97647,
+    "seen": 1791984392.917741,
+    "ast_hash": "164ed1a7817d692b4265e4573ec84eec",
+    "semantic_hash": "164ed1a7817d692b4265e4573ec84eec"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_model_v2.md": {
+    "mtime": 1791900198.0867884,
+    "seen": 1791984392.917741,
+    "ast_hash": "75776ccd5f216c4c7be534babda4d6c3",
+    "semantic_hash": "75776ccd5f216c4c7be534babda4d6c3"
+  },
+  "reports/audit/dunkest_20261013_conditional_tail_paired_bootstrap_v1.md": {
+    "mtime": 1791900399.6920276,
+    "seen": 1791984392.917742,
+    "ast_hash": "55a6e2f693fbb2831477ae73dc5cc0bc",
+    "semantic_hash": "55a6e2f693fbb2831477ae73dc5cc0bc"
+  },
+  "reports/audit/dunkest_20261013_minutes_rate_decomposition_v1.md": {
+    "mtime": 1791900492.9838457,
+    "seen": 1791984392.9177432,
+    "ast_hash": "33f1f31fed525b901e18d53fad626609",
+    "semantic_hash": "33f1f31fed525b901e18d53fad626609"
+  },
+  "reports/audit/dunkest_20261013_past_only_residual_correction_v1.md": {
+    "mtime": 1791899383.4044247,
+    "seen": 1791984392.9177432,
+    "ast_hash": "a2f857a475f183ee2358378b99488210",
+    "semantic_hash": "a2f857a475f183ee2358378b99488210"
+  },
+  "reports/audit/dunkest_autonomous_validation_20261014_v1.md": {
+    "mtime": 1791973020.3685,
+    "seen": 1791984392.9177442,
+    "ast_hash": "a29b9990bedf36a904ce0a391c7dda5e",
+    "semantic_hash": "a29b9990bedf36a904ce0a391c7dda5e"
+  },
+  "reports/audit/dunkest_blend_sequential_weight_validation_20261013_v1.md": {
+    "mtime": 1791900950.3546581,
+    "seen": 1791984392.9177449,
+    "ast_hash": "2a4e92a788c7dccd91859e1e5223583e",
+    "semantic_hash": "2a4e92a788c7dccd91859e1e5223583e"
+  },
+  "reports/audit/dunkest_bos_cle_validity_cross_endpoint_check_v1.md": {
+    "mtime": 1791812243.312815,
+    "seen": 1791984392.9177449,
+    "ast_hash": "fcbf7c27ff817b1be13b170a616a09e5",
+    "semantic_hash": "fcbf7c27ff817b1be13b170a616a09e5"
+  },
+  "reports/audit/dunkest_calendar_api_endpoint_audit_v1.md": {
+    "mtime": 1791807301.237362,
+    "seen": 1791984392.9177458,
+    "ast_hash": "4227d0f60bc0eafe64de18b207706f43",
+    "semantic_hash": "4227d0f60bc0eafe64de18b207706f43"
+  },
+  "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1.md": {
+    "mtime": 1791879467.2499483,
+    "seen": 1791984392.9177458,
+    "ast_hash": "a94c5f994bb058ea2cb461e3dc15b904",
+    "semantic_hash": "a94c5f994bb058ea2cb461e3dc15b904"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v1.md": {
+    "mtime": 1791881424.2686775,
+    "seen": 1791984392.917747,
+    "ast_hash": "b8e21acd703577227796344a80ef89bd",
+    "semantic_hash": "b8e21acd703577227796344a80ef89bd"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v2.md": {
+    "mtime": 1791881452.0350661,
+    "seen": 1791984392.917748,
+    "ast_hash": "dbadb00603d61772e25436b7b15117b0",
+    "semantic_hash": "dbadb00603d61772e25436b7b15117b0"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v3.md": {
+    "mtime": 1791881522.3716295,
+    "seen": 1791984392.917748,
+    "ast_hash": "60d34d7978513b8d8ef124c6ee9ac4d1",
+    "semantic_hash": "60d34d7978513b8d8ef124c6ee9ac4d1"
+  },
+  "reports/audit/dunkest_coach_official_multiplier_sensitivity_supersession_20261013.md": {
+    "mtime": 1791881480.6342003,
+    "seen": 1791984392.917749,
+    "ast_hash": "507c50622a60bfb1cd0c4083e6b2db84",
+    "semantic_hash": "507c50622a60bfb1cd0c4083e6b2db84"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_supersession_20261013.md": {
+    "mtime": 1791882288.625054,
+    "seen": 1791984392.9177501,
+    "ast_hash": "3e9da0b4d3f1472c920481e50e7bb0e5",
+    "semantic_hash": "3e9da0b4d3f1472c920481e50e7bb0e5"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v1.md": {
+    "mtime": 1791882181.7321713,
+    "seen": 1791984392.9177501,
+    "ast_hash": "9abf5ed28b6fbc4245f3dfe109c7cf2b",
+    "semantic_hash": "9abf5ed28b6fbc4245f3dfe109c7cf2b"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v2.md": {
+    "mtime": 1791882235.3226385,
+    "seen": 1791984392.917751,
+    "ast_hash": "eafa49da13f7f95e66f484f18488327d",
+    "semantic_hash": "eafa49da13f7f95e66f484f18488327d"
+  },
+  "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v3.md": {
+    "mtime": 1791882384.1825218,
+    "seen": 1791984392.917751,
+    "ast_hash": "0bf6cb5d5146cc3e29c67ae5b76196d3",
+    "semantic_hash": "0bf6cb5d5146cc3e29c67ae5b76196d3"
+  },
+  "reports/audit/dunkest_coach_score_monte_carlo_bootstrap_supersession_20261013.md": {
+    "mtime": 1791882302.541988,
+    "seen": 1791984392.917752,
+    "ast_hash": "93bc6d6d2736ff0b503a466dd02aab5b",
+    "semantic_hash": "93bc6d6d2736ff0b503a466dd02aab5b"
+  },
+  "reports/audit/dunkest_coach_score_monte_carlo_paired_bootstrap_2018-26_v1.md": {
+    "mtime": 1791882266.9846244,
+    "seen": 1791984392.917753,
+    "ast_hash": "ce357053d8a8d7488b5676e10180621c",
+    "semantic_hash": "ce357053d8a8d7488b5676e10180621c"
+  },
+  "reports/audit/dunkest_coach_score_monte_carlo_paired_bootstrap_2018-26_v2.md": {
+    "mtime": 1791882342.3151422,
+    "seen": 1791984392.917753,
+    "ast_hash": "e270281bc519da440471c463cd306b04",
+    "semantic_hash": "e270281bc519da440471c463cd306b04"
+  },
+  "reports/audit/dunkest_code_audit_20261014_v1.md": {
+    "mtime": 1791964484.9795468,
+    "seen": 1791984392.9177542,
+    "ast_hash": "3d7b899e35df8ff2f2d8c040af055229",
+    "semantic_hash": "3d7b899e35df8ff2f2d8c040af055229"
+  },
+  "reports/audit/dunkest_current_season_id_resolution_2026-27_v1.md": {
+    "mtime": 1791829832.5454175,
+    "seen": 1791984392.917755,
+    "ast_hash": "a37a97da312db41570994e019ae551b9",
+    "semantic_hash": "a37a97da312db41570994e019ae551b9"
+  },
+  "reports/audit/dunkest_current_season_id_resolution_2026-27_v2.md": {
+    "mtime": 1791838348.10368,
+    "seen": 1791984392.917755,
+    "ast_hash": "fc9a7a2fcdfd95ee6d4bfe2416164b79",
+    "semantic_hash": "fc9a7a2fcdfd95ee6d4bfe2416164b79"
+  },
+  "reports/audit/dunkest_date_assisted_link_paired_eval_20261013_v1.md": {
+    "mtime": 1791893022.048484,
+    "seen": 1791984392.9177558,
+    "ast_hash": "4f067b9315c9abb1b91846f0fcb77e29",
+    "semantic_hash": "4f067b9315c9abb1b91846f0fcb77e29"
+  },
+  "reports/audit/dunkest_ensemble_weights_walk_forward_20261012T172631Z.md": {
+    "mtime": 1791825991.9899042,
+    "seen": 1791984392.9177558,
+    "ast_hash": "1273fe6d233fcff65ef6724f8b144de5",
+    "semantic_hash": "1273fe6d233fcff65ef6724f8b144de5"
+  },
+  "reports/audit/dunkest_gw1_strategy_variants_20261013_v1.md": {
+    "mtime": 1791960735.7208266,
+    "seen": 1791984392.917757,
+    "ast_hash": "50ec58a15b4883f1258519d8d28be1a5",
+    "semantic_hash": "50ec58a15b4883f1258519d8d28be1a5"
+  },
+  "reports/audit/dunkest_gw1_strategy_variants_20261013_v2.md": {
+    "mtime": 1791961026.9709003,
+    "seen": 1791984392.917758,
+    "ast_hash": "30328b7da4bb832264b8d8aca4aa4e94",
+    "semantic_hash": "30328b7da4bb832264b8d8aca4aa4e94"
+  },
+  "reports/audit/dunkest_h2h_final_holdout_2025-26_v1.md": {
+    "mtime": 1791883784.9383214,
+    "seen": 1791984392.917758,
+    "ast_hash": "2c8a8d27ef1e19d0c9be90773213bc40",
+    "semantic_hash": "2c8a8d27ef1e19d0c9be90773213bc40"
+  },
+  "reports/audit/dunkest_h2h_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791883567.5211344,
+    "seen": 1791984392.917759,
+    "ast_hash": "dec80b691f21c445df16ef153224dae2",
+    "semantic_hash": "dec80b691f21c445df16ef153224dae2"
+  },
+  "reports/audit/dunkest_historical_backtest_reframed_20261013_v1.md": {
+    "mtime": 1791880438.6813488,
+    "seen": 1791984392.917759,
+    "ast_hash": "06f2929076cc8ce5141248f7cab4c93c",
+    "semantic_hash": "06f2929076cc8ce5141248f7cab4c93c"
+  },
+  "reports/audit/dunkest_historical_data_training_2018-25_v1.md": {
+    "mtime": 1791737896.8224268,
+    "seen": 1791984392.91776,
+    "ast_hash": "6797f535dcc823da5e81c707ed2f43d6",
+    "semantic_hash": "6797f535dcc823da5e81c707ed2f43d6"
+  },
+  "reports/audit/dunkest_historical_data_training_2018-26_v2.md": {
+    "mtime": 1791739140.8483396,
+    "seen": 1791984392.917761,
+    "ast_hash": "6f0277d7ad49d9688902cad19e4cae20",
+    "semantic_hash": "6f0277d7ad49d9688902cad19e4cae20"
+  },
+  "reports/audit/dunkest_historical_endpoint_discovery_v1.md": {
+    "mtime": 1791812486.40296,
+    "seen": 1791984392.917761,
+    "ast_hash": "5cd170add422f438deba5778b3049afe",
+    "semantic_hash": "5cd170add422f438deba5778b3049afe"
+  },
+  "reports/audit/dunkest_historical_game_linked_rows_20261013_v2.md": {
+    "mtime": 1791891471.4322186,
+    "seen": 1791984392.917762,
+    "ast_hash": "5349606f20ffa26d903cd897ddbdb26f",
+    "semantic_hash": "5349606f20ffa26d903cd897ddbdb26f"
+  },
+  "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.md": {
+    "mtime": 1791893703.7204967,
+    "seen": 1791984392.917762,
+    "ast_hash": "364de3c758f4a0794958dd4e60dfc135",
+    "semantic_hash": "364de3c758f4a0794958dd4e60dfc135"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v1.md": {
+    "mtime": 1791890090.5138385,
+    "seen": 1791984392.917763,
+    "ast_hash": "021df7f85786cfaa457f2e3a9565275a",
+    "semantic_hash": "021df7f85786cfaa457f2e3a9565275a"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v2.md": {
+    "mtime": 1791890705.964064,
+    "seen": 1791984392.9177642,
+    "ast_hash": "258224aa3a7493137d3c4fdcd583405e",
+    "semantic_hash": "258224aa3a7493137d3c4fdcd583405e"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v3.md": {
+    "mtime": 1791890807.025396,
+    "seen": 1791984392.9177642,
+    "ast_hash": "2389f65c133adc68ddf47a03c6e52037",
+    "semantic_hash": "2389f65c133adc68ddf47a03c6e52037"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v4.md": {
+    "mtime": 1791891484.5952868,
+    "seen": 1791984392.9177651,
+    "ast_hash": "f5da35e1b73a5ab371436ae9ff01bc5a",
+    "semantic_hash": "f5da35e1b73a5ab371436ae9ff01bc5a"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v5.md": {
+    "mtime": 1791892007.7212954,
+    "seen": 1791984392.9177659,
+    "ast_hash": "be414c495c7f08e4a373d7c878473a2c",
+    "semantic_hash": "be414c495c7f08e4a373d7c878473a2c"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v6.md": {
+    "mtime": 1791893066.536778,
+    "seen": 1791984392.9177659,
+    "ast_hash": "4a795178a4a8548d7bed09f85573d155",
+    "semantic_hash": "4a795178a4a8548d7bed09f85573d155"
+  },
+  "reports/audit/dunkest_historical_lineup_candidate_universe_supersession_20261013_v7.md": {
+    "mtime": 1791893703.7210574,
+    "seen": 1791984392.9177668,
+    "ast_hash": "fb5d01fecc4204326643eefdf8418fd6",
+    "semantic_hash": "fb5d01fecc4204326643eefdf8418fd6"
+  },
+  "reports/audit/dunkest_historical_lineup_infeasibility_20261013_v1.md": {
+    "mtime": 1791889666.3969865,
+    "seen": 1791984392.9177668,
+    "ast_hash": "bc55c21ea48d0b7575a473569cb70640",
+    "semantic_hash": "bc55c21ea48d0b7575a473569cb70640"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v1.md": {
+    "mtime": 1791978469.7139482,
+    "seen": 1791984392.917768,
+    "ast_hash": "94ed32d7678d0132ed00a4a9e23041f3",
+    "semantic_hash": "94ed32d7678d0132ed00a4a9e23041f3"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v1_bootstrap.md": {
+    "mtime": 1791978450.5916848,
+    "seen": 1791984392.917769,
+    "ast_hash": "4d30cf27cba60071e3b133db6b24f3c3",
+    "semantic_hash": "4d30cf27cba60071e3b133db6b24f3c3"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v1_superseded.md": {
+    "mtime": 1791979592.6199641,
+    "seen": 1791984392.917769,
+    "ast_hash": "a3ae68877e9b7357eac1b9dcd2751ae2",
+    "semantic_hash": "a3ae68877e9b7357eac1b9dcd2751ae2"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v2.md": {
+    "mtime": 1791979247.9500716,
+    "seen": 1791984392.91777,
+    "ast_hash": "0f00878df8dfc3d7bf7000bd4c2885dd",
+    "semantic_hash": "0f00878df8dfc3d7bf7000bd4c2885dd"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v2_bootstrap.md": {
+    "mtime": 1791978886.309176,
+    "seen": 1791984392.91777,
+    "ast_hash": "e4ebf0f73b7daaca6fb9a449bff437fe",
+    "semantic_hash": "e4ebf0f73b7daaca6fb9a449bff437fe"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v2_superseded.md": {
+    "mtime": 1791979240.368509,
+    "seen": 1791984392.917771,
+    "ast_hash": "fe5d0d53982da7164abbfabebaf11adf",
+    "semantic_hash": "fe5d0d53982da7164abbfabebaf11adf"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v3.md": {
+    "mtime": 1791979581.4787831,
+    "seen": 1791984392.917772,
+    "ast_hash": "78e3450d29d5fffba0e037bfd52ab759",
+    "semantic_hash": "78e3450d29d5fffba0e037bfd52ab759"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v3_bootstrap.md": {
+    "mtime": 1791979585.5858204,
+    "seen": 1791984392.917772,
+    "ast_hash": "a15de4014ddef8993c8a9a8a37ea4a97",
+    "semantic_hash": "a15de4014ddef8993c8a9a8a37ea4a97"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v4.md": {
+    "mtime": 1791981580.9138668,
+    "seen": 1791984392.917773,
+    "ast_hash": "022366238d65f153a796e6da643b7d4e",
+    "semantic_hash": "022366238d65f153a796e6da643b7d4e"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v4_superseded.md": {
+    "mtime": 1791981580.9148371,
+    "seen": 1791984392.917773,
+    "ast_hash": "ca1b1415d780beadede5d21f9b790a6f",
+    "semantic_hash": "ca1b1415d780beadede5d21f9b790a6f"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v5.md": {
+    "mtime": 1791981833.9339538,
+    "seen": 1791984392.917774,
+    "ast_hash": "a16b9b1e0cb8303265232377ab38b627",
+    "semantic_hash": "a16b9b1e0cb8303265232377ab38b627"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v5_proxy_bootstrap.md": {
+    "mtime": 1791981749.825573,
+    "seen": 1791984392.9177752,
+    "ast_hash": "7d79a1ff72543189f08894fad925859b",
+    "semantic_hash": "7d79a1ff72543189f08894fad925859b"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v6.md": {
+    "mtime": 1791983280.325759,
+    "seen": 1791984392.9177752,
+    "ast_hash": "49508473b2685b68b6ecfc94874d6132",
+    "semantic_hash": "49508473b2685b68b6ecfc94874d6132"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7.md": {
+    "mtime": 1791983846.7525032,
+    "seen": 1791984392.9177759,
+    "ast_hash": "3573e750032adceff2d34f69a9dd2f11",
+    "semantic_hash": "3573e750032adceff2d34f69a9dd2f11"
+  },
+  "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7_proxy_bootstrap.md": {
+    "mtime": 1791983734.274932,
+    "seen": 1791984392.9177768,
+    "ast_hash": "ea0c308c9380ae09abd8e49be4231dca",
+    "semantic_hash": "ea0c308c9380ae09abd8e49be4231dca"
+  },
+  "reports/audit/dunkest_historical_lineups_h2h_20261013_v6.md": {
+    "mtime": 1791884668.0328014,
+    "seen": 1791984392.9177768,
+    "ast_hash": "2f422ec18825e6471c076d04f1b4356e",
+    "semantic_hash": "2f422ec18825e6471c076d04f1b4356e"
+  },
+  "reports/audit/dunkest_historical_lineups_h2h_20261013_v6_paired_bootstrap.md": {
+    "mtime": 1791884668.0323381,
+    "seen": 1791984392.917778,
+    "ast_hash": "9b82e50bc603e51e860965ac4b02f8b6",
+    "semantic_hash": "9b82e50bc603e51e860965ac4b02f8b6"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v1.md": {
+    "mtime": 1791879741.7696824,
+    "seen": 1791984392.917779,
+    "ast_hash": "80ba8d9d53d647d462e63473892e4f03",
+    "semantic_hash": "80ba8d9d53d647d462e63473892e4f03"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v2.md": {
+    "mtime": 1791879818.0242453,
+    "seen": 1791984392.917779,
+    "ast_hash": "65aacc1646936a1f5a0505b9eee18af1",
+    "semantic_hash": "65aacc1646936a1f5a0505b9eee18af1"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v4.md": {
+    "mtime": 1791880074.3930037,
+    "seen": 1791984392.91778,
+    "ast_hash": "08e10449f018f42221500c7164d79f0c",
+    "semantic_hash": "08e10449f018f42221500c7164d79f0c"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v5.md": {
+    "mtime": 1791880329.9749815,
+    "seen": 1791984392.91778,
+    "ast_hash": "e1258eaeeb3f58bc69c9526d8f241cf0",
+    "semantic_hash": "e1258eaeeb3f58bc69c9526d8f241cf0"
+  },
+  "reports/audit/dunkest_historical_lineups_lagged_market_supersession_20261013.md": {
+    "mtime": 1791880438.681493,
+    "seen": 1791984392.9177809,
+    "ast_hash": "cb54bc3ee38dc5586a28d7a5a906f2eb",
+    "semantic_hash": "cb54bc3ee38dc5586a28d7a5a906f2eb"
+  },
+  "reports/audit/dunkest_historical_lineups_rest_schedule_20261013_v1.md": {
+    "mtime": 1791886289.4849062,
+    "seen": 1791984392.917782,
+    "ast_hash": "597054c85df37f426a4efcd0f24e65b1",
+    "semantic_hash": "597054c85df37f426a4efcd0f24e65b1"
+  },
+  "reports/audit/dunkest_historical_lineups_rest_schedule_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791885829.8670332,
+    "seen": 1791984392.917782,
+    "ast_hash": "11b1958786ba9d4d6de084df7bbebd56",
+    "semantic_hash": "11b1958786ba9d4d6de084df7bbebd56"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v1.md": {
+    "mtime": 1791888346.7903032,
+    "seen": 1791984392.917783,
+    "ast_hash": "14442b0fa646d61b9ad38e9cfc5792ae",
+    "semantic_hash": "14442b0fa646d61b9ad38e9cfc5792ae"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v2.md": {
+    "mtime": 1791888714.9837503,
+    "seen": 1791984392.917783,
+    "ast_hash": "097e21c6b93cdafe1c71d1eb4c10be65",
+    "semantic_hash": "097e21c6b93cdafe1c71d1eb4c10be65"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791888697.2868311,
+    "seen": 1791984392.917784,
+    "ast_hash": "04ecbbd55fee4391fa71ec6c637cf700",
+    "semantic_hash": "04ecbbd55fee4391fa71ec6c637cf700"
+  },
+  "reports/audit/dunkest_historical_lineups_sequential_transfer_supersession_20261013_v1.md": {
+    "mtime": 1791889645.295953,
+    "seen": 1791984392.9177852,
+    "ast_hash": "f72ed4b23c7b7fe548a564cfbcab22a2",
+    "semantic_hash": "f72ed4b23c7b7fe548a564cfbcab22a2"
+  },
+  "reports/audit/dunkest_historical_lineups_strict_actual_coverage_20261014_v1.md": {
+    "mtime": 1791977652.0602224,
+    "seen": 1791984392.9177852,
+    "ast_hash": "73fab8e4a5b31c06120b3e9a54eee100",
+    "semantic_hash": "73fab8e4a5b31c06120b3e9a54eee100"
+  },
+  "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1.md": {
+    "mtime": 1791891647.3195405,
+    "seen": 1791984392.9177861,
+    "ast_hash": "dea628719bdb00e433e8ccb3c219cc72",
+    "semantic_hash": "dea628719bdb00e433e8ccb3c219cc72"
+  },
+  "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1.md": {
+    "mtime": 1791891898.2275412,
+    "seen": 1791984392.9177868,
+    "ast_hash": "cc9629a2b8daf3f51485ee31382537b1",
+    "semantic_hash": "cc9629a2b8daf3f51485ee31382537b1"
+  },
+  "reports/audit/dunkest_historical_pdk_production_blend_20261012T162125Z_5b670240_v1.md": {
+    "mtime": 1791822192.6205907,
+    "seen": 1791984392.9177868,
+    "ast_hash": "d4857ea7882c3ee187db7ed2ada70ece",
+    "semantic_hash": "d4857ea7882c3ee187db7ed2ada70ece"
+  },
+  "reports/audit/dunkest_historical_pdk_production_blend_20261012T162434Z_7a50d394_v1.md": {
+    "mtime": 1791822339.4762597,
+    "seen": 1791984392.9177878,
+    "ast_hash": "e075182e77069178d3b791cce4969bb7",
+    "semantic_hash": "e075182e77069178d3b791cce4969bb7"
+  },
+  "reports/audit/dunkest_historical_round_game_mapping_20261013_v1.md": {
+    "mtime": 1791890069.3058813,
+    "seen": 1791984392.9177878,
+    "ast_hash": "44cf687222728b6068393e086a82a77d",
+    "semantic_hash": "44cf687222728b6068393e086a82a77d"
+  },
+  "reports/audit/dunkest_historical_round_game_residuals_20261013_v1.md": {
+    "mtime": 1791890783.8808682,
+    "seen": 1791984392.917789,
+    "ast_hash": "bfa37096358c5a985247213260626005",
+    "semantic_hash": "bfa37096358c5a985247213260626005"
+  },
+  "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2.md": {
+    "mtime": 1791890448.5684347,
+    "seen": 1791984392.91779,
+    "ast_hash": "0c91a3e294f7a642fa4789f72ad2a721",
+    "semantic_hash": "0c91a3e294f7a642fa4789f72ad2a721"
+  },
+  "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.md": {
+    "mtime": 1791890629.2285037,
+    "seen": 1791984392.91779,
+    "ast_hash": "811ff3afa87991adf128475773b93ab2",
+    "semantic_hash": "811ff3afa87991adf128475773b93ab2"
+  },
+  "reports/audit/dunkest_historical_schedule_coarse_survey_v1.md": {
+    "mtime": 1791812391.1535423,
+    "seen": 1791984392.917791,
+    "ast_hash": "f62827e11feb573f24b35a692a0f35f1",
+    "semantic_hash": "f62827e11feb573f24b35a692a0f35f1"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v1.md": {
+    "mtime": 1791879372.3120449,
+    "seen": 1791984392.917791,
+    "ast_hash": "280464218794deb4204c9050567ea022",
+    "semantic_hash": "280464218794deb4204c9050567ea022"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v2.md": {
+    "mtime": 1791883008.5801454,
+    "seen": 1791984392.917792,
+    "ast_hash": "7cfa6615e73caad6d10cdf911a5d2575",
+    "semantic_hash": "7cfa6615e73caad6d10cdf911a5d2575"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v3.md": {
+    "mtime": 1791883379.763735,
+    "seen": 1791984392.917793,
+    "ast_hash": "c7fa8b03a8a38a11c5d84e4aa350ebee",
+    "semantic_hash": "c7fa8b03a8a38a11c5d84e4aa350ebee"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v4.md": {
+    "mtime": 1791883596.4974985,
+    "seen": 1791984392.917793,
+    "ast_hash": "0a684242cb3aeff683b7318bc97bf862",
+    "semantic_hash": "0a684242cb3aeff683b7318bc97bf862"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v5_role_interactions.md": {
+    "mtime": 1791885188.565846,
+    "seen": 1791984392.917794,
+    "ast_hash": "8a53ac97ea47b639a78bbfed5910c53f",
+    "semantic_hash": "8a53ac97ea47b639a78bbfed5910c53f"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v6_rest_schedule.md": {
+    "mtime": 1791885418.1067908,
+    "seen": 1791984392.917794,
+    "ast_hash": "750c9e1e1f317f50366ec9e486aeb81c",
+    "semantic_hash": "750c9e1e1f317f50366ec9e486aeb81c"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v7_corrected_team_link.md": {
+    "mtime": 1791891946.724576,
+    "seen": 1791984392.9177952,
+    "ast_hash": "bc19b2195ac0222159991c1ed0f814b9",
+    "semantic_hash": "bc19b2195ac0222159991c1ed0f814b9"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v8_date_assisted_link.md": {
+    "mtime": 1791893042.7740722,
+    "seen": 1791984392.9177961,
+    "ast_hash": "287006629b5584f22117dd1ef282f604",
+    "semantic_hash": "287006629b5584f22117dd1ef282f604"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v9_persisted_date_link.md": {
+    "mtime": 1791893729.0229826,
+    "seen": 1791984392.9177961,
+    "ast_hash": "fb49684f5a0ca6868eca3a3cd0ee6814",
+    "semantic_hash": "fb49684f5a0ca6868eca3a3cd0ee6814"
+  },
+  "reports/audit/dunkest_lagged_credit_matchup_walk_forward_supersession_20261013.md": {
+    "mtime": 1791883596.501329,
+    "seen": 1791984392.917797,
+    "ast_hash": "0195482c000be863893a55bc16639a3a",
+    "semantic_hash": "0195482c000be863893a55bc16639a3a"
+  },
+  "reports/audit/dunkest_lagged_credit_walk_forward_20261013_v1.md": {
+    "mtime": 1791879204.710874,
+    "seen": 1791984392.9177978,
+    "ast_hash": "69dfedb4640fd3e5821010908ce78f57",
+    "semantic_hash": "69dfedb4640fd3e5821010908ce78f57"
+  },
+  "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.md": {
+    "mtime": 1791892844.1593294,
+    "seen": 1791984392.9177978,
+    "ast_hash": "6313d25567eb09feedc5b2643fa9b54f",
+    "semantic_hash": "6313d25567eb09feedc5b2643fa9b54f"
+  },
+  "reports/audit/dunkest_lineup_backtest_readiness_v1.md": {
+    "mtime": 1791826876.844714,
+    "seen": 1791984392.917799,
+    "ast_hash": "855948ad89720420267c24a640c7dafb",
+    "semantic_hash": "855948ad89720420267c24a640c7dafb"
+  },
+  "reports/audit/dunkest_lineup_backtest_readiness_v2.md": {
+    "mtime": 1791826899.6531014,
+    "seen": 1791984392.9178,
+    "ast_hash": "e5e95f420738dd1c14cc7e45c8714c6d",
+    "semantic_hash": "e5e95f420738dd1c14cc7e45c8714c6d"
+  },
+  "reports/audit/dunkest_lineup_backtest_resolution_20261013_v1.md": {
+    "mtime": 1791878320.1125205,
+    "seen": 1791984392.9178,
+    "ast_hash": "3dfb39daa136e7d7fb3c4ef72ce328e2",
+    "semantic_hash": "3dfb39daa136e7d7fb3c4ef72ce328e2"
+  },
+  "reports/audit/dunkest_lineup_postselection_calibration_20261014_v1.md": {
+    "mtime": 1791983803.2837703,
+    "seen": 1791984392.917801,
+    "ast_hash": "7de01e32de217e2ea78b4f787acb891f",
+    "semantic_hash": "7de01e32de217e2ea78b4f787acb891f"
+  },
+  "reports/audit/dunkest_lineup_rest_schedule_robustness_20261013_v1.md": {
+    "mtime": 1791894437.7391148,
+    "seen": 1791984392.917801,
+    "ast_hash": "49f9d38244b4a9a37837930724681876",
+    "semantic_hash": "49f9d38244b4a9a37837930724681876"
+  },
+  "reports/audit/dunkest_lineups_internal_id_semantics_v1.md": {
+    "mtime": 1791839451.487808,
+    "seen": 1791984392.917802,
+    "ast_hash": "da9532d7dc76e1dec32b4b55de42536e",
+    "semantic_hash": "da9532d7dc76e1dec32b4b55de42536e"
+  },
+  "reports/audit/dunkest_matchup_expanded_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791882984.22851,
+    "seen": 1791984392.917802,
+    "ast_hash": "63c1622051e13e7254c76d01fede447e",
+    "semantic_hash": "63c1622051e13e7254c76d01fede447e"
+  },
+  "reports/audit/dunkest_model_comparison_20261014_v1.md": {
+    "mtime": 1791975018.3427846,
+    "seen": 1791984392.917803,
+    "ast_hash": "17a89db9a55c3a355cf0cb60109b2dcf",
+    "semantic_hash": "17a89db9a55c3a355cf0cb60109b2dcf"
+  },
+  "reports/audit/dunkest_model_comparison_20261014_v2.md": {
+    "mtime": 1791975331.6966314,
+    "seen": 1791984392.917804,
+    "ast_hash": "ddaf8688c411f11e6afef4a1aa80f32f",
+    "semantic_hash": "ddaf8688c411f11e6afef4a1aa80f32f"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v1.md": {
+    "mtime": 1791973880.6421165,
+    "seen": 1791984392.917804,
+    "ast_hash": "fb684fddf38f9dbc1193c45a44cc9c5b",
+    "semantic_hash": "fb684fddf38f9dbc1193c45a44cc9c5b"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v2.md": {
+    "mtime": 1791973914.449131,
+    "seen": 1791984392.917805,
+    "ast_hash": "52ca84100d3fa9393ef6ce5c987587cc",
+    "semantic_hash": "52ca84100d3fa9393ef6ce5c987587cc"
+  },
+  "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v3.md": {
+    "mtime": 1791974043.0069096,
+    "seen": 1791984392.917805,
+    "ast_hash": "400fedaf659a2ff275417619bde203c1",
+    "semantic_hash": "400fedaf659a2ff275417619bde203c1"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v1.md": {
+    "mtime": 1791887197.0594194,
+    "seen": 1791984392.9178061,
+    "ast_hash": "8369ab460f634ca1cc2553384e23c0a4",
+    "semantic_hash": "8369ab460f634ca1cc2553384e23c0a4"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v2.md": {
+    "mtime": 1791888917.4886136,
+    "seen": 1791984392.917807,
+    "ast_hash": "fe136ed32663b8f169e5066756a1ddd3",
+    "semantic_hash": "fe136ed32663b8f169e5066756a1ddd3"
+  },
+  "reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v3.md": {
+    "mtime": 1791888922.1817079,
+    "seen": 1791984392.917807,
+    "ast_hash": "9f4f01366960f5a22727832f6dcf33e5",
+    "semantic_hash": "9f4f01366960f5a22727832f6dcf33e5"
+  },
+  "reports/audit/dunkest_official_schedule_vs_archive_validation_v1.md": {
+    "mtime": 1791810087.7169232,
+    "seen": 1791984392.917808,
+    "ast_hash": "492cea55b7e28f06a1d6520c36ef1ae9",
+    "semantic_hash": "492cea55b7e28f06a1d6520c36ef1ae9"
+  },
+  "reports/audit/dunkest_official_schedule_vs_archive_validation_v2_status_aware.md": {
+    "mtime": 1791812132.529589,
+    "seen": 1791984392.917809,
+    "ast_hash": "b6c78229c48d03dda52649d0b8c2bb84",
+    "semantic_hash": "b6c78229c48d03dda52649d0b8c2bb84"
+  },
+  "reports/audit/dunkest_official_vs_proxy_pdk_history_features_20261014_v1.md": {
+    "mtime": 1791964282.4833643,
+    "seen": 1791984392.917809,
+    "ast_hash": "a629b969a2d902e5ff035099e5adc96f",
+    "semantic_hash": "a629b969a2d902e5ff035099e5adc96f"
+  },
+  "reports/audit/dunkest_optimizer_ensemble_calibration_matchup_20261014_v1.md": {
+    "mtime": 1791975702.98257,
+    "seen": 1791984392.91781,
+    "ast_hash": "1198554af311bcbdce0e0212fb102def",
+    "semantic_hash": "1198554af311bcbdce0e0212fb102def"
+  },
+  "reports/audit/dunkest_participation_label_readiness_20261013_v1.md": {
+    "mtime": 1791886226.0543828,
+    "seen": 1791984392.917811,
+    "ast_hash": "d63d9983fd1eb245a638bf7337f535ee",
+    "semantic_hash": "d63d9983fd1eb245a638bf7337f535ee"
+  },
+  "reports/audit/dunkest_pdk_backtest_summary_20261013_v1.md": {
+    "mtime": 1791875343.355323,
+    "seen": 1791984392.917811,
+    "ast_hash": "0fd0a307edd23cbf0c58d281454775ac",
+    "semantic_hash": "0fd0a307edd23cbf0c58d281454775ac"
+  },
+  "reports/audit/dunkest_pdk_calibration_error_audit_20261012T172805Z.md": {
+    "mtime": 1791826085.6034846,
+    "seen": 1791984392.9178119,
+    "ast_hash": "a50558f0fab053bb900d2c6779b5002b",
+    "semantic_hash": "a50558f0fab053bb900d2c6779b5002b"
+  },
+  "reports/audit/dunkest_pdk_feature_families_20261013_v1.md": {
+    "mtime": 1791877676.6836338,
+    "seen": 1791984392.9178119,
+    "ast_hash": "1bd60fa004c0475c8cd4bbf2fa3a5db5",
+    "semantic_hash": "1bd60fa004c0475c8cd4bbf2fa3a5db5"
+  },
+  "reports/audit/dunkest_pdk_holdout_train_2020-25_test_2025-26_v1.md": {
+    "mtime": 1791820303.8594167,
+    "seen": 1791984392.917813,
+    "ast_hash": "e8c137ee9a129190e40a705f8d6868a2",
+    "semantic_hash": "e8c137ee9a129190e40a705f8d6868a2"
+  },
+  "reports/audit/dunkest_pdk_model_tuning_20261012_v1.md": {
+    "mtime": 1791826587.561083,
+    "seen": 1791984392.917814,
+    "ast_hash": "186ff60dcb87fc929a14a6f16a18b861",
+    "semantic_hash": "186ff60dcb87fc929a14a6f16a18b861"
+  },
+  "reports/audit/dunkest_pdk_score_calibration_20261012T172819Z.md": {
+    "mtime": 1791826099.8797054,
+    "seen": 1791984392.917814,
+    "ast_hash": "769fb19d8a5b59565c0fe9fb4cd23cf4",
+    "semantic_hash": "769fb19d8a5b59565c0fe9fb4cd23cf4"
+  },
+  "reports/audit/dunkest_pdk_train_only_search_20261013_train_only_v1.md": {
+    "mtime": 1791899140.28917,
+    "seen": 1791984392.917815,
+    "ast_hash": "998dd804ea826de89846ef56e928aa33",
+    "semantic_hash": "998dd804ea826de89846ef56e928aa33"
+  },
+  "reports/audit/dunkest_persisted_v3_vs_v8_prediction_parity_20261013_v1.md": {
+    "mtime": 1791893665.1554184,
+    "seen": 1791984392.9178162,
+    "ast_hash": "8cc5c5ceac90ef55fe5e932324c7061c",
+    "semantic_hash": "8cc5c5ceac90ef55fe5e932324c7061c"
+  },
+  "reports/audit/dunkest_phase_b_model_strategy_comparison_20261013_v1.md": {
+    "mtime": 1791877796.828406,
+    "seen": 1791984392.9178162,
+    "ast_hash": "8c4b5d81103880784ad3fff8246c0316",
+    "semantic_hash": "8c4b5d81103880784ad3fff8246c0316"
+  },
+  "reports/audit/dunkest_post_match_evaluation_workflow_v1.md": {
+    "mtime": 1791837317.0738375,
+    "seen": 1791984392.917817,
+    "ast_hash": "ead220af3b97bb3877f770841deffdbc",
+    "semantic_hash": "ead220af3b97bb3877f770841deffdbc"
+  },
+  "reports/audit/dunkest_pre_match_snapshot_authenticity_v1.md": {
+    "mtime": 1791838091.4234776,
+    "seen": 1791984392.917817,
+    "ast_hash": "9ce63dffcc5790ae22d685037914805f",
+    "semantic_hash": "9ce63dffcc5790ae22d685037914805f"
+  },
+  "reports/audit/dunkest_pre_match_snapshot_authenticity_v2.md": {
+    "mtime": 1791838113.8741066,
+    "seen": 1791984392.917818,
+    "ast_hash": "209f3c1cc20965f7eaf88190beccc0cf",
+    "semantic_hash": "209f3c1cc20965f7eaf88190beccc0cf"
+  },
+  "reports/audit/dunkest_prediction_reliability_followup_20261012T152844Z_dcb3a29b_v1.md": {
+    "mtime": 1791819014.0820935,
+    "seen": 1791984392.9178188,
+    "ast_hash": "ea09facd0c7587cd7909ee5d26af18f4",
+    "semantic_hash": "ea09facd0c7587cd7909ee5d26af18f4"
+  },
+  "reports/audit/dunkest_prediction_reliability_followup_20261012T152844Z_dcb3a29b_v2.md": {
+    "mtime": 1791819121.6787415,
+    "seen": 1791984392.9178188,
+    "ast_hash": "21657f0afb53c4c33e5f1610f1332dc3",
+    "semantic_hash": "21657f0afb53c4c33e5f1610f1332dc3"
+  },
+  "reports/audit/dunkest_prelock_archive_inventory_20261013_v1.md": {
+    "mtime": 1791898553.3212674,
+    "seen": 1791984392.91782,
+    "ast_hash": "e3849c78ee07248a99586edfd774eb9d",
+    "semantic_hash": "e3849c78ee07248a99586edfd774eb9d"
+  },
+  "reports/audit/dunkest_production_ensemble_and_lineup_validation_20261014_v1.md": {
+    "mtime": 1791979621.2177877,
+    "seen": 1791984392.91782,
+    "ast_hash": "74ae7aebcfa79cd14b321b153bc97348",
+    "semantic_hash": "74ae7aebcfa79cd14b321b153bc97348"
+  },
+  "reports/audit/dunkest_production_ensemble_expanding_oos_20261014_v1.md": {
+    "mtime": 1791976827.1657043,
+    "seen": 1791984392.917821,
+    "ast_hash": "d3f6bf63335ad7767ea3d9bb9f149d35",
+    "semantic_hash": "d3f6bf63335ad7767ea3d9bb9f149d35"
+  },
+  "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1.md": {
+    "mtime": 1791886041.1291912,
+    "seen": 1791984392.917822,
+    "ast_hash": "65f86c91cede225a94c84d21f1532ef6",
+    "semantic_hash": "65f86c91cede225a94c84d21f1532ef6"
+  },
+  "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v2_multiseason.md": {
+    "mtime": 1791886526.842077,
+    "seen": 1791984392.917822,
+    "ast_hash": "e10c7f600a9c7adb7de0875f8ec8b70d",
+    "semantic_hash": "e10c7f600a9c7adb7de0875f8ec8b70d"
+  },
+  "reports/audit/dunkest_profile_games_api_verification_v1.md": {
+    "mtime": 1791805832.5748675,
+    "seen": 1791984392.917823,
+    "ast_hash": "b2db65856e6ace52c5e37298f1352863",
+    "semantic_hash": "b2db65856e6ace52c5e37298f1352863"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v1.md": {
+    "mtime": 1791812431.8684523,
+    "seen": 1791984392.917824,
+    "ast_hash": "e9e06597bee6ed2f8529f7922056988a",
+    "semantic_hash": "e9e06597bee6ed2f8529f7922056988a"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v2.md": {
+    "mtime": 1791812486.4030416,
+    "seen": 1791984392.917824,
+    "ast_hash": "2a927039b9ad9999c1b89852472f6cfe",
+    "semantic_hash": "2a927039b9ad9999c1b89852472f6cfe"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v3.md": {
+    "mtime": 1791814204.3611002,
+    "seen": 1791984392.917825,
+    "ast_hash": "e1d2e9061a189cc1497693c2af28b149",
+    "semantic_hash": "e1d2e9061a189cc1497693c2af28b149"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v4.md": {
+    "mtime": 1791814600.1259358,
+    "seen": 1791984392.917825,
+    "ast_hash": "11bd41eba4e7ae996855d3c6f789d628",
+    "semantic_hash": "11bd41eba4e7ae996855d3c6f789d628"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v5.md": {
+    "mtime": 1791817361.7577734,
+    "seen": 1791984392.917826,
+    "ast_hash": "326df667940e6bd93a9eaf6c289a541c",
+    "semantic_hash": "326df667940e6bd93a9eaf6c289a541c"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v6.md": {
+    "mtime": 1791817527.8392801,
+    "seen": 1791984392.9178271,
+    "ast_hash": "e1a331bddfb324890676ffb485c24634",
+    "semantic_hash": "e1a331bddfb324890676ffb485c24634"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-12_v7.md": {
+    "mtime": 1791826118.0564072,
+    "seen": 1791984392.9178271,
+    "ast_hash": "696130384e8d5f9745edb9dc79061a06",
+    "semantic_hash": "696130384e8d5f9745edb9dc79061a06"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v10.md": {
+    "mtime": 1791885439.857295,
+    "seen": 1791984392.917828,
+    "ast_hash": "ea920b8a6901465c432327efc4733b82",
+    "semantic_hash": "ea920b8a6901465c432327efc4733b82"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v11.md": {
+    "mtime": 1791885856.8939257,
+    "seen": 1791984392.917828,
+    "ast_hash": "f73a83414ea7003f89856b53f62941ac",
+    "semantic_hash": "f73a83414ea7003f89856b53f62941ac"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v12.md": {
+    "mtime": 1791886595.7101696,
+    "seen": 1791984392.917829,
+    "ast_hash": "45497f0c3d8309e2cc26303aa98596b5",
+    "semantic_hash": "45497f0c3d8309e2cc26303aa98596b5"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v13.md": {
+    "mtime": 1791887343.5598118,
+    "seen": 1791984392.91783,
+    "ast_hash": "ff7aeff5b7b8cb9ecd5ff82dd8c6decd",
+    "semantic_hash": "ff7aeff5b7b8cb9ecd5ff82dd8c6decd"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v14.md": {
+    "mtime": 1791888905.5697582,
+    "seen": 1791984392.91783,
+    "ast_hash": "c29e76290fbbe01017edc79b3302296c",
+    "semantic_hash": "c29e76290fbbe01017edc79b3302296c"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v15.md": {
+    "mtime": 1791889645.2958195,
+    "seen": 1791984392.917831,
+    "ast_hash": "bdc45a14307b3c355512c46be462ed8b",
+    "semantic_hash": "bdc45a14307b3c355512c46be462ed8b"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v16.md": {
+    "mtime": 1791890111.0579197,
+    "seen": 1791984392.917831,
+    "ast_hash": "4bdad6e1030a7617ec400af067fecce3",
+    "semantic_hash": "4bdad6e1030a7617ec400af067fecce3"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v17.md": {
+    "mtime": 1791890840.2013159,
+    "seen": 1791984392.917832,
+    "ast_hash": "d32974c945bb9c6e95a12f73ed33fd09",
+    "semantic_hash": "d32974c945bb9c6e95a12f73ed33fd09"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v18.md": {
+    "mtime": 1791891504.570409,
+    "seen": 1791984392.917832,
+    "ast_hash": "710e640ab2bae6ecc9d55d770ac27dfc",
+    "semantic_hash": "710e640ab2bae6ecc9d55d770ac27dfc"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v19.md": {
+    "mtime": 1791892032.4342172,
+    "seen": 1791984392.9178329,
+    "ast_hash": "c379487b7b8995b9e90f7394eb91797d",
+    "semantic_hash": "c379487b7b8995b9e90f7394eb91797d"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v20.md": {
+    "mtime": 1791893112.133988,
+    "seen": 1791984392.917834,
+    "ast_hash": "8d887bd69e600d083f76b0a0e322123c",
+    "semantic_hash": "8d887bd69e600d083f76b0a0e322123c"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v21.md": {
+    "mtime": 1791893703.7209952,
+    "seen": 1791984392.917834,
+    "ast_hash": "bda1c4d78a7ce7a683c111bd5af13eca",
+    "semantic_hash": "bda1c4d78a7ce7a683c111bd5af13eca"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v22.md": {
+    "mtime": 1791894194.551864,
+    "seen": 1791984392.917835,
+    "ast_hash": "ca48f2e12835115641431ace3a68b3c1",
+    "semantic_hash": "ca48f2e12835115641431ace3a68b3c1"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v23.md": {
+    "mtime": 1791894451.1621635,
+    "seen": 1791984392.917836,
+    "ast_hash": "64b4ed4b4c818e9487f615aa2f7bb62f",
+    "semantic_hash": "64b4ed4b4c818e9487f615aa2f7bb62f"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v24.md": {
+    "mtime": 1791898636.4019825,
+    "seen": 1791984392.917836,
+    "ast_hash": "415f7034e4895ad94f852497f4cb955e",
+    "semantic_hash": "415f7034e4895ad94f852497f4cb955e"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v25.md": {
+    "mtime": 1791899411.3687785,
+    "seen": 1791984392.9178371,
+    "ast_hash": "cc77ddf8304f18f250c255771696e0a9",
+    "semantic_hash": "cc77ddf8304f18f250c255771696e0a9"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v26.md": {
+    "mtime": 1791899404.1070375,
+    "seen": 1791984392.9178371,
+    "ast_hash": "0e504fe0fed97aba70733d4955ee27d1",
+    "semantic_hash": "0e504fe0fed97aba70733d4955ee27d1"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v27.md": {
+    "mtime": 1791900629.5159702,
+    "seen": 1791984392.917838,
+    "ast_hash": "3bbfd25ec134b6891a38426b738c5a92",
+    "semantic_hash": "3bbfd25ec134b6891a38426b738c5a92"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v28.md": {
+    "mtime": 1791901322.8593245,
+    "seen": 1791984392.917839,
+    "ast_hash": "e7878dd86829d2a64078de8af17d0071",
+    "semantic_hash": "e7878dd86829d2a64078de8af17d0071"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v8.md": {
+    "mtime": 1791884810.15275,
+    "seen": 1791984392.917839,
+    "ast_hash": "894b06a986dea335ebd3afae1a175786",
+    "semantic_hash": "894b06a986dea335ebd3afae1a175786"
+  },
+  "reports/audit/dunkest_project_followup_2026-10-13_v9.md": {
+    "mtime": 1791885215.7696056,
+    "seen": 1791984392.9178398,
+    "ast_hash": "7440c3b736d6d792a761f5d8b45843b8",
+    "semantic_hash": "7440c3b736d6d792a761f5d8b45843b8"
+  },
+  "reports/audit/dunkest_prospective_gw1_preflight_20261013_v1.md": {
+    "mtime": 1791876617.16444,
+    "seen": 1791984392.9178398,
+    "ast_hash": "d0f8e9a898b1d4a09b064cbee853e385",
+    "semantic_hash": "d0f8e9a898b1d4a09b064cbee853e385"
+  },
+  "reports/audit/dunkest_rest_schedule_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791885422.9104211,
+    "seen": 1791984392.917841,
+    "ast_hash": "01aa567e9a2b59e3174af2cff4281e2d",
+    "semantic_hash": "01aa567e9a2b59e3174af2cff4281e2d"
+  },
+  "reports/audit/dunkest_role_matchup_interactions_paired_bootstrap_20261013_v1.md": {
+    "mtime": 1791885207.7998314,
+    "seen": 1791984392.917842,
+    "ast_hash": "1a160b31939a2a34e6277bd767977297",
+    "semantic_hash": "1a160b31939a2a34e6277bd767977297"
+  },
+  "reports/audit/dunkest_rookie_balance_20261012T171217Z_2f98f42b_v1.md": {
+    "mtime": 1791825213.766567,
+    "seen": 1791984392.917842,
+    "ast_hash": "1248a92c556d79cecefb68b8e704875b",
+    "semantic_hash": "1248a92c556d79cecefb68b8e704875b"
+  },
+  "reports/audit/dunkest_rookie_pdk_walk_forward_20261012_v1.md": {
+    "mtime": 1791825761.6174903,
+    "seen": 1791984392.9178429,
+    "ast_hash": "5345978880dec11b659fa7446b90fbdb",
+    "semantic_hash": "5345978880dec11b659fa7446b90fbdb"
+  },
+  "reports/audit/dunkest_rookie_plusvalenza_calibration_20261013_v1.md": {
+    "mtime": 1791917383.7402017,
+    "seen": 1791984392.9178429,
+    "ast_hash": "ac8807647d568a9510798070896fe6e3",
+    "semantic_hash": "ac8807647d568a9510798070896fe6e3"
+  },
+  "reports/audit/dunkest_round_calendar_linkage_v1.md": {
+    "mtime": 1791806639.4821455,
+    "seen": 1791984392.917844,
+    "ast_hash": "fc4df64d0477204bde0c34dd74c38d6a",
+    "semantic_hash": "fc4df64d0477204bde0c34dd74c38d6a"
+  },
+  "reports/audit/dunkest_run_output_audit_20261012T150816Z_2c74817c_v1.md": {
+    "mtime": 1791818082.0695548,
+    "seen": 1791984392.917845,
+    "ast_hash": "25308b93a139caf68dce982638a55bba",
+    "semantic_hash": "25308b93a139caf68dce982638a55bba"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v1.md": {
+    "mtime": 1791811076.3016684,
+    "seen": 1791984392.917845,
+    "ast_hash": "310adfec826af34e8efa7c04f6102129",
+    "semantic_hash": "310adfec826af34e8efa7c04f6102129"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v2.md": {
+    "mtime": 1791811221.1552172,
+    "seen": 1791984392.917846,
+    "ast_hash": "0254dea2b40db538b2f92de230835cdb",
+    "semantic_hash": "0254dea2b40db538b2f92de230835cdb"
+  },
+  "reports/audit/dunkest_schedule_2024-25_archive_validation_v3.md": {
+    "mtime": 1791811270.9480684,
+    "seen": 1791984392.917846,
+    "ast_hash": "cb1ba217ba736ffc1ba77c7f2ae7f53b",
+    "semantic_hash": "cb1ba217ba736ffc1ba77c7f2ae7f53b"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v1.md": {
+    "mtime": 1791811147.570425,
+    "seen": 1791984392.9178472,
+    "ast_hash": "0e1f8b7c5af73a6e338bc75501ea5f49",
+    "semantic_hash": "0e1f8b7c5af73a6e338bc75501ea5f49"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v2.md": {
+    "mtime": 1791811221.1632316,
+    "seen": 1791984392.917848,
+    "ast_hash": "b29b3025fe87ab5435721be10d340faa",
+    "semantic_hash": "b29b3025fe87ab5435721be10d340faa"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v3.md": {
+    "mtime": 1791811270.957696,
+    "seen": 1791984392.917848,
+    "ast_hash": "b0ba2dec459b35a95c19a8dab7d2ff54",
+    "semantic_hash": "b0ba2dec459b35a95c19a8dab7d2ff54"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v4.md": {
+    "mtime": 1791811369.405324,
+    "seen": 1791984392.917849,
+    "ast_hash": "7b915f83c9fc50030b0a4bf41369d9f3",
+    "semantic_hash": "7b915f83c9fc50030b0a4bf41369d9f3"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v5.md": {
+    "mtime": 1791812132.530045,
+    "seen": 1791984392.917849,
+    "ast_hash": "89ccf23f58d423c5a908b67b976bc0d4",
+    "semantic_hash": "89ccf23f58d423c5a908b67b976bc0d4"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v6.md": {
+    "mtime": 1791812243.3125544,
+    "seen": 1791984392.91785,
+    "ast_hash": "44d3dd2c84f4a890d0c9404074f2343f",
+    "semantic_hash": "44d3dd2c84f4a890d0c9404074f2343f"
+  },
+  "reports/audit/dunkest_schedule_season_id_inventory_v7.md": {
+    "mtime": 1791812391.1539679,
+    "seen": 1791984392.917851,
+    "ast_hash": "04da0b84fa8733253ad1e6d06845c655",
+    "semantic_hash": "04da0b84fa8733253ad1e6d06845c655"
+  },
+  "reports/audit/dunkest_single_vs_multiseason_train_window_20261014_v1.md": {
+    "mtime": 1791972559.5466826,
+    "seen": 1791984392.917851,
+    "ast_hash": "9b9b28ca6949d89090286bbc8fd5b5dc",
+    "semantic_hash": "9b9b28ca6949d89090286bbc8fd5b5dc"
+  },
+  "reports/audit/dunkest_stats_endpoint_scope_v1.md": {
+    "mtime": 1791817242.1743152,
+    "seen": 1791984392.917852,
+    "ast_hash": "ad7a11604b831fff5164fa9bb19c877b",
+    "semantic_hash": "ad7a11604b831fff5164fa9bb19c877b"
+  },
+  "reports/audit/dunkest_tail_hybrid_vs_v9_20261013_v1.md": {
+    "mtime": 1791901297.8396904,
+    "seen": 1791984392.917852,
+    "ast_hash": "5903330ccbbe5b6c7cdb941513071535",
+    "semantic_hash": "5903330ccbbe5b6c7cdb941513071535"
+  },
+  "reports/audit/dunkest_temporal_leakage_audit_20261013_v1.md": {
+    "mtime": 1791877151.8820248,
+    "seen": 1791984392.9178529,
+    "ast_hash": "ac341bad5ddeb303c95d7c56f809cb1c",
+    "semantic_hash": "ac341bad5ddeb303c95d7c56f809cb1c"
+  },
+  "reports/audit/dunkest_temporal_leakage_audit_20261013_v2.md": {
+    "mtime": 1791877195.1355836,
+    "seen": 1791984392.917854,
+    "ast_hash": "3db9dd7c800e32e3548c253434a069b0",
+    "semantic_hash": "3db9dd7c800e32e3548c253434a069b0"
+  },
+  "reports/audit/dunkest_three_workstreams_implementation_20261014_v1.md": {
+    "mtime": 1791976918.0089924,
+    "seen": 1791984392.917854,
+    "ast_hash": "8c925f98f24f91feebc9a8ed6424e805",
+    "semantic_hash": "8c925f98f24f91feebc9a8ed6424e805"
+  },
+  "reports/audit/dunkest_transfer_malus_sensitivity_sequential_lineup_proxy_20261013_v1.md": {
+    "mtime": 1791887213.8600798,
+    "seen": 1791984392.917855,
+    "ast_hash": "5bf69b2c25bdc0947354d616fe883dfb",
+    "semantic_hash": "5bf69b2c25bdc0947354d616fe883dfb"
+  },
+  "reports/audit/dunkest_uncertainty_expanding_oos_20261014_v1.md": {
+    "mtime": 1791975656.3014417,
+    "seen": 1791984392.917855,
+    "ast_hash": "cf40e2106ea03ad6edff5243e4e2c5a7",
+    "semantic_hash": "cf40e2106ea03ad6edff5243e4e2c5a7"
+  },
+  "reports/audit/dunkest_uncertainty_expanding_oos_20261014_v1_superseded.md": {
+    "mtime": 1791975708.9461699,
+    "seen": 1791984392.917856,
+    "ast_hash": "1a0867888249fef66814977f2a3cbbb2",
+    "semantic_hash": "1a0867888249fef66814977f2a3cbbb2"
+  },
+  "reports/audit/dunkest_uncertainty_expanding_oos_20261014_v2.md": {
+    "mtime": 1791975675.7584183,
+    "seen": 1791984392.917857,
+    "ast_hash": "a268a81b79733236867a465e1e32f491",
+    "semantic_hash": "a268a81b79733236867a465e1e32f491"
+  },
+  "reports/audit/dunkest_v6_v7_lineup_strategy_paired_bootstrap_20261014_v1.md": {
+    "mtime": 1791983803.7327259,
+    "seen": 1791984392.917857,
+    "ast_hash": "d8bf5be6271958994335e9c1106f5044",
+    "semantic_hash": "d8bf5be6271958994335e9c1106f5044"
+  },
+  "reports/audit/dunkest_v9_past_only_calibration_20261013_v1.md": {
+    "mtime": 1791894162.2150238,
+    "seen": 1791984392.9178581,
+    "ast_hash": "47eb4ab5ff2989f64c9eccecb59343d7",
+    "semantic_hash": "47eb4ab5ff2989f64c9eccecb59343d7"
+  },
+  "reports/audit/dunkest_v9_residual_segments_20261013_v1.md": {
+    "mtime": 1791894130.553654,
+    "seen": 1791984392.917859,
+    "ast_hash": "eae4a879edeb7fe610210119248579df",
+    "semantic_hash": "eae4a879edeb7fe610210119248579df"
+  },
+  "reports/audit/dunkest_validity_flag_official_source_v1.md": {
+    "mtime": 1791806893.896272,
+    "seen": 1791984392.917859,
+    "ast_hash": "92b2c6a5c82aa11134667b6804de32e4",
+    "semantic_hash": "92b2c6a5c82aa11134667b6804de32e4"
+  },
+  "reports/audit/dunkest_validity_flag_semantics_v1.md": {
+    "mtime": 1791806148.8890944,
+    "seen": 1791984392.91786,
+    "ast_hash": "6fd5c178a41516e9ead9180df47e0a8e",
+    "semantic_hash": "6fd5c178a41516e9ead9180df47e0a8e"
+  },
+  "reports/audit/dunkest_week_round_audit_derivative_v1.md": {
+    "mtime": 1791817472.992921,
+    "seen": 1791984392.91786,
+    "ast_hash": "e657fa26a743b1918d5e239590b4dde0",
+    "semantic_hash": "e657fa26a743b1918d5e239590b4dde0"
+  },
+  "reports/audit/dunkest_week_round_audit_derivative_v2.md": {
+    "mtime": 1791840080.352045,
+    "seen": 1791984392.9178612,
+    "ast_hash": "97da2450188f8d2eaf9b557873415298",
+    "semantic_hash": "97da2450188f8d2eaf9b557873415298"
+  },
+  "reports/audit/dunkest_week_round_boxscore_signature_corroboration_v1.md": {
+    "mtime": 1791814539.4569392,
+    "seen": 1791984392.917862,
+    "ast_hash": "6bc2ae268c59ac1077a9dd7c65478fc7",
+    "semantic_hash": "6bc2ae268c59ac1077a9dd7c65478fc7"
+  },
+  "reports/audit/dunkest_week_round_collection_audit_v1.md": {
+    "mtime": 1791812816.1415598,
+    "seen": 1791984392.917862,
+    "ast_hash": "96f8d960aa7a3e68771849cb9c7f6504",
+    "semantic_hash": "96f8d960aa7a3e68771849cb9c7f6504"
+  },
+  "reports/audit/dunkest_week_round_confirmed_contamination_rows_v1.md": {
+    "mtime": 1791838775.158122,
+    "seen": 1791984392.917863,
+    "ast_hash": "d19234aa8d9201edfdb073c88a8a417e",
+    "semantic_hash": "d19234aa8d9201edfdb073c88a8a417e"
+  },
+  "reports/audit/dunkest_week_round_contamination_impact_v1.md": {
+    "mtime": 1791838541.5543087,
+    "seen": 1791984392.917863,
+    "ast_hash": "cac6bfb0de62ba0fef356e91869a363a",
+    "semantic_hash": "cac6bfb0de62ba0fef356e91869a363a"
+  },
+  "reports/audit/dunkest_week_round_contamination_impact_v2.md": {
+    "mtime": 1791839172.8668096,
+    "seen": 1791984392.9178638,
+    "ast_hash": "87657bd547979bf130ccd1205538d190",
+    "semantic_hash": "87657bd547979bf130ccd1205538d190"
+  },
+  "reports/audit/dunkest_week_round_cross_season_integrity_v1.md": {
+    "mtime": 1791813862.218709,
+    "seen": 1791984392.917865,
+    "ast_hash": "4c5318138ae7e857da22379b61151792",
+    "semantic_hash": "4c5318138ae7e857da22379b61151792"
+  },
+  "reports/audit/dunkest_week_round_cross_season_integrity_v2.md": {
+    "mtime": 1791813977.7002428,
+    "seen": 1791984392.917865,
+    "ast_hash": "55b758d0242e1b3a00e735565358bf86",
+    "semantic_hash": "55b758d0242e1b3a00e735565358bf86"
+  },
+  "reports/audit/dunkest_week_round_history_corroboration_v1.md": {
+    "mtime": 1791814468.3581474,
+    "seen": 1791984392.917866,
+    "ast_hash": "0cb46400d84d3ba1c552788e74fbb5cf",
+    "semantic_hash": "0cb46400d84d3ba1c552788e74fbb5cf"
+  },
+  "reports/audit/dunkest_week_round_quarantine_manifest_v1.md": {
+    "mtime": 1791814271.4681692,
+    "seen": 1791984392.917866,
+    "ast_hash": "0c9ff6ee60039cf91f5f981077b6834e",
+    "semantic_hash": "0c9ff6ee60039cf91f5f981077b6834e"
+  },
+  "reports/audit/dunkest_week_round_quarantine_manifest_v2.md": {
+    "mtime": 1791817361.7575214,
+    "seen": 1791984392.917867,
+    "ast_hash": "9c2597adfa5064757bc3084957059661",
+    "semantic_hash": "9c2597adfa5064757bc3084957059661"
+  },
+  "reports/audit/dunkest_week_round_season5_contamination_v1.md": {
+    "mtime": 1791814046.6536367,
+    "seen": 1791984392.9178681,
+    "ast_hash": "126e6fff5c4b2cedaa05a83fd15c27a5",
+    "semantic_hash": "126e6fff5c4b2cedaa05a83fd15c27a5"
+  },
+  "reports/audit/dunkest_week_round_season5_contamination_v2.md": {
+    "mtime": 1791814078.2746954,
+    "seen": 1791984392.9178681,
+    "ast_hash": "c32f42359c3aea9d6e40071c43f64417",
+    "semantic_hash": "c32f42359c3aea9d6e40071c43f64417"
+  },
+  "reports/audit/historical_dunkest_market_snapshot_inventory_v1.md": {
+    "mtime": 1791804918.729421,
+    "seen": 1791984392.917869,
+    "ast_hash": "5fc9062eeed0505bf72eaa3d332ed21b",
+    "semantic_hash": "5fc9062eeed0505bf72eaa3d332ed21b"
+  },
+  "reports/audit/minutes_allocator_replay_20261012T171217Z_2f98f42b.md": {
+    "mtime": 1791828578.4495854,
+    "seen": 1791984392.917869,
+    "ast_hash": "4fc1e87397233aa863fcd2c90c4a79f0",
+    "semantic_hash": "4fc1e87397233aa863fcd2c90c4a79f0"
+  },
+  "reports/audit/official_pdk_target_mode_review_v1.md": {
+    "mtime": 1791811595.2694619,
+    "seen": 1791984392.91787,
+    "ast_hash": "306f58143d899a6f38f514630b190f46",
+    "semantic_hash": "306f58143d899a6f38f514630b190f46"
+  },
+  "reports/audit/official_pdk_target_mode_review_v2.md": {
+    "mtime": 1791811642.5699408,
+    "seen": 1791984392.917871,
+    "ast_hash": "5d0a2d1ed9ea13547c0b94a84508720d",
+    "semantic_hash": "5d0a2d1ed9ea13547c0b94a84508720d"
+  },
+  "reports/audit/proxy_vs_official_target_comparison_2025-26_v1.md": {
+    "mtime": 1791811847.4138753,
+    "seen": 1791984392.917871,
+    "ast_hash": "85293316656ce628f34cd1b834536174",
+    "semantic_hash": "85293316656ce628f34cd1b834536174"
+  },
+  "reports/audit/proxy_vs_official_target_comparison_2025-26_v2.md": {
+    "mtime": 1791811880.5107126,
+    "seen": 1791984392.9178722,
+    "ast_hash": "5992cf539fb3ad2dde1ce1ab79743d80",
+    "semantic_hash": "5992cf539fb3ad2dde1ce1ab79743d80"
+  },
+  "reports/backtest/post_match_evaluation_20261012T171217Z_2f98f42b.md": {
+    "mtime": 1791828379.7352653,
+    "seen": 1791984392.9178722,
+    "ast_hash": "aaa48c11fee95dcf186cc7faaebd4501",
+    "semantic_hash": "aaa48c11fee95dcf186cc7faaebd4501"
+  }
+}

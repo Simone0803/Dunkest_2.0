@@ -1,0 +1,726 @@
+{
+  "created_utc": "2026-10-14T20:26:28.746570+00:00",
+  "source": "dunkest_pdk_game_training_2020-26_v3 filtered to 2020/21–2024/25; enriched crosswalk for minutes labels",
+  "outer_folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "inner_validation_fraction": 0.2,
+  "rotation_weight_candidates": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "gating_policy": "apply rotation-aware model blend only when current target team differs from previous observed team; weight selected only on inner time-ordered validation team-change rows",
+  "holdout_2025_26_loaded": false,
+  "prospective_2026_27_loaded": false,
+  "fold_selection": [
+    {
+      "season": "2022-23",
+      "outer_train_rows": 36071,
+      "outer_test_rows": 19165,
+      "inner_train_rows": 29177,
+      "inner_valid_rows": 6894,
+      "inner_cutoff": "2022-02-02T00:00:00",
+      "inner_team_change_rows": 74,
+      "inner_scores": [
+        {
+          "rotation_weight": 0.0,
+          "n_team_change": 74,
+          "mae": 5.929856212487424,
+          "rmse": 7.625174271239958
+        },
+        {
+          "rotation_weight": 0.25,
+          "n_team_change": 74,
+          "mae": 5.929856212487424,
+          "rmse": 7.625174271239958
+        },
+        {
+          "rotation_weight": 0.5,
+          "n_team_change": 74,
+          "mae": 5.929856212487424,
+          "rmse": 7.625174271239958
+        },
+        {
+          "rotation_weight": 0.75,
+          "n_team_change": 74,
+          "mae": 5.929856212487424,
+          "rmse": 7.625174271239958
+        },
+        {
+          "rotation_weight": 1.0,
+          "n_team_change": 74,
+          "mae": 5.929856212487424,
+          "rmse": 7.625174271239958
+        }
+      ],
+      "selected_rotation_weight": 0.0,
+      "outer_team_change_rows": 161
+    },
+    {
+      "season": "2023-24",
+      "outer_train_rows": 55236,
+      "outer_test_rows": 18927,
+      "inner_train_rows": 44533,
+      "inner_valid_rows": 10703,
+      "inner_cutoff": "2022-12-30T00:00:00",
+      "inner_team_change_rows": 79,
+      "inner_scores": [
+        {
+          "rotation_weight": 0.0,
+          "n_team_change": 79,
+          "mae": 6.679633459800738,
+          "rmse": 8.755763678962321
+        },
+        {
+          "rotation_weight": 0.25,
+          "n_team_change": 79,
+          "mae": 6.679633459800738,
+          "rmse": 8.755763678962321
+        },
+        {
+          "rotation_weight": 0.5,
+          "n_team_change": 79,
+          "mae": 6.679633459800738,
+          "rmse": 8.755763678962321
+        },
+        {
+          "rotation_weight": 0.75,
+          "n_team_change": 79,
+          "mae": 6.679633459800738,
+          "rmse": 8.755763678962321
+        },
+        {
+          "rotation_weight": 1.0,
+          "n_team_change": 79,
+          "mae": 6.679633459800738,
+          "rmse": 8.755763678962321
+        }
+      ],
+      "selected_rotation_weight": 0.0,
+      "outer_team_change_rows": 207
+    },
+    {
+      "season": "2024-25",
+      "outer_train_rows": 74163,
+      "outer_test_rows": 19590,
+      "inner_train_rows": 58587,
+      "inner_valid_rows": 15576,
+      "inner_cutoff": "2023-11-24T00:00:00",
+      "inner_team_change_rows": 100,
+      "inner_scores": [
+        {
+          "rotation_weight": 0.0,
+          "n_team_change": 100,
+          "mae": 7.012305630936155,
+          "rmse": 8.608952592803709
+        },
+        {
+          "rotation_weight": 0.25,
+          "n_team_change": 100,
+          "mae": 7.012305630936155,
+          "rmse": 8.608952592803709
+        },
+        {
+          "rotation_weight": 0.5,
+          "n_team_change": 100,
+          "mae": 7.012305630936155,
+          "rmse": 8.608952592803709
+        },
+        {
+          "rotation_weight": 0.75,
+          "n_team_change": 100,
+          "mae": 7.012305630936155,
+          "rmse": 8.608952592803709
+        },
+        {
+          "rotation_weight": 1.0,
+          "n_team_change": 100,
+          "mae": 7.012305630936155,
+          "rmse": 8.608952592803709
+        }
+      ],
+      "selected_rotation_weight": 0.0,
+      "outer_team_change_rows": 187
+    }
+  ],
+  "pooled_metrics": [
+    {
+      "candidate": "expanded_hgb",
+      "cohort": "all",
+      "n": 57682,
+      "mae": 7.570100088364738,
+      "rmse": 9.831209341834342,
+      "bias_pred_minus_actual": -0.026004090685212315
+    },
+    {
+      "candidate": "expanded_hgb",
+      "cohort": "team_change",
+      "n": 555,
+      "mae": 7.039308635202686,
+      "rmse": 8.810551829193841,
+      "bias_pred_minus_actual": 1.4632781489018865
+    },
+    {
+      "candidate": "expanded_hgb",
+      "cohort": "rookie_season",
+      "n": 5540,
+      "mae": 6.428228049277842,
+      "rmse": 8.572074842383158,
+      "bias_pred_minus_actual": -0.6252062262876751
+    },
+    {
+      "candidate": "expanded_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 338,
+      "mae": 4.947698413210065,
+      "rmse": 6.799702254557263,
+      "bias_pred_minus_actual": 0.4023090130328402
+    },
+    {
+      "candidate": "expanded_hgb",
+      "cohort": "stable_veteran",
+      "n": 43545,
+      "mae": 7.989558991838323,
+      "rmse": 10.27064381698942,
+      "bias_pred_minus_actual": 0.009550452020001682
+    },
+    {
+      "candidate": "rotation_hgb",
+      "cohort": "all",
+      "n": 57682,
+      "mae": 7.570100088364738,
+      "rmse": 9.831209341834342,
+      "bias_pred_minus_actual": -0.026004090685212315
+    },
+    {
+      "candidate": "rotation_hgb",
+      "cohort": "team_change",
+      "n": 555,
+      "mae": 7.039308635202686,
+      "rmse": 8.810551829193841,
+      "bias_pred_minus_actual": 1.4632781489018865
+    },
+    {
+      "candidate": "rotation_hgb",
+      "cohort": "rookie_season",
+      "n": 5540,
+      "mae": 6.428228049277842,
+      "rmse": 8.572074842383158,
+      "bias_pred_minus_actual": -0.6252062262876751
+    },
+    {
+      "candidate": "rotation_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 338,
+      "mae": 4.947698413210065,
+      "rmse": 6.799702254557263,
+      "bias_pred_minus_actual": 0.4023090130328402
+    },
+    {
+      "candidate": "rotation_hgb",
+      "cohort": "stable_veteran",
+      "n": 43545,
+      "mae": 7.989558991838323,
+      "rmse": 10.27064381698942,
+      "bias_pred_minus_actual": 0.009550452020001682
+    },
+    {
+      "candidate": "nested_team_change_gate",
+      "cohort": "all",
+      "n": 57682,
+      "mae": 7.570100088364738,
+      "rmse": 9.831209341834342,
+      "bias_pred_minus_actual": -0.026004090685212315
+    },
+    {
+      "candidate": "nested_team_change_gate",
+      "cohort": "team_change",
+      "n": 555,
+      "mae": 7.039308635202686,
+      "rmse": 8.810551829193841,
+      "bias_pred_minus_actual": 1.4632781489018865
+    },
+    {
+      "candidate": "nested_team_change_gate",
+      "cohort": "rookie_season",
+      "n": 5540,
+      "mae": 6.428228049277842,
+      "rmse": 8.572074842383158,
+      "bias_pred_minus_actual": -0.6252062262876751
+    },
+    {
+      "candidate": "nested_team_change_gate",
+      "cohort": "low_history_nonrookie",
+      "n": 338,
+      "mae": 4.947698413210065,
+      "rmse": 6.799702254557263,
+      "bias_pred_minus_actual": 0.4023090130328402
+    },
+    {
+      "candidate": "nested_team_change_gate",
+      "cohort": "stable_veteran",
+      "n": 43545,
+      "mae": 7.989558991838323,
+      "rmse": 10.27064381698942,
+      "bias_pred_minus_actual": 0.009550452020001682
+    }
+  ],
+  "fold_metrics": [
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "expanded_hgb",
+      "cohort": "all",
+      "n": 19165,
+      "mae": 7.566403363062657,
+      "rmse": 9.825199803246425,
+      "bias_pred_minus_actual": -0.0946784134973397
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "expanded_hgb",
+      "cohort": "team_change",
+      "n": 161,
+      "mae": 7.12327576472777,
+      "rmse": 8.69326053795623,
+      "bias_pred_minus_actual": 1.2931431688747566
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "expanded_hgb",
+      "cohort": "rookie_season",
+      "n": 1637,
+      "mae": 6.631165783371195,
+      "rmse": 8.652735007723512,
+      "bias_pred_minus_actual": -0.8052338480249343
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "expanded_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 123,
+      "mae": 5.183233390673896,
+      "rmse": 7.522381615394743,
+      "bias_pred_minus_actual": -0.4793565679727227
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "expanded_hgb",
+      "cohort": "stable_veteran",
+      "n": 14745,
+      "mae": 7.952360365053928,
+      "rmse": 10.25017322615904,
+      "bias_pred_minus_actual": -0.07831287522384289
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "rotation_hgb",
+      "cohort": "all",
+      "n": 19165,
+      "mae": 7.566403363062657,
+      "rmse": 9.825199803246425,
+      "bias_pred_minus_actual": -0.0946784134973397
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "rotation_hgb",
+      "cohort": "team_change",
+      "n": 161,
+      "mae": 7.12327576472777,
+      "rmse": 8.69326053795623,
+      "bias_pred_minus_actual": 1.2931431688747566
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "rotation_hgb",
+      "cohort": "rookie_season",
+      "n": 1637,
+      "mae": 6.631165783371195,
+      "rmse": 8.652735007723512,
+      "bias_pred_minus_actual": -0.8052338480249343
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "rotation_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 123,
+      "mae": 5.183233390673896,
+      "rmse": 7.522381615394743,
+      "bias_pred_minus_actual": -0.4793565679727227
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "rotation_hgb",
+      "cohort": "stable_veteran",
+      "n": 14745,
+      "mae": 7.952360365053928,
+      "rmse": 10.25017322615904,
+      "bias_pred_minus_actual": -0.07831287522384289
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "nested_team_change_gate",
+      "cohort": "all",
+      "n": 19165,
+      "mae": 7.566403363062657,
+      "rmse": 9.825199803246425,
+      "bias_pred_minus_actual": -0.0946784134973397
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "nested_team_change_gate",
+      "cohort": "team_change",
+      "n": 161,
+      "mae": 7.12327576472777,
+      "rmse": 8.69326053795623,
+      "bias_pred_minus_actual": 1.2931431688747566
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "nested_team_change_gate",
+      "cohort": "rookie_season",
+      "n": 1637,
+      "mae": 6.631165783371195,
+      "rmse": 8.652735007723512,
+      "bias_pred_minus_actual": -0.8052338480249343
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "nested_team_change_gate",
+      "cohort": "low_history_nonrookie",
+      "n": 123,
+      "mae": 5.183233390673896,
+      "rmse": 7.522381615394743,
+      "bias_pred_minus_actual": -0.4793565679727227
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "candidate": "nested_team_change_gate",
+      "cohort": "stable_veteran",
+      "n": 14745,
+      "mae": 7.952360365053928,
+      "rmse": 10.25017322615904,
+      "bias_pred_minus_actual": -0.07831287522384289
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "expanded_hgb",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.572412305291047,
+      "rmse": 9.801451531233015,
+      "bias_pred_minus_actual": 0.08943482393741091
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "expanded_hgb",
+      "cohort": "team_change",
+      "n": 207,
+      "mae": 7.222563797877747,
+      "rmse": 8.955382792173976,
+      "bias_pred_minus_actual": 1.2829102049443086
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "expanded_hgb",
+      "cohort": "rookie_season",
+      "n": 1810,
+      "mae": 6.553286487521626,
+      "rmse": 8.758116670944968,
+      "bias_pred_minus_actual": -0.5643442301305636
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "expanded_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 139,
+      "mae": 4.929667711716441,
+      "rmse": 6.592676303903499,
+      "bias_pred_minus_actual": 1.0674462603922457
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "expanded_hgb",
+      "cohort": "stable_veteran",
+      "n": 14552,
+      "mae": 7.9612213236624,
+      "rmse": 10.202833700015018,
+      "bias_pred_minus_actual": 0.1144511635611698
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "rotation_hgb",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.572412305291047,
+      "rmse": 9.801451531233015,
+      "bias_pred_minus_actual": 0.08943482393741091
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "rotation_hgb",
+      "cohort": "team_change",
+      "n": 207,
+      "mae": 7.222563797877747,
+      "rmse": 8.955382792173976,
+      "bias_pred_minus_actual": 1.2829102049443086
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "rotation_hgb",
+      "cohort": "rookie_season",
+      "n": 1810,
+      "mae": 6.553286487521626,
+      "rmse": 8.758116670944968,
+      "bias_pred_minus_actual": -0.5643442301305636
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "rotation_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 139,
+      "mae": 4.929667711716441,
+      "rmse": 6.592676303903499,
+      "bias_pred_minus_actual": 1.0674462603922457
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "rotation_hgb",
+      "cohort": "stable_veteran",
+      "n": 14552,
+      "mae": 7.9612213236624,
+      "rmse": 10.202833700015018,
+      "bias_pred_minus_actual": 0.1144511635611698
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "nested_team_change_gate",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.572412305291047,
+      "rmse": 9.801451531233015,
+      "bias_pred_minus_actual": 0.08943482393741091
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "nested_team_change_gate",
+      "cohort": "team_change",
+      "n": 207,
+      "mae": 7.222563797877747,
+      "rmse": 8.955382792173976,
+      "bias_pred_minus_actual": 1.2829102049443086
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "nested_team_change_gate",
+      "cohort": "rookie_season",
+      "n": 1810,
+      "mae": 6.553286487521626,
+      "rmse": 8.758116670944968,
+      "bias_pred_minus_actual": -0.5643442301305636
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "nested_team_change_gate",
+      "cohort": "low_history_nonrookie",
+      "n": 139,
+      "mae": 4.929667711716441,
+      "rmse": 6.592676303903499,
+      "bias_pred_minus_actual": 1.0674462603922457
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "candidate": "nested_team_change_gate",
+      "cohort": "stable_veteran",
+      "n": 14552,
+      "mae": 7.9612213236624,
+      "rmse": 10.202833700015018,
+      "bias_pred_minus_actual": 0.1144511635611698
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "expanded_hgb",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.571482651440294,
+      "rmse": 9.865733270828764,
+      "bias_pred_minus_actual": -0.07035166293472576
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "expanded_hgb",
+      "cohort": "team_change",
+      "n": 187,
+      "mae": 6.764161434522066,
+      "rmse": 8.749009514791977,
+      "bias_pred_minus_actual": 1.8094166311670554
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "expanded_hgb",
+      "cohort": "rookie_season",
+      "n": 2093,
+      "mae": 6.161355214145466,
+      "rmse": 8.342997828497595,
+      "bias_pred_minus_actual": -0.537033744806776
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "expanded_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 76,
+      "mae": 4.599480851099047,
+      "rmse": 5.87841246942879,
+      "bias_pred_minus_actual": 0.6127141325160887
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "expanded_hgb",
+      "cohort": "stable_veteran",
+      "n": 14248,
+      "mae": 8.056997474378466,
+      "rmse": 10.360443089768989,
+      "bias_pred_minus_actual": -0.006660271880657366
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "rotation_hgb",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.571482651440294,
+      "rmse": 9.865733270828764,
+      "bias_pred_minus_actual": -0.07035166293472576
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "rotation_hgb",
+      "cohort": "team_change",
+      "n": 187,
+      "mae": 6.764161434522066,
+      "rmse": 8.749009514791977,
+      "bias_pred_minus_actual": 1.8094166311670554
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "rotation_hgb",
+      "cohort": "rookie_season",
+      "n": 2093,
+      "mae": 6.161355214145466,
+      "rmse": 8.342997828497595,
+      "bias_pred_minus_actual": -0.537033744806776
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "rotation_hgb",
+      "cohort": "low_history_nonrookie",
+      "n": 76,
+      "mae": 4.599480851099047,
+      "rmse": 5.87841246942879,
+      "bias_pred_minus_actual": 0.6127141325160887
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "rotation_hgb",
+      "cohort": "stable_veteran",
+      "n": 14248,
+      "mae": 8.056997474378466,
+      "rmse": 10.360443089768989,
+      "bias_pred_minus_actual": -0.006660271880657366
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "nested_team_change_gate",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.571482651440294,
+      "rmse": 9.865733270828764,
+      "bias_pred_minus_actual": -0.07035166293472576
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "nested_team_change_gate",
+      "cohort": "team_change",
+      "n": 187,
+      "mae": 6.764161434522066,
+      "rmse": 8.749009514791977,
+      "bias_pred_minus_actual": 1.8094166311670554
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "nested_team_change_gate",
+      "cohort": "rookie_season",
+      "n": 2093,
+      "mae": 6.161355214145466,
+      "rmse": 8.342997828497595,
+      "bias_pred_minus_actual": -0.537033744806776
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "nested_team_change_gate",
+      "cohort": "low_history_nonrookie",
+      "n": 76,
+      "mae": 4.599480851099047,
+      "rmse": 5.87841246942879,
+      "bias_pred_minus_actual": 0.6127141325160887
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "candidate": "nested_team_change_gate",
+      "cohort": "stable_veteran",
+      "n": 14248,
+      "mae": 8.056997474378466,
+      "rmse": 10.360443089768989,
+      "bias_pred_minus_actual": -0.006660271880657366
+    }
+  ],
+  "production_changed": false
+}

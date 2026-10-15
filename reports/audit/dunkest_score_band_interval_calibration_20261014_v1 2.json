@@ -1,0 +1,573 @@
+{
+  "created_utc": "2026-10-14T18:39:54.069661+00:00",
+  "source": "reports/audit/dunkest_multiseason_production_ensemble_walk_forward_20261014_v1_predictions.csv",
+  "calibration": "strictly prior-season production-ensemble OOF residual q10/q50/q90, forecast score bands, shrinkage n/(n+1000)",
+  "folds": [
+    {
+      "test_season": "2023-24",
+      "calibration_seasons": [
+        "2022-23"
+      ],
+      "n_cal": 19165,
+      "n_test": 18927,
+      "pooled_q10_q50_q90": [
+        -13.956037810733289,
+        0.8657164066832466,
+        10.501624960179779
+      ],
+      "bands": {
+        "<5": {
+          "n_cal": 1224,
+          "n_test": 1519,
+          "q10_q50_q90": [
+            -11.069892606957318,
+            1.0382490786770098,
+            7.37296867604428
+          ],
+          "shrinkage_alpha": 0.5503597122302158
+        },
+        "5-10": {
+          "n_cal": 4904,
+          "n_test": 4531,
+          "q10_q50_q90": [
+            -11.187076743675421,
+            1.379586801257762,
+            8.265925313509097
+          ],
+          "shrinkage_alpha": 0.8306233062330624
+        },
+        "10-15": {
+          "n_cal": 4530,
+          "n_test": 4323,
+          "q10_q50_q90": [
+            -13.051800572476541,
+            1.118071433209157,
+            10.4370980911845
+          ],
+          "shrinkage_alpha": 0.8191681735985533
+        },
+        "15-20": {
+          "n_cal": 3411,
+          "n_test": 3193,
+          "q10_q50_q90": [
+            -14.687803599702702,
+            0.4784956948514558,
+            11.84779589694114
+          ],
+          "shrinkage_alpha": 0.7732940376331897
+        },
+        "20-25": {
+          "n_cal": 2269,
+          "n_test": 2250,
+          "q10_q50_q90": [
+            -15.825820475357498,
+            0.025186155105891284,
+            12.216471870008114
+          ],
+          "shrinkage_alpha": 0.6940960538390946
+        },
+        "25+": {
+          "n_cal": 2827,
+          "n_test": 3111,
+          "q10_q50_q90": [
+            -16.658880605329376,
+            -0.2661295007715819,
+            13.702336109326032
+          ],
+          "shrinkage_alpha": 0.7386987196237261
+        }
+      }
+    },
+    {
+      "test_season": "2024-25",
+      "calibration_seasons": [
+        "2022-23",
+        "2023-24"
+      ],
+      "n_cal": 38092,
+      "n_test": 19590,
+      "pooled_q10_q50_q90": [
+        -13.880238244195091,
+        0.9779991430698249,
+        10.5324288800951
+      ],
+      "bands": {
+        "<5": {
+          "n_cal": 2743,
+          "n_test": 1595,
+          "q10_q50_q90": [
+            -9.291178935524073,
+            1.392632984713845,
+            6.3328557724362335
+          ],
+          "shrinkage_alpha": 0.7328346246326476
+        },
+        "5-10": {
+          "n_cal": 9435,
+          "n_test": 4256,
+          "q10_q50_q90": [
+            -10.692489013442456,
+            1.5691415118776637,
+            8.099418706096536
+          ],
+          "shrinkage_alpha": 0.9041686631528509
+        },
+        "10-15": {
+          "n_cal": 8853,
+          "n_test": 4888,
+          "q10_q50_q90": [
+            -12.943767373542372,
+            1.0972234229300188,
+            10.469354088650775
+          ],
+          "shrinkage_alpha": 0.8985080686085456
+        },
+        "15-20": {
+          "n_cal": 6604,
+          "n_test": 3475,
+          "q10_q50_q90": [
+            -14.854694336383425,
+            0.5892847846591761,
+            11.974845362311479
+          ],
+          "shrinkage_alpha": 0.8684902682798528
+        },
+        "20-25": {
+          "n_cal": 4519,
+          "n_test": 2254,
+          "q10_q50_q90": [
+            -15.828294540340607,
+            0.023470030624689858,
+            12.621951114950921
+          ],
+          "shrinkage_alpha": 0.8188077550280848
+        },
+        "25+": {
+          "n_cal": 5938,
+          "n_test": 3122,
+          "q10_q50_q90": [
+            -17.146796760249806,
+            -0.23347587732289093,
+            14.427968263836636
+          ],
+          "shrinkage_alpha": 0.8558662438743153
+        }
+      }
+    }
+  ],
+  "production_changed": false,
+  "holdout_policy": "2025/26 excluded from this new experiment; 2026/27 GW1 untouched",
+  "metrics": [
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "all",
+      "n": 18927,
+      "lower_tail_coverage": 0.8981877740793576,
+      "upper_tail_coverage": 0.9024145400750251,
+      "central_80_coverage": 0.8006023141543827,
+      "mean_interval_width": 24.457662770913064,
+      "median_bias_after_offset": -1.2249940248837392,
+      "median_absolute_error": 7.508664153112271
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "all",
+      "n": 18927,
+      "lower_tail_coverage": 0.9033127278491044,
+      "upper_tail_coverage": 0.9049505996724256,
+      "central_80_coverage": 0.8082633275215301,
+      "mean_interval_width": 24.30262797602042,
+      "median_bias_after_offset": -1.0682123505152303,
+      "median_absolute_error": 7.489185007548032
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "all",
+      "n": 19590,
+      "lower_tail_coverage": 0.8945890760592139,
+      "upper_tail_coverage": 0.9061255742725881,
+      "central_80_coverage": 0.8007146503318019,
+      "mean_interval_width": 24.412667124290184,
+      "median_bias_after_offset": -1.3055330234186837,
+      "median_absolute_error": 7.565367285649256
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "all",
+      "n": 19590,
+      "lower_tail_coverage": 0.902705461970393,
+      "upper_tail_coverage": 0.9047983665135273,
+      "central_80_coverage": 0.8075038284839203,
+      "mean_interval_width": 24.261253337720497,
+      "median_bias_after_offset": -1.1256195548342331,
+      "median_absolute_error": 7.559389724889107
+    }
+  ],
+  "cohort_metrics": [
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "<5",
+      "n": 1519,
+      "lower_tail_coverage": 0.989466754443713,
+      "upper_tail_coverage": 0.955892034233048,
+      "central_80_coverage": 0.945358788676761,
+      "mean_interval_width": 18.4428612830016,
+      "median_bias_after_offset": -0.8282143114426951,
+      "median_absolute_error": 3.719075725624592
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "<5",
+      "n": 1519,
+      "lower_tail_coverage": 1.0,
+      "upper_tail_coverage": 0.9697169190256748,
+      "central_80_coverage": 0.9697169190256748,
+      "mean_interval_width": 24.457662770913064,
+      "median_bias_after_offset": -0.6556816394489319,
+      "median_absolute_error": 3.7459786648333653
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "5-10",
+      "n": 4531,
+      "lower_tail_coverage": 0.9190024277201501,
+      "upper_tail_coverage": 0.9159126020745972,
+      "central_80_coverage": 0.8349150297947473,
+      "mean_interval_width": 19.45300205718452,
+      "median_bias_after_offset": -1.3352434048929762,
+      "median_absolute_error": 5.672067012944602
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "5-10",
+      "n": 4531,
+      "lower_tail_coverage": 0.980578238799382,
+      "upper_tail_coverage": 0.9448245420436989,
+      "central_80_coverage": 0.925402780843081,
+      "mean_interval_width": 24.457662770913064,
+      "median_bias_after_offset": -0.8213730103184604,
+      "median_absolute_error": 5.709964809440939
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "10-15",
+      "n": 4323,
+      "lower_tail_coverage": 0.8984501503585473,
+      "upper_tail_coverage": 0.9021512838306731,
+      "central_80_coverage": 0.8006014341892205,
+      "mean_interval_width": 23.48889866366104,
+      "median_bias_after_offset": -1.3647878720752704,
+      "median_absolute_error": 7.213678036277403
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "10-15",
+      "n": 4323,
+      "lower_tail_coverage": 0.9003007170946102,
+      "upper_tail_coverage": 0.9127920425630349,
+      "central_80_coverage": 0.8130927596576452,
+      "mean_interval_width": 24.457662770913064,
+      "median_bias_after_offset": -1.1124328455493597,
+      "median_absolute_error": 7.2139225796817135
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "15-20",
+      "n": 3193,
+      "lower_tail_coverage": 0.8925775133103664,
+      "upper_tail_coverage": 0.8947698089570937,
+      "central_80_coverage": 0.7873473222674601,
+      "mean_interval_width": 26.53559949664384,
+      "median_bias_after_offset": -0.8733107983305536,
+      "median_absolute_error": 8.316281123305597
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "15-20",
+      "n": 3193,
+      "lower_tail_coverage": 0.8537425618540557,
+      "upper_tail_coverage": 0.8856874412777952,
+      "central_80_coverage": 0.7394300031318509,
+      "mean_interval_width": 24.45766277091307,
+      "median_bias_after_offset": -1.2605315101623442,
+      "median_absolute_error": 8.31587512732368
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "20-25",
+      "n": 2250,
+      "lower_tail_coverage": 0.8808888888888889,
+      "upper_tail_coverage": 0.9004444444444445,
+      "central_80_coverage": 0.7813333333333333,
+      "mean_interval_width": 28.04229234536561,
+      "median_bias_after_offset": -0.8990385870235402,
+      "median_absolute_error": 9.057601206646543
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "20-25",
+      "n": 2250,
+      "lower_tail_coverage": 0.8448888888888889,
+      "upper_tail_coverage": 0.8675555555555555,
+      "central_80_coverage": 0.7124444444444444,
+      "mean_interval_width": 24.457662770913068,
+      "median_bias_after_offset": -1.7395688386008958,
+      "median_absolute_error": 9.079026202442037
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_residual_quantiles",
+      "cohort": "25+",
+      "n": 3111,
+      "lower_tail_coverage": 0.8723882995821279,
+      "upper_tail_coverage": 0.8817100610736097,
+      "central_80_coverage": 0.7540983606557377,
+      "mean_interval_width": 30.361216714655413,
+      "median_bias_after_offset": -0.7067546064597939,
+      "median_absolute_error": 10.376140945833871
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "25+",
+      "n": 3111,
+      "lower_tail_coverage": 0.8097074895531984,
+      "upper_tail_coverage": 0.8357441337190614,
+      "central_80_coverage": 0.6454516232722597,
+      "mean_interval_width": 24.45766277091307,
+      "median_bias_after_offset": -1.8386005139146253,
+      "median_absolute_error": 10.410899625038263
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "predicted_ge_20",
+      "n": 5361,
+      "lower_tail_coverage": 0.8244730460734937,
+      "upper_tail_coverage": 0.8490953180376796,
+      "central_80_coverage": 0.6735683641111733,
+      "mean_interval_width": 24.457662770913068,
+      "median_bias_after_offset": -1.7970371359150188,
+      "median_absolute_error": 9.851915256293344
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "lower_tail_coverage": 0.9459459459459459,
+      "upper_tail_coverage": 0.9536679536679536,
+      "central_80_coverage": 0.8996138996138996,
+      "mean_interval_width": 24.45766277091307,
+      "median_bias_after_offset": 0.10546883978050936,
+      "median_absolute_error": 5.576806316241515
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_residual_quantiles",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "lower_tail_coverage": 0.896843935031778,
+      "upper_tail_coverage": 0.9009723504807431,
+      "central_80_coverage": 0.797816285512521,
+      "mean_interval_width": 24.45766277091306,
+      "median_bias_after_offset": -1.262431135204565,
+      "median_absolute_error": 7.563023562069795
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "<5",
+      "n": 1595,
+      "lower_tail_coverage": 0.9786833855799373,
+      "upper_tail_coverage": 0.9222570532915361,
+      "central_80_coverage": 0.9009404388714733,
+      "mean_interval_width": 15.624034707960305,
+      "median_bias_after_offset": -1.6291985801109112,
+      "median_absolute_error": 3.860283292035835
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "<5",
+      "n": 1595,
+      "lower_tail_coverage": 1.0,
+      "upper_tail_coverage": 0.961755485893417,
+      "central_80_coverage": 0.961755485893417,
+      "mean_interval_width": 24.41266712429019,
+      "median_bias_after_offset": -1.2145647384668912,
+      "median_absolute_error": 3.872342179043304
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "5-10",
+      "n": 4256,
+      "lower_tail_coverage": 0.9055451127819549,
+      "upper_tail_coverage": 0.9043703007518797,
+      "central_80_coverage": 0.8099154135338346,
+      "mean_interval_width": 18.791907719538987,
+      "median_bias_after_offset": -1.6711126681609012,
+      "median_absolute_error": 5.860138164130844
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "5-10",
+      "n": 4256,
+      "lower_tail_coverage": 0.9772086466165414,
+      "upper_tail_coverage": 0.9431390977443609,
+      "central_80_coverage": 0.9203477443609023,
+      "mean_interval_width": 24.41266712429019,
+      "median_bias_after_offset": -1.0799702993530624,
+      "median_absolute_error": 5.886467263460727
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "10-15",
+      "n": 4888,
+      "lower_tail_coverage": 0.9126432078559739,
+      "upper_tail_coverage": 0.901595744680851,
+      "central_80_coverage": 0.8142389525368249,
+      "mean_interval_width": 23.413121462193146,
+      "median_bias_after_offset": -1.791288580474144,
+      "median_absolute_error": 7.286821529625118
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "10-15",
+      "n": 4888,
+      "lower_tail_coverage": 0.9140752864157119,
+      "upper_tail_coverage": 0.9144844517184942,
+      "central_80_coverage": 0.8285597381342062,
+      "mean_interval_width": 24.412667124290188,
+      "median_bias_after_offset": -1.6720643006139495,
+      "median_absolute_error": 7.281823308348648
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "15-20",
+      "n": 3475,
+      "lower_tail_coverage": 0.8935251798561151,
+      "upper_tail_coverage": 0.9133812949640288,
+      "central_80_coverage": 0.8069064748201439,
+      "mean_interval_width": 26.829539698694905,
+      "median_bias_after_offset": -0.6083539477602383,
+      "median_absolute_error": 8.14274954261974
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "15-20",
+      "n": 3475,
+      "lower_tail_coverage": 0.8538129496402878,
+      "upper_tail_coverage": 0.9001438848920863,
+      "central_80_coverage": 0.753956834532374,
+      "mean_interval_width": 24.412667124290188,
+      "median_bias_after_offset": -0.9970683061708858,
+      "median_absolute_error": 8.136075340403247
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "20-25",
+      "n": 2254,
+      "lower_tail_coverage": 0.870452528837622,
+      "upper_tail_coverage": 0.8970718722271517,
+      "central_80_coverage": 0.7675244010647737,
+      "mean_interval_width": 28.450245655291525,
+      "median_bias_after_offset": -0.4899317966964278,
+      "median_absolute_error": 9.312893850326843
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "20-25",
+      "n": 2254,
+      "lower_tail_coverage": 0.8234250221827861,
+      "upper_tail_coverage": 0.8691215616681455,
+      "central_80_coverage": 0.6925465838509317,
+      "mean_interval_width": 24.412667124290184,
+      "median_bias_after_offset": -1.4444609091415623,
+      "median_absolute_error": 9.322236946772932
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_residual_quantiles",
+      "cohort": "25+",
+      "n": 3122,
+      "lower_tail_coverage": 0.8779628443305574,
+      "upper_tail_coverage": 0.8975016015374759,
+      "central_80_coverage": 0.7754644458680333,
+      "mean_interval_width": 31.574765024086446,
+      "median_bias_after_offset": -0.11720211680164572,
+      "median_absolute_error": 10.277144073411822
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "25+",
+      "n": 3122,
+      "lower_tail_coverage": 0.7943625880845612,
+      "upper_tail_coverage": 0.8475336322869955,
+      "central_80_coverage": 0.6418962203715567,
+      "mean_interval_width": 24.412667124290188,
+      "median_bias_after_offset": -1.3286771371943609,
+      "median_absolute_error": 10.281107770618306
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "predicted_ge_20",
+      "n": 5376,
+      "lower_tail_coverage": 0.8065476190476191,
+      "upper_tail_coverage": 0.8565848214285714,
+      "central_80_coverage": 0.6631324404761905,
+      "mean_interval_width": 24.412667124290184,
+      "median_bias_after_offset": -1.3772218957451405,
+      "median_absolute_error": 9.879081201245635
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "lower_tail_coverage": 0.9354166666666667,
+      "upper_tail_coverage": 0.9729166666666667,
+      "central_80_coverage": 0.9083333333333333,
+      "mean_interval_width": 24.412667124290184,
+      "median_bias_after_offset": 0.1577061298002698,
+      "median_absolute_error": 5.197465338890515
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_residual_quantiles",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "lower_tail_coverage": 0.893563579277865,
+      "upper_tail_coverage": 0.9044479330193615,
+      "central_80_coverage": 0.7980115122972266,
+      "mean_interval_width": 24.412667124290188,
+      "median_bias_after_offset": -1.3422862831541675,
+      "median_absolute_error": 7.624843629680872
+    }
+  ],
+  "promotion_rule": "Only consider production integration if central coverage improves toward 0.80 and tail coverage toward 0.90 across both folds, without materially wider intervals or subgroup failures."
+}

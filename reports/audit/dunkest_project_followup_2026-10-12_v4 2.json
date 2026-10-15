@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-12",
+  "status": "read-only cross-source audit",
+  "exact_boxscore_signature_rows": 19,
+  "confirmed_multi_player_cluster": {
+    "table_scope": "season_5_week_43_round_2",
+    "files": ["season_5_week_43_round_2_avg.parquet", "season_5_week_43_round_2_tot.parquet"],
+    "expected_season": "2020-21",
+    "actual_game": {"season": "2021-22", "date": "2021-11-27", "game_id": "0022100292", "matchup": "PHI vs MIN"},
+    "players": 15,
+    "official_history_rows": 15,
+    "official_valid_true_rows": 15,
+    "pdk_agrees_at_one_decimal": 15,
+    "live_requery_reproduced": true
+  },
+  "isolated_exact_boxscore_candidates": [
+    {"table_scope": "season_13_week_20_round_1", "player": "Jaden Springer", "actual_season": "2024-25", "date": "2025-01-10", "game_id": "0022400528", "pdk_agrees_at_one_decimal": true},
+    {"table_scope": "season_5_week_40_round_3", "player": "Juan Toscano-Anderson", "actual_season": "2021-22", "date": "2022-03-14", "game_id": "0022101025", "pdk_agrees_at_one_decimal": false},
+    {"table_scope": "season_5_week_53_round_2", "player": "Nickeil Alexander-Walker", "actual_season": "2021-22", "date": "2022-02-04", "game_id": "0022100794", "pdk_agrees_at_one_decimal": true},
+    {"table_scope": "season_9_week_40_round_2", "player": "Sandro Mamukelashvili", "actual_season": "2023-24", "date": "2024-02-10", "game_id": "0022300750", "pdk_agrees_at_one_decimal": false}
+  ],
+  "history_corroboration": {"candidate_rows": 45, "same_date_history_matches": 37, "pdk_matches_at_one_decimal": 18, "isolated_pdk_matching_candidates": 3},
+  "weekly_avg_vs_valid_history": {
+    "season_id_5": {"weekly_rows": 17681, "official_valid_rows": 17662, "table_only_score_entries": 25, "history_only_score_entries": 6},
+    "season_id_7": {"weekly_rows": 18422, "official_valid_rows": 18422, "player_groups_score_multiset_match": 492},
+    "season_id_9": {"weekly_rows": 19165, "official_valid_rows": 19165, "player_groups_score_multiset_match": 482},
+    "season_id_13": {"weekly_rows": 18927, "official_valid_rows": 18927, "player_groups_score_multiset_match": 512},
+    "season_id_19": {"weekly_rows": 19590, "official_valid_rows": 19590, "player_groups_score_multiset_match": 509}
+  },
+  "safeguards": ["Raw archive preserved", "No targets or validity flags changed", "No production model/config/split/backtest changed"],
+  "tests": {"passed": 213, "warnings": 6800}
+}

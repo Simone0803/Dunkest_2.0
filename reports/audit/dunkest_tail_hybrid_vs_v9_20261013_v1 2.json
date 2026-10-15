@@ -1,0 +1,61 @@
+{
+  "created_utc": "2026-10-13T14:21:37.838674+00:00",
+  "paired_rows": 57662,
+  "label_mismatches": 0,
+  "join_keys": [
+    "season_id",
+    "target_date/game_date",
+    "player_name"
+  ],
+  "strong_baseline": "V9 historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+  "tail_specialist": "25% conditional-tail mixture + 75% direct HGB; this specialist was discovered in exploratory folds and is not a pristine pre-registered candidate.",
+  "hybrid_weight_selection": "Choose tail-specialist weight from 5%, 10%, 15%, 25%, 50% using 2022/23 MAE only; freeze selected weight and evaluate on 2023/24 and 2024/25.",
+  "selection_fold_mae": {
+    "0.05": 7.417781812407349,
+    "0.1": 7.40497432803741,
+    "0.15": 7.394881435869592,
+    "0.25": 7.382213693701646,
+    "0.5": 7.3889043294661265
+  },
+  "selected_tail_specialist_weight": 0.25,
+  "later_folds": [
+    "2023-24",
+    "2024-25"
+  ],
+  "paired_date_cluster_bootstrap_later_folds": {
+    "overall_later_folds": {
+      "n": 38507,
+      "date_clusters": 311,
+      "delta_mae_candidate_minus_v9": -0.05419246732385148,
+      "ci95": [
+        -0.07551916839050787,
+        -0.036423859834047015
+      ],
+      "bootstrap_reps": 5000
+    },
+    "actual_ge25_later_folds": {
+      "n": 8791,
+      "date_clusters": 311,
+      "delta_mae_candidate_minus_v9": -0.2467852560490535,
+      "ci95": [
+        -0.28422163240764986,
+        -0.21458853245027693
+      ],
+      "bootstrap_reps": 5000
+    },
+    "actual_ge30_later_folds": {
+      "n": 5889,
+      "date_clusters": 311,
+      "delta_mae_candidate_minus_v9": -0.258085488354917,
+      "ci95": [
+        -0.3009746956624972,
+        -0.21963177919059146
+      ],
+      "bootstrap_reps": 5000
+    }
+  },
+  "holdout_2025_26_loaded": false,
+  "prospective_snapshot_loaded": false,
+  "caveat": "The validation folds were previously inspected in exploratory work and the tail specialist was developed on them. This is a sequential robustness check, not a pristine final test. No lineup-level utility is measured here.",
+  "production_changed": false
+}

@@ -1,0 +1,78 @@
+{
+  "generated_at_utc": "2026-10-14T13:16:43.732474+00:00",
+  "paired_rounds": 458,
+  "bootstrap_replicates": 50000,
+  "seed": 20261014,
+  "method": "Paired season-stratified bootstrap on identical season_id/round_index rows. V6 is the observed-row-trained player model; V7 uses zero-inclusive proxy training and past-only role/history residual calibration. All realized strategy scores in this comparison use the same zero-for-missing evaluation proxy.",
+  "comparisons": [
+    {
+      "comparison": "model_v7_calibrated_zero_inclusive_minus_model_v6_raw",
+      "paired_rounds": 458,
+      "mean_delta": 26.244454148471615,
+      "median_delta": 21.125000000000014,
+      "win_rate_new_strategy": 0.6877729257641921,
+      "bootstrap_95_ci": [
+        21.240875272925766,
+        31.2794192139738
+      ],
+      "bootstrap_nonpositive": 0,
+      "by_season": [
+        {
+          "season_id": "9",
+          "n": 159,
+          "mean_delta": 24.389433962264153,
+          "win_rate": 0.6792452830188679
+        },
+        {
+          "season_id": "13",
+          "n": 147,
+          "mean_delta": 31.385136054421768,
+          "win_rate": 0.7346938775510204
+        },
+        {
+          "season_id": "19",
+          "n": 152,
+          "mean_delta": 23.213322368421053,
+          "win_rate": 0.6513157894736842
+        }
+      ]
+    },
+    {
+      "comparison": "baseline_v7_calibrated_minus_baseline_v6_raw",
+      "paired_rounds": 458,
+      "mean_delta": -2.1238755458515284,
+      "median_delta": 0.0,
+      "win_rate_new_strategy": 0.24672489082969432,
+      "bootstrap_95_ci": [
+        -3.7557546397379906,
+        -0.4966686681222701
+      ],
+      "bootstrap_nonpositive": 49737,
+      "by_season": [
+        {
+          "season_id": "9",
+          "n": 159,
+          "mean_delta": -2.3842138364779877,
+          "win_rate": 0.23270440251572327
+        },
+        {
+          "season_id": "13",
+          "n": 147,
+          "mean_delta": -1.0893197278911557,
+          "win_rate": 0.30612244897959184
+        },
+        {
+          "season_id": "19",
+          "n": 152,
+          "mean_delta": -2.8520723684210525,
+          "win_rate": 0.20394736842105263
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Zero-inclusive labels assume a missing player-week-round row means 0 points; this is a proxy, not official observation.",
+    "Candidate pool, CR/role and availability are reconstructed rather than certified pre-lock state.",
+    "Coach price and transfer malus remain proxies."
+  ]
+}
