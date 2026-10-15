@@ -39,6 +39,7 @@ from dunkest.models.multiseason_training import train_multiseason_models
 from dunkest.models.rookie_prior import load_college_rookie_priors
 from dunkest.names import player_key
 from dunkest.optimize.milp import LineupSolution
+from dunkest.pipeline.forecast import build_player_forecast
 from dunkest.pipeline.optimize import run_optimize
 from dunkest.rules.eligibility import filter_injured, unavailable_mask
 from dunkest.report.artifacts import save_pre_match_snapshot
@@ -558,7 +559,26 @@ def run_season_opener(
     injuries = get_injuries(settings, force_refresh=True) if settings.use_injuries else pd.DataFrame()
     official_out_count = int(unavailable_mask(injuries).sum()) if not injuries.empty else 0
     if settings.use_injuries:
-        market_for_injury_match = market.rename(columns={"team_code": "team"}).copy()
+        # get_opening_market already applies the official injury filter. Count
+        # matches against the unfiltered scraped market when available; otherwise
+        # the diagnostic would misleadingly report zero OUT matches because
+        # those players have already been removed before this point.
+        market_for_injury_match = market.copy()
+        if "team" not in market_for_injury_match and "team_code" in market_for_injury_match:
+            market_for_injury_match = market_for_injury_match.rename(columns={"team_code": "team"})
+        raw_market_path = settings.data_path / "current_lineups_market.csv"
+        if raw_market_path.is_file():
+            try:
+                raw_market = pd.read_csv(raw_market_path)
+                if {"player_name", "team"}.issubset(raw_market.columns):
+                    market_for_injury_match = raw_market
+            except (OSError, pd.errors.ParserError, UnicodeDecodeError) as exc:
+                warnings.warn(
+                    f"Listino grezzo non leggibile per la diagnostica infortuni; "
+                    f"uso il listino filtrato disponibile: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
         market_after_official_out = filter_injured(market_for_injury_match, injuries)
         matched_out_count = len(market_for_injury_match) - len(market_after_official_out)
         unmatched_out_count = max(official_out_count - matched_out_count, 0)

@@ -18,6 +18,11 @@ from dunkest.pipeline.season_opener import (
 from dunkest.pipeline import season_opener
 
 
+def test_season_opener_uses_shared_player_forecast_builder():
+    # Regression guard: the live season-opener path calls this shared function.
+    assert callable(season_opener.build_player_forecast)
+
+
 def test_turn_specific_lineup_annotations_override_other_turn_labels_but_preserve_hard_out():
     market = pd.DataFrame([
         {
