@@ -1,0 +1,36 @@
+{
+  "generated_at_utc": "2026-10-13T07:58:40.111343+00:00",
+  "status": "waiting_for_real_postgame_outcomes",
+  "historical_full_lineup_backtest": "not_recoverable_as_certified_from_current_archives",
+  "prospective_run": {
+    "run_id": "20261013T072534Z_76c01a55",
+    "path": "data/workspaces/dunkest_preflight_20261013/predictions/20261013T072534Z_76c01a55",
+    "season_id": "26",
+    "gameweek": 1,
+    "mapped_fixtures": 16,
+    "pre_match_snapshot_files_hash_verified": 11,
+    "pre_match_inputs_complete": true,
+    "snapshot_capture_metadata_ok": true,
+    "post_match_results_archived": false
+  },
+  "minimum_safe_result_retrieval_after_utc": "2026-10-23T12:00:00+00:00",
+  "reason": "The mapped fixtures are scheduled for 2026-10-20 through 2026-10-22. The schedule has date-only precision, so the collector correctly refuses to run before the latest fixture date plus 36 hours. No actual player/coach scores exist yet for these fixtures.",
+  "code_changes": [
+    "Added --run-dir support to post-match builder and evaluator for explicit frozen runs outside data/predictions.",
+    "Added run-id/manifest consistency checks for explicit paths.",
+    "Added regression tests for workspace paths and mismatched run IDs."
+  ],
+  "validation": {
+    "post_match_collection_tests": 20,
+    "full_test_suite_last_run_before_final_helper_tests": 259,
+    "production_config_or_model_changed_by_this_resolution": false,
+    "frozen_run_modified": false
+  },
+  "command_after_cutoff": "cd /Users/simone/Documents/Dunkest && bash scripts/run_prospective_gw1_backtest.sh",
+  "expected_outputs": [
+    "data/workspaces/dunkest_preflight_20261013/processed/official_dunkest_player_games_2026-27.parquet",
+    "data/workspaces/dunkest_preflight_20261013/archive/26/gw1/post_match_<timestamp>_<id>/",
+    "data/workspaces/dunkest_preflight_20261013/reports/backtest/post_match_evaluation_20261013T072534Z_76c01a55.md"
+  ],
+  "historical_limit": "Historical weekly PDK/plusvalenza records are outcomes, not proof of the roster, prices, injuries, coach market, and lineup choices known before each tipoff. Do not retrofit those snapshots from post-game data; only rounds with authentic pre-match bundles can support a complete lineup backtest."
+}

@@ -1,0 +1,453 @@
+{
+  "generated_at_utc": "2026-10-14T13:15:23.690382+00:00",
+  "supersedes_diagnostic_versions": {
+    "v1": "identity-key mismatch made outcome join coverage invalid",
+    "v2": "candidate pool restricted to immediately previous round and missed most target participants",
+    "v4": "deterministic every-third-round sample; V5 evaluates all high-confidence rounds",
+    "gamelevel_actuals_v1": "unioning all linked game IDs allowed cross-date exact-signature collisions; v2 uses high-confidence round-date consensus",
+    "gamelevel_actuals_v2": "training used same-round rows whose lag1_pdk/minutes fields included the target label; v3 constructs each training row from the latest strictly pre-target candidate observation"
+  },
+  "input": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "coach_prediction_source": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_predictions.csv",
+  "realized_player_score_source": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "secondary_game_level_validation_source": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "game_level_actual_reconstruction": {
+    "date_link_source": "data/processed/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.parquet",
+    "rounds_with_confident_date_mapping": 778,
+    "date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links": 10,
+    "weekly_rows_reconstructed": 93734,
+    "rows_with_absolute_difference_below_0_02": 93728,
+    "share_with_absolute_difference_below_0_02": 0.9999359890754689,
+    "mean_absolute_difference": 0.0014935882390594661,
+    "scoring_rule": "Use target_pdk_round_total from the official historical Dunkest player-week-round archive as the realized player score. The game-level linked PDK reconstruction remains a secondary audit only and is not used to assign the target outcome to a single NBA date."
+  },
+  "candidate_policy": "For target round r, each candidate's latest observed row strictly before r is carried forward. CR, role and team are lagged; when a player has no row in r-1, the last observed CR is carried forward. Realized score is joined after lineup selection from the official historical Dunkest player-week-round target_pdk_round_total. Missing rows remain unknown in strict metrics and are zeroed only in the separate sensitivity scenario. Players never observed in the archived season remain outside the candidate universe.",
+  "target_date_mapping": {
+    "rounds_total": 779,
+    "rounds_with_confident_date": 768,
+    "rounds_date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links_per_round": 10,
+    "rows_with_target_opponent": 90219,
+    "rows_with_all_three_opponent_defense_features": 90219,
+    "date_mapping_by_season": [
+      {
+        "season_id": "13",
+        "rounds": 154,
+        "confident_rounds": 150,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "19",
+        "rounds": 158,
+        "confident_rounds": 155,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "5",
+        "rounds": 140,
+        "confident_rounds": 140,
+        "median_confidence": 0.9916787016023657
+      },
+      {
+        "season_id": "7",
+        "rounds": 165,
+        "confident_rounds": 161,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "9",
+        "rounds": 162,
+        "confident_rounds": 162,
+        "median_confidence": 1.0
+      }
+    ],
+    "mapping_method": "Official-valid Dunkest PDK and player/team identity are used only to link historical outcome rows to candidate NBA dates. A round date is accepted only if >=75% of unique player-date links agree and >=10 unique links exist. Matchup features use NBA schedule and opponent defensive stats strictly before that date."
+  },
+  "coach_policy": "Historical coach CR is missing; use fixed coach_cr=10 for every team, and reconstruct neutral-credit base score from final NBA results. Coach budget and price-difference multipliers are therefore proxies, not historical market truth.",
+  "optimizer": {
+    "budget": 95.0,
+    "fixed_coach_cr": 10.0,
+    "player_budget_after_coach": 85.0,
+    "formation": "4G/4F/2C roster; 5 starters, sixth man, 4 bench; one captain; max 3 per NBA team including coach",
+    "transfer_malus": 0.0,
+    "reason": "Historical carry-over roster and exact transfer/coach prices are not archived; this evaluates fresh independent round lineups."
+  },
+  "training_feature_policy": "For every training target round, all player predictors come from the latest archived row strictly before that target round. Target-round PDK is joined only as the label after prior features are selected; players with no target-round row are assigned 0 only in this explicit zero-inclusive proxy. Target matchup and opponent-defense context are joined from the target schedule by lagged team. No same-round PDK, minutes, box-score stats, or target-market role/CR are used as predictors.",
+  "calibration_policy": "Player forecasts are calibrated using role x history-cohort residual means from expanding-season out-of-sample predictions only. Residuals are shrunk toward the global OOS residual mean with prior strength 20. The calibration fold never uses the held-out test season; 2022/23 uses OOS 2021/22 residuals, 2023/24 uses OOS 2021/22 and 2022/23 residuals, and 2024/25 uses OOS 2021/22 through 2023/24 residuals. Both the model and previous-five baseline are calibrated before optimization.",
+  "calibration_residual_policy": "The calibration labels use the zero-inclusive proxy target: missing player-week-round rows are assumed to score 0. The resulting calibration is appropriate only for this explicit reconstructed-candidate scenario; observed-only rows are retained separately.",
+  "training_rows_by_test_season": {
+    "9": 68410,
+    "13": 104425,
+    "19": 140604
+  },
+  "fold_policy": "Train player score model on leakage-safe rows from earlier valid seasons only; test seasons 2022-23, 2023-24 and 2024-25. No test-season labels are used to fit its model. All high-confidence mapped rounds with a prior historical candidate pool are evaluated; CBC uses a 1-second time limit and 5% relative gap.",
+  "metrics_strict_observed_only": [
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "rounds_evaluated": 2,
+      "mean_model_realized_team_score": 229.1125,
+      "mean_baseline_realized_team_score": 214.66750000000002,
+      "mean_delta_model_minus_baseline": 14.445000000000007,
+      "median_delta_model_minus_baseline": 14.445000000000007,
+      "model_win_rate_vs_baseline": 1.0,
+      "mean_candidate_count": 249.0,
+      "mean_candidate_target_row_coverage": 0.8197674418604651,
+      "mean_target_players_covered": 0.9180500445380193
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "rounds_evaluated": 6,
+      "mean_model_realized_team_score": 175.57666666666668,
+      "mean_baseline_realized_team_score": 191.99416666666664,
+      "mean_delta_model_minus_baseline": -16.4175,
+      "median_delta_model_minus_baseline": -18.525000000000006,
+      "model_win_rate_vs_baseline": 0.16666666666666666,
+      "mean_candidate_count": 199.83333333333334,
+      "mean_candidate_target_row_coverage": 0.7003172669628839,
+      "mean_target_players_covered": 0.9863693024070382
+    },
+    {
+      "season_id": "POOLED",
+      "season": "2022-23–2024-25",
+      "rounds_evaluated": 8,
+      "mean_model_realized_team_score": 188.960625,
+      "mean_baseline_realized_team_score": 197.66250000000002,
+      "mean_delta_model_minus_baseline": -8.701874999999998,
+      "median_delta_model_minus_baseline": -13.600000000000009,
+      "model_win_rate_vs_baseline": 0.375,
+      "mean_candidate_count": 212.125,
+      "mean_candidate_target_row_coverage": 0.7301798106872792,
+      "mean_target_players_covered": 0.9692894879397835
+    }
+  ],
+  "player_forecast_rows": 109467,
+  "player_forecast_calibration_metrics": {
+    "model_raw": {
+      "n": 109467,
+      "mae": 6.804401216372795,
+      "rmse": 9.962823288947853,
+      "bias_pred_minus_actual": -0.21882811320297185,
+      "observations_with_zero_proxy": 55133
+    },
+    "model_calibrated": {
+      "n": 109467,
+      "mae": 6.712797521399304,
+      "rmse": 9.976585412369257,
+      "bias_pred_minus_actual": -0.5606094607505082,
+      "observations_with_zero_proxy": 55133
+    },
+    "baseline_raw": {
+      "n": 109467,
+      "mae": 9.67087615141245,
+      "rmse": 13.134847952671832,
+      "bias_pred_minus_actual": 5.429810987177262,
+      "observations_with_zero_proxy": 55133
+    },
+    "baseline_calibrated": {
+      "n": 109467,
+      "mae": 8.577887164902782,
+      "rmse": 11.905247225780274,
+      "bias_pred_minus_actual": 0.17865783518590161,
+      "observations_with_zero_proxy": 55133
+    }
+  },
+  "metrics_proxy_zero_missing": [
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "rounds_evaluated_proxy": 147,
+      "mean_model_realized_team_score_proxy": 171.89183673469387,
+      "mean_baseline_realized_team_score_proxy": 120.44673469387754,
+      "mean_delta_model_minus_baseline_proxy": 51.44510204081634,
+      "median_delta_model_minus_baseline_proxy": 52.60500000000002,
+      "model_win_rate_vs_baseline_proxy": 0.8095238095238095,
+      "mean_candidate_count": 245.96598639455783
+    },
+    {
+      "season_id": "19",
+      "season": "2024-25",
+      "rounds_evaluated_proxy": 152,
+      "mean_model_realized_team_score_proxy": 167.44993421052632,
+      "mean_baseline_realized_team_score_proxy": 122.41884868421053,
+      "mean_delta_model_minus_baseline_proxy": 45.03108552631579,
+      "median_delta_model_minus_baseline_proxy": 44.542500000000004,
+      "model_win_rate_vs_baseline_proxy": 0.7763157894736842,
+      "mean_candidate_count": 245.08552631578948
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "rounds_evaluated_proxy": 159,
+      "mean_model_realized_team_score_proxy": 148.61911949685535,
+      "mean_baseline_realized_team_score_proxy": 112.97122641509436,
+      "mean_delta_model_minus_baseline_proxy": 35.647893081761005,
+      "median_delta_model_minus_baseline_proxy": 27.0,
+      "model_win_rate_vs_baseline_proxy": 0.6855345911949685,
+      "mean_candidate_count": 226.36477987421384
+    },
+    {
+      "season_id": "POOLED",
+      "season": "2022-23–2024-25",
+      "rounds_evaluated_proxy": 458,
+      "mean_model_realized_team_score_proxy": 162.3382751091703,
+      "mean_baseline_realized_team_score_proxy": 118.50602620087335,
+      "mean_delta_model_minus_baseline_proxy": 43.83224890829694,
+      "median_delta_model_minus_baseline_proxy": 41.925,
+      "model_win_rate_vs_baseline_proxy": 0.7554585152838428,
+      "mean_candidate_count": 238.86899563318778
+    }
+  ],
+  "proxy_zero_missing_policy": "Only for the proxy scenario, missing valid player-game PDK rows for previously observed candidates assigned to a scheduled team are set to zero. This is an explicit no-appearance assumption, not observed Dunkest actuals; strict observed-only results remain separate.",
+  "selection_conditioned_score_calibration": {
+    "model": {
+      "lineup_rows": 458,
+      "strict_complete_lineup_rows": 113,
+      "mean_expected_team_pdk": 172.7198874491208,
+      "mean_realized_team_score": 195.79212389380532,
+      "mean_optimism_gap": -23.072236444684535,
+      "proxy_mean_expected_team_pdk": 169.58823320950867,
+      "proxy_mean_realized_team_score": 162.3382751091703,
+      "proxy_mean_optimism_gap": 7.249958100338375
+    },
+    "previous5_baseline": {
+      "lineup_rows": 458,
+      "strict_complete_lineup_rows": 11,
+      "mean_expected_team_pdk": 254.56698305489178,
+      "mean_realized_team_score": 197.59681818181818,
+      "mean_optimism_gap": 56.9701648730736,
+      "proxy_mean_expected_team_pdk": 229.02189457791863,
+      "proxy_mean_realized_team_score": 118.50602620087335,
+      "proxy_mean_optimism_gap": 110.51586837704528
+    }
+  },
+  "round_status_counts": {
+    "selected_actuals_incomplete": 450,
+    "evaluated": 8,
+    "candidate_pool_too_small": 3,
+    "optimization_failed": 3
+  },
+  "lineup_rows": 916,
+  "production_changed": false,
+  "limitations": [
+    "This is a reconstructed candidate-universe experiment, not a complete historical Dunkest market backtest. The candidate universe contains players observed earlier in the archived season; late additions and players with no earlier archived row may be missing.",
+    "The historical round archives are outcomes, not timestamped complete pre-lock roster snapshots. Candidate CR/role/team are lagged proxies, not certified market state.",
+    "Game-level PDK reconstruction is a secondary audit. Strategy realized player scores come directly from the official Dunkest player-week-round outcome archive.",
+    "Historical coach prices and exact credit-difference multipliers are unavailable; coach CR is fixed at 10 and neutral-credit base scores are used.",
+    "No transfer malus is applied because historical carried rosters and coach prices are unavailable.",
+    "The 2025/26 season is not used in this lineup comparison; tested seasons are 2022/23 through 2024/25."
+  ],
+  "strategy_proxy_bootstrap": {
+    "generated_at_utc": "2026-10-14T13:15:34.274501+00:00",
+    "input": "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7_rounds.csv",
+    "bootstrap_unit": "paired gameweek/round",
+    "stratification": "resample rounds within each test season; preserve observed season sample sizes in pooled estimate",
+    "seed": 42,
+    "bootstrap_replicates": 50000,
+    "paired_rounds": 458,
+    "mean_model_minus_baseline": 43.83224890829694,
+    "median_model_minus_baseline": 41.925,
+    "model_win_rate": 0.7554585152838428,
+    "stratified_round_bootstrap_95_ci": [
+      38.60830021834062,
+      49.04960589519651
+    ],
+    "bootstrap_replicates_with_nonpositive_mean_delta": 0,
+    "by_season": [
+      {
+        "season_id": "9",
+        "rounds": 159,
+        "mean_delta": 35.647893081761005,
+        "median_delta": 27.0,
+        "win_rate": 0.6855345911949685
+      },
+      {
+        "season_id": "13",
+        "rounds": 147,
+        "mean_delta": 51.44510204081634,
+        "median_delta": 52.60500000000002,
+        "win_rate": 0.8095238095238095
+      },
+      {
+        "season_id": "19",
+        "rounds": 152,
+        "mean_delta": 45.03108552631579,
+        "median_delta": 44.542500000000004,
+        "win_rate": 0.7763157894736842
+      }
+    ],
+    "limitations": [
+      "This estimates uncertainty conditional on the reconstructed candidate pool, zero-inclusive training/evaluation proxy, and past-only group calibration.",
+      "It does not correct missing historical pre-lock prices/availability, unknown coach credits, or transfer malus.",
+      "It compares fresh independent round lineups, not a sequential roster with carried players and transfer constraints."
+    ]
+  },
+  "v6_v7_paired_strategy_bootstrap": {
+    "generated_at_utc": "2026-10-14T13:16:43.732474+00:00",
+    "paired_rounds": 458,
+    "bootstrap_replicates": 50000,
+    "seed": 20261014,
+    "method": "Paired season-stratified bootstrap on identical season_id/round_index rows. V6 is the observed-row-trained player model; V7 uses zero-inclusive proxy training and past-only role/history residual calibration. All realized strategy scores in this comparison use the same zero-for-missing evaluation proxy.",
+    "comparisons": [
+      {
+        "comparison": "model_v7_calibrated_zero_inclusive_minus_model_v6_raw",
+        "paired_rounds": 458,
+        "mean_delta": 26.244454148471615,
+        "median_delta": 21.125000000000014,
+        "win_rate_new_strategy": 0.6877729257641921,
+        "bootstrap_95_ci": [
+          21.240875272925766,
+          31.2794192139738
+        ],
+        "bootstrap_nonpositive": 0,
+        "by_season": [
+          {
+            "season_id": "9",
+            "n": 159,
+            "mean_delta": 24.389433962264153,
+            "win_rate": 0.6792452830188679
+          },
+          {
+            "season_id": "13",
+            "n": 147,
+            "mean_delta": 31.385136054421768,
+            "win_rate": 0.7346938775510204
+          },
+          {
+            "season_id": "19",
+            "n": 152,
+            "mean_delta": 23.213322368421053,
+            "win_rate": 0.6513157894736842
+          }
+        ]
+      },
+      {
+        "comparison": "baseline_v7_calibrated_minus_baseline_v6_raw",
+        "paired_rounds": 458,
+        "mean_delta": -2.1238755458515284,
+        "median_delta": 0.0,
+        "win_rate_new_strategy": 0.24672489082969432,
+        "bootstrap_95_ci": [
+          -3.7557546397379906,
+          -0.4966686681222701
+        ],
+        "bootstrap_nonpositive": 49737,
+        "by_season": [
+          {
+            "season_id": "9",
+            "n": 159,
+            "mean_delta": -2.3842138364779877,
+            "win_rate": 0.23270440251572327
+          },
+          {
+            "season_id": "13",
+            "n": 147,
+            "mean_delta": -1.0893197278911557,
+            "win_rate": 0.30612244897959184
+          },
+          {
+            "season_id": "19",
+            "n": 152,
+            "mean_delta": -2.8520723684210525,
+            "win_rate": 0.20394736842105263
+          }
+        ]
+      }
+    ],
+    "limitations": [
+      "Zero-inclusive labels assume a missing player-week-round row means 0 points; this is a proxy, not official observation.",
+      "Candidate pool, CR/role and availability are reconstructed rather than certified pre-lock state.",
+      "Coach price and transfer malus remain proxies."
+    ]
+  },
+  "strict_observed_paired_comparison": {
+    "paired_rounds_v6_v7": 5,
+    "v7_model_minus_v7_baseline_mean": -7.031000000000001,
+    "v7_model_win_rate_vs_baseline": 0.4,
+    "v7_model_minus_v6_model_mean": -24.148999999999994,
+    "v7_model_minus_v6_model_win_rate": 0.2,
+    "rounds": [
+      {
+        "season_id": 9,
+        "round_index": 4,
+        "model_minus_baseline_v6": 16.189999999999998,
+        "model_minus_baseline_v7": -36.845
+      },
+      {
+        "season_id": 9,
+        "round_index": 17,
+        "model_minus_baseline_v6": 4.039999999999992,
+        "model_minus_baseline_v7": -16.63500000000002
+      },
+      {
+        "season_id": 9,
+        "round_index": 121,
+        "model_minus_baseline_v6": 62.58500000000001,
+        "model_minus_baseline_v7": -10.564999999999998
+      },
+      {
+        "season_id": 13,
+        "round_index": 4,
+        "model_minus_baseline_v6": 46.37999999999997,
+        "model_minus_baseline_v7": 3.1500000000000057
+      },
+      {
+        "season_id": 13,
+        "round_index": 7,
+        "model_minus_baseline_v6": 7.465000000000003,
+        "model_minus_baseline_v7": 25.74000000000001
+      }
+    ]
+  },
+  "postselection_lineup_score_calibration": {
+    "generated_at_utc": "2026-10-14T13:16:43.283489+00:00",
+    "input": "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7_lineups.csv",
+    "method": "For each strategy, fit actual_proxy = intercept + slope * expected_team_pdk on prior rounds only, across prior test seasons and prior rounds of the current season. Calibration starts after 20 prior evaluated rounds. Slope is constrained to [0,2]. This adjusts the forecast score after lineup selection; it does not change selected lineups.",
+    "metrics": [
+      {
+        "strategy": "model",
+        "raw": {
+          "n": 458,
+          "mae": 43.832770887776384,
+          "rmse": 57.70755982424799,
+          "bias_pred_minus_actual": 7.2499581003383975
+        },
+        "postselection_calibrated": {
+          "n": 438,
+          "mae": 43.371751944897845,
+          "rmse": 57.075258621144215,
+          "bias_pred_minus_actual": 6.800741780691417
+        },
+        "calibrated_rounds": 438,
+        "mean_slope": 1.0285386697284096,
+        "mean_intercept": -5.376148688285627
+      },
+      {
+        "strategy": "previous5_baseline",
+        "raw": {
+          "n": 458,
+          "mae": 111.64173185477875,
+          "rmse": 127.83477566259737,
+          "bias_pred_minus_actual": 110.51586837704528
+        },
+        "postselection_calibrated": {
+          "n": 438,
+          "mae": 52.662396813123415,
+          "rmse": 63.584234768583336,
+          "bias_pred_minus_actual": 3.6549986252909146
+        },
+        "calibrated_rounds": 438,
+        "mean_slope": 0.5228175264958398,
+        "mean_intercept": 1.6888411644343897
+      }
+    ],
+    "limitations": [
+      "Realized outcomes use the explicit zero-for-missing proxy from V7, not fully observed official scores.",
+      "Historical market/availability/coach credits and transfer malus remain incomplete.",
+      "Post-selection calibration adjusts score forecasts only and does not change lineup selection."
+    ]
+  },
+  "interpretation": "The zero-inclusive, past-only calibrated V7 strategy materially outperforms the V6 raw strategy and previous-five baseline under the explicit zero-for-missing proxy. However, the strict observed-only overlap between V6 and V7 contains only 5 paired rounds, on which V7 model averages 7.03 fewer points than the V7 baseline. The proxy superiority is therefore not certified; do not promote this strategy to production without better historical roster/availability snapshots."
+}

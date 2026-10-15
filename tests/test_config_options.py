@@ -23,3 +23,17 @@ def test_top_k_requires_distinct_rosters_and_caps_diversity_setting():
 def test_market_cache_ttl_must_be_positive():
     with pytest.raises(ValueError, match="market_cache_max_age_hours must be positive"):
         Settings(market_cache_max_age_hours=0)
+
+
+
+def test_training_target_mode_is_validated_and_normalized():
+    assert Settings(training_target=" TARGET_PDK ").training_target == "target_pdk"
+    assert Settings(training_target="auto").training_target == "auto"
+    with pytest.raises(ValueError, match="training_target must be one of"):
+        Settings(training_target="proxy-ish")
+
+
+def test_season_opener_defaults_to_certified_multiseason_training():
+    settings = Settings.from_yaml(Settings().root / "config" / "season_opener.yaml")
+    assert settings.opening_multiseason_training is True
+    assert settings.training_target == "target_pdk_official"

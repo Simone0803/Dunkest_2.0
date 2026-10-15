@@ -1,0 +1,50 @@
+{
+  "generated_utc": "2026-10-12T14:14:28.355519+00:00",
+  "candidate_rows_reviewed": 45,
+  "status_counts": {
+    "history_match_but_pdk_differs": 19,
+    "confirmed_multi_player_cross_season_cluster": 15,
+    "no_same_date_official_history_match_or_date_unavailable": 8,
+    "corroborated_isolated_cross_season_candidate": 3
+  },
+  "corroborated_isolated_candidates": [
+    {
+      "source_file_avg": "season_13_week_20_round_1_avg.parquet",
+      "player_name": "Jaden Springer",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_date": "2025-01-10",
+      "candidate_game_id": "0022400528",
+      "table_pdk": 0.0,
+      "official_history_pdk_values": "0.0",
+      "official_history_valid_flags": "True"
+    },
+    {
+      "source_file_avg": "season_5_week_53_round_2_avg.parquet",
+      "player_name": "Nickeil Alexander-Walker",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_date": "2022-02-04",
+      "candidate_game_id": "0022100794",
+      "table_pdk": 13.0,
+      "official_history_pdk_values": "13.0",
+      "official_history_valid_flags": "True"
+    },
+    {
+      "source_file_avg": "season_9_week_20_round_2_avg.parquet",
+      "player_name": "Sandro Mamukelashvili",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_date": "2023-12-28",
+      "candidate_game_id": "0022300427",
+      "table_pdk": -1.0,
+      "official_history_pdk_values": "-0.95",
+      "official_history_valid_flags": "True"
+    }
+  ],
+  "confirmed_cluster_rows": 15,
+  "interpretation": "A same-player/date official-history match plus PDK agreement at one-decimal table precision corroborates a cross-season candidate, but isolated rows are still tracked separately from the confirmed multi-player cluster. PDK mismatches and missing history rows are unresolved, not automatically labelled errors.",
+  "safeguards": [
+    "Read-only analysis",
+    "No source rows changed",
+    "No automatic filtering",
+    "No model/config/target/split/backtest changes"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "created_utc": "2026-10-13T14:15:50.353230+00:00",
+  "source": "dunkest_20261013_conditional_tail_blend_v1_predictions.csv",
+  "selection_rule": "Choose among fixed weights 0.25, 0.50, 0.75 using 2022/23 MAE only; freeze the selected weight and evaluate on 2023/24 and 2024/25 without re-selection.",
+  "selection_mae_2022_23": {
+    "0.25": 7.566101791511507,
+    "0.5": 7.556659807639372,
+    "0.75": 7.554389247699377
+  },
+  "selected_weight": 0.75,
+  "later_folds": [
+    "2023-24",
+    "2024-25"
+  ],
+  "later_fold_metrics": [
+    {
+      "scope": "pooled_later_folds_2023-24_2024-25",
+      "candidate": "direct_hgb",
+      "n": 38517,
+      "mae": 7.567062961704291,
+      "rmse": 9.833299214296172,
+      "bias": -0.006632845325531434,
+      "mae_actual_ge25": 12.001655024448649,
+      "n_actual_ge25": 8794,
+      "mae_actual_ge30": 13.930913751912678,
+      "n_actual_ge30": 5891
+    },
+    {
+      "scope": "pooled_later_folds_2023-24_2024-25",
+      "candidate": "blend_mix_weight_0.75",
+      "n": 38517,
+      "mae": 7.5590022375466015,
+      "rmse": 9.826231051197155,
+      "bias": -0.050839128054041116,
+      "mae_actual_ge25": 12.010361611121667,
+      "n_actual_ge25": 8794,
+      "mae_actual_ge30": 14.000304558133223,
+      "n_actual_ge30": 5891
+    }
+  ],
+  "paired_date_cluster_bootstrap_later_folds": {
+    "overall": {
+      "n": 38517,
+      "clusters": 312,
+      "delta_mae_candidate_minus_direct": -0.00806072415768957,
+      "ci95": [
+        -0.015192301667440004,
+        -0.0007782996266966155
+      ],
+      "reps": 5000
+    },
+    "actual_ge25": {
+      "n": 8794,
+      "clusters": 312,
+      "delta_mae_candidate_minus_direct": 0.008706586673019491,
+      "ci95": [
+        -0.012432567656073128,
+        0.029475485116872185
+      ],
+      "reps": 5000
+    },
+    "actual_ge30": {
+      "n": 5891,
+      "clusters": 312,
+      "delta_mae_candidate_minus_direct": 0.06939080622054468,
+      "ci95": [
+        0.040732285361681754,
+        0.09799086937921538
+      ],
+      "reps": 5000
+    }
+  },
+  "holdout_2025_26_loaded": false,
+  "prospective_snapshot_loaded": false,
+  "caveat": "Later folds were previously inspected during exploratory work; this sequential rule removes same-fold weight selection but is not a pristine untouched final test set.",
+  "production_changed": false
+}

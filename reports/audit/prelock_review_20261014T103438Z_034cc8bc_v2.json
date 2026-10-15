@@ -1,0 +1,96 @@
+{
+  "reviewed_at_utc": "2026-10-14T19:22:17.746321+00:00",
+  "run_id": "20261014T103438Z_034cc8bc",
+  "archive_path": "/Users/simone/Documents/Dunkest/data/archives/pre_lock/season_id=26/gw=1/20261014T103438Z_034cc8bc",
+  "integrity_ok": true,
+  "stored_eligibility_status": "incomplete_evidence",
+  "stored_pre_lock_eligible": false,
+  "stored_snapshot_freshness": [
+    {
+      "path": "coach_market_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0013,
+      "fetched_at": "2026-10-14T10:34:33.730865+00:00"
+    },
+    {
+      "path": "current_lineups_market.csv",
+      "status": "fresh",
+      "age_hours": 0.552,
+      "fetched_at": "2026-10-14T10:01:31.273164+00:00"
+    },
+    {
+      "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+      "status": "unknown_freshness",
+      "age_hours": null,
+      "fetched_at": null
+    },
+    {
+      "path": "injuries_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0332,
+      "fetched_at": "2026-10-14T10:32:39.069883+00:00"
+    },
+    {
+      "path": "lineups_availability.csv",
+      "status": "fresh",
+      "age_hours": 0.552,
+      "fetched_at": "2026-10-14T10:01:31.294749+00:00"
+    },
+    {
+      "path": "player_credits_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0332,
+      "fetched_at": "2026-10-14T10:32:39.081154+00:00"
+    }
+  ],
+  "rechecked_snapshot_freshness": [
+    {
+      "path": "coach_market_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0013,
+      "fetched_at": "2026-10-14T10:34:33.730865+00:00"
+    },
+    {
+      "path": "current_lineups_market.csv",
+      "status": "fresh",
+      "age_hours": 0.552,
+      "fetched_at": "2026-10-14T10:01:31.273164+00:00"
+    },
+    {
+      "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+      "status": "stale",
+      "age_hours": 49.6879,
+      "fetched_at": "2026-10-12T08:53:22.144840+00:00"
+    },
+    {
+      "path": "injuries_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0332,
+      "fetched_at": "2026-10-14T10:32:39.069883+00:00"
+    },
+    {
+      "path": "lineups_availability.csv",
+      "status": "fresh",
+      "age_hours": 0.552,
+      "fetched_at": "2026-10-14T10:01:31.294749+00:00"
+    },
+    {
+      "path": "player_credits_26_gw1.parquet",
+      "status": "fresh",
+      "age_hours": 0.0332,
+      "fetched_at": "2026-10-14T10:32:39.081154+00:00"
+    }
+  ],
+  "rechecked_fixture_mapping_validation": {
+    "status": "invalid",
+    "errors": [
+      "fixture mapping source snapshot is older than the permitted pre-lock window",
+      "prediction run is 133.42 hours before earliest kickoff; expected 0–36.00"
+    ],
+    "fixture_count": 16,
+    "earliest_kickoff_utc": "2026-10-20T00:00:00+00:00",
+    "mapping_file": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet"
+  },
+  "rechecked_pre_lock_eligible": false,
+  "note": "This review is a separate audit record. Eligibility requires intact hashes, fresh snapshots, and a verified fixture mapping; it does not mutate the archive or immutable registry."
+}

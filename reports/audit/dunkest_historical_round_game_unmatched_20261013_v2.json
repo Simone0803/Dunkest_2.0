@@ -1,0 +1,71 @@
+{
+  "generated_at_utc": "2026-10-13T11:20:48.567497+00:00",
+  "unmatched_rows": 7892,
+  "classification_counts": {
+    "player_team_exist_but_pdk_or_boxscore_stats_differ": 6726,
+    "player_team_and_pdk_exist_but_boxscore_signature_differs": 1032,
+    "player_exists_in_season_but_team_differs_or_trade_alias": 128,
+    "boxscore_stats_match_but_pdk_or_other_signature_field_differs": 6
+  },
+  "season_summary": [
+    {
+      "season_id": 5,
+      "unmatched_rows": 1426,
+      "classification_counts": "{\"boxscore_stats_match_but_pdk_or_other_signature_field_differs\": 2, \"player_exists_in_season_but_team_differs_or_trade_alias\": 7, \"player_team_and_pdk_exist_but_boxscore_signature_differs\": 250, \"player_team_exist_but_pdk_or_boxscore_stats_differ\": 1167}",
+      "mean_same_player_team_records": 19.722300140252454,
+      "rows_with_any_player_season_record": 1426,
+      "rows_with_exact_stats_signature": 2
+    },
+    {
+      "season_id": 7,
+      "unmatched_rows": 1702,
+      "classification_counts": "{\"boxscore_stats_match_but_pdk_or_other_signature_field_differs\": 2, \"player_exists_in_season_but_team_differs_or_trade_alias\": 20, \"player_team_and_pdk_exist_but_boxscore_signature_differs\": 280, \"player_team_exist_but_pdk_or_boxscore_stats_differ\": 1400}",
+      "mean_same_player_team_records": 18.405405405405407,
+      "rows_with_any_player_season_record": 1702,
+      "rows_with_exact_stats_signature": 2
+    },
+    {
+      "season_id": 9,
+      "unmatched_rows": 1762,
+      "classification_counts": "{\"boxscore_stats_match_but_pdk_or_other_signature_field_differs\": 1, \"player_exists_in_season_but_team_differs_or_trade_alias\": 41, \"player_team_and_pdk_exist_but_boxscore_signature_differs\": 185, \"player_team_exist_but_pdk_or_boxscore_stats_differ\": 1535}",
+      "mean_same_player_team_records": 18.71850170261067,
+      "rows_with_any_player_season_record": 1762,
+      "rows_with_exact_stats_signature": 1
+    },
+    {
+      "season_id": 13,
+      "unmatched_rows": 1443,
+      "classification_counts": "{\"player_exists_in_season_but_team_differs_or_trade_alias\": 15, \"player_team_and_pdk_exist_but_boxscore_signature_differs\": 150, \"player_team_exist_but_pdk_or_boxscore_stats_differ\": 1278}",
+      "mean_same_player_team_records": 21.586278586278585,
+      "rows_with_any_player_season_record": 1443,
+      "rows_with_exact_stats_signature": 0
+    },
+    {
+      "season_id": 19,
+      "unmatched_rows": 1559,
+      "classification_counts": "{\"boxscore_stats_match_but_pdk_or_other_signature_field_differs\": 1, \"player_exists_in_season_but_team_differs_or_trade_alias\": 45, \"player_team_and_pdk_exist_but_boxscore_signature_differs\": 167, \"player_team_exist_but_pdk_or_boxscore_stats_differ\": 1346}",
+      "mean_same_player_team_records": 20.069275176395124,
+      "rows_with_any_player_season_record": 1559,
+      "rows_with_exact_stats_signature": 1
+    }
+  ],
+  "rounds_with_unmatched_rows": 555,
+  "rows_with_player_team_season_candidate": 7764,
+  "rows_with_exact_stats_signature_ignoring_pdk": 6,
+  "rows_with_same_player_team_pdk_candidate": 1035,
+  "method": "Classifies unmatched v1 rows using official-archive candidate counts by season/player/team/PDK and exact equality of 17 boxscore fields independent of PDK. It is diagnostic only; no labels are repaired.",
+  "guardrails": [
+    "No production code/config or source data changed.",
+    "No missing row is interpreted as a DNP, zero, injury, or official non-eligible row.",
+    "Name/team candidate matches do not establish a valid game-date match.",
+    "Do not inspect or tune against frozen 2026/27 GW1 holdout before 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "rows_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2_rows.csv",
+    "seasons_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2_seasons.csv",
+    "rounds_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2_rounds.csv",
+    "json": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2.json",
+    "markdown": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v2.md"
+  },
+  "production_changed": false
+}

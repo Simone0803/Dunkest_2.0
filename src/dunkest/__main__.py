@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import argparse
+import json
+from datetime import datetime, timezone
+from math import isfinite
 from pathlib import Path
 
 import pandas as pd
 
 from dunkest.backtest.walk_forward import run_walk_forward_backtest
+from dunkest.backtest.metrics import compute_lineup_coverage
 from dunkest.config import Settings, load_roster_yaml
 from dunkest.pipeline.collect import run_collect
 from dunkest.pipeline.optimize import run_optimize
@@ -16,6 +20,7 @@ from dunkest.report.console import print_matchday_report
 from dunkest.report.season_opener import print_season_opener_report
 from dunkest.report.terminal import CONSOLE, print_dataframe, print_header
 from dunkest.pipeline.season_opener import run_season_opener
+from dunkest.names import player_key
 
 
 def main() -> None:
@@ -28,7 +33,7 @@ def main() -> None:
 
     p_run = sub.add_parser("run", help="Predict and optimize next gameweek")
     p_run.add_argument("--giornata", type=int, required=True)
-    p_run.add_argument("--turno", type=int, default=None, help="Turno Dunkest separato dalla Giornata; richiesto quando si esegue lo scraping Lineups")
+    p_run.add_argument("--turno", type=int, default=None, help="Compatibilità legacy; lo scraping acquisisce sempre l'intera Giornata")
     p_run.add_argument("--budget", type=float, default=None)
     p_run.add_argument("--roster", type=Path, default=None)
     p_run.add_argument("--transfer-penalty", type=float, default=None)
@@ -51,7 +56,7 @@ def main() -> None:
         help="CSV con player_name, cr (quotazioni ufficiali della stagione target)",
     )
     p_open.add_argument("--budget", type=float, default=95.0)
-    p_open.add_argument("--turno", type=int, default=None, help="Turno Dunkest da leggere nello scraper Lineups")
+    p_open.add_argument("--turno", type=int, default=None, help="Compatibilità legacy; lo scraping acquisisce sempre l'intera Giornata 1")
     p_open.add_argument(
         "--official-cr-only",
         action="store_true",
@@ -86,7 +91,9 @@ def main() -> None:
     if args.command == "season-opener":
         cfg = args.config or (Settings.from_yaml().root / "config" / "season_opener.yaml")
         settings = Settings.from_yaml(cfg) if cfg.exists() else Settings.from_yaml()
-        settings.target_dunkest_turn = args.turno
+        # The scraper captures the complete Dunkest Gameweek 1 in one browser
+        # session; --turno remains accepted only for backward CLI compatibility.
+        settings.target_dunkest_turn = None
         settings.budget = args.budget
         if args.prior_season:
             settings.feature_season = args.prior_season
@@ -98,12 +105,22 @@ def main() -> None:
         if credits_file is None:
             credits_file = settings.data_path / "current_lineups_market.csv"
             if not args.no_lineups_scrape:
-                if args.turno is None:
-                    parser.error("specifica --turno: il Turno Dunkest non viene dedotto dalla Giornata")
                 try:
                     from dunkest.data.dunkest.lineups_browser import scrape_lineups_market
 
-                    scrape_lineups_market(credits_file, turn_number=args.turno)
+                    print("\nAcquisizione Lineups dell'intera Giornata 1...")
+                    scrape_lineups_market(credits_file, turn_number=None)
+                    capture_manifest = {
+                        "source": "dunkest_lineups_browser",
+                        "gameweek": 1,
+                        "capture_scope": "full_gameweek_all_turns",
+                        "turns_captured": [1, 2, 3],
+                        "market_merged": False,
+                        "captured_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                    (settings.data_path / "lineups_gw1_capture.json").write_text(
+                        json.dumps(capture_manifest, indent=2), encoding="utf-8"
+                    )
                 except Exception as exc:
                     parser.error(f"Scraping Lineups non riuscito: {exc}")
         elif not credits_file.exists():
@@ -117,8 +134,15 @@ def main() -> None:
         except (RuntimeError, ValueError) as exc:
             parser.error(str(exc))
         print_season_opener_report(settings, preds, market, coach_df, solutions, meta)
-        out = save_run_artifacts(settings, preds, solutions, None)
+        out = save_run_artifacts(
+            settings,
+            preds,
+            solutions,
+            meta.get("model_artifact_metadata"),
+            run_metadata={key: value for key, value in meta.items() if key != "model_artifact_metadata"},
+        )
         market.to_parquet(out / "opening_market.parquet", index=False)
+        coach_df.to_parquet(out / "coach_predictions.parquet", index=False)
         CONSOLE.print(f"\n[bold green]Artefatti salvati[/bold green]  {out}")
         return
 
@@ -137,33 +161,70 @@ def main() -> None:
 
     if args.command == "run":
         settings.target_gameweek = args.giornata
-        settings.target_dunkest_turn = args.turno
+        # The Lineups scraper always captures the complete gameweek in one
+        # browser session; --turno is accepted only for backward compatibility.
+        settings.target_dunkest_turn = None
+        if args.giornata > 1 and args.budget is None:
+            parser.error(
+                "dalla giornata 2 devi indicare --budget con i crediti CR totali attualmente "
+                "disponibili per costruire la rosa"
+            )
         if args.budget is not None:
+            if not isfinite(args.budget) or args.budget <= 0:
+                parser.error("--budget deve essere un numero finito e maggiore di zero")
             settings.budget = args.budget
         if args.giornata > 1 and not args.roster:
             parser.error("dalla giornata 2 devi indicare --roster con i 10 giocatori e il coach attuali")
         if args.roster:
-            players, coach = load_roster_yaml(args.roster)
+            try:
+                players, coach = load_roster_yaml(args.roster)
+            except (OSError, ValueError, TypeError) as exc:
+                parser.error(f"file --roster non valido: {exc}")
             if args.giornata > 1:
-                if len(players) != 10 or coach is None:
-                    parser.error("il file --roster deve contenere esattamente 10 giocatori e un coach")
-                normalized = [str(p).strip().casefold() for p in players]
+                if len(players) != 10 or not isinstance(coach, str) or not coach.strip():
+                    parser.error("il file --roster deve contenere esattamente 10 giocatori e il coach attuale")
+                normalized = [player_key(p) for p in players]
                 if any(not name for name in normalized) or len(set(normalized)) != 10:
-                    parser.error("la rosa attuale contiene nomi vuoti o giocatori duplicati")
+                    parser.error("la rosa attuale contiene nomi vuoti o giocatori duplicati dopo la normalizzazione")
+            players = [str(player).strip() for player in players]
             settings.current_roster = players
-            settings.current_coach = coach
+            settings.current_coach = str(coach).strip() if isinstance(coach, str) and coach.strip() else None
         if not args.no_lineups_scrape:
-            if args.turno is None:
-                parser.error("specifica --turno: il Turno Dunkest non viene dedotto dalla Giornata")
             try:
                 from dunkest.data.dunkest.lineups_browser import scrape_lineups_market
+                from dunkest.data.dunkest.fixtures import save_current_capture_fixture_mapping
 
-                scrape_lineups_market(
-                    settings.data_path / "current_lineups_market.csv",
-                    turn_number=args.turno,
+                market_path = settings.data_path / "current_lineups_market.csv"
+                print(f"\nAcquisizione Lineups dell'intera Giornata {args.giornata} (tutti i turni)...")
+                scrape_lineups_market(market_path, turn_number=None)
+                capture_manifest = {
+                    "source": "dunkest_lineups_browser",
+                    "gameweek": args.giornata,
+                    "capture_scope": "full_gameweek_all_turns",
+                    "turns_captured": [1, 2, 3],
+                    "market_merged": False,
+                    "captured_at": datetime.now(timezone.utc).isoformat(),
+                }
+                (settings.data_path / f"lineups_gw{args.giornata}_capture.json").write_text(
+                    json.dumps(capture_manifest, indent=2), encoding="utf-8"
                 )
+                mapping = save_current_capture_fixture_mapping(settings, args.giornata)
+                if mapping.empty:
+                    raise RuntimeError(
+                        f"Nessun matchup verificato per la Giornata {args.giornata}; "
+                        "non genero rose su un calendario incompleto."
+                    )
             except Exception as exc:
-                parser.error(f"Scraping Lineups non riuscito: {exc}")
+                parser.error(f"Aggiornamento Lineups/calendario non riuscito: {exc}")
+        else:
+            from dunkest.data.dunkest.fixtures import get_fixture_mapping
+
+            mapping = get_fixture_mapping(settings, args.giornata)
+            if mapping.empty:
+                parser.error(
+                    f"Manca una mappatura fixture verificata per la Giornata {args.giornata}. "
+                    "Rimuovi --no-lineups-scrape per acquisire mercato e calendario completi."
+                )
         if args.giornata > 1:
             settings.transfer_penalty = 5.0 if args.transfer_penalty is None else args.transfer_penalty
         elif args.transfer_penalty is not None:
@@ -172,7 +233,7 @@ def main() -> None:
         preds, coach_df = run_predict(settings, models, features)
         try:
             solutions = run_optimize(settings, preds, coach_df)
-        except ValueError as exc:
+        except (RuntimeError, ValueError) as exc:
             parser.error(str(exc))
         for i, sol in enumerate(solutions, start=1):
             sol.rank = i
@@ -235,6 +296,37 @@ def main() -> None:
             metrics,
             [("metric", "Metrica", None), ("value_display", "Valore", None)],
         )
+        lineup_coverage = compute_lineup_coverage(
+            results, list(range(args.from_gw, args.to_gw + 1))
+        )
+        coverage_rows = [
+            {
+                "copertura": "Giornate richieste con risultati",
+                "conteggio": f"{lineup_coverage['gameweeks_with_results']} / {lineup_coverage['requested_gameweeks']}",
+            },
+            {
+                "copertura": "GW con score completo della rosa #1",
+                "conteggio": f"{lineup_coverage['gameweeks_with_complete_rank1']} / {lineup_coverage['requested_gameweeks']}",
+            },
+            {
+                "copertura": "GW con tre score lineup completi",
+                "conteggio": f"{lineup_coverage['gameweeks_with_three_complete_lineups']} / {lineup_coverage['requested_gameweeks']}",
+            },
+            {
+                "copertura": "Lineup con score completo",
+                "conteggio": f"{lineup_coverage['complete_lineups']} / {lineup_coverage['generated_lineups']}",
+            },
+            {
+                "copertura": "Lineup con actual mancanti",
+                "conteggio": str(lineup_coverage["incomplete_lineups"]),
+            },
+        ]
+        print_dataframe(
+            CONSOLE,
+            "Copertura punteggi lineup",
+            pd.DataFrame(coverage_rows),
+            [("copertura", "Copertura", None), ("conteggio", "Conteggio", None)],
+        )
         if not results.empty:
             availability = results.groupby("gameweek", as_index=False).first()
             snapshot_fields = [
@@ -282,7 +374,10 @@ def main() -> None:
                 [
                     ("gameweek", "GW", "d"),
                     ("evaluation_split", "Split", None),
+                    ("n_predictions", "Previsioni", "d"),
                     ("n_player_games", "Campioni", "d"),
+                    ("n_missing_actual", "Actual mancanti", "d"),
+                    ("actual_coverage", "Copertura actual", ".1%"),
                     ("mae", "MAE", ".2f"),
                     ("rmse", "RMSE", ".2f"),
                     ("bias", "Bias", ".2f"),

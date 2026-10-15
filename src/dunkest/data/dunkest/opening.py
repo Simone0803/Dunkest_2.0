@@ -8,7 +8,7 @@ import pandas as pd
 from dunkest.config import Settings
 from dunkest.data.dunkest import client as dk_client
 from dunkest.names import player_key
-from dunkest.rules.eligibility import unavailable_mask
+from dunkest.rules.eligibility import filter_injured
 from dunkest.rules.pdk import normalize_position
 
 
@@ -49,6 +49,26 @@ def _load_credits_csv(path: Path) -> pd.DataFrame:
     status_col = cols.get("status") or cols.get("availability")
     if status_col:
         out["status"] = df[status_col].astype(str).str.strip().str.upper()
+    for turn in (1, 2, 3):
+        turn_group_col = cols.get(f"lineup_group_turn{turn}")
+        if turn_group_col:
+            out[f"lineup_group_turn{turn}"] = (
+                df[turn_group_col].fillna("").astype(str).str.strip().str.upper()
+                .replace({"NAN": "", "NONE": ""})
+            )
+        turn_starter_col = cols.get(f"starter_turn{turn}")
+        if turn_starter_col:
+            turn_starter = df[turn_starter_col].fillna("").astype(str).str.strip().str.casefold()
+            out[f"starter_turn{turn}"] = turn_starter.map({
+                "true": True, "1": True, "yes": True, "starter": True,
+                "false": False, "0": False, "no": False, "bench": False,
+            })
+        turn_status_col = cols.get(f"status_turn{turn}")
+        if turn_status_col:
+            out[f"status_turn{turn}"] = (
+                df[turn_status_col].fillna("").astype(str).str.strip().str.upper()
+                .replace({"NAN": "", "NONE": ""})
+            )
     entity_col = cols.get("entity_type") or cols.get("type") or cols.get("tipo")
     if entity_col:
         out["entity_type"] = df[entity_col].astype(str).str.strip().str.casefold()
@@ -85,39 +105,6 @@ def fetch_opening_coach_market(credits_file: Path | None) -> pd.DataFrame:
     # Snapshot scraped from Dunkest Lineups on 2026-09-29; refreshed rows above
     # replace matching teams while preserving the rest of this complete market.
     return base.drop_duplicates("team", keep="last")
-
-
-def _lineups_hard_out_keys(settings: Settings) -> set[str]:
-    """Current-turn OUT identities from the browser market and its archive."""
-    paths = [
-        settings.data_path / "current_lineups_market.csv",
-        settings.data_path / "lineups_availability.csv",
-    ]
-    keys: set[str] = set()
-    for path in paths:
-        if not path.is_file():
-            continue
-        try:
-            frame = pd.read_csv(path)
-        except (OSError, pd.errors.ParserError, UnicodeDecodeError):
-            continue
-        frame.columns = [str(column).strip().lower() for column in frame.columns]
-        if "dunkest_turn" in frame:
-            if settings.target_dunkest_turn is None:
-                continue
-            frame = frame.loc[
-                pd.to_numeric(frame["dunkest_turn"], errors="coerce").eq(
-                    int(settings.target_dunkest_turn)
-                )
-            ]
-        elif "gameweek" in frame:
-            # Older scraper exports used gameweek for the selected Turno.
-            continue
-        if "player_name" not in frame:
-            continue
-        hard_out = unavailable_mask(frame)
-        keys.update(frame.loc[hard_out, "player_name"].dropna().astype(str).map(player_key))
-    return {key for key in keys if key}
 
 
 def fetch_opening_market_pool(
@@ -184,8 +171,16 @@ def fetch_opening_market_pool(
     if not file_market.empty:
         file_cr = file_market
         file_cr["key"] = file_cr["player_name"].map(player_key)
+        turn_annotation_cols = [
+            f"{field}_turn{turn}"
+            for turn in (1, 2, 3)
+            for field in ("lineup_group", "starter", "status")
+        ]
         file_cols = ["key", "cr_file"] + [
-            c for c in ("team_code", "role", "prior_player_name", "lineup_group", "starter", "status")
+            c for c in (
+                "team_code", "role", "prior_player_name", "lineup_group", "starter", "status",
+                *turn_annotation_cols,
+            )
             if c in file_cr.columns
         ]
         df = df.merge(file_cr[file_cols], on="key", how="left", suffixes=("", "_file"))
@@ -193,12 +188,42 @@ def fetch_opening_market_pool(
             df["team_code"] = df["team_code_file"].fillna(df.get("team_code"))
         if "role_file" in df:
             df["role"] = df["role_file"].fillna(df.get("role"))
-        for col in ("lineup_group", "starter", "status"):
+        for col in ("lineup_group", "starter", "status", *turn_annotation_cols):
             file_col = f"{col}_file"
             if file_col in df:
                 if col not in df:
                     df[col] = pd.NA
                 df[col] = df[file_col].combine_first(df[col])
+
+        # The NBA-mode stats endpoint is not a complete market roster before
+        # the season starts: newly listed rookies and players without a stats
+        # row can be absent even though Dunkest Lineups quotes them. The live
+        # market is the authoritative candidate universe; append those rows
+        # with unknown history rather than silently dropping them. Explicit
+        # OUT/INDISPONIBILI rows are removed by the eligibility gate below.
+        present_keys = set(df["key"].dropna().astype(str))
+        market_only = file_cr.loc[
+            file_cr["key"].notna() & ~file_cr["key"].astype(str).isin(present_keys)
+        ].copy()
+        if not market_only.empty:
+            additions = pd.DataFrame(index=market_only.index, columns=df.columns)
+            for column in df.columns:
+                if column in market_only.columns:
+                    additions[column] = market_only[column]
+            additions["player_name"] = market_only["player_name"]
+            additions["key"] = market_only["key"]
+            if "team_code" in market_only:
+                additions["team_code"] = market_only["team_code"]
+            if "role" in market_only:
+                additions["role"] = market_only["role"]
+                additions["position"] = market_only["role"]
+            if "cr_file" in market_only:
+                additions["cr_file"] = pd.to_numeric(market_only["cr_file"], errors="coerce")
+            if "prior_pdk" not in additions:
+                additions["prior_pdk"] = float("nan")
+            if "pdk" in additions:
+                additions["pdk"] = additions["prior_pdk"]
+            df = pd.concat([df, additions], ignore_index=True)
     else:
         df["cr_file"] = float("nan")
 
@@ -218,15 +243,24 @@ def fetch_opening_market_pool(
         df.loc[missing, "cr"] = proxy[missing]
         df.loc[missing, "cr_source"] = "pdk_proxy"
 
-    # Lineups' INDISPONIBILI group is a hard exclusion from the purchase
-    # candidates, not merely a zero-point projection. Status fields are also
-    # honored for CSVs exported by older scraper versions.
-    df = df.loc[~unavailable_mask(df)].copy()
-    # OUT names are also stored separately because the Lineups availability
-    # panel is league-wide and does not belong in the price export itself.
-    hard_out_keys = _lineups_hard_out_keys(settings)
-    if hard_out_keys:
-        df = df.loc[~df["player_name"].map(player_key).isin(hard_out_keys)].copy()
+    # Lineups is still used for the market/CR universe, but injury status comes
+    # from Dunkest's dedicated injuries page. Keep only the market's explicit
+    # INDISPONIBILI roster group here; ignore its scraped status labels.
+    if "lineup_group" in df.columns:
+        group = df["lineup_group"].fillna("").astype(str).str.upper().str.strip()
+        df = df.loc[~group.isin({"INDISPONIBILI", "UNAVAILABLE", "INJURED"})].copy()
+
+    # Reuse the per-gameweek official injury snapshot used by the prediction
+    # pipeline. Initial-only names are matched conservatively by team/surname.
+    from dunkest.data.access import get_injuries
+
+    injuries = get_injuries(settings)
+    had_team_column = "team" in df.columns
+    if not had_team_column and "team_code" in df.columns:
+        df["team"] = df["team_code"]
+    df = filter_injured(df, injuries)
+    if not had_team_column:
+        df = df.drop(columns=["team"], errors="ignore")
     df = df[df["cr"] >= settings.min_cr].copy()
     df["pdk"] = df["prior_pdk"]
     df["gameweek"] = 1

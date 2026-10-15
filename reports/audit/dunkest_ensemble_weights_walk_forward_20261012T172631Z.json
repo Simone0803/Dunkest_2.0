@@ -1,0 +1,92 @@
+{
+  "created_utc": "2026-10-12T17:26:31.988823+00:00",
+  "source_predictions": "data/processed/dunkest_pdk_game_walk_forward_predictions_2020-26_v3.csv",
+  "validation_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "final_test_season": "2025-26",
+  "validation_objective": "pooled MAE",
+  "grid_step": 0.05,
+  "chosen_weights": {
+    "random_forest": 0.6,
+    "ridge": 0.35,
+    "baseline_prev10_mean": 0.05
+  },
+  "validation_ensemble_mae": 7.565836417404785,
+  "candidate_weight_combinations": 231,
+  "no_final_test_used_for_tuning": true,
+  "limitations": [
+    "Saved fold predictions are expanding-window out-of-fold predictions; this tunes ensemble weights, not RF/Ridge hyperparameters.",
+    "The 2025/26 final holdout is evaluated after selection and must not be reused for further tuning.",
+    "Game-level PDK metrics do not directly validate lineup optimization, coaches, prices, injuries, or transfer penalties.",
+    "Supervised labels start in 2020/21 because 2018/19–2019/20 archive rows have unverified/false Dunkest-valid flags; those seasons remain available as prior NBA feature history."
+  ],
+  "metrics": [
+    {
+      "split": "validation_2022-23_to_2024-25",
+      "model": "random_forest",
+      "n": 57682,
+      "mae": 7.587961813833206,
+      "rmse": 9.8548796535153,
+      "bias_pred_minus_actual": -0.08804971815361018
+    },
+    {
+      "split": "validation_2022-23_to_2024-25",
+      "model": "ridge",
+      "n": 57682,
+      "mae": 7.62791063584792,
+      "rmse": 9.877845456207686,
+      "bias_pred_minus_actual": 0.15695416994995076
+    },
+    {
+      "split": "validation_2022-23_to_2024-25",
+      "model": "baseline_prev10_mean",
+      "n": 57682,
+      "mae": 7.775553380039879,
+      "rmse": 10.131621545219817,
+      "bias_pred_minus_actual": -0.03070107088233627
+    },
+    {
+      "split": "validation_2022-23_to_2024-25",
+      "model": "tuned_convex_ensemble",
+      "n": 57682,
+      "mae": 7.565836417404785,
+      "rmse": 9.820342563056617,
+      "bias_pred_minus_actual": 0.0005690750461991914
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "model": "random_forest",
+      "n": 18412,
+      "mae": 7.577480168868869,
+      "rmse": 9.856336535795888,
+      "bias_pred_minus_actual": -0.1724664427687624
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "model": "ridge",
+      "n": 18412,
+      "mae": 7.588682784618104,
+      "rmse": 9.860373417017705,
+      "bias_pred_minus_actual": 0.04951699097616165
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "model": "baseline_prev10_mean",
+      "n": 18412,
+      "mae": 7.788633422517751,
+      "rmse": 10.153896308385907,
+      "bias_pred_minus_actual": -0.047916359542948164
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "model": "tuned_convex_ensemble",
+      "n": 18412,
+      "mae": 7.5567952763948245,
+      "rmse": 9.83057873471441,
+      "bias_pred_minus_actual": -0.08854473679674899
+    }
+  ]
+}

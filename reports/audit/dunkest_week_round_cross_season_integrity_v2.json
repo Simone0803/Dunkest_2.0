@@ -1,0 +1,577 @@
+{
+  "generated_utc": "2026-10-12T14:06:17.694466+00:00",
+  "method": "Exact player name + team + PTS/REB/AST/STL/BLK/TOV/PLUS_MINUS signature (minutes excluded to avoid integer rounding differences) against NBA historical boxscores. A unique different-season match is a candidate; a cluster of >=5 players matching one different-season NBA game is strong evidence of source-scope contamination.",
+  "table_files": 779,
+  "table_rows": 93785,
+  "nba_log_files": 7,
+  "match_class_counts": {
+    "unique_expected_season_match": 79395,
+    "no_exact_signature_match": 13618,
+    "ambiguous_multiple_seasons": 727,
+    "unique_cross_season_candidate": 45
+  },
+  "per_season": [
+    {
+      "table_season_id": "5",
+      "expected_nba_season": "2020-21",
+      "files": 140,
+      "rows": 17681,
+      "unique_expected_season_matches": 15088,
+      "unique_cross_season_candidates": 23,
+      "ambiguous_multiple_seasons": 131,
+      "no_exact_signature_match": 2439
+    },
+    {
+      "table_season_id": "7",
+      "expected_nba_season": "2021-22",
+      "files": 165,
+      "rows": 18422,
+      "unique_expected_season_matches": 15376,
+      "unique_cross_season_candidates": 1,
+      "ambiguous_multiple_seasons": 153,
+      "no_exact_signature_match": 2892
+    },
+    {
+      "table_season_id": "9",
+      "expected_nba_season": "2022-23",
+      "files": 162,
+      "rows": 19165,
+      "unique_expected_season_matches": 16111,
+      "unique_cross_season_candidates": 12,
+      "ambiguous_multiple_seasons": 154,
+      "no_exact_signature_match": 2888
+    },
+    {
+      "table_season_id": "13",
+      "expected_nba_season": "2023-24",
+      "files": 154,
+      "rows": 18927,
+      "unique_expected_season_matches": 16142,
+      "unique_cross_season_candidates": 7,
+      "ambiguous_multiple_seasons": 184,
+      "no_exact_signature_match": 2594
+    },
+    {
+      "table_season_id": "19",
+      "expected_nba_season": "2024-25",
+      "files": 158,
+      "rows": 19590,
+      "unique_expected_season_matches": 16678,
+      "unique_cross_season_candidates": 2,
+      "ambiguous_multiple_seasons": 105,
+      "no_exact_signature_match": 2805
+    }
+  ],
+  "cross_season_candidate_rows": 45,
+  "cross_season_clusters": [
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_43_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100292",
+      "candidate_game_date": "2021-11-27",
+      "candidate_matchup": "PHI vs. MIN",
+      "matched_player_rows": 8,
+      "player_names": [
+        "Danny Green",
+        "Furkan Korkmaz",
+        "Isaiah Joe",
+        "Joel Embiid",
+        "Matisse Thybulle",
+        "Seth Curry",
+        "Tobias Harris",
+        "Tyrese Maxey"
+      ],
+      "evidence_level": "multi_player_game_cluster"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_43_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100292",
+      "candidate_game_date": "2021-11-27",
+      "candidate_matchup": "MIN @ PHI",
+      "matched_player_rows": 7,
+      "player_names": [
+        "Anthony Edwards",
+        "D'Angelo Russell",
+        "Jaden McDaniels",
+        "Jarred Vanderbilt",
+        "Karl-Anthony Towns",
+        "Malik Beasley",
+        "Naz Reid"
+      ],
+      "evidence_level": "multi_player_game_cluster"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_12_round_1_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022401180",
+      "candidate_game_date": "2025-04-11",
+      "candidate_matchup": "MEM @ DEN",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Lamar Stevens"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_20_round_2_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300427",
+      "candidate_game_date": "2023-12-28",
+      "candidate_matchup": "SAS @ POR",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Sandro Mamukelashvili"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "7",
+      "source_file": "season_7_week_9_round_1_avg.parquet",
+      "expected_nba_season": "2021-22",
+      "candidate_nba_season": "2022-23",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Keon Johnson"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_10_round_2_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Kessler Edwards"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_15_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Kessler Edwards"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_1_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300986",
+      "candidate_game_date": "2024-03-18",
+      "candidate_matchup": "POR @ CHI",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Matisse Thybulle"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_27_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300427",
+      "candidate_game_date": "2023-12-28",
+      "candidate_matchup": "SAS @ POR",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Sandro Mamukelashvili"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_53_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100794",
+      "candidate_game_date": "2022-02-04",
+      "candidate_matchup": "NOP @ DEN",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Nickeil Alexander-Walker"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_2_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300018",
+      "candidate_game_date": "2023-11-14",
+      "candidate_matchup": "ATL @ DET",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Garrison Mathews"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_34_round_2_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2018-19",
+      "candidate_game_id": "0021800739",
+      "candidate_game_date": "2019-01-27",
+      "candidate_matchup": "DAL vs. TOR",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Dwight Powell"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_39_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022400232",
+      "candidate_game_date": "2024-11-16",
+      "candidate_matchup": "DAL vs. SAS",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Markieff Morris"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_40_round_2_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300750",
+      "candidate_game_date": "2024-02-10",
+      "candidate_matchup": "SAS @ BKN",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Sandro Mamukelashvili"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_43_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300191",
+      "candidate_game_date": "2023-11-13",
+      "candidate_matchup": "SAC vs. CLE",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Kessler Edwards"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_4_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Kessler Edwards"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_5_round_1_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2022-23",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "R.J. Hampton"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_52_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2022-23",
+      "candidate_game_id": "0022200223",
+      "candidate_game_date": "2022-11-17",
+      "candidate_matchup": "LAC vs. DET",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Terance Mann"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_17_round_1_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2019-20",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Yuta Watanabe"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_48_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2019-20",
+      "candidate_game_id": "0021900123",
+      "candidate_game_date": "2019-11-08",
+      "candidate_matchup": "PHI @ DEN",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Furkan Korkmaz"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_40_round_3_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022101025",
+      "candidate_game_date": "2022-03-14",
+      "candidate_matchup": "GSW vs. WAS",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Juan Toscano-Anderson"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_34_round_1_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2019-20",
+      "candidate_game_id": "0021900156",
+      "candidate_game_date": "2019-11-13",
+      "candidate_matchup": "BOS vs. WAS",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Semi Ojeleye"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_23_round_1_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100132",
+      "candidate_game_date": "2021-11-05",
+      "candidate_matchup": "SAC vs. CHA",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Damian Jones"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_22_round_1_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022401200",
+      "candidate_game_date": "2025-04-13",
+      "candidate_matchup": "SAC vs. PHX",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Terence Davis"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "19",
+      "source_file": "season_19_week_44_round_2_avg.parquet",
+      "expected_nba_season": "2024-25",
+      "candidate_nba_season": "2022-23",
+      "candidate_game_id": "0022201142",
+      "candidate_game_date": "2023-03-29",
+      "candidate_matchup": "OKC vs. DET",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Ousmane Dieng"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "19",
+      "source_file": "season_19_week_22_round_1_avg.parquet",
+      "expected_nba_season": "2024-25",
+      "candidate_nba_season": "2020-21",
+      "candidate_game_id": "0022001041",
+      "candidate_game_date": "2021-05-11",
+      "candidate_matchup": "LAL vs. NYK",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Markieff Morris"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_35_round_1_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2019-20",
+      "candidate_game_id": "",
+      "candidate_game_date": "",
+      "candidate_matchup": "",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Yuta Watanabe"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_21_round_1_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022400022",
+      "candidate_game_date": "2024-11-19",
+      "candidate_matchup": "CHA @ BKN",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Seth Curry"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_20_round_1_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022400528",
+      "candidate_game_date": "2025-01-10",
+      "candidate_matchup": "BOS vs. SAC",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Jaden Springer"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_19_round_2_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022400604",
+      "candidate_game_date": "2025-01-20",
+      "candidate_matchup": "BOS @ GSW",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Jaden Springer"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "13",
+      "source_file": "season_13_week_18_round_2_avg.parquet",
+      "expected_nba_season": "2023-24",
+      "candidate_nba_season": "2024-25",
+      "candidate_game_id": "0022400391",
+      "candidate_game_date": "2024-12-23",
+      "candidate_matchup": "CHA vs. HOU",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Seth Curry"
+      ],
+      "evidence_level": "isolated_candidate"
+    },
+    {
+      "table_season_id": "9",
+      "source_file": "season_9_week_9_round_1_avg.parquet",
+      "expected_nba_season": "2022-23",
+      "candidate_nba_season": "2023-24",
+      "candidate_game_id": "0022300191",
+      "candidate_game_date": "2023-11-13",
+      "candidate_matchup": "SAC vs. CLE",
+      "matched_player_rows": 1,
+      "player_names": [
+        "Kessler Edwards"
+      ],
+      "evidence_level": "isolated_candidate"
+    }
+  ],
+  "confirmed_multi_player_clusters": [
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_43_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100292",
+      "candidate_game_date": "2021-11-27",
+      "candidate_matchup": "PHI vs. MIN",
+      "matched_player_rows": 8,
+      "player_names": [
+        "Danny Green",
+        "Furkan Korkmaz",
+        "Isaiah Joe",
+        "Joel Embiid",
+        "Matisse Thybulle",
+        "Seth Curry",
+        "Tobias Harris",
+        "Tyrese Maxey"
+      ],
+      "evidence_level": "multi_player_game_cluster"
+    },
+    {
+      "table_season_id": "5",
+      "source_file": "season_5_week_43_round_2_avg.parquet",
+      "expected_nba_season": "2020-21",
+      "candidate_nba_season": "2021-22",
+      "candidate_game_id": "0022100292",
+      "candidate_game_date": "2021-11-27",
+      "candidate_matchup": "MIN @ PHI",
+      "matched_player_rows": 7,
+      "player_names": [
+        "Anthony Edwards",
+        "D'Angelo Russell",
+        "Jaden McDaniels",
+        "Jarred Vanderbilt",
+        "Karl-Anthony Towns",
+        "Malik Beasley",
+        "Naz Reid"
+      ],
+      "evidence_level": "multi_player_game_cluster"
+    }
+  ],
+  "limitations": [
+    "No exact signature match does not prove a bad row: the Dunkest table may have differing precision, missing values, or source corrections.",
+    "An isolated cross-season match can be coincidental; only clustered matches to the same NBA game are treated as strong evidence.",
+    "This audit does not modify source files, labels, model artifacts, configuration, temporal splits, or backtests."
+  ]
+}

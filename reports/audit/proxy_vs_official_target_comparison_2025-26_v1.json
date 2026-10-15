@@ -1,0 +1,187 @@
+{
+  "created_utc": "2026-10-12T13:30:47.411900+00:00",
+  "season": "2025-26",
+  "inputs": {
+    "player_logs_with_official_overlay": "/Users/simone/Documents/Dunkest/data/processed/player_game_logs_2025-26_official_pdk_overlay_v4.parquet",
+    "team_logs": "/Users/simone/Documents/Dunkest/data/processed/team_game_logs_2025-26.parquet"
+  },
+  "feature_policy": "Same production feature builder and feature whitelist for both target modes; current-game target columns are excluded from FEATURE_COLS. PDK rolling features are based on prior proxy PDK values in both arms.",
+  "target_policy": "Compare explicit target_pdk vs target_pdk_official on identical rows where both labels are finite; all official labels must have gameValidForDunkest=True.",
+  "validation_policy": "Use train_models' identical date-ordered out-of-fold cutoffs; evaluate both predictions on the intersection of rows with finite predictions from both arms, against official PDK for the primary comparison.",
+  "counts": {
+    "source_player_log_rows": 24424,
+    "source_official_label_rows": 18412,
+    "common_rows_before_oof": 18412,
+    "common_oof_rows": 7407,
+    "unique_oof_dates": 64,
+    "oof_date_min": "2026-01-30",
+    "oof_date_max": "2026-04-10",
+    "duplicate_player_game_identities": 0
+  },
+  "proxy_minus_official_target_delta": {
+    "mean": -0.5031065208586469,
+    "mae": 0.5090157958687725,
+    "rmse": 0.7282928253451143,
+    "p90_absolute_difference": 1.0524999999999989
+  },
+  "metrics": [
+    {
+      "model": "model_trained_on_proxy_target__evaluated_vs_official",
+      "n": 7407,
+      "mae": 7.548044802615749,
+      "rmse": 9.87863173256279,
+      "bias_pred_minus_actual": -0.6758996864875515,
+      "r2": 0.4050832025340827,
+      "p90_absolute_error": 15.915273108951327
+    },
+    {
+      "model": "model_trained_on_official_target__evaluated_vs_official",
+      "n": 7407,
+      "mae": 7.5626594803387786,
+      "rmse": 9.846526775131867,
+      "bias_pred_minus_actual": -0.16582080034286564,
+      "r2": 0.40894380639293715,
+      "p90_absolute_error": 15.94490446635023
+    },
+    {
+      "model": "model_trained_on_proxy_target__evaluated_vs_proxy",
+      "n": 7407,
+      "mae": 7.509668517788508,
+      "rmse": 9.785279951462426,
+      "bias_pred_minus_actual": -0.1727931656289048,
+      "r2": 0.39238364510619406,
+      "p90_absolute_error": 15.73693265132273
+    },
+    {
+      "model": "baseline_proxy_previous_10_mean__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.722291819157466,
+      "rmse": 10.171813471794412,
+      "bias_pred_minus_actual": -0.7172568403207704,
+      "r2": 0.3690399447891608,
+      "p90_absolute_error": 16.383874999999993
+    },
+    {
+      "model": "baseline_minutes_projection__evaluated_vs_official",
+      "n": 7384,
+      "mae": 7.574252082172515,
+      "rmse": 9.959797134647678,
+      "bias_pred_minus_actual": -0.9107612525300609,
+      "r2": 0.395068672449827,
+      "p90_absolute_error": 16.10262038535136
+    }
+  ],
+  "cohort_metrics_by_official_target_band": [
+    {
+      "model": "trained_on_proxy",
+      "n": 1540,
+      "mae": 7.904481132143221,
+      "rmse": 9.505723973318517,
+      "bias_pred_minus_actual": 7.848830393859871,
+      "r2": -17.461257264670287,
+      "p90_absolute_error": 15.182568845118215,
+      "official_target_band": "<5"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1540,
+      "mae": 8.150897289414297,
+      "rmse": 9.821306431807711,
+      "bias_pred_minus_actual": 8.093387808074533,
+      "r2": -18.70740307356507,
+      "p90_absolute_error": 15.67748685254085,
+      "official_target_band": "<5"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1258,
+      "mae": 5.663192300019203,
+      "rmse": 7.223778967782993,
+      "bias_pred_minus_actual": 4.769521370505725,
+      "r2": -23.121449450568957,
+      "p90_absolute_error": 11.926779884120666,
+      "official_target_band": "5-10"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1258,
+      "mae": 6.014774565427852,
+      "rmse": 7.645751082963781,
+      "bias_pred_minus_actual": 5.152459863900032,
+      "r2": -26.021833436440538,
+      "p90_absolute_error": 12.703266389383858,
+      "official_target_band": "5-10"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 2147,
+      "mae": 4.665730538456992,
+      "rmse": 5.939890537334305,
+      "bias_pred_minus_actual": 0.5323454609727003,
+      "r2": -3.3574432228775866,
+      "p90_absolute_error": 9.776128181844102,
+      "official_target_band": "10-20"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 2147,
+      "mae": 4.882265859331941,
+      "rmse": 6.221130189867309,
+      "bias_pred_minus_actual": 1.0563720538047499,
+      "r2": -3.779840816108349,
+      "p90_absolute_error": 10.168315913174045,
+      "official_target_band": "10-20"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1425,
+      "mae": 7.227590412571814,
+      "rmse": 8.669180457194276,
+      "bias_pred_minus_actual": -5.7300952162682774,
+      "r2": -8.537031336675545,
+      "p90_absolute_error": 13.732545997377773,
+      "official_target_band": "20-30"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1425,
+      "mae": 6.936847010480287,
+      "rmse": 8.419363571716385,
+      "bias_pred_minus_actual": -5.063689695203647,
+      "r2": -7.995299979900658,
+      "p90_absolute_error": 13.332040689697337,
+      "official_target_band": "20-30"
+    },
+    {
+      "model": "trained_on_proxy",
+      "n": 1037,
+      "mae": 15.713144833238315,
+      "rmse": 17.978460156107015,
+      "bias_pred_minus_actual": -15.497787550607317,
+      "r2": -3.0060558718444996,
+      "p90_absolute_error": 27.4614288562399,
+      "official_target_band": "30+"
+    },
+    {
+      "model": "trained_on_official",
+      "n": 1037,
+      "mae": 14.97629580708099,
+      "rmse": 17.344089892281684,
+      "bias_pred_minus_actual": -14.682853794806393,
+      "r2": -2.7283360458366688,
+      "p90_absolute_error": 26.678042923748333,
+      "official_target_band": "30+"
+    }
+  ],
+  "outputs": [
+    "/Users/simone/Documents/Dunkest/reports/audit/proxy_vs_official_target_oof_2025-26_v1.csv",
+    "/Users/simone/Documents/Dunkest/reports/audit/proxy_vs_official_target_comparison_2025-26_v1.json",
+    "/Users/simone/Documents/Dunkest/reports/audit/proxy_vs_official_target_comparison_2025-26_v1.md"
+  ],
+  "limitations": [
+    "This is an isolated within-season temporal OOF comparison, not a full expanding-season evaluation.",
+    "It isolates the target choice while holding the production feature builder fixed; proxy-trained predictions are evaluated against official PDK to measure their usefulness for the official target.",
+    "Both arms use proxy-derived historical PDK features. The separate historical V3 model uses official-target lags, so its metrics should not be directly combined with this comparison.",
+    "No production config, code path, source parquet, saved model, temporal split, or backtest was changed."
+  ]
+}

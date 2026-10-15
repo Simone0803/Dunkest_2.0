@@ -1,0 +1,98 @@
+{
+  "generated_at_utc": "2026-10-13T08:50:24.265263+00:00",
+  "input": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_predictions.csv",
+  "input_rows": 39360,
+  "walk_forward_model_rows": 9840,
+  "test_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "official_rule_source": "https://docs.dunkest.com/regolamento-it/regolamento-fantasy/punteggio-allenatori",
+  "rule_table_checks": [
+    {
+      "difference": 0.0,
+      "expected_high": 1.0,
+      "observed_high": 1.0,
+      "expected_low": 1.0,
+      "observed_low": 1.0,
+      "passed": true
+    },
+    {
+      "difference": 1.5,
+      "expected_high": 0.95,
+      "observed_high": 0.95,
+      "expected_low": 1.05,
+      "observed_low": 1.05,
+      "passed": true
+    },
+    {
+      "difference": 3.0,
+      "expected_high": 0.91,
+      "observed_high": 0.91,
+      "expected_low": 1.14,
+      "observed_low": 1.14,
+      "passed": true
+    },
+    {
+      "difference": 5.0,
+      "expected_high": 0.87,
+      "observed_high": 0.87,
+      "expected_low": 1.23,
+      "observed_low": 1.23,
+      "passed": true
+    },
+    {
+      "difference": 7.0,
+      "expected_high": 0.83,
+      "observed_high": 0.83,
+      "expected_low": 1.32,
+      "observed_low": 1.32,
+      "passed": true
+    },
+    {
+      "difference": 10.0,
+      "expected_high": 0.79,
+      "observed_high": 0.79,
+      "expected_low": 1.41,
+      "observed_low": 1.41,
+      "passed": true
+    },
+    {
+      "difference": 14.0,
+      "expected_high": 0.75,
+      "observed_high": 0.75,
+      "expected_low": 1.5,
+      "observed_low": 1.5,
+      "passed": true
+    },
+    {
+      "difference": 16.0,
+      "expected_high": 0.7,
+      "observed_high": 0.7,
+      "expected_low": 1.6,
+      "observed_low": 1.6,
+      "passed": true
+    }
+  ],
+  "cr_difference_scenarios": [
+    0.0,
+    1.5,
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    14.0,
+    16.0
+  ],
+  "key_interpretation": "The official multiplier formula is deterministic and reproduced. CR differences are controlled scenarios, not observed historical prices; these PDK metrics are sensitivity analyses, not exact historical PDK validation.",
+  "historical_market_coverage": "No historical coach CR snapshots were found for the tested seasons in the local market inventory; local timestamped coach markets cover the 2026/27 opener only.",
+  "base_score_model_metrics_source": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_metrics.csv",
+  "production_changed": false,
+  "limitations": [
+    "Scenario CR differences are not actual historical coach quotations.",
+    "Official current rule table was checked; historical rule versions have not been verified independently.",
+    "The base model is evaluated chronologically; transformed metrics inherit the same test predictions and are sensitivity analysis only."
+  ]
+}

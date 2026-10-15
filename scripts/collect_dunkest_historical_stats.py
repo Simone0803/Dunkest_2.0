@@ -1,0 +1,265 @@
+from __future__ import annotations
+
+import argparse
+import json
+import time
+from pathlib import Path
+
+import pandas as pd
+
+from dunkest.config import Settings
+from dunkest.data.dunkest.client import fetch_week_rounds, fetch_stats_table
+
+
+# NBA seasons with rounds currently exposed by the official Dunkest API.
+# IDs 1 and 3 returned no rounds in the historical endpoint probe.
+DEFAULT_SEASONS = ["5", "7", "9", "13", "19"]
+MAX_WEEKS_DEFAULT = 100
+OUTPUT_DIR = Path("data/raw/dunkest_history_v2")
+def extract_rounds(payload) -> list[str]:
+    if payload is None:
+        return []
+
+    if isinstance(payload, dict):
+        for key in ("data", "rounds", "results"):
+            if key in payload:
+                return extract_rounds(payload[key])
+        return []
+
+    if isinstance(payload, (list, tuple)):
+        result = []
+        for item in payload:
+            if isinstance(item, dict):
+                value = item.get("id", item.get("round", item.get("value")))
+            else:
+                value = item
+            if value is not None:
+                result.append(str(value))
+        return list(dict.fromkeys(result))
+
+    return [str(payload)]
+
+
+def task_key(season: str, week: int, round_id: str, stats_type: str) -> str:
+    return f"{season}:{week}:{round_id}:{stats_type}"
+
+
+def output_path(season: str, week: int, round_id: str, stats_type: str) -> Path:
+    return OUTPUT_DIR / (
+        f"season_{season}_week_{week}_round_{round_id}_{stats_type}.parquet"
+    )
+
+
+def save_manifest(path: Path, manifest: dict) -> None:
+    temp = path.with_suffix(".tmp")
+    temp.write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
+    temp.replace(path)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Raccoglie statistiche storiche dall'API ufficiale Dunkest."
+    )
+    parser.add_argument(
+        "--seasons",
+        nargs="+",
+        default=DEFAULT_SEASONS,
+        help="Season ID da raccogliere. Default: 5 7 9 13 19.",
+    )
+    parser.add_argument(
+        "--max-weeks",
+        type=int,
+        default=MAX_WEEKS_DEFAULT,
+        help="Numero massimo di settimane da esplorare per stagione.",
+    )
+    parser.add_argument(
+        "--stats-types",
+        nargs="+",
+        choices=["avg", "tot"],
+        default=["avg", "tot"],
+        help="Tipi di statistiche da raccogliere.",
+    )
+    parser.add_argument(
+        "--include-active-season",
+        action="store_true",
+        help="Include anche la stagione attiva 2026-27 (season ID 26).",
+    )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.25,
+        help="Pausa tra le richieste, in secondi.",
+    )
+    args = parser.parse_args()
+
+    seasons = list(dict.fromkeys(str(x) for x in args.seasons))
+    if args.include_active_season and "26" not in seasons:
+        seasons.append("26")
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    manifest_path = OUTPUT_DIR / "collection_manifest.json"
+
+    if manifest_path.exists():
+        manifest = json.loads(manifest_path.read_text())
+    else:
+        manifest = {}
+
+    manifest.setdefault("completed", [])
+    manifest.setdefault("errors", [])
+
+    # Migrazione prudente del manifest precedente:
+    # una task è completata soltanto se il parquet esiste ed è non vuoto.
+    valid_completed = []
+    for key in manifest["completed"]:
+        try:
+            season, week, round_id, stats_type = key.split(":", 3)
+            file_path = output_path(season, int(week), round_id, stats_type)
+            if file_path.exists() and file_path.stat().st_size > 0:
+                check = pd.read_parquet(file_path)
+                if not check.empty:
+                    valid_completed.append(key)
+        except Exception:
+            continue
+
+    removed = len(manifest["completed"]) - len(valid_completed)
+    manifest["completed"] = list(dict.fromkeys(valid_completed))
+    if removed:
+        print(
+            f"Manifest: riaperte {removed} task senza parquet valido.",
+            flush=True,
+        )
+    save_manifest(manifest_path, manifest)
+
+    settings = Settings()
+    total_rows = 0
+    empty_count = 0
+    error_count = 0
+
+    for season_id in seasons:
+        settings.season_id = season_id
+        print(f"\n=== STAGIONE ID {season_id} ===", flush=True)
+
+        empty_round_weeks = 0
+        season_had_rounds = False
+        for week in range(1, args.max_weeks + 1):
+            try:
+                rounds_payload = fetch_week_rounds(settings, week)
+                rounds = extract_rounds(rounds_payload)
+            except Exception as exc:
+                error_count += 1
+                print(f"  Week {week}: errore rounds: {exc}", flush=True)
+                continue
+
+            if not rounds:
+                empty_round_weeks += 1
+                if empty_round_weeks >= 3:
+                    print(
+                        f"  Stop stagione dopo {empty_round_weeks} settimane "
+                        "consecutive senza round.",
+                        flush=True,
+                    )
+                    break
+                continue
+
+            empty_round_weeks = 0
+            season_had_rounds = True
+            print(f"  Week {week}: rounds {', '.join(rounds)}", flush=True)
+
+            for round_id in rounds:
+                for stats_type in args.stats_types:
+                    key = task_key(season_id, week, round_id, stats_type)
+                    file_path = output_path(
+                        season_id, week, round_id, stats_type
+                    )
+
+                    if key in manifest["completed"]:
+                        continue
+
+                    try:
+                        df = fetch_stats_table(
+                            settings,
+                            season_id=season_id,
+                            mode="dunkest",
+                            stats_type=stats_type,
+                            weeks=[week],
+                            rounds=[round_id],
+                            player_search="",
+                            sort_by="pdk",
+                            sort_order="desc",
+                        )
+
+                        if df is None or df.empty:
+                            # Una risposta vuota non è un task completato.
+                            empty_count += 1
+                            print(
+                                f"    {stats_type}: 0 righe; verrà riprovata",
+                                flush=True,
+                            )
+                            time.sleep(max(0, args.delay))
+                            continue
+
+                        df = df.copy()
+                        df["source_season_id"] = season_id
+                        df["source_week"] = int(week)
+                        df["source_round"] = str(round_id)
+                        df["source_stats_type"] = stats_type
+                        df["source_granularity"] = "dunkest_week_round_table"
+
+                        temp_path = file_path.with_suffix(".tmp.parquet")
+                        df.to_parquet(temp_path, index=False)
+                        temp_path.replace(file_path)
+
+                        manifest["completed"].append(key)
+                        manifest["completed"] = list(
+                            dict.fromkeys(manifest["completed"])
+                        )
+                        manifest["errors"] = [
+                            e for e in manifest["errors"]
+                            if e.get("task") != key
+                        ]
+                        total_rows += len(df)
+
+                        print(
+                            f"    {stats_type}: {len(df)} righe salvate",
+                            flush=True,
+                        )
+
+                    except Exception as exc:
+                        error_count += 1
+                        manifest["errors"] = [
+                            e for e in manifest["errors"]
+                            if e.get("task") != key
+                        ]
+                        manifest["errors"].append({
+                            "task": key,
+                            "error": repr(exc),
+                        })
+                        print(
+                            f"    ERRORE {stats_type}: {exc}",
+                            flush=True,
+                        )
+
+                    finally:
+                        save_manifest(manifest_path, manifest)
+                        time.sleep(max(0, args.delay))
+
+        if not season_had_rounds:
+            print(
+                f"  AVVISO: nessun round trovato per season_id={season_id}; "
+                "verificare disponibilità o correttezza dell'ID.",
+                flush=True,
+            )
+
+    save_manifest(manifest_path, manifest)
+
+    print("\n=== RIEPILOGO ===")
+    print(f"Directory: {OUTPUT_DIR}")
+    print(f"Task completati validi: {len(manifest['completed'])}")
+    print(f"Risposte vuote in questa esecuzione: {empty_count}")
+    print(f"Errori in questa esecuzione: {error_count}")
+    print(f"Righe raccolte in questa esecuzione: {total_rows}")
+    print(f"Manifest: {manifest_path}")
+
+
+if __name__ == "__main__":
+    main()

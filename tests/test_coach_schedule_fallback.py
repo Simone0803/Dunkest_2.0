@@ -1,3 +1,6 @@
+import json
+from datetime import datetime, timezone
+
 import pandas as pd
 
 from dunkest.config import Settings
@@ -57,8 +60,13 @@ def test_partial_turn_mapping_keeps_unmatched_coaches_in_candidate_market(tmp_pa
 
 
 def test_live_lineups_market_bypasses_cached_coach_data(tmp_path, monkeypatch):
-    (tmp_path / "current_lineups_market.csv").write_text(
+    market_path = tmp_path / "current_lineups_market.csv"
+    market_path.write_text(
         "player_name,cr,team,role\nCoach A,11,BOS,HC\nCoach B,7,NYK,HC\n",
+        encoding="utf-8",
+    )
+    market_path.with_suffix(market_path.suffix + ".meta.json").write_text(
+        json.dumps({"fetched_at": datetime.now(timezone.utc).isoformat()}),
         encoding="utf-8",
     )
     settings = Settings(data_dir=str(tmp_path), season_id="26")

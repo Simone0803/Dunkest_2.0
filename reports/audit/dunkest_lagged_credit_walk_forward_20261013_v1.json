@@ -1,0 +1,370 @@
+{
+  "generated_at_utc": "2026-10-13T08:13:24.707176+00:00",
+  "input": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "target_definition": "Official-valid Dunkest PDK total from each archived player-week/round row.",
+  "feature_policy": "Every CR/form feature is shifted from the player's last observed earlier round. The current-round CR, PDK, minutes, boxscore stats, plusvalenza, and starter status are never features.",
+  "round_price_semantics": "Historical weekly-round tables are not timestamped market snapshots. Lagged CR is a prior-observed-round proxy, not proof of exact pre-lock credit for every player. Rows also report whether the prior archived round had a player row.",
+  "season_policy": {
+    "valid_target_season_ids": [
+      "5",
+      "7",
+      "9",
+      "13",
+      "19"
+    ],
+    "test_season_ids": [
+      "9",
+      "13",
+      "19"
+    ],
+    "invalid_official_target_seasons_excluded": [
+      "1",
+      "3"
+    ]
+  },
+  "folds": [
+    {
+      "test_season_id": "9",
+      "status": "evaluated",
+      "train_rows": 36103,
+      "test_rows": 19165,
+      "train_seasons": [
+        "5",
+        "7"
+      ],
+      "test_rounds": 162,
+      "test_rows_with_lagged_cr": 18683,
+      "test_rows_with_exact_previous_round_cr": 1433,
+      "test_rows_with_lagged_pdk": 18683
+    },
+    {
+      "test_season_id": "13",
+      "status": "evaluated",
+      "train_rows": 55268,
+      "test_rows": 18927,
+      "train_seasons": [
+        "5",
+        "7",
+        "9"
+      ],
+      "test_rounds": 154,
+      "test_rows_with_lagged_cr": 18415,
+      "test_rows_with_exact_previous_round_cr": 1450,
+      "test_rows_with_lagged_pdk": 18415
+    },
+    {
+      "test_season_id": "19",
+      "status": "evaluated",
+      "train_rows": 74195,
+      "test_rows": 19590,
+      "train_seasons": [
+        "13",
+        "5",
+        "7",
+        "9"
+      ],
+      "test_rounds": 158,
+      "test_rows_with_lagged_cr": 19081,
+      "test_rows_with_exact_previous_round_cr": 1681,
+      "test_rows_with_lagged_pdk": 19081
+    }
+  ],
+  "rows_input": 93785,
+  "rows_with_lagged_cr": 91290,
+  "rows_with_exact_previous_round_row": 6549,
+  "feature_families": {
+    "historical_form_only": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present"
+      ],
+      "categorical": []
+    },
+    "historical_form_plus_lagged_credit": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr"
+      ],
+      "categorical": [
+        "lagged_role",
+        "lagged_team"
+      ]
+    },
+    "historical_form_plus_credit_no_team": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr"
+      ],
+      "categorical": [
+        "lagged_role"
+      ]
+    }
+  },
+  "fold_metrics": [
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_last_round",
+      "n": 18683,
+      "mae": 9.881081732055879,
+      "rmse": 13.032500265274274,
+      "bias_pred_minus_actual": -0.1268452603971525
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_previous5_mean",
+      "n": 18683,
+      "mae": 7.962406599582509,
+      "rmse": 10.468912160195538,
+      "bias_pred_minus_actual": -0.30704852004496064
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_train_median",
+      "n": 19165,
+      "mae": 10.375185494390816,
+      "rmse": 13.742519664757186,
+      "bias_pred_minus_actual": -3.953061831463605
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_only",
+      "n": 19165,
+      "mae": 7.658261690817966,
+      "rmse": 9.996786117586518,
+      "bias_pred_minus_actual": -0.3936765607413665
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 19165,
+      "mae": 7.468348114542161,
+      "rmse": 9.708894708129664,
+      "bias_pred_minus_actual": -0.1831837262597776
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_credit_no_team",
+      "n": 19165,
+      "mae": 7.464739602302812,
+      "rmse": 9.703663213954666,
+      "bias_pred_minus_actual": -0.20055835833461325
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_last_round",
+      "n": 18415,
+      "mae": 9.841519956557155,
+      "rmse": 13.059896849653711,
+      "bias_pred_minus_actual": -0.06378875916372523
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_previous5_mean",
+      "n": 18415,
+      "mae": 7.949628699429814,
+      "rmse": 10.446323715572227,
+      "bias_pred_minus_actual": -0.21336083808489456
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_train_median",
+      "n": 18927,
+      "mae": 10.633116711576056,
+      "rmse": 13.949545158287583,
+      "bias_pred_minus_actual": -3.461143340201828
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_only",
+      "n": 18927,
+      "mae": 7.695723028447495,
+      "rmse": 9.981223193454099,
+      "bias_pred_minus_actual": -0.11508789584928716
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 18927,
+      "mae": 7.521732899907659,
+      "rmse": 9.849385031552066,
+      "bias_pred_minus_actual": -1.1558728027911713
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_credit_no_team",
+      "n": 18927,
+      "mae": 7.5051590349964,
+      "rmse": 9.825289852275228,
+      "bias_pred_minus_actual": -1.1394231876309404
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_last_round",
+      "n": 19081,
+      "mae": 9.919908809810806,
+      "rmse": 13.109985110039275,
+      "bias_pred_minus_actual": -0.10312667050993134
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_previous5_mean",
+      "n": 19081,
+      "mae": 7.9961556871582555,
+      "rmse": 10.482414897304412,
+      "bias_pred_minus_actual": -0.27629058574847576
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_train_median",
+      "n": 19590,
+      "mae": 10.398909137314957,
+      "rmse": 13.589369997240452,
+      "bias_pred_minus_actual": -3.1711562021439508
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_only",
+      "n": 19590,
+      "mae": 7.690133780742765,
+      "rmse": 10.0289871309486,
+      "bias_pred_minus_actual": -0.2226717342232356
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 19590,
+      "mae": 7.514950520858811,
+      "rmse": 9.85264465517187,
+      "bias_pred_minus_actual": -0.9423492861558067
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_credit_no_team",
+      "n": 19590,
+      "mae": 7.5053007776189125,
+      "rmse": 9.84112593737516,
+      "bias_pred_minus_actual": -0.9569428825428621
+    }
+  ],
+  "pooled_oof_metrics": [
+    {
+      "feature_family": "baseline_last_round",
+      "n": 56179,
+      "pooled_mae": 9.881301197956532,
+      "pooled_rmse": 13.06783785432806,
+      "pooled_bias": -0.09811993805514516
+    },
+    {
+      "feature_family": "baseline_previous5_mean",
+      "n": 56179,
+      "pooled_mae": 7.96968087126269,
+      "pooled_rmse": 10.466104585885967,
+      "pooled_bias": -0.2658916677050143
+    },
+    {
+      "feature_family": "baseline_train_median",
+      "n": 57682,
+      "pooled_mae": 10.467876633958602,
+      "pooled_rmse": 13.75922878351739,
+      "pooled_bias": -3.526098956346867
+    },
+    {
+      "feature_family": "historical_form_only",
+      "n": 57682,
+      "pooled_mae": 7.681378173931258,
+      "pooled_rmse": 10.002635514858712,
+      "pooled_bias": -0.24418742700982854
+    },
+    {
+      "feature_family": "historical_form_plus_credit_no_team",
+      "n": 57682,
+      "pooled_mae": 7.491777708246329,
+      "pooled_rmse": 9.790450021392866,
+      "pooled_bias": -0.7655087319924473
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 57682,
+      "pooled_mae": 7.501692224877377,
+      "pooled_rmse": 9.80404249887401,
+      "pooled_bias": -0.7601772332441558
+    }
+  ],
+  "production_changed": false,
+  "limitations": [
+    "This phase validates round-level player score prediction with lagged historical credits; it does not yet claim a complete historical optimal-lineup result.",
+    "Historical player-round archives list observed player rows, not a complete timestamped pre-lock player universe. Full lineup optimization needs a verified candidate universe and historically correct role/budget rules.",
+    "Historical coach credit markets are not present in these player archives. Coach outcome components can be reconstructed from final NBA team scores, but exact credit-adjusted coach PDK requires historical coach CRs or a separately validated reconstruction."
+  ]
+}

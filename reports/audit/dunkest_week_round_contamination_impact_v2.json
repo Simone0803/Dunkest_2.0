@@ -1,0 +1,65 @@
+{
+  "generated_at_utc": "2026-10-12T21:06:12.855276+00:00",
+  "confirmed_cluster": {
+    "players": 15,
+    "game_date": "2021-11-27",
+    "game_id": "22100292",
+    "matchup": "MIN @ PHI",
+    "source_scope": "season_id=5, week=43, round=2",
+    "quarantined_files": [
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet"
+    ]
+  },
+  "processed_week_round_source": {
+    "path": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+    "season5_week43_round2_rows": 118,
+    "confirmed_contaminated_player_rows": 15,
+    "confirmed_player_ids_present_in_other_season5_rounds": 15,
+    "confirmed_player_ids_not_seen_elsewhere_in_season5": [],
+    "guard_excluded_rows_from_season_id_seed": 17,
+    "row_level_quarantine_rows": 17,
+    "row_level_quarantine_by_season": {
+      "13": 1,
+      "5": 16
+    },
+    "note": "The exact-key guard excludes 17 independently corroborated rows: 15 from the confirmed 2021-11-27 PHI-MIN cluster plus isolated exact-boxscore rows for Jaden Springer and Nickeil Alexander-Walker whose PDK also matches valid official history. No entire player history is removed."
+  },
+  "official_2020_21_player_history": {
+    "path": "data/processed/official_dunkest_player_games_2020-21_season_id_5.parquet",
+    "rows": 22568,
+    "valid_true_rows": 17662,
+    "valid_false_rows": 4906,
+    "min_game_date": "2020-12-22",
+    "max_game_date": "2021-05-16",
+    "contains_post_2020_21_dates": false
+  },
+  "pdk_training_v3": {
+    "path": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+    "season5_rows": 17662,
+    "season5_max_game_date": "2021-05-16",
+    "season5_rows_after_2021_06_30": 0,
+    "matches_official_valid_row_count": true
+  },
+  "current_2026_27_capital_gain_history": {
+    "path": "data/processed/plusvalenza_history_multiseason_26_pre_gw0_5y_nba_v3.parquet",
+    "season_ids": [
+      "13",
+      "16",
+      "19",
+      "22",
+      "25"
+    ],
+    "includes_contaminated_season_id_5": false
+  },
+  "source_sha256": {
+    "reports/audit/dunkest_week_round_season5_contamination_v2.csv": "1be5f18141c8cef3eeb8ec59a3428045c7c99fc7053c34a5f0f7cee8edb3be90",
+    "reports/audit/dunkest_week_round_confirmed_contamination_rows_v1.csv": "fcef26d1674aa0c7a4c1efa9e0cfa92e27cf898cc0da141cc1f2cbc7930a6016",
+    "reports/audit/dunkest_week_round_quarantine_manifest_v2.json": "af7c358a4b284332632984d943a6e6117505ed625e2a2d153d4410f75c576ff5",
+    "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet": "be7ce4b0042fb3498e36e07b85004712bde856538b1099f6bbbc3fe915a39256",
+    "data/processed/official_dunkest_player_games_2020-21_season_id_5.parquet": "bef4056ee2fbd120298bedcdac7c016210fb08b8bf55cb50a0948cdcf279654a",
+    "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet": "9f1cae2490822bc3617f96e35463473787fbfec016236f27a5c586f0cd9c72e5",
+    "data/processed/plusvalenza_history_multiseason_26_pre_gw0_5y_nba_v3.parquet": "19d39b05159e3373c8bb9745391a7ebfe86d5ec7834f37ab443bffadd14647bf"
+  },
+  "conclusion": "The row-level quarantine register identifies 17 high-confidence cross-season rows: the 15-player PHI-MIN cluster plus isolated exact-boxscore records for Jaden Springer and Nickeil Alexander-Walker whose PDK matches valid official history. The official 2020/21 per-player history and PDK training targets contain no post-season dates, the season-5 training row count matches the official valid-row count, and the current 2026/27 capital-gain cache does not include season_id=5. The historical collector now excludes only exact season/week/round/player keys from season-specific ID seeding. The remaining weekly-round archive is not certified clean."
+}

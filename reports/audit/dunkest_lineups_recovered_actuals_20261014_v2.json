@@ -1,0 +1,69 @@
+{
+  "generated_at_utc": "2026-10-14T13:42:13.281586+00:00",
+  "lineup_rows": 916,
+  "fully_scored_recovered_proxy_rows": 806,
+  "paired_strategy_rounds": 366,
+  "incomplete_lineup_rows": 110,
+  "player_recovery_status_counts": {
+    "weekly_round_score_observed": 5872,
+    "team_played_player_row_absent_zero_candidate": 1930,
+    "explicit_nonvalid_game_row_zero_candidate": 1235,
+    "team_did_not_play_identity_or_candidate_mismatch": 123
+  },
+  "paired_strategy_comparison": {
+    "n_paired_rounds": 366,
+    "mean_delta": 44.16502732240437,
+    "median_delta": 41.38499999999999,
+    "model_win_rate": 0.7540983606557377,
+    "bootstrap_95_ci": [
+      38.21603073770491,
+      50.1129149590164
+    ],
+    "by_season": [
+      {
+        "season_id": "13",
+        "n": 131,
+        "mean_delta": 50.01599236641221,
+        "win_rate": 0.7938931297709924
+      },
+      {
+        "season_id": "19",
+        "n": 98,
+        "mean_delta": 48.36673469387755,
+        "win_rate": 0.8061224489795918
+      },
+      {
+        "season_id": "9",
+        "n": 137,
+        "mean_delta": 35.56470802919708,
+        "win_rate": 0.6788321167883211
+      }
+    ]
+  },
+  "expected_score_calibration": {
+    "model": {
+      "n": 428,
+      "mean_expected": 169.7091908404585,
+      "mean_actual_proxy": 162.32950934579438,
+      "mae": 44.061899353110555,
+      "rmse": 57.98750519449618,
+      "bias_expected_minus_actual": 7.379681494664113,
+      "mean_zero_candidate_share": 0.22172897196261684
+    },
+    "previous5_baseline": {
+      "n": 378,
+      "mean_expected": 229.44468420883086,
+      "mean_actual_proxy": 118.78488095238095,
+      "mae": 111.87193587793666,
+      "rmse": 128.21104667816036,
+      "bias_expected_minus_actual": 110.65980325644988,
+      "mean_zero_candidate_share": 0.4833333333333334
+    }
+  },
+  "score_policy": "Player score uses official weekly outcome when present. Missing score uses 0 only for an explicit non-valid game row or a lagged team fixture with no player row. The exact stored lineup slot determines starter/sixth/captain multiplier. Coach base actual is rejoined by season/date/team from the complete coach outcome archive, rather than relying on the optimizer metadata lookup.",
+  "limitations": [
+    "Zero candidates are a sensitivity proxy, not certified official Dunkest scores.",
+    "Lagged team assignment may be stale after trades; 123 selected-player instances have team/date mismatches and exclude their lineups.",
+    "Coach credits/multipliers and transfer malus remain historical proxies; this evaluates fresh independent lineups, not sequential roster management."
+  ]
+}

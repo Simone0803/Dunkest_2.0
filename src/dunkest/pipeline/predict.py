@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 
 import pandas as pd
 
@@ -8,7 +7,6 @@ from dunkest.config import Settings
 from dunkest.data.cache import cache_has_complete_collection
 from dunkest.data.access import (
     get_dunkest_data,
-    get_future_schedule,
     get_injuries,
     get_player_data,
     get_plusvalenza_history,
@@ -24,12 +22,125 @@ from dunkest.names import player_key
 from dunkest.rules.eligibility import filter_injured
 
 
+def _verified_team_context(fixtures: pd.DataFrame) -> dict[str, dict]:
+    """Return only score-bearing team matchups from the verified Dunkest bridge."""
+    context: dict[str, dict] = {}
+    if fixtures.empty:
+        return context
+
+    def _truth(value: object) -> bool:
+        if isinstance(value, bool):
+            return value
+        return str(value).strip().casefold() in {"true", "1", "yes"}
+
+    for _, fixture in fixtures.iterrows():
+        home = str(fixture.get("home_team", "")).strip().upper()
+        away = str(fixture.get("away_team", "")).strip().upper()
+        turn = pd.to_numeric(fixture.get("dunkest_turn"), errors="coerce")
+        game_id = str(fixture.get("nba_game_id", "")).strip()
+        if not home or not away or pd.isna(turn) or not game_id:
+            continue
+        for team, opponent, is_home, valid_column in (
+            (home, away, True, "home_team_eligible"),
+            (away, home, False, "away_team_eligible"),
+        ):
+            if not _truth(fixture.get(valid_column, fixture.get("fantasy_eligible", False))):
+                continue
+            if team in context:
+                raise RuntimeError(
+                    f"La mappatura della giornata assegna più partite valide alla squadra {team}."
+                )
+            context[team] = {
+                "opponent": opponent, "dunkest_turn": int(turn),
+                "nba_game_id": game_id, "game_datetime_utc": fixture.get("game_datetime_utc"),
+                "is_home": is_home,
+            }
+    return context
+
+
+def _attach_verified_gameweek_context(
+    settings: Settings, market: pd.DataFrame, fixtures: pd.DataFrame
+) -> pd.DataFrame:
+    """Attach opponent/turn identity and lineup annotation for each player's turn."""
+    context = _verified_team_context(fixtures)
+    if not context:
+        raise RuntimeError(
+            f"Nessun matchup Dunkest verificato per la Giornata {settings.target_gameweek}; "
+            "non genero rose con turni o avversari ipotizzati."
+        )
+    out = market.copy()
+    team_col = "team_code" if "team_code" in out else "team"
+    if team_col not in out or "player_name" not in out:
+        raise RuntimeError("Il mercato Dunkest non contiene player_name e team_code per collegare le fixture.")
+    out["_team_context"] = out[team_col].astype(str).str.strip().str.upper().map(context)
+    out = out.loc[out["_team_context"].notna()].copy()
+    if out.empty:
+        raise RuntimeError(
+            f"Nessun giocatore del mercato è collegato alle partite verificate della Giornata {settings.target_gameweek}."
+        )
+    for column in ("opponent", "dunkest_turn", "nba_game_id", "game_datetime_utc", "is_home"):
+        out[column] = out["_team_context"].map(lambda item: item[column])
+    out["dunkest_turn"] = pd.to_numeric(out["dunkest_turn"], errors="coerce").astype(int)
+
+    market_path = settings.data_path / "current_lineups_market.csv"
+    if market_path.is_file():
+        live = pd.read_csv(market_path)
+        live.columns = [str(column).strip().lower() for column in live.columns]
+        if {"player_name", "role"}.issubset(live.columns):
+            live = live.loc[~live["role"].astype(str).str.upper().eq("HC")].copy()
+            live["_player_key"] = live["player_name"].map(player_key)
+            if live["_player_key"].duplicated(keep=False).any():
+                raise RuntimeError("Il mercato Lineups contiene identità giocatore duplicate dopo la normalizzazione.")
+            lookup = live.set_index("_player_key")
+            out["_player_key"] = out["player_name"].map(player_key)
+            for turn in (1, 2, 3):
+                for column in (f"lineup_group_turn{turn}", f"starter_turn{turn}", f"status_turn{turn}"):
+                    if column in lookup.columns:
+                        out[column] = out["_player_key"].map(lookup[column])
+            out = out.drop(columns="_player_key")
+
+    global_status = out.get("status", pd.Series("", index=out.index)).fillna("").astype(str).str.strip().str.upper()
+    global_group = out.get("lineup_group", pd.Series("", index=out.index)).fillna("").astype(str).str.strip().str.upper()
+    hard_out = global_status.isin({"OUT", "INJURED", "UNAVAILABLE"}) | global_group.eq("INDISPONIBILI")
+    for turn in (1, 2, 3):
+        mask = out["dunkest_turn"].eq(turn)
+        group_col, starter_col, status_col = (
+            f"lineup_group_turn{turn}", f"starter_turn{turn}", f"status_turn{turn}"
+        )
+        if group_col in out:
+            selected = out[group_col].fillna("").astype(str).str.strip()
+            use = mask & ~hard_out & selected.ne("")
+            out.loc[use, "lineup_group"] = selected.loc[use]
+        if status_col in out:
+            selected = out[status_col].fillna("").astype(str).str.strip()
+            use = mask & ~hard_out & selected.ne("")
+            out.loc[use, "status"] = selected.loc[use]
+        if starter_col in out:
+            selected = out[starter_col]
+            use = mask & ~hard_out & selected.notna() & selected.astype(str).str.strip().ne("")
+            out.loc[use, "starter"] = selected.loc[use]
+    out.loc[hard_out, "lineup_group"] = "INDISPONIBILI"
+    out.loc[hard_out, "status"] = "OUT"
+    return out.drop(columns="_team_context").reset_index(drop=True)
+
+
 def run_predict(
     settings: Settings, models: dict, features: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     gw = settings.target_gameweek
     dk = get_dunkest_data(settings, gw)
-    injuries = get_injuries(settings) if settings.use_injuries else pd.DataFrame()
+    from dunkest.data.dunkest.fixtures import get_fixture_mapping
+
+    fixture_schedule = get_fixture_mapping(settings, gw)
+    if fixture_schedule.empty:
+        raise RuntimeError(
+            f"Manca la mappatura verificata delle partite Dunkest per la Giornata {gw}. "
+            "Aggiorna Lineups e acquisisci il calendario della giornata prima di generare rose."
+        )
+    dk = _attach_verified_gameweek_context(settings, dk, fixture_schedule)
+    # Refresh the dedicated official Dunkest injury page after the gameweek
+    # market/fixture capture; do not infer availability from partial Lineups UI.
+    injuries = get_injuries(settings, force_refresh=True) if settings.use_injuries else pd.DataFrame()
     if settings.use_injuries and injuries.empty:
         raise RuntimeError(
             "Archivio indisponibilità vuoto: non genero rose che potrebbero includere "
@@ -65,6 +176,14 @@ def run_predict(
         plusvalenza_history=plusvalenza_history,
         college_rookie_priors=rookie_priors,
     )
+    # Override historical last-opponent fields with the verified upcoming matchup.
+    if not preds.empty and {"team", "player_name"}.issubset(preds.columns):
+        team_context = _verified_team_context(fixture_schedule)
+        preds["_team_context"] = preds["team"].astype(str).str.strip().str.upper().map(team_context)
+        preds = preds.loc[preds["_team_context"].notna()].copy()
+        for column in ("opponent", "dunkest_turn", "nba_game_id", "game_datetime_utc", "is_home"):
+            preds[column] = preds["_team_context"].map(lambda item: item[column])
+        preds = preds.drop(columns="_team_context")
     # Retain the team forecast for coach modeling. Confirmed outs already have
     # zero availability-adjusted PDK; dropping rows here can erase a team from
     # the roster-strength comparison entirely.
@@ -87,30 +206,10 @@ def run_predict(
             team_logs = pd.read_parquet(prior_teams)
         else:
             team_logs = pd.DataFrame()
-    try:
-        upcoming_schedule = get_future_schedule(settings)
-    except Exception as exc:
-        warnings.warn(
-            f"Calendario futuro non disponibile per i coach; uso il mapping fixture Dunkest: {exc}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        upcoming_schedule = pd.DataFrame()
-    # Prefer the versioned Dunkest fixture mapping for the target gameweek so
-    # coach matchups stay aligned with fantasy eligibility. Fall back to the
-    # raw NBA future schedule only when the mapping is missing.
-    try:
-        from dunkest.data.dunkest.fixtures import get_fixture_mapping
-
-        fixture_schedule = get_fixture_mapping(settings, gw)
-        if not fixture_schedule.empty:
-            upcoming_schedule = fixture_schedule
-    except Exception as exc:
-        warnings.warn(
-            f"Mapping fixture Dunkest non disponibile per i coach: {exc}",
-            RuntimeWarning,
-            stacklevel=2,
-        )
+    # The verified Dunkest mapping is mandatory for a valid gameweek forecast;
+    # do not spend a network call on a raw NBA schedule that cannot establish
+    # fantasy eligibility or turn identity.
+    upcoming_schedule = fixture_schedule
     coach_data = get_coach_data(settings, gw)
     save_coach_market_snapshot(settings, coach_data, gw)
     coach_df = predict_coach_points(

@@ -1,0 +1,622 @@
+{
+  "created_utc": "2026-10-14T18:38:35.506892+00:00",
+  "source": "reports/audit/dunkest_multiseason_production_ensemble_walk_forward_20261014_v1_predictions.csv",
+  "test_seasons": [
+    "2023-24",
+    "2024-25"
+  ],
+  "calibration": "strictly earlier OOF seasons; predicted score bands; residual median shrinkage alpha=n/(n+1000); corrections subtracted from prediction",
+  "bootstrap": "paired resampling by game date, 2000 replicates, deterministic seed",
+  "holdout_policy": "2025/26 excluded; 2026/27 frozen GW1 untouched",
+  "production_changed": false,
+  "folds": [
+    {
+      "test_season": "2023-24",
+      "calibration_seasons": [
+        "2022-23"
+      ],
+      "n_calibration": 19165,
+      "n_test": 18927,
+      "global_median_residual": 0.8657164066832466,
+      "band_residual_medians": {
+        "<5": 1.0382490786770098,
+        "5-10": 1.379586801257762,
+        "10-15": 1.118071433209157,
+        "15-20": 0.4784956948514558,
+        "20-25": 0.025186155105891284,
+        "25+": -0.2661295007715819
+      },
+      "band_calibration_counts": {
+        "<5": 1224,
+        "5-10": 4904,
+        "10-15": 4530,
+        "15-20": 3411,
+        "20-25": 2269,
+        "25+": 2827
+      },
+      "date_clusters": 154,
+      "paired_bootstrap_delta_mae_calibrated_minus_raw": -0.06825183279224323,
+      "paired_bootstrap_ci95_delta_mae": [
+        -0.0818427633850715,
+        -0.05438966846589199
+      ]
+    },
+    {
+      "test_season": "2024-25",
+      "calibration_seasons": [
+        "2022-23",
+        "2023-24"
+      ],
+      "n_calibration": 38092,
+      "n_test": 19590,
+      "global_median_residual": 0.9779991430698249,
+      "band_residual_medians": {
+        "<5": 1.392632984713845,
+        "5-10": 1.5691415118776637,
+        "10-15": 1.0972234229300188,
+        "15-20": 0.5892847846591761,
+        "20-25": 0.023470030624689858,
+        "25+": -0.23347587732289093
+      },
+      "band_calibration_counts": {
+        "<5": 2743,
+        "5-10": 9435,
+        "10-15": 8853,
+        "15-20": 6604,
+        "20-25": 4519,
+        "25+": 5938
+      },
+      "date_clusters": 158,
+      "paired_bootstrap_delta_mae_calibrated_minus_raw": -0.04957897418622004,
+      "paired_bootstrap_ci95_delta_mae": [
+        -0.06669133507866118,
+        -0.030982859084036724
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.5573091528166145,
+      "rmse": 9.838191477963514,
+      "bias_pred_minus_actual": -0.3592776182004925
+    },
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "actual_ge_25",
+      "n": 4369,
+      "mae": 12.429352736203517,
+      "rmse": 14.855965123158743,
+      "bias_pred_minus_actual": -11.4729391995897
+    },
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "actual_ge_30",
+      "n": 2972,
+      "mae": 14.355607417349757,
+      "rmse": 16.615718374171806,
+      "bias_pred_minus_actual": -13.862732942720196
+    },
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "predicted_ge_20",
+      "n": 5361,
+      "mae": 9.823386514215715,
+      "rmse": 12.304526551598284,
+      "bias_pred_minus_actual": -0.9313207292317709
+    },
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "mae": 5.742984945611608,
+      "rmse": 7.593451221047663,
+      "bias_pred_minus_actual": 0.9711852464637559
+    },
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "mae": 7.608361352247992,
+      "rmse": 9.893990791262185,
+      "bias_pred_minus_actual": -0.3967147285213182
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.508572928350166,
+      "rmse": 9.907608956899894,
+      "bias_pred_minus_actual": -1.224802414429236
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "actual_ge_25",
+      "n": 4369,
+      "mae": 13.1096233100863,
+      "rmse": 15.534277840737813,
+      "bias_pred_minus_actual": -12.33865560627295
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "actual_ge_30",
+      "n": 2972,
+      "mae": 15.124791052059406,
+      "rmse": 17.3445655087279,
+      "bias_pred_minus_actual": -14.728449349403446
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "predicted_ge_20",
+      "n": 5361,
+      "mae": 9.851915256293344,
+      "rmse": 12.400135395476456,
+      "bias_pred_minus_actual": -1.7970371359150188
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "mae": 5.574446434897948,
+      "rmse": 7.529991263052701,
+      "bias_pred_minus_actual": 0.11149667479202977
+    },
+    {
+      "test_season": "2023-24",
+      "method": "pooled_median_offset",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "mae": 7.562996173697997,
+      "rmse": 9.96630986114197,
+      "bias_pred_minus_actual": -1.262403746832768
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "all",
+      "n": 18927,
+      "mae": 7.489057320024371,
+      "rmse": 9.88495859295871,
+      "bias_pred_minus_actual": -1.0679842772991708
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "actual_ge_25",
+      "n": 4369,
+      "mae": 12.626190011046317,
+      "rmse": 15.117242583141655,
+      "bias_pred_minus_actual": -11.60628117649262
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "actual_ge_30",
+      "n": 2972,
+      "mae": 14.434941293296463,
+      "rmse": 16.78134684216923,
+      "bias_pred_minus_actual": -13.907725608871946
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "predicted_ge_20",
+      "n": 5361,
+      "mae": 9.822752694915854,
+      "rmse": 12.294743520714349,
+      "bias_pred_minus_actual": -0.7874557734563298
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "mae": 5.525289398256991,
+      "rmse": 7.51588930687905,
+      "bias_pred_minus_actual": -0.16397219357585238
+    },
+    {
+      "test_season": "2023-24",
+      "method": "score_band_shrinkage",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "mae": 7.544314628051721,
+      "rmse": 9.943459106188829,
+      "bias_pred_minus_actual": -1.0934217404622257
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.60880840358012,
+      "rmse": 9.918423875041944,
+      "bias_pred_minus_actual": -0.327533880348859
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "actual_ge_25",
+      "n": 4425,
+      "mae": 12.326885940547117,
+      "rmse": 14.920267011590713,
+      "bias_pred_minus_actual": -11.404464198843362
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "actual_ge_30",
+      "n": 2919,
+      "mae": 14.485562703532386,
+      "rmse": 16.948789807190913,
+      "bias_pred_minus_actual": -13.988083606741895
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "predicted_ge_20",
+      "n": 5376,
+      "mae": 9.868624200725135,
+      "rmse": 12.356915111810165,
+      "bias_pred_minus_actual": -0.3992227526753163
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "mae": 5.468638278703834,
+      "rmse": 7.207833671483662,
+      "bias_pred_minus_actual": 1.1357052728700947
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "mae": 7.662564639055818,
+      "rmse": 9.977031349210558,
+      "bias_pred_minus_actual": -0.36428714008434293
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.5652361396162995,
+      "rmse": 9.998480432179745,
+      "bias_pred_minus_actual": -1.3054018773857266
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "actual_ge_25",
+      "n": 4425,
+      "mae": 13.098972579608054,
+      "rmse": 15.680496243687125,
+      "bias_pred_minus_actual": -12.382463341913189
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "actual_ge_30",
+      "n": 2919,
+      "mae": 15.351462685614782,
+      "rmse": 17.764532805940863,
+      "bias_pred_minus_actual": -14.966082749811722
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "predicted_ge_20",
+      "n": 5376,
+      "mae": 9.879081201245635,
+      "rmse": 12.427015427058445,
+      "bias_pred_minus_actual": -1.3772218957451405
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "mae": 5.194016936948264,
+      "rmse": 7.11284363903553,
+      "bias_pred_minus_actual": 0.16115453174252156
+    },
+    {
+      "test_season": "2024-25",
+      "method": "pooled_median_offset",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "mae": 7.62479580561738,
+      "rmse": 10.060310692866143,
+      "bias_pred_minus_actual": -1.3422384590906746
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "all",
+      "n": 19590,
+      "mae": 7.5592294293939,
+      "rmse": 9.995933282870011,
+      "bias_pred_minus_actual": -1.1253917457453693
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "actual_ge_25",
+      "n": 4425,
+      "mae": 12.575241265801793,
+      "rmse": 15.241093556193999,
+      "bias_pred_minus_actual": -11.596447299986403
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "actual_ge_30",
+      "n": 2919,
+      "mae": 14.617350307708298,
+      "rmse": 17.182377953457614,
+      "bias_pred_minus_actual": -14.088317783388213
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "predicted_ge_20",
+      "n": 5376,
+      "mae": 9.872862078837132,
+      "rmse": 12.354728818104977,
+      "bias_pred_minus_actual": -0.27347680029919763
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "mae": 5.117912092046692,
+      "rmse": 7.12458062283009,
+      "bias_pred_minus_actual": -0.22656603489212532
+    },
+    {
+      "test_season": "2024-25",
+      "method": "score_band_shrinkage",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "mae": 7.620549802074521,
+      "rmse": 10.057506946526797,
+      "bias_pred_minus_actual": -1.147968215719705
+    }
+  ],
+  "prediction_bands": [
+    {
+      "test_season": "2023-24",
+      "predicted_band": "<5",
+      "method": "raw",
+      "mean_predicted": 3.7885403630210166,
+      "mean_actual": 3.5785055957867016,
+      "bias": 0.2100347672343146,
+      "n": 1519
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "<5",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 2.7531331156543137,
+      "mean_actual": 3.5785055957867016,
+      "bias": -0.8253724801323877,
+      "n": 1519
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "5-10",
+      "method": "raw",
+      "mean_predicted": 7.663908613756091,
+      "mean_actual": 7.619565217391305,
+      "bias": 0.04434339636478577,
+      "n": 4531
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "5-10",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 6.284321812498328,
+      "mean_actual": 7.619565217391305,
+      "bias": -1.3352434048929762,
+      "n": 4531
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "10-15",
+      "method": "raw",
+      "mean_predicted": 12.310708960162339,
+      "mean_actual": 12.557425399028453,
+      "bias": -0.24671643886611355,
+      "n": 4323
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "10-15",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 11.192637526953183,
+      "mean_actual": 12.557425399028453,
+      "bias": -1.3647878720752704,
+      "n": 4323
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "15-20",
+      "method": "raw",
+      "mean_predicted": 17.437333346254697,
+      "mean_actual": 17.832148449733793,
+      "bias": -0.39481510347909726,
+      "n": 3193
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "15-20",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 16.95883765140324,
+      "mean_actual": 17.832148449733793,
+      "bias": -0.8733107983305536,
+      "n": 3193
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "20-25",
+      "method": "raw",
+      "mean_predicted": 22.24670756808235,
+      "mean_actual": 23.120559999999998,
+      "bias": -0.873852431917648,
+      "n": 2250
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "20-25",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 22.22152141297646,
+      "mean_actual": 23.120559999999998,
+      "bias": -0.8990385870235402,
+      "n": 2250
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "25+",
+      "method": "raw",
+      "mean_predicted": 30.814804738798834,
+      "mean_actual": 31.787688846030214,
+      "bias": -0.9728841072313775,
+      "n": 3111
+    },
+    {
+      "test_season": "2023-24",
+      "predicted_band": "25+",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 31.080934239570425,
+      "mean_actual": 31.787688846030214,
+      "bias": -0.7067546064597939,
+      "n": 3111
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "<5",
+      "method": "raw",
+      "mean_predicted": 3.6588826804650028,
+      "mean_actual": 3.8954482758620688,
+      "bias": -0.2365655953970662,
+      "n": 1595
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "<5",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 2.2690476769742585,
+      "mean_actual": 3.8954482758620688,
+      "bias": -1.6264005988878107,
+      "n": 1595
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "5-10",
+      "method": "raw",
+      "mean_predicted": 7.703651494092703,
+      "mean_actual": 7.80562265037594,
+      "bias": -0.10197115628323748,
+      "n": 4256
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "5-10",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 6.134509982215039,
+      "mean_actual": 7.80562265037594,
+      "bias": -1.6711126681609012,
+      "n": 4256
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "10-15",
+      "method": "raw",
+      "mean_predicted": 12.35233418779139,
+      "mean_actual": 13.046399345335516,
+      "bias": -0.6940651575441247,
+      "n": 4888
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "10-15",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 11.255110764861369,
+      "mean_actual": 13.046399345335516,
+      "bias": -1.791288580474144,
+      "n": 4888
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "15-20",
+      "method": "raw",
+      "mean_predicted": 17.3615351534457,
+      "mean_actual": 17.380604316546766,
+      "bias": -0.019069163101061014,
+      "n": 3475
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "15-20",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 16.772250368786526,
+      "mean_actual": 17.380604316546766,
+      "bias": -0.6083539477602383,
+      "n": 3475
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "20-25",
+      "method": "raw",
+      "mean_predicted": 22.283746752118144,
+      "mean_actual": 22.750208518189886,
+      "bias": -0.4664617660717378,
+      "n": 2254
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "20-25",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 22.260276721493454,
+      "mean_actual": 22.750208518189886,
+      "bias": -0.4899317966964278,
+      "n": 2254
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "25+",
+      "method": "raw",
+      "mean_predicted": 30.723668578585265,
+      "mean_actual": 31.0743465727098,
+      "bias": -0.35067799412453676,
+      "n": 3122
+    },
+    {
+      "test_season": "2024-25",
+      "predicted_band": "25+",
+      "method": "score_band_shrinkage",
+      "mean_predicted": 30.957144455908157,
+      "mean_actual": 31.0743465727098,
+      "bias": -0.11720211680164572,
+      "n": 3122
+    }
+  ],
+  "decision_rule": "Promote only if paired OOS MAE delta CI is below zero in both folds and high-score cohorts improve without material ordinary-score regressions; otherwise keep research-only."
+}

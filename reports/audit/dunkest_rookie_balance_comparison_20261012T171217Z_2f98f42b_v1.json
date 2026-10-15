@@ -1,0 +1,19 @@
+{
+  "old_run": "20261012T162434Z_7a50d394",
+  "new_run": "20261012T171217Z_2f98f42b",
+  "players_compared": 552,
+  "college_rookies": 50,
+  "rookie_minute_prior_weight_before_max": 0.35,
+  "rookie_minute_prior_weight_after_max": 0.15,
+  "rookie_minutes_before_mean": 6.9930785469454,
+  "rookie_minutes_after_mean": 6.3876956751921306,
+  "rookie_minutes_mean_delta": -0.6053828717532683,
+  "rookie_minutes_median_delta": 0.0,
+  "rookie_pdk_before_mean": 4.954192177692874,
+  "rookie_pdk_after_mean": 4.593053063992062,
+  "rookie_pdk_mean_delta": -0.3611391137008124,
+  "rookie_pdk_median_delta": 0.0,
+  "nonrookie_minutes_mean_delta": 0.027876887557430487,
+  "nonrookie_pdk_mean_delta": 0.009763528702444091,
+  "rookies_with_lower_minutes": 23
+}

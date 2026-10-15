@@ -1,0 +1,467 @@
+{
+  "generated_at_utc": "2026-10-12T17:41:39.652232+00:00",
+  "season_ids_scanned": [
+    "26"
+  ],
+  "rounds_scanned": 1,
+  "rounds_ready": 0,
+  "rounds_not_ready": 1,
+  "checks_passed_by_type": {
+    "fixture_mapping": 1,
+    "roster_and_CR": 1,
+    "timestamped_injuries": 1,
+    "fixture_linked_coaches": 1,
+    "player_results_linked": 0,
+    "coach_results_linked": 0
+  },
+  "rounds": [
+    {
+      "season_id": "26",
+      "gameweek": 1,
+      "checks": {
+        "fixture_mapping": true,
+        "roster_and_CR": true,
+        "timestamped_injuries": true,
+        "fixture_linked_coaches": true,
+        "player_results_linked": false,
+        "coach_results_linked": false
+      },
+      "ready_for_full_lineup_backtest": false,
+      "player_result_reason": "missing player results",
+      "files": {
+        "player_results": "data/processed/dunkest_players_26_gw1.parquet",
+        "player_credits": "data/processed/player_credits_26_gw1.parquet",
+        "coach_market": "data/processed/coach_market_26_gw1.parquet",
+        "injuries": "data/processed/injuries_26_gw1.parquet",
+        "coach_results": null
+      },
+      "fixture_mapping": "data/processed/dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet"
+    }
+  ],
+  "pre_match_snapshot_run_count": 39,
+  "pre_match_snapshot_runs": [
+    {
+      "run_id": "20261008T093000Z_3051df18",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261008T094331Z_12d79429",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261008T100031Z_a02fed37",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261009T135323Z_fb0fee15",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261009T141219Z_18e83d63",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261009T141921Z_39483857",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261009T142424Z_2c78a7be",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261009T150558Z_4e8ff850",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T083359Z_22ec70d9",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_first_appearance_v1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T085257Z_5076b845",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T131128Z_df206ae1",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T132258Z_86251ef3",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T135249Z_830f6057",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T144213Z_100ee7de",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261010T144856Z_28b368a0",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T085417Z_327ebd5e",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T090223Z_464324bb",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T093023Z_01411bbd",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T093847Z_2b4a2ab6",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T093945Z_6f9fc7a3",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T094038Z_43bedafe",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T094126Z_2bb5f9bb",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T094835Z_9a175ece",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T095005Z_538872ad",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T095227Z_f4f126c9",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T095616Z_e0474c53",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T102807Z_869c3c41",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T103952Z_6c140c29",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T105557Z_d94a9ea8",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T105854Z_4bc44e97",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T110150Z_652b80ff",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T150816Z_2c74817c",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T152359Z_acb7432b",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T152844Z_dcb3a29b",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T161757Z_1aa46622",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T161852Z_53156b20",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T162125Z_5b670240",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T162434Z_7a50d394",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    },
+    {
+      "run_id": "20261012T171217Z_2f98f42b",
+      "files": [
+        "coach_market_26_gw1.parquet",
+        "current_lineups_market.csv",
+        "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+        "injuries_26_gw1.parquet",
+        "lineups_availability.csv",
+        "player_credits_26_gw1.parquet"
+      ]
+    }
+  ],
+  "conclusion": "No scanned round has all required archived inputs. Valid complete-lineup metrics cannot be computed without inventing pre-game state or using look-ahead data.",
+  "policy": "Raw archives untouched. Same-round weekly CR/PDK tables are not treated as verified pre-game snapshots. Missing actuals are never scored as zero."
+}

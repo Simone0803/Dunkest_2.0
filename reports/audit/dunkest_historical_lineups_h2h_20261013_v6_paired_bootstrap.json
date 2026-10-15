@@ -1,0 +1,67 @@
+{
+  "experiment": "dunkest_historical_lineups_h2h_20261013_v6",
+  "n_evaluated_rounds": 409,
+  "bootstrap_replicates": 10000,
+  "bootstrap_method": "paired, stratified by season; resample target rounds within each season and weight by season sample size",
+  "comparison": "H2H lineup realized team score minus model-without-H2H realized team score; negative favors no-H2H model",
+  "model_mean_realized_team_score": 160.9859902200489,
+  "h2h_mean_realized_team_score": 155.3279706601467,
+  "baseline_mean_realized_team_score": 140.33721271393642,
+  "h2h_minus_model_mean": -5.6580195599022005,
+  "h2h_minus_model_median": -2.125,
+  "h2h_win_rate_vs_model": 0.45232273838630804,
+  "h2h_minus_model_ci95": [
+    -9.489390586797066,
+    -1.7727756723716395
+  ],
+  "season_results": [
+    {
+      "season": "2022-23",
+      "rounds": 139,
+      "model_mean": 152.06625899280576,
+      "h2h_mean": 146.64273381294967,
+      "baseline_mean": 134.73205035971222,
+      "h2h_minus_model_mean": -5.423525179856115,
+      "h2h_minus_model_median": -4.799999999999983,
+      "h2h_win_rate": 0.4172661870503597,
+      "bootstrap_ci95": [
+        -12.253802158273379,
+        1.3116951438848896
+      ]
+    },
+    {
+      "season": "2023-24",
+      "rounds": 132,
+      "model_mean": 163.16121212121212,
+      "h2h_mean": 155.78943181818184,
+      "baseline_mean": 142.53715909090909,
+      "h2h_minus_model_mean": -7.371780303030303,
+      "h2h_minus_model_median": -2.2675000000000125,
+      "h2h_win_rate": 0.45454545454545453,
+      "bootstrap_ci95": [
+        -14.612434659090905,
+        -0.5344422348484908
+      ]
+    },
+    {
+      "season": "2024-25",
+      "rounds": 138,
+      "model_mean": 167.88971014492753,
+      "h2h_mean": 163.6347463768116,
+      "baseline_mean": 143.8786956521739,
+      "h2h_minus_model_mean": -4.2549637681159425,
+      "h2h_minus_model_median": -0.022499999999993747,
+      "h2h_win_rate": 0.4855072463768116,
+      "bootstrap_ci95": [
+        -10.388480978260866,
+        1.9854166666666635
+      ]
+    }
+  ],
+  "limitations": [
+    "Restricted candidate pool; not a full pre-lock market backtest.",
+    "Coach credit is fixed at 10 and transfer malus is 0 because historical coach prices and carried rosters are unavailable.",
+    "The H2H features are game-level history while the optimized target is weekly-round PDK; the observed lineup degradation is a reason not to promote these features without redesigning/validating the target-compatible feature."
+  ],
+  "production_changed": false
+}

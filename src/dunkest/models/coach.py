@@ -65,6 +65,54 @@ def _team_profiles(results: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, float
     return profile, score_sds, league_sd
 
 
+def _simulate_matchup_scores(
+    team_pts,
+    opp_pts,
+    team_sd,
+    opponent_sd,
+    score_correlation,
+    matchup_key,
+    overtime_probability=0.0,
+    draws=8192,
+):
+    """Simulate deterministic final scores with internally consistent OT flags.
+
+    The input score distributions approximate final team totals. For the small
+    share of draws assigned to overtime, preserve the sampled total and likely
+    winner, replace the implausible regulation margin with a tied regulation
+    score, and resolve OT by one point. This is an approximation, but avoids
+    applying Dunkest's OT coach rule to games whose simulated scores are not
+    tied at regulation.
+    """
+    seed = int.from_bytes(hashlib.sha256(matchup_key.encode("utf-8")).digest()[:4], "big")
+    rng = np.random.default_rng(seed)
+    z_team = rng.standard_normal(draws)
+    z_opp_independent = rng.standard_normal(draws)
+    rho = float(np.clip(score_correlation, -0.4, 0.6))
+    z_opp = rho * z_team + np.sqrt(1.0 - rho * rho) * z_opp_independent
+    team_scores = np.maximum(np.rint(team_pts + max(team_sd, 5.0) * z_team), 0).astype(int)
+    opponent_scores = np.maximum(np.rint(opp_pts + max(opponent_sd, 5.0) * z_opp), 0).astype(int)
+
+    # A sampled tie is a regulation tie regardless of the empirical OT prior.
+    tied = team_scores == opponent_scores
+    overtime = (rng.random(draws) < float(np.clip(overtime_probability, 0.0, 0.25))) | tied
+    indices = np.flatnonzero(overtime)
+    if len(indices):
+        original_team = team_scores[indices].copy()
+        original_opponent = opponent_scores[indices].copy()
+        tie_score = np.rint((original_team + original_opponent) / 2.0).astype(int)
+        team_wins = original_team > original_opponent
+        opponent_wins = original_opponent > original_team
+        unresolved = ~(team_wins | opponent_wins)
+        if unresolved.any():
+            team_wins[unresolved] = rng.random(int(unresolved.sum())) < 0.5
+        team_scores[indices] = tie_score
+        opponent_scores[indices] = tie_score
+        team_scores[indices[team_wins]] += 1
+        opponent_scores[indices[~team_wins]] += 1
+    return team_scores, opponent_scores, overtime
+
+
 def _coach_score_distribution(
     team_pts: float,
     opp_pts: float,
@@ -76,18 +124,11 @@ def _coach_score_distribution(
     matchup_key: str,
     overtime_probability: float = 0.0,
 ) -> np.ndarray:
-    """Simulate Dunkest coach scores under plausible game outcomes."""
-    seed = int.from_bytes(hashlib.sha256(matchup_key.encode("utf-8")).digest()[:4], "big")
-    rng = np.random.default_rng(seed)
-    draws = 8192
-    z_team = rng.standard_normal(draws)
-    z_opp_independent = rng.standard_normal(draws)
-    rho = float(np.clip(score_correlation, -0.4, 0.6))
-    z_opp = rho * z_team + np.sqrt(1.0 - rho * rho) * z_opp_independent
-    team_scores = np.maximum(np.rint(team_pts + max(team_sd, 5.0) * z_team), 0)
-    opponent_scores = np.maximum(np.rint(opp_pts + max(opponent_sd, 5.0) * z_opp), 0)
-    overtime_probability = float(np.clip(overtime_probability, 0.0, 0.25))
-    overtime = rng.random(draws) < overtime_probability
+    """Simulate Dunkest coach scores without impossible tied final scores."""
+    team_scores, opponent_scores, overtime = _simulate_matchup_scores(
+        team_pts, opp_pts, team_sd, opponent_sd, score_correlation,
+        matchup_key, overtime_probability,
+    )
     return np.asarray(coach_points_from_outcomes(
         team_scores, opponent_scores, coach_cr, opponent_coach_cr, overtime
     ), dtype=float)
@@ -234,6 +275,10 @@ def _next_game_context(
     gameweek: int | None = None,
 ) -> pd.DataFrame:
     out = coaches.copy()
+    if "matchup_date" in out:
+        out["matchup_date"] = pd.to_datetime(out["matchup_date"], errors="coerce")
+    else:
+        out["matchup_date"] = pd.Series(pd.NaT, index=out.index, dtype="datetime64[ns]")
     if "coach_projection_source" not in out:
         out["coach_projection_source"] = "no_verified_matchup"
     if "matchup_projection_available" not in out:
@@ -244,10 +289,9 @@ def _next_game_context(
         schedule if schedule is not None else pd.DataFrame(), gameweek
     )
     if team_logs is None or team_logs.empty:
-        # The opener often has no current-season team logs yet. The verified
-        # Dunkest fixture still identifies the opponent, so retain that
-        # matchup and use a neutral scoring baseline; historical-only rows
-        # remain explicitly unprojected.
+        # A verified fixture identifies the opponent but cannot replace missing
+        # historical team results. Keep the matchup identity for diagnostics,
+        # but leave the score projection unavailable so the optimizer fails closed.
         if not schedule.empty:
             team_to_coach = dict(zip(out.get("team", pd.Series(dtype=str)).astype(str).str.upper(), out.get("coach", pd.Series(dtype=str))))
             team_to_cr = dict(zip(
@@ -270,13 +314,14 @@ def _next_game_context(
                 out.at[idx, "opponent"] = opponent
                 out.at[idx, "opponent_coach"] = team_to_coach.get(opponent, "")
                 out.at[idx, "opponent_coach_cr"] = team_to_cr.get(opponent, np.nan)
-                out.at[idx, "expected_team_pts"] = 112.0
-                out.at[idx, "expected_opp_pts"] = 112.0
-                out.at[idx, "matchup_projection_available"] = True
+                # A verified fixture identifies the opponent, but it does not
+                # provide a score forecast. Do not manufacture 112-112 points
+                # and let the optimizer rank coaches from an invented matchup.
+                out.at[idx, "matchup_projection_available"] = False
                 out.at[idx, "coach_projection_source"] = (
-                    "verified_matchup"
+                    "missing_team_history"
                     if bool(game.get("mapping_verified", False))
-                    else "unverified_matchup"
+                    else "unverified_matchup_missing_team_history"
                 )
                 if "NBA_GAME_ID" in game.index:
                     out.at[idx, "nba_game_id"] = game["NBA_GAME_ID"]
@@ -501,7 +546,10 @@ def _next_game_context(
         else:
             home_team, away_team = team, opponent
         synthetic = pd.Series({
-            "GAME_DATE": pd.to_datetime(row.get("date") or row.get("matchup_date"), errors="coerce"),
+            "GAME_DATE": pd.to_datetime(
+                row.get("date") if pd.notna(row.get("date")) else row.get("matchup_date"),
+                errors="coerce",
+            ),
             "HOME_TEAM": home_team,
             "AWAY_TEAM": away_team,
             "NBA_GAME_ID": row.get("nba_game_id", pd.NA),
@@ -555,9 +603,13 @@ def _next_game_context(
         else:
             expected_team = own_profile["offense"] + opponent_profile["defense_allowed"] - league_points
             expected_opp = opponent_profile["offense"] + own_profile["defense_allowed"] - league_points
+        expected_team_base = expected_team
+        expected_opp_base = expected_opp
         expected_team += own_profile["roster_points_adjustment"]
         expected_opp += opponent_profile["roster_points_adjustment"]
         ha = 0.0 if neutral_home else home_advantage
+        out.at[idx, "expected_team_pts_before_roster_adjustment"] = expected_team_base + (ha if is_home else -ha)
+        out.at[idx, "expected_opp_pts_before_roster_adjustment"] = expected_opp_base - (ha if is_home else -ha)
         out.at[idx, "expected_team_pts"] = expected_team + (ha if is_home else -ha)
         out.at[idx, "expected_opp_pts"] = expected_opp - (ha if is_home else -ha)
         out.at[idx, "team_recent_games"] = int(own_profile["games"])
@@ -621,24 +673,29 @@ def predict_coach_points(
     )
     if "opponent_coach_cr" not in df:
         df["opponent_coach_cr"] = float("nan")
-    # Before the current matchup exists, use prior-season team PDK if available.
-    # Missing opponent market data means a neutral CR gap. Coach prices affect
-    # only the official scoring coefficient; they never imply team strength.
-    df["opponent_coach_cr"] = pd.to_numeric(
-        df["opponent_coach_cr"], errors="coerce"
-    ).fillna(pd.to_numeric(df["coach_cr"], errors="coerce"))
-    df["expected_margin"] = 0.0
-    # If no matchup/team data exists, use a neutral NBA scoring baseline and
-    # preserve a real prior-season coach score below. Do not turn CR into points.
-    default_team_pts = pd.Series(112.0, index=df.index)
-    default_opp_pts = pd.Series(112.0, index=df.index)
+    # Never substitute the selected coach's price for an unknown opponent price:
+    # the official multiplier depends on the actual CR difference.
+    df["opponent_coach_cr"] = pd.to_numeric(df["opponent_coach_cr"], errors="coerce")
+    df["coach_cr"] = pd.to_numeric(df["coach_cr"], errors="coerce")
     df["expected_team_pts"] = pd.to_numeric(
         df.get("expected_team_pts", pd.Series(float("nan"), index=df.index)), errors="coerce"
-    ).fillna(default_team_pts)
+    )
     df["expected_opp_pts"] = pd.to_numeric(
         df.get("expected_opp_pts", pd.Series(float("nan"), index=df.index)), errors="coerce"
-    ).fillna(default_opp_pts)
+    )
     df["expected_margin"] = df["expected_team_pts"] - df["expected_opp_pts"]
+    df["expected_team_pts_before_roster_adjustment"] = pd.to_numeric(
+        df.get("expected_team_pts_before_roster_adjustment", pd.Series(float("nan"), index=df.index)),
+        errors="coerce",
+    ).fillna(df["expected_team_pts"])
+    df["expected_opp_pts_before_roster_adjustment"] = pd.to_numeric(
+        df.get("expected_opp_pts_before_roster_adjustment", pd.Series(float("nan"), index=df.index)),
+        errors="coerce",
+    ).fillna(df["expected_opp_pts"])
+    df["expected_margin_before_roster_adjustment"] = (
+        df["expected_team_pts_before_roster_adjustment"]
+        - df["expected_opp_pts_before_roster_adjustment"]
+    )
     if "matchup_projection_available" not in df:
         df["matchup_projection_available"] = False
     if "team_score_sd" not in df:
@@ -650,6 +707,24 @@ def predict_coach_points(
     if "overtime_probability" not in df:
         df["overtime_probability"] = 0.0
     def coach_score_summary(row: pd.Series) -> pd.Series:
+        required_values = [
+            row.get("expected_team_pts"), row.get("expected_opp_pts"),
+            row.get("coach_cr"), row.get("opponent_coach_cr"),
+        ]
+        if not np.isfinite(pd.to_numeric(pd.Series(required_values), errors="coerce")).all():
+            return pd.Series({
+                "expected_coach_pdk": np.nan,
+                "p10_coach_pdk": np.nan,
+                "p50_coach_pdk": np.nan,
+                "p90_coach_pdk": np.nan,
+                "win_probability": np.nan,
+                "expected_total_pts": np.nan,
+                "p_team_120_plus": np.nan,
+                "p_opponent_95_or_less": np.nan,
+                "p_overtime": np.nan,
+                "coach_positive_coefficient": np.nan,
+                "coach_negative_coefficient": np.nan,
+            })
         scores = _coach_score_distribution(
             float(row["expected_team_pts"]),
             float(row["expected_opp_pts"]),
@@ -683,7 +758,18 @@ def predict_coach_points(
 
     score_summary = df.apply(coach_score_summary, axis=1)
     df[score_summary.columns] = score_summary
-    has_projection = df["matchup_projection_available"].fillna(False).astype(bool)
+    has_matchup = df["matchup_projection_available"].fillna(False).astype(bool)
+    score_inputs_valid = np.isfinite(df[[
+        "expected_team_pts", "expected_opp_pts", "coach_cr", "opponent_coach_cr"
+    ]].apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)).all(axis=1)
+    has_projection = has_matchup & score_inputs_valid
+    missing_cr = has_matchup & ~np.isfinite(
+        pd.to_numeric(df["opponent_coach_cr"], errors="coerce").to_numpy(dtype=float)
+    )
+    df.loc[missing_cr, "coach_projection_source"] = "missing_opponent_coach_cr"
+    missing_scores = has_matchup & ~score_inputs_valid & ~missing_cr
+    df.loc[missing_scores, "coach_projection_source"] = "missing_team_score_forecast"
+    df["matchup_projection_available"] = has_projection
     prior = pd.to_numeric(
         df.get("prior_coach_pdk", pd.Series(float("nan"), index=df.index)),
         errors="coerce",
@@ -694,27 +780,65 @@ def predict_coach_points(
     for column in ("p10_coach_pdk", "p50_coach_pdk", "p90_coach_pdk"):
         df.loc[~has_projection & ~keep_historical, column] = 0.0
         df.loc[keep_historical, column] = prior.fillna(0.0)
-    df.loc[~has_projection & ~keep_historical, "coach_projection_source"] = "no_verified_matchup"
+    missing_source = df.get(
+        "coach_projection_source", pd.Series("", index=df.index)
+    ).fillna("").astype(str).str.strip().isin({"", "nan", "None", "no_verified_matchup"})
+    df.loc[~has_projection & ~keep_historical & missing_source, "coach_projection_source"] = "no_verified_matchup"
     df.loc[keep_historical, "coach_projection_source"] = "prior_only"
     df.loc[~has_projection, "win_probability"] = np.nan
     df["expected_margin"] = df["expected_team_pts"] - df["expected_opp_pts"]
+    df["win_probability_before_roster_adjustment"] = np.nan
     # Monte Carlo diagnostics use the same seeded scenario construction as
     # the score distribution above.
     for idx, row in df.iterrows():
         if not bool(row["matchup_projection_available"]):
             continue
         seed_key = f"{row.get('team', '')}-{row.get('opponent', '')}"
-        seed = int.from_bytes(hashlib.sha256(seed_key.encode("utf-8")).digest()[:4], "big")
-        rng = np.random.default_rng(seed)
-        count = 8192
-        rho = float(np.clip(row["score_correlation"], -0.4, 0.6))
-        z_team = rng.standard_normal(count)
-        z_opp = rho * z_team + np.sqrt(1.0 - rho * rho) * rng.standard_normal(count)
-        team_scores = np.maximum(np.rint(float(row["expected_team_pts"]) + max(float(row["team_score_sd"]), 5.0) * z_team), 0)
-        opponent_scores = np.maximum(np.rint(float(row["expected_opp_pts"]) + max(float(row["opponent_score_sd"]), 5.0) * z_opp), 0)
+        team_sd = max(float(row["team_score_sd"]), 5.0)
+        opponent_sd = max(float(row["opponent_score_sd"]), 5.0)
+        team_scores, opponent_scores, _ = _simulate_matchup_scores(
+            float(row["expected_team_pts"]), float(row["expected_opp_pts"]),
+            team_sd, opponent_sd, float(row["score_correlation"]), seed_key,
+            float(row["overtime_probability"]), draws=8192,
+        )
         df.at[idx, "win_probability"] = float(np.mean(team_scores > opponent_scores))
+        base_team_scores, base_opponent_scores, _ = _simulate_matchup_scores(
+            float(row["expected_team_pts_before_roster_adjustment"]),
+            float(row["expected_opp_pts_before_roster_adjustment"]),
+            team_sd, opponent_sd, float(row["score_correlation"]), seed_key,
+            float(row["overtime_probability"]), draws=8192,
+        )
+        df.at[idx, "win_probability_before_roster_adjustment"] = float(
+            np.mean(base_team_scores > base_opponent_scores)
+        )
         df.at[idx, "p_team_120_plus"] = float(np.mean(team_scores >= 120))
         df.at[idx, "p_opponent_95_or_less"] = float(np.mean(opponent_scores <= 95))
         df.at[idx, "expected_margin"] = float(np.mean(team_scores - opponent_scores))
         df.at[idx, "expected_total_pts"] = float(np.mean(team_scores + opponent_scores))
+
+    # The same NBA game appears once from each team's perspective. Normalize
+    # each pair so the two win probabilities sum to 100%, removing Monte Carlo
+    # noise and making the baseline-vs-roster adjustment directly comparable.
+    handled: set[object] = set()
+    for idx, row in df.iterrows():
+        if idx in handled or not bool(row["matchup_projection_available"]):
+            continue
+        counterparts = df.index[
+            df["team"].astype(str).str.upper().eq(str(row.get("opponent", "")).upper())
+            & df["opponent"].astype(str).str.upper().eq(str(row.get("team", "")).upper())
+            & df["matchup_projection_available"].fillna(False).astype(bool)
+        ]
+        counterparts = [other for other in counterparts if other != idx]
+        if len(counterparts) != 1:
+            continue
+        other = counterparts[0]
+        for column in ("win_probability", "win_probability_before_roster_adjustment"):
+            p_self = pd.to_numeric(pd.Series([df.at[idx, column]]), errors="coerce").iloc[0]
+            p_other = pd.to_numeric(pd.Series([df.at[other, column]]), errors="coerce").iloc[0]
+            if np.isfinite(p_self) and np.isfinite(p_other):
+                normalized = float(np.clip((p_self + 1.0 - p_other) / 2.0, 0.0, 1.0))
+                df.at[idx, column] = normalized
+                df.at[other, column] = 1.0 - normalized
+        handled.add(idx)
+        handled.add(other)
     return df

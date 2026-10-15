@@ -1,0 +1,118 @@
+{
+  "created_utc": "2026-10-13T12:22:42.213326+00:00",
+  "source_predictions": "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v9_persisted_date_link_predictions.csv",
+  "model_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+  "protocol": "for each target season, calibrator is fitted only on earlier seasons' expanding-origin OOF predictions and labels; evaluate on next untouched season",
+  "calibration_methods": [
+    "OLS affine mapping actual ~ raw prediction",
+    "mean residual offset estimated on earlier seasons"
+  ],
+  "bootstrap_replicates": 3000,
+  "bootstrap_seed": 20261013,
+  "prospective_holdout_read": false,
+  "production_changed": false,
+  "metrics": [
+    {
+      "test_season": "2023-24",
+      "method": "raw",
+      "n": 18918,
+      "mae": 7.463761087342568,
+      "rmse": 9.747693358298015,
+      "bias_pred_minus_actual": -0.8939286701419848,
+      "delta_mae_vs_raw": NaN,
+      "ci95_low_delta": NaN,
+      "ci95_high_delta": NaN,
+      "round_clusters": NaN
+    },
+    {
+      "test_season": "2023-24",
+      "method": "past_only_affine",
+      "n": 18918,
+      "mae": 7.48758260626824,
+      "rmse": 9.75049509413397,
+      "bias_pred_minus_actual": -0.7691044542501199,
+      "delta_mae_vs_raw": 0.023821518925672542,
+      "ci95_low_delta": 0.020773128201226353,
+      "ci95_high_delta": 0.026787556614529588,
+      "round_clusters": 153.0
+    },
+    {
+      "test_season": "2023-24",
+      "method": "past_only_mean_bias",
+      "n": 18918,
+      "mae": 7.469972196667329,
+      "rmse": 9.738029317914712,
+      "bias_pred_minus_actual": -0.781535447987535,
+      "delta_mae_vs_raw": 0.006211109324759474,
+      "ci95_low_delta": 0.004469967506547885,
+      "ci95_high_delta": 0.007840571824817896,
+      "round_clusters": 153.0
+    },
+    {
+      "test_season": "2024-25",
+      "method": "raw",
+      "n": 19589,
+      "mae": 7.463217903821078,
+      "rmse": 9.761622060221386,
+      "bias_pred_minus_actual": -0.6864163398736959,
+      "delta_mae_vs_raw": NaN,
+      "ci95_low_delta": NaN,
+      "ci95_high_delta": NaN,
+      "round_clusters": NaN
+    },
+    {
+      "test_season": "2024-25",
+      "method": "past_only_affine",
+      "n": 19589,
+      "mae": 7.468926677524715,
+      "rmse": 9.727763598391958,
+      "bias_pred_minus_actual": -0.19400232471535192,
+      "delta_mae_vs_raw": 0.0057087737036375635,
+      "ci95_low_delta": -0.0021812541401862924,
+      "ci95_high_delta": 0.014095806574206789,
+      "round_clusters": 158.0
+    },
+    {
+      "test_season": "2024-25",
+      "method": "past_only_mean_bias",
+      "n": 19589,
+      "mae": 7.500626092003595,
+      "rmse": 9.739228811500686,
+      "bias_pred_minus_actual": -0.18568787739071385,
+      "delta_mae_vs_raw": 0.03740818818251715,
+      "ci95_low_delta": 0.029856549532485215,
+      "ci95_high_delta": 0.045271522088159086,
+      "round_clusters": 158.0
+    }
+  ],
+  "coefficients": [
+    {
+      "test_season": "2023-24",
+      "calibration_train_seasons": "2022-23",
+      "n_train_oof": 19155,
+      "n_test": 18918,
+      "affine_intercept": 0.3665060839199832,
+      "affine_slope": 0.9839580293320912,
+      "mean_residual_offset": 0.1123932221544503,
+      "raw_train_mae": 7.433034989167134,
+      "calibrated_train_mae": 7.451525712100339
+    },
+    {
+      "test_season": "2024-25",
+      "calibration_train_seasons": "2022-23;2023-24",
+      "n_train_oof": 38073,
+      "n_test": 19589,
+      "affine_intercept": -0.08362165490358109,
+      "affine_slope": 1.037808649567383,
+      "mean_residual_offset": 0.5007284624829818,
+      "raw_train_mae": 7.448302405059838,
+      "calibrated_train_mae": 7.474040026305206
+    }
+  ],
+  "limitations": [
+    "Only 2023/24 and 2024/25 can be evaluated because calibration needs at least one prior OOF season.",
+    "The experiment evaluates game-level score calibration, not lineup-level utility or coach/transfer scoring.",
+    "Two test seasons are not sufficient for production promotion; all results are exploratory.",
+    "No 2025/26 final holdout or frozen 2026/27 GW1 predictions were read or changed."
+  ]
+}

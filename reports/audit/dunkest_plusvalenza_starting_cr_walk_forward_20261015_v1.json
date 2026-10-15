@@ -1,0 +1,38 @@
+{
+  "generated_utc": "2026-10-15",
+  "source": "data/processed/plusvalenza_history_multiseason_26_pre_gw0_5y_nba_v4.parquet",
+  "seasons": {
+    "5": "2020-21",
+    "7": "2021-22",
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "source_rows": 93744,
+  "rows_after_validation": 87626,
+  "walk_forward_validation_rows": 17256,
+  "price_basis": "pre_gameweek_cr = official_end_cr - official_plusvalenza",
+  "comparison": {
+    "old_end_cr_feature": {
+      "mae": 0.06951203048414405,
+      "baseline_mae": 0.18297465220958023,
+      "raw_multiclass_brier": 0.3186553599299603,
+      "calibrated_multiclass_brier": 0.3146603991225286,
+      "raw_multiclass_log_loss": 0.6446841325722248,
+      "calibrated_multiclass_log_loss": 0.5620632025971323,
+      "calibrated_gain_bias_percentage_points": 0.20503646931592234
+    },
+    "reconstructed_start_cr": {
+      "mae": 0.061433718929502175,
+      "baseline_mae": 0.18297465220958023,
+      "raw_multiclass_brier": 0.26910078872814475,
+      "calibrated_multiclass_brier": 0.2614777998398101,
+      "raw_multiclass_log_loss": 0.5843229506713083,
+      "calibrated_multiclass_log_loss": 0.505167240396501,
+      "calibrated_gain_bias_percentage_points": 0.18691630812447402
+    }
+  },
+  "production_changed": true,
+  "prospective_2026_27_bundle_loaded": false,
+  "caveat": "Walk-forward improvement validates the reconstructed price feature basis; it does not prove every underlying official Dunkest pricing rule has been analytically reverse-engineered."
+}

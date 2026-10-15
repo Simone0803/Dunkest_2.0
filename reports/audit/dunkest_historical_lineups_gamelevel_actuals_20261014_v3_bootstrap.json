@@ -1,0 +1,45 @@
+{
+  "generated_at_utc": "2026-10-14T12:04:36.781338+00:00",
+  "input": "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v3_rounds.csv",
+  "bootstrap_unit": "paired gameweek/round",
+  "stratification": "resample rounds within each test season; preserve observed season sample sizes in pooled estimate",
+  "seed": 42,
+  "bootstrap_replicates": 50000,
+  "paired_rounds": 409,
+  "mean_model_minus_baseline": 20.48940097799511,
+  "median_model_minus_baseline": 16.819999999999993,
+  "model_win_rate": 0.6405867970660146,
+  "stratified_round_bootstrap_95_ci": [
+    15.188577322738384,
+    25.775735941320292
+  ],
+  "bootstrap_replicates_with_nonpositive_mean_delta": 0,
+  "by_season": [
+    {
+      "season_id": "9",
+      "rounds": 139,
+      "mean_delta": 15.45607913669065,
+      "median_delta": 12.235,
+      "win_rate": 0.5899280575539568
+    },
+    {
+      "season_id": "13",
+      "rounds": 132,
+      "mean_delta": 20.459204545454543,
+      "median_delta": 16.162499999999994,
+      "win_rate": 0.6439393939393939
+    },
+    {
+      "season_id": "19",
+      "rounds": 138,
+      "mean_delta": 25.588079710144925,
+      "median_delta": 23.422500000000007,
+      "win_rate": 0.6884057971014492
+    }
+  ],
+  "limitations": [
+    "This estimates uncertainty conditional on the restricted historical candidate pool and reconstructed official player actuals.",
+    "It does not correct missing historical pre-lock prices/availability, unknown coach credits, or transfer malus.",
+    "It compares fresh independent round lineups, not a sequential roster with carried players and transfer constraints."
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-10-13",
+  "phase": "B",
+  "production_changed": false,
+  "feature_family_selection": {
+    "validation_seasons": ["2022-23", "2023-24", "2024-25"],
+    "validation_rows": 57682,
+    "chosen_family": "combined_full",
+    "metrics": {
+      "combined_full": {"weighted_mae": 7.567030, "weighted_rmse": 9.838230, "weighted_bias": -0.170197},
+      "combined_without_opponent": {"weighted_mae": 7.567224, "weighted_rmse": 9.839713, "weighted_bias": -0.159470},
+      "nba_history_plus_opponent": {"weighted_mae": 7.623752, "weighted_rmse": 9.960594, "weighted_bias": -0.578273},
+      "baseline_prev10_mean": {"weighted_mae": 7.775553, "weighted_rmse": 10.131622, "weighted_bias": -0.030701},
+      "pdk_history_plus_opponent": {"weighted_mae": 7.832554, "weighted_rmse": 10.076088, "weighted_bias": 0.267948}
+    },
+    "relative_mae_gain_vs_baseline_pct": 2.6818,
+    "relative_mae_gain_vs_nba_only_pct": 0.7440,
+    "opponent_feature_marginal_mae_gain": 0.000194,
+    "secondary_2025_26_holdout": {
+      "is_globally_untouched": false,
+      "combined_full_mae": 7.563889,
+      "combined_full_rmse": 9.838323,
+      "combined_without_opponent_mae": 7.567716,
+      "nba_history_plus_opponent_mae": 7.628998,
+      "pdk_history_plus_opponent_mae": 7.767623,
+      "baseline_prev10_mean_mae": 7.788633
+    }
+  },
+  "rookie_and_cold_start": {
+    "cohort_source": "feature-family audit; cohorts based on previous valid Dunkest PDK game count, not draft-year rookie identity",
+    "no_prior_pdk_history": {"n": 249, "combined_mae": 5.1360, "baseline_mae": 9.6840},
+    "history_1_to_3": {"n": 736, "combined_mae": 5.0181, "baseline_mae": 5.3502},
+    "history_4_to_10": {"n": 1588, "combined_mae": 5.4456, "baseline_mae": 5.5499},
+    "history_over_10": {"n": 55109, "combined_mae": 7.6732, "baseline_mae": 7.8635},
+    "separate_rookie_prior_audit": {
+      "college_rate_mae": 0.1100,
+      "historical_rate_baseline_mae": 0.1240,
+      "conditional_minutes_mae": 5.84,
+      "position_overall_median_minutes_mae": 7.35,
+      "college_minutes_blend_cap_before": 0.35,
+      "college_minutes_blend_cap_after": 0.15
+    }
+  },
+  "proxy_vs_official_target_common_rows": {
+    "n": 7384,
+    "proxy_trained_mae": 7.5510,
+    "proxy_trained_rmse": 9.8782,
+    "proxy_trained_bias": -0.6783,
+    "official_trained_mae": 7.5651,
+    "official_trained_rmse": 9.8461,
+    "official_trained_bias": -0.1679,
+    "decision": "mixed evidence; keep production target mode unchanged"
+  },
+  "team_win_probability": {
+    "points_only_baseline": {"brier": 0.2066, "log_loss": 0.6014, "accuracy": 0.687},
+    "efficiency_blend_improves_both_validation_scores": false,
+    "roster_strength_proxy_improves_both_validation_scores": false,
+    "platt_calibration_improves_test_scores": false
+  },
+  "complete_lineup_backtest": {
+    "status": "not_ready",
+    "rounds_scanned": 1,
+    "rounds_ready": 0,
+    "player_results_linked": 0,
+    "coach_results_linked": 0,
+    "decision": "no lineup/coach/transfer strategy winner can be declared without authentic pre-match snapshots and fixture-linked official actuals"
+  },
+  "decisions": [
+    "Keep combined PDK plus NBA feature family as a research candidate only.",
+    "Do not prioritize current opponent categorical features; marginal validation gain is negligible.",
+    "Do not switch production target mode based on mixed partial-sample evidence.",
+    "Keep the college-derived rookie-minute prior cap at 15 percent pending stronger validation.",
+    "Keep points-only raw team win probabilities.",
+    "Do not report complete-lineup strategy metrics until required pre-match and post-match evidence is linked."
+  ],
+  "artifact_paths": [
+    "reports/audit/dunkest_phase_b_model_strategy_comparison_20261013_v1.md",
+    "reports/audit/dunkest_phase_b_model_strategy_comparison_20261013_v1.json"
+  ]
+}

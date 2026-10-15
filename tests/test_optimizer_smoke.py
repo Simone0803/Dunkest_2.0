@@ -6,7 +6,8 @@ from dunkest.optimize.milp import optimize_top_k_lineups, validate_solution
 
 
 def _sample_players(n=40):
-    roles = (["G"] * 16 + ["F"] * 16 + ["C"] * 8)[:n]
+    role_block = ["G"] * 16 + ["F"] * 16 + ["C"] * 8
+    roles = (role_block * ((n + len(role_block) - 1) // len(role_block)))[:n]
     return pd.DataFrame(
         {
             "player_name": [f"P{i}" for i in range(n)],
@@ -103,11 +104,201 @@ def test_current_turn_players_are_not_left_on_the_half_value_bench():
     assert not current_turn["slot"].eq("Bench").any()
 
 
-def test_injury_doubt_players_are_removed_even_if_they_project_well():
+def test_whole_gameweek_roster_keeps_first_turn_players_off_the_bench():
+    settings = Settings.from_yaml()
+    settings.budget = 200.0
+    settings.target_dunkest_turn = None
+    players = _sample_players(40)
+    players["dunkest_turn"] = 2
+    players.loc[:5, "dunkest_turn"] = 1
+    players.loc[:5, "expected_pdk"] = 100.0
+    players["expected_min"] = 24.0
+    coaches = pd.DataFrame({
+        "coach": ["HC"], "team": ["T9"], "coach_cr": [7.0],
+        "expected_coach_pdk": [5.0],
+    })
+
+    solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
+
+    first_turn = solution.players.loc[solution.players["dunkest_turn"].eq(1)]
+    assert not first_turn["slot"].eq("Bench").any()
+
+
+def test_whole_gameweek_optimizes_legal_lineups_for_each_player_turn():
+    settings = Settings.from_yaml()
+    settings.budget = 200.0
+    settings.target_dunkest_turn = None
+    players = _sample_players(40)
+    players["dunkest_turn"] = [1 if i % 5 == 0 else 2 if i % 5 in {1, 2, 3} else 3 for i in range(40)]
+    players["expected_min"] = 24.0
+    coaches = pd.DataFrame({
+        "coach": ["HC"], "team": ["T9"], "coach_cr": [7.0],
+        "expected_coach_pdk": [5.0],
+    })
+
+    solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
+
+    assert solution.meta["dynamic_turn_mode"] is True
+    assert solution.module == "dinamico-per-turno"
+    assert solution.meta["turn_lineups"].keys() == {"1", "2", "3"}
+    captain_schedule = solution.meta["captain_schedule"]
+    assert len(captain_schedule) == 1
+    captain_turn, initial_captain = next(iter(captain_schedule.items()))
+    assert solution.captain == initial_captain
+    assert solution.players.set_index("player_name").loc[initial_captain, "dunkest_turn"] == int(captain_turn)
+    assert solution.meta["turn_lineups"][captain_turn]["slots"][initial_captain] == "Captain"
+    assert sum(
+        slot == "Captain"
+        for lineup in solution.meta["turn_lineups"].values()
+        for slot in lineup["slots"].values()
+    ) == 1
+    for turn, lineup in solution.meta["turn_lineups"].items():
+        slots = pd.Series(lineup["slots"], dtype=str)
+        assert int(slots.isin({"Starter", "Captain"}).sum()) == 5
+        assert int(slots.eq("Sixth Man").sum()) == 1
+        assert int(slots.eq("Bench").sum()) == 4
+        assert lineup["module"] in {"2-2-1", "2-1-2", "1-3-1", "3-1-1", "1-2-2"}
+    for name, row in solution.players.set_index("player_name").iterrows():
+        assert row["slot"] == solution.meta["turn_lineups"][str(int(row["dunkest_turn"]))]["slots"][name]
+        own_turn = int(row["dunkest_turn"])
+        own_slot = row["slot"]
+        previous_slot = own_slot
+        for later_turn in (turn for turn in (1, 2, 3) if turn > own_turn):
+            later_slot = solution.meta["turn_lineups"][str(later_turn)]["slots"][name]
+            assert not (previous_slot == "Bench" and later_slot in {"Starter", "Captain", "Sixth Man"})
+            previous_slot = later_slot
+        final_slot = solution.meta["turn_lineups"]["3"]["slots"][name]
+        expected_multiplier = 0.5 + 0.5 * float(own_slot == "Sixth Man" or final_slot in {"Starter", "Captain", "Sixth Man"})
+        expected_multiplier += 0.5 * float(own_slot == "Captain" and final_slot in {"Starter", "Captain", "Sixth Man"})
+        assert row["score_multiplier"] == pytest.approx(expected_multiplier)
+    assert solution.expected_player_pdk == pytest.approx(
+        (solution.players["expected_pdk"] * solution.players["score_multiplier"]).sum()
+    )
+    assert solution.meta["validation"]["valid"] is True
+
+
+def test_dynamic_lineup_validator_rejects_post_game_slot_changes():
+    settings = Settings.from_yaml()
+    settings.budget = 200.0
+    settings.target_dunkest_turn = None
+    players = _sample_players(40)
+    players["dunkest_turn"] = [1 if i % 5 == 0 else 2 if i % 5 in {1, 2, 3} else 3 for i in range(40)]
+    players["expected_min"] = 24.0
+    coaches = pd.DataFrame({
+        "coach": ["HC"], "team": ["T9"], "coach_cr": [7.0],
+        "expected_coach_pdk": [5.0],
+    })
+    solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
+
+    candidates = solution.players.loc[
+        solution.players["slot"].eq("Bench") & solution.players["dunkest_turn"].lt(3)
+    ]
+    player = candidates.iloc[0]
+    name = str(player["player_name"])
+    own_turn = int(player["dunkest_turn"])
+    later_turn = next(turn for turn in (1, 2, 3) if turn > own_turn)
+    lineup = solution.meta["turn_lineups"][str(later_turn)]
+    replacement = next(
+        name for name, slot in lineup["slots"].items()
+        if slot == "Starter" and name != solution.captain
+    )
+    lineup["slots"][name] = "Starter"
+    lineup["slots"][replacement] = "Bench"
+    role_counts = pd.Series({
+        player_name: lineup["roles"][player_name]
+        for player_name, slot in lineup["slots"].items()
+        if slot in {"Starter", "Captain"}
+    }).value_counts().to_dict()
+    lineup["module"] = f"{role_counts.get('G', 0)}-{role_counts.get('F', 0)}-{role_counts.get('C', 0)}"
+
+    with pytest.raises(ValueError, match="promoted after playing in Dunkest turn"):
+        validate_solution(solution, coaches, settings)
+
+
+def test_dynamic_lineup_validator_rejects_captain_change_to_player_who_played():
+    settings = Settings.from_yaml()
+    settings.budget = 200.0
+    settings.target_dunkest_turn = None
+    players = _sample_players(40)
+    players["dunkest_turn"] = [1 if i % 5 == 0 else 2 if i % 5 in {1, 2, 3} else 3 for i in range(40)]
+    players["expected_min"] = 24.0
+    coaches = pd.DataFrame({
+        "coach": ["HC"], "team": ["T9"], "coach_cr": [7.0],
+        "expected_coach_pdk": [5.0],
+    })
+    solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
+    final_lineup = solution.meta["turn_lineups"]["3"]
+    already_played_starter = next(
+        name for name, slot in final_lineup["slots"].items()
+        if slot == "Starter" and solution.players.set_index("player_name").loc[name, "dunkest_turn"] < 3
+    )
+    final_lineup["slots"][already_played_starter] = "Captain"
+
+    with pytest.raises(ValueError, match="captain assignment is inconsistent"):
+        validate_solution(solution, coaches, settings)
+
+
+def test_dynamic_optimizer_returns_three_independently_valid_lineups():
+    settings = Settings.from_yaml()
+    settings.budget = 95.0
+    settings.target_dunkest_turn = None
+    players = _sample_players(60)
+    players["dunkest_turn"] = [1 if i % 5 == 0 else 2 if i % 5 in {1, 2, 3} else 3 for i in range(60)]
+    players["expected_min"] = 24.0
+    coaches = pd.DataFrame({
+        "coach": ["HC0", "HC1", "HC2", "HC3"],
+        "team": ["T0", "T1", "T2", "T3"],
+        "coach_cr": [7.0, 8.0, 9.0, 10.0],
+        "expected_coach_pdk": [5.0, 6.0, 7.0, 8.0],
+    })
+
+    solutions = optimize_top_k_lineups(players, coaches, settings, k=3)
+
+    assert len(solutions) == 3
+    assert len({solution.captain for solution in solutions}) == 3
+    assert len({solution.coach for solution in solutions}) == 3
+    assert [solution.expected_team_pdk for solution in solutions] == sorted(
+        (solution.expected_team_pdk for solution in solutions), reverse=True
+    )
+    rosters = [set(solution.players["player_name"]) for solution in solutions]
+    for solution in solutions:
+        assert solution.meta["validation"]["valid"] is True
+        assert len(solution.players) == 10
+        assert solution.budget_used <= settings.budget
+        assert solution.players["role"].value_counts().to_dict() == {"G": 4, "F": 4, "C": 2}
+        coach_team = coaches.set_index("coach").loc[solution.coach, "team"]
+        assert solution.players.groupby("team").size().get(coach_team, 0) + 1 <= 3
+        assert solution.meta["dynamic_turn_mode"] is True
+        for turn, lineup in solution.meta["turn_lineups"].items():
+            slots = pd.Series(lineup["slots"], dtype=str)
+            assert int(slots.isin({"Starter", "Captain"}).sum()) == 5
+            assert int(slots.eq("Sixth Man").sum()) == 1
+            assert int(slots.eq("Bench").sum()) == 4
+            expected_captains = 1 if turn in solution.meta["captain_schedule"] else 0
+            assert int(slots.eq("Captain").sum()) == expected_captains
+            if turn in solution.meta["captain_schedule"]:
+                assert lineup["slots"][solution.meta["captain_schedule"][turn]] == "Captain"
+    for rank, solution in enumerate(solutions):
+        expected_overlaps = {
+            str(previous_rank + 1): len(rosters[rank] & rosters[previous_rank])
+            for previous_rank in range(rank)
+        }
+        assert solution.meta["overlap_with_prior_ranks"] == expected_overlaps
+        assert solution.overlap_with_previous == (
+            expected_overlaps.get(str(rank)) if rank > 0 else None
+        )
+
+
+def test_injury_doubt_players_remain_candidates_using_availability_adjusted_score():
     settings = Settings.from_yaml()
     settings.budget = 200.0
     players = _sample_players(40)
-    players.loc[0, "expected_pdk"] = 1000.0
+    # This is the expected score after P(play) has already been applied by
+    # predict_players; the optimizer must not apply the probability twice.
+    players.loc[0, "expected_pdk"] = 30.0
+    players.loc[0, "p10"] = 0.0
+    players.loc[0, "p50"] = 0.0
+    players.loc[0, "p90"] = 30.0
     players.loc[0, "p_play"] = 0.5
     players.loc[0, "status"] = "Questionable (50%)"
     coaches = pd.DataFrame({
@@ -117,7 +308,7 @@ def test_injury_doubt_players_are_removed_even_if_they_project_well():
 
     solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
 
-    assert "P0" not in set(solution.players["player_name"])
+    assert "P0" in set(solution.players["player_name"])
 
 
 def test_zero_minute_player_cannot_be_assigned_a_playing_slot():
@@ -306,7 +497,7 @@ def test_top_k_is_ranked_by_configured_optimizer_objective():
     assert objective_values == sorted(objective_values, reverse=True)
 
 
-def test_capital_gain_is_separate_and_uses_finite_difference_shadow_price():
+def test_capital_gain_uses_positive_slate_shadow_value_even_with_slack_budget():
     settings = Settings.from_yaml()
     settings.budget = 200.0  # Slack budget: an extra CR has no current optimizer value.
     players = _sample_players(40)
@@ -319,9 +510,12 @@ def test_capital_gain_is_separate_and_uses_finite_difference_shadow_price():
 
     solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
 
-    assert solution.meta["capital_gain_shadow_price"] == pytest.approx(0.0)
+    assert solution.meta["capital_gain_shadow_price"] > 0.0
+    assert solution.meta["capital_gain_shadow_price_method"] in {
+        "conservative_slate_productivity_proxy", "conservative_slate_productivity_floor"
+    }
     assert solution.meta["expected_budget_gain"] == pytest.approx(5.0)
-    assert solution.meta["future_budget_value_pdk"] == pytest.approx(0.0)
+    assert solution.meta["future_budget_value_pdk"] > 0.0
     assert solution.meta["validation"]["valid"] is True
 
 
@@ -342,6 +536,32 @@ def test_optimizer_accounts_capital_gain_for_all_roster_slots():
         selected["expected_plusvalenza"].sum()
     )
     assert "optimizer_plusvalenza_priority" not in selected
+
+
+def test_plusvalenza_changes_roster_selection_even_when_budget_is_slack():
+    settings = Settings.from_yaml()
+    settings.budget = 200.0
+    players = _sample_players(40)
+    players["cr"] = 8.0
+    players["expected_pdk"] = 20.0
+    players["p10"] = 20.0
+    players["p50"] = 20.0
+    players["p90"] = 20.0
+    players["expected_plusvalenza"] = 0.0
+    players.loc[0, "expected_plusvalenza"] = 1.0
+    coaches = pd.DataFrame({
+        "coach": ["HC"], "team": ["T9"], "coach_cr": [7.0],
+        "expected_coach_pdk": [5.0],
+    })
+
+    solution = optimize_top_k_lineups(players, coaches, settings, k=1)[0]
+
+    assert "P0" in set(solution.players["player_name"])
+    assert solution.meta["capital_gain_shadow_price"] > 0.0
+    assert solution.meta["future_budget_value_pdk"] == pytest.approx(
+        solution.meta["expected_budget_gain"] * solution.meta["capital_gain_shadow_price"]
+    )
+    assert solution.meta["validation"]["valid"] is True
 
 
 def test_tight_budget_gets_positive_empirical_credit_shadow_value():

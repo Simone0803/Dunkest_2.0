@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-10-14T10:09:19.142011+00:00",
+  "dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "label_source": "certified official Dunkest PDK targets",
+  "training_feature_adapter": "history_flags_trends from train-only V1; all features past-only",
+  "model": "ExtraTreesRegressor(n_estimators=220, min_samples_leaf=12, max_features=0.85, random_state=2026)",
+  "test_folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25",
+    "25": "2025-26"
+  },
+  "multi_season_training_policy": "all certified seasons strictly earlier than the test season",
+  "single_season_training_policy": "only the immediately preceding certified season",
+  "2025_26_fold_training_seasons": [
+    "2020-21",
+    "2021-22",
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "2025_26_fold_training_rows": 93766,
+  "lag1_pdk_mismatches": 0,
+  "paired_rows": 76094,
+  "paired_date_clusters": 635,
+  "bootstrap_replicates": 4000,
+  "mae_difference_multi_minus_single_pooled": -0.01597516654258822,
+  "mae_difference_95pct_date_cluster_bootstrap": [
+    -0.02253791233140834,
+    -0.00924053818832871
+  ],
+  "2025_26_single_season_mae": 7.585507690893686,
+  "2025_26_multi_season_mae": 7.557802624337734,
+  "2025_26_mae_difference_multi_minus_single": -0.02770506655595195,
+  "production_changed": false,
+  "holdout_interpretation": "2025/26 labels are used only to evaluate this fold; they do not enter its fit or model selection. The season has been examined by prior project experiments, so it is not claimed globally untouched."
+}

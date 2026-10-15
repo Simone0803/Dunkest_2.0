@@ -16,7 +16,7 @@ MIN_HISTORY_ROWS = 40
 MIN_DRAFT_CLASSES = 4
 COLLEGE_PRIOR_BASE_WEIGHT = 0.20
 COLLEGE_PRIOR_FADE_GAMES = 12.0
-COLLEGE_MINUTES_BASE_WEIGHT = 0.35
+COLLEGE_MINUTES_BASE_WEIGHT = 0.15
 MIN_CV_TRAIN_ROWS = 20
 MIN_CV_VALIDATION_ROWS = 5
 MIN_CV_FOLDS = 2
@@ -233,6 +233,7 @@ def load_college_rookie_priors(path: Path) -> pd.DataFrame:
         "college_cv_mae", "college_baseline_cv_mae",
         "college_projected_minutes_per_game", "college_minutes_prior_weight",
         "college_minutes_cv_mae", "college_minutes_baseline_cv_mae",
+        "college_target_source",
     ]
     if not path.exists():
         warnings.warn(
@@ -258,10 +259,45 @@ def load_college_rookie_priors(path: Path) -> pd.DataFrame:
         )
         return pd.DataFrame(columns=columns)
 
+    raw["player_key"] = raw["player_name"].map(player_key)
+    draft_years = _number(raw, "draft_year")
     target = _number(raw, "nba_pdk_per_min")
+    rookie_minutes = _number(raw, "nba_rookie_minutes")
+    target_source = "nba_boxscore_proxy_pdk_per_min"
+
+    # Prefer verified official Dunkest labels when a reproducible official
+    # rookie-season dataset is available. Do not mix official labels with the
+    # older box-score proxy in a single fit: use one target definition per model.
+    official_path = path.with_name("rookie_official_pdk.csv")
+    if official_path.exists():
+        official = pd.read_csv(official_path)
+        required_official = {
+            "player_key", "draft_year", "official_dunkest_pdk_per_min",
+            "official_dunkest_rookie_minutes",
+        }
+        if required_official.issubset(official.columns):
+            official["player_key"] = official["player_key"].astype(str)
+            official["draft_year"] = pd.to_numeric(official["draft_year"], errors="coerce")
+            if official.duplicated(["player_key", "draft_year"]).any():
+                raise ValueError(f"Duplicate player/draft-year labels in {official_path}.")
+            raw = raw.merge(
+                official[list(required_official)],
+                on=["player_key", "draft_year"],
+                how="left",
+                validate="one_to_one",
+            )
+            official_target = _number(raw, "official_dunkest_pdk_per_min")
+            official_eligible = official_target.notna() & draft_years.notna()
+            if (
+                int(official_eligible.sum()) >= MIN_HISTORY_ROWS
+                and draft_years.loc[official_eligible].nunique() >= MIN_DRAFT_CLASSES
+            ):
+                target = official_target
+                rookie_minutes = _number(raw, "official_dunkest_rookie_minutes")
+                target_source = "official_dunkest_pdk_per_min"
+
     features = _college_features(raw)
     historical = target.notna() & features["college_pdk_per_min"].notna()
-    draft_years = _number(raw, "draft_year")
     eligible = historical & draft_years.notna()
     if int(eligible.sum()) < MIN_HISTORY_ROWS or draft_years.loc[eligible].nunique() < MIN_DRAFT_CLASSES:
         warnings.warn(
@@ -273,8 +309,6 @@ def load_college_rookie_priors(path: Path) -> pd.DataFrame:
             stacklevel=2,
         )
         return pd.DataFrame(columns=columns)
-
-    rookie_minutes = _number(raw, "nba_rookie_minutes")
 
     # Evaluate the NCAA prior on later draft classes only. Feature selection,
     # imputation, scaling, and the baseline are refit inside every fold.
@@ -373,6 +407,7 @@ def load_college_rookie_priors(path: Path) -> pd.DataFrame:
             "college_prior_base_weight": calibrated_base_weight,
             "college_cv_mae": cv_mae,
             "college_baseline_cv_mae": baseline_cv_mae,
+            "college_target_source": target_source,
         }
     )
     result["player_key"] = result["player_name"].map(player_key)

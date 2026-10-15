@@ -1,0 +1,39 @@
+{
+  "audit": "dunkest_calendar_api_endpoint_audit_v1",
+  "purpose": "Read-only endpoint discovery for historical Dunkest matchday-to-NBA-game mapping",
+  "checked_at": "2026-10-12",
+  "public_endpoints": {
+    "game_config": {
+      "url": "https://fantaking-api.dunkest.com/api/v1/games/1/config",
+      "http_status": 200,
+      "league": {"id": 1, "name": "NBA", "display_name": "NBA 2026/27"}
+    },
+    "league_config": {
+      "url": "https://fantaking-api.dunkest.com/api/v1/leagues/1/config",
+      "http_status": 200,
+      "current_schedule_id": 57,
+      "current_competition_id": 57,
+      "current_matchday": {"id": 1858, "number": 1, "num_rounds": 3},
+      "current_round": {"id": 2890, "number": 1, "started_at": "2026-10-20T18:59:00Z"},
+      "matchday_count": 63,
+      "sampled_matchday_fields": ["id", "number", "display_name"]
+    }
+  },
+  "historical_selection_tests": [
+    {"query": "?season_id=19", "http_status": 200, "schedule_id": 57, "matchday_count": 63, "result": "parameter did not select historical season"},
+    {"query": "?schedule_id=19", "http_status": 200, "schedule_id": 57, "matchday_count": 63, "result": "parameter did not select historical season"},
+    {"query": "?competition_id=19", "http_status": 200, "schedule_id": 57, "matchday_count": 63, "result": "parameter did not select historical season"}
+  ],
+  "endpoint_probes": [
+    {"path": "/api/v1/matches/1858/lineups", "http_status": 403, "result": "Did not find a league configs for this competition"},
+    {"path": "/api/v1/schedules/57/matchdays", "http_status": 404, "result": "no usable mapping"},
+    {"path": "/api/v1/competitions/57/matchdays", "http_status": 404, "result": "no usable mapping"}
+  ],
+  "conclusion": "No authoritative historical mapping between Dunkest matchdays and individual NBA games was recovered. Current public config exposes IDs but not dated historical game-level eligibility.",
+  "guardrails": [
+    "No raw data or official PDK values changed",
+    "No reconstructed proxy substituted for official labels",
+    "No model, training target, temporal split, or backtest settings changed",
+    "Endpoint probing was read-only and did not collect account credentials"
+  ]
+}

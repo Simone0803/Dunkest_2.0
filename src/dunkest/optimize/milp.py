@@ -17,9 +17,10 @@ STARTER_MIN_MINUTES = 18.0
 SIXTH_MIN_MINUTES = 12.0
 CAPTAIN_MIN_MINUTES = 22.0
 MIN_STARTER_PLAY_PROB = 0.5
-# A reported injury/availability doubt must never occupy one of the 10 roster
-# slots, even when its conditional projection is high enough for the bench.
-MIN_PLAY_PROB = 1.0
+# Confirmed outs are excluded by unavailable_mask / p_play == 0. Players with
+# uncertain participation remain candidates: expected_pdk already includes
+# P(play), and P10/P50/P90 use the zero-if-absent mixture from uncertainty.py.
+MIN_PLAY_PROB = 0.0
 # Player outcomes share pace and game-script shocks. Use a modest common
 # correlation instead of summing every individual quantile as if correlation
 # were exactly one.
@@ -34,6 +35,26 @@ def _portfolio_spread(values: list[float], correlation: float = TEAM_PLAYER_SCOR
     squares = float(sum(value * value for value in values))
     common = float(sum(values)) ** 2
     return float(((1.0 - rho) * squares + rho * common) ** 0.5)
+
+
+def _binary_variable(problem: pulp.LpProblem, name: str):
+    """Create a binary variable with PuLP's model-owned API when available."""
+    add_variable = getattr(problem, "add_variable", None)
+    if callable(add_variable):
+        return add_variable(name, cat="Binary")
+    # Compatibility for the project's declared PuLP 2.7 minimum.
+    return pulp.LpVariable(name, cat="Binary")
+
+
+def _cbc_solver(*, time_limit: float, relative_gap: float):
+    """Prefer the supported CBC command wrapper, retaining the old bundled fallback."""
+    solver = pulp.COIN_CMD(msg=0, timeLimit=time_limit, gapRel=relative_gap)
+    if solver.available():
+        return solver
+    legacy_solver = getattr(pulp, "PULP_CBC_CMD", None)
+    if legacy_solver is not None:
+        return legacy_solver(msg=0, timeLimit=time_limit, gapRel=relative_gap)
+    return solver
 
 
 def _validate_optimizer_inputs(players: pd.DataFrame, coaches: pd.DataFrame, settings: Settings) -> None:
@@ -148,7 +169,8 @@ def optimize_top_k_lineups(
         raise ValueError("Coach optimizer data contains duplicate coach identities or NBA teams.")
     eligible = ~unavailable_mask(players)
     if "p_play" in players.columns:
-        eligible &= pd.to_numeric(players["p_play"], errors="coerce").fillna(1.0) >= MIN_PLAY_PROB
+        play_probability = pd.to_numeric(players["p_play"], errors="coerce").fillna(0.0)
+        eligible &= play_probability > MIN_PLAY_PROB
     df = players.loc[eligible].copy()
     if "expected_min" not in df.columns:
         df["expected_min"] = 24.0
@@ -171,10 +193,15 @@ def optimize_top_k_lineups(
         ["_sort_coach", "_sort_team", "coach_cr"], kind="stable"
     ).drop(columns=["_sort_coach", "_sort_team"]).reset_index(drop=True)
     coach_reference_cr = float(pd.to_numeric(coach_df["coach_cr"], errors="coerce").min())
-    # Convert future CR into current PDK using the actual finite-difference
-    # value of one additional CR under this slate and objective.
+    # Convert future CR into current PDK. Prefer the slate-specific finite-
+    # difference value of extra budget; integer roster solutions can have flat
+    # regions, though, so that estimate alone can be zero even when plusvalenza
+    # should matter (e.g. a slack-budget lineup or a budget increment that does
+    # not cross a discrete roster switch). Use a conservative, slate-derived
+    # floor equal to 25% of median projected PDK per CR as a future-budget value.
     shadow_price = 0.0
     shadow_price_available = False
+    shadow_price_method = "unavailable"
     delta_cr = float(settings.capital_gain_budget_delta)
     if df["expected_plusvalenza"].abs().sum() > 0.0:
         base_solution, base_diag = _solve_once(
@@ -195,6 +222,24 @@ def optimize_top_k_lineups(
             higher_value = float(higher_diag["objective_value"])
             shadow_price = max(0.0, (higher_value - base_value) / delta_cr)
             shadow_price_available = True
+            shadow_price_method = "finite_difference_budget_value"
+        productivity = (
+            pd.to_numeric(df["expected_pdk"], errors="coerce")
+            / pd.to_numeric(df["cr"], errors="coerce").where(
+                pd.to_numeric(df["cr"], errors="coerce") > 0.0
+            )
+        )
+        productivity = productivity.replace([np.inf, -np.inf], np.nan).dropna()
+        productivity = productivity.loc[productivity > 0.0]
+        if not productivity.empty:
+            fallback_shadow_price = 0.25 * float(productivity.median())
+            if shadow_price < fallback_shadow_price:
+                shadow_price = fallback_shadow_price
+                shadow_price_method = (
+                    "conservative_slate_productivity_floor"
+                    if shadow_price_available else "conservative_slate_productivity_proxy"
+                )
+        shadow_price_available = bool(np.isfinite(shadow_price) and shadow_price > 0.0)
     solutions: list[LineupSolution] = []
     forbidden_player_sets: list[set[int]] = []
     forbidden_captains: set[int] = set()
@@ -226,6 +271,7 @@ def optimize_top_k_lineups(
         sol.meta["capital_gain_shadow_price"] = shadow_price
         sol.meta["budget_shadow_price"] = shadow_price
         sol.meta["budget_shadow_price_available"] = shadow_price_available
+        sol.meta["capital_gain_shadow_price_method"] = shadow_price_method
         sol.meta["capital_gain_budget_delta"] = delta_cr
         coach_index = sol.meta.get("selected_coach_index")
         if coach_index is None or not 0 <= int(coach_index) < len(coach_df):
@@ -249,7 +295,7 @@ def optimize_top_k_lineups(
         # distinct while the market contains feasible alternatives.
         forbidden_coaches.add(int(coach_index))
         captain_idx = sol.meta.get("captain_index")
-        if captain_idx is not None:
+        if settings.optimize_captain and captain_idx is not None:
             forbidden_captains.add(int(captain_idx))
         if solver_diagnostics["status"] != "Optimal":
             # A feasible timeout incumbent is usable, but subsequent solves
@@ -269,6 +315,15 @@ def optimize_top_k_lineups(
             "refusing to present repeated coach recommendations."
         )
     for rank, solution in enumerate(solutions, start=1):
+        selected_indices = set(solution.meta.get("selected_indices", []))
+        overlaps = {
+            str(previous_rank): len(
+                selected_indices & set(previous.meta.get("selected_indices", []))
+            )
+            for previous_rank, previous in enumerate(solutions[:rank - 1], start=1)
+        }
+        solution.meta["overlap_with_prior_ranks"] = overlaps
+        solution.overlap_with_previous = overlaps.get(str(rank - 1)) if rank > 1 else None
         solution.rank = rank
 
     return solutions
@@ -292,34 +347,109 @@ def _solve_once(
     current_coach_key = player_key(current_coach) if current_coach else ""
 
     prob = pulp.LpProblem("DunkestTeamOptimizer", pulp.LpMaximize)
-    x = [pulp.LpVariable(f"x_{i}", cat="Binary") for i in range(n)]
-    starter = [pulp.LpVariable(f"s_{i}", cat="Binary") for i in range(n)]
-    sixth = [pulp.LpVariable(f"x6_{i}", cat="Binary") for i in range(n)]
-    bench = [pulp.LpVariable(f"b_{i}", cat="Binary") for i in range(n)]
-    captain = [pulp.LpVariable(f"c_{i}", cat="Binary") for i in range(n)]
-
-    y = [pulp.LpVariable(f"coach_{j}", cat="Binary") for j in range(m)] if m else []
+    x = [_binary_variable(prob, f"x_{i}") for i in range(n)]
     player_turns = (
         pd.to_numeric(df["dunkest_turn"], errors="coerce")
         if "dunkest_turn" in df.columns else pd.Series(float("nan"), index=df.index)
     )
     target_turn = settings.target_dunkest_turn
+    turn_values = sorted(player_turns.dropna().astype(int).unique().tolist())
+    # A whole-gameweek optimization needs a separate legal lineup for each
+    # Dunkest turn: players can be promoted before their own game, but not
+    # after it starts. A single static slot assignment undervalues later turns.
+    dynamic_turn_mode = (
+        target_turn is None and len(turn_values) > 1 and player_turns.notna().all()
+    )
+    if dynamic_turn_mode:
+        player_turn_by_index = {i: int(player_turns.loc[i]) for i in range(n)}
+        starter_by_turn = {
+            (i, turn): _binary_variable(prob, f"s_{i}_t{turn}")
+            for i in range(n) for turn in turn_values
+        }
+        sixth_by_turn = {
+            (i, turn): _binary_variable(prob, f"x6_{i}_t{turn}")
+            for i in range(n) for turn in turn_values
+        }
+        bench_by_turn = {
+            (i, turn): _binary_variable(prob, f"b_{i}_t{turn}")
+            for i in range(n) for turn in turn_values
+        }
+        # The solution's displayed slot is the slot assigned when that player
+        # actually scores, not a fictitious fixed lineup across the full week.
+        starter = [starter_by_turn[(i, player_turn_by_index[i])] for i in range(n)]
+        sixth = [sixth_by_turn[(i, player_turn_by_index[i])] for i in range(n)]
+        bench = [bench_by_turn[(i, player_turn_by_index[i])] for i in range(n)]
+    else:
+        player_turn_by_index = {}
+        starter_by_turn = {}
+        sixth_by_turn = {}
+        bench_by_turn = {}
+        starter = [_binary_variable(prob, f"s_{i}") for i in range(n)]
+        sixth = [_binary_variable(prob, f"x6_{i}") for i in range(n)]
+        bench = [_binary_variable(prob, f"b_{i}") for i in range(n)]
+    captain_by_turn = (
+        {
+            (i, turn): _binary_variable(prob, f"c_{i}_t{turn}")
+            for i in range(n) for turn in turn_values
+        }
+        if dynamic_turn_mode else {}
+    )
+    captain = (
+        [captain_by_turn[(i, turn_values[0])] for i in range(n)]
+        if dynamic_turn_mode
+        else [_binary_variable(prob, f"c_{i}") for i in range(n)]
+    )
+    full_score = (
+        [_binary_variable(prob, f"full_score_{i}") for i in range(n)]
+        if dynamic_turn_mode else []
+    )
+    active_at_end = (
+        [_binary_variable(prob, f"active_at_end_{i}") for i in range(n)]
+        if dynamic_turn_mode else []
+    )
+    captain_bonus = (
+        [_binary_variable(prob, f"captain_bonus_{i}") for i in range(n)]
+        if dynamic_turn_mode else []
+    )
+    y = [_binary_variable(prob, f"coach_{j}") for j in range(m)] if m else []
 
     for i in range(n):
-        prob += starter[i] + sixth[i] + bench[i] == x[i]
-        prob += captain[i] <= starter[i]
-        if target_turn is not None and pd.notna(player_turns.loc[i]):
-            if int(player_turns.loc[i]) == int(target_turn):
-                # Dunkest's Turno guidance: players playing now must be put
-                # on the field before tip-off. Otherwise they cannot be moved
-                # from the bench after their game to replace a later player.
-                # The sixth-man slot is full-value under the current rules.
-                prob += bench[i] == 0
-        if i in forbidden_captains:
-            # Top-k options must offer different captain choices. The captain
-            # remains a starter, and each subsequent MILP solve excludes all
-            # previously used captains while optimizing the full objective.
-            prob += captain[i] == 0
+        if dynamic_turn_mode:
+            own_turn = player_turn_by_index[i]
+            # One fixed Dunkest team for the entire gameweek: each selected
+            # player's slot is identical across turns. Only captain changes
+            # after observing results are manual, not optimized in advance.
+            for turn in turn_values:
+                prob += (
+                    starter_by_turn[(i, turn)]
+                    + sixth_by_turn[(i, turn)]
+                    + bench_by_turn[(i, turn)] == x[i]
+                )
+                prob += starter_by_turn[(i, turn)] == starter_by_turn[(i, own_turn)]
+                prob += sixth_by_turn[(i, turn)] == sixth_by_turn[(i, own_turn)]
+                prob += bench_by_turn[(i, turn)] == bench_by_turn[(i, own_turn)]
+        else:
+            prob += starter[i] + sixth[i] + bench[i] == x[i]
+        if dynamic_turn_mode:
+            captain_min = pd.to_numeric(df.loc[i, "expected_min"], errors="coerce")
+            for turn in turn_values:
+                prob += captain_by_turn[(i, turn)] <= starter_by_turn[(i, turn)]
+                # Optimize exactly one initial captain (first Dunkest turn).
+                # Later captain changes are deliberately left to the user after
+                # observing results; they are not preassigned by the solver.
+                if (
+                    not settings.optimize_captain
+                    or turn != player_turn_by_index[i]
+                    or pd.isna(captain_min)
+                    or float(captain_min) < CAPTAIN_MIN_MINUTES
+                ):
+                    prob += captain_by_turn[(i, turn)] == 0
+            if settings.optimize_captain and i in forbidden_captains:
+                prob += captain_by_turn[(i, player_turn_by_index[i])] == 0
+        else:
+            prob += captain[i] <= starter[i]
+            if not settings.optimize_captain or i in forbidden_captains:
+                prob += captain[i] == 0
         emin_value = pd.to_numeric(df.loc[i, "expected_min"], errors="coerce")
         emin = 0.0 if pd.isna(emin_value) else float(emin_value)
         p_play = float(pd.to_numeric(df.loc[i, "p_play"], errors="coerce") if "p_play" in df.columns else 1.0)
@@ -329,28 +459,84 @@ def _solve_once(
             prob += starter[i] == 0
         if emin < SIXTH_MIN_MINUTES or p_play < MIN_STARTER_PLAY_PROB:
             prob += sixth[i] == 0
-        if emin < CAPTAIN_MIN_MINUTES:
+        if not dynamic_turn_mode and emin < CAPTAIN_MIN_MINUTES:
             prob += captain[i] == 0
+        if dynamic_turn_mode:
+            final_turn = turn_values[-1]
+            own_turn = player_turn_by_index[i]
+            # Full credit applies to a player still on the field at the end,
+            # or to the sixth man selected for their game even if later benched.
+            prob += active_at_end[i] >= starter_by_turn[(i, final_turn)]
+            prob += active_at_end[i] >= sixth_by_turn[(i, final_turn)]
+            prob += active_at_end[i] <= (
+                starter_by_turn[(i, final_turn)] + sixth_by_turn[(i, final_turn)]
+            )
+            prob += full_score[i] >= active_at_end[i]
+            prob += full_score[i] >= sixth_by_turn[(i, own_turn)]
+            prob += full_score[i] <= (
+                active_at_end[i]
+                + sixth_by_turn[(i, own_turn)]
+            )
+            # Captain's +50% is retained only while that player remains on the
+            # field at the end of the gameweek.
+            prob += captain_bonus[i] <= captain_by_turn[(i, own_turn)]
+            prob += captain_bonus[i] <= active_at_end[i]
+            prob += captain_bonus[i] >= captain_by_turn[(i, own_turn)] + active_at_end[i] - 1
 
     prob += pulp.lpSum(x) == rules.total_players
     prob += pulp.lpSum(x[i] for i in range(n) if df.loc[i, "role"] == "G") == rules.guards
     prob += pulp.lpSum(x[i] for i in range(n) if df.loc[i, "role"] == "F") == rules.forwards
     prob += pulp.lpSum(x[i] for i in range(n) if df.loc[i, "role"] == "C") == rules.centers
-    prob += pulp.lpSum(starter) == rules.starters
-    prob += pulp.lpSum(sixth) == rules.sixth_man
-    prob += pulp.lpSum(bench) == rules.bench
-    prob += pulp.lpSum(captain) == rules.captains
+    if dynamic_turn_mode:
+        for turn in turn_values:
+            prob += pulp.lpSum(captain_by_turn[(i, turn)] for i in range(n)) <= (
+                rules.captains if settings.optimize_captain else 0
+            )
+        prob += pulp.lpSum(captain_by_turn.values()) == (
+            rules.captains if settings.optimize_captain else 0
+        )
+    else:
+        prob += pulp.lpSum(captain) == (rules.captains if settings.optimize_captain else 0)
 
-    form_vars = {
-        (g, f, c): pulp.LpVariable(f"form_{g}_{f}_{c}", cat="Binary") for g, f, c in FORMATIONS
-    }
-    prob += pulp.lpSum(form_vars.values()) == 1
-    starters_g = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "G")
-    starters_f = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "F")
-    starters_c = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "C")
-    prob += starters_g == pulp.lpSum(g * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
-    prob += starters_f == pulp.lpSum(f * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
-    prob += starters_c == pulp.lpSum(c * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+    form_vars_by_turn = {}
+    if dynamic_turn_mode:
+        for turn in turn_values:
+            prob += pulp.lpSum(starter_by_turn[(i, turn)] for i in range(n)) == rules.starters
+            prob += pulp.lpSum(sixth_by_turn[(i, turn)] for i in range(n)) == rules.sixth_man
+            prob += pulp.lpSum(bench_by_turn[(i, turn)] for i in range(n)) == rules.bench
+            turn_form_vars = {
+                (g, f, c): _binary_variable(prob, f"form_t{turn}_{g}_{f}_{c}")
+                for g, f, c in FORMATIONS
+            }
+            form_vars_by_turn[turn] = turn_form_vars
+            prob += pulp.lpSum(turn_form_vars.values()) == 1
+            starters_g = pulp.lpSum(
+                starter_by_turn[(i, turn)] for i in range(n) if df.loc[i, "role"] == "G"
+            )
+            starters_f = pulp.lpSum(
+                starter_by_turn[(i, turn)] for i in range(n) if df.loc[i, "role"] == "F"
+            )
+            starters_c = pulp.lpSum(
+                starter_by_turn[(i, turn)] for i in range(n) if df.loc[i, "role"] == "C"
+            )
+            prob += starters_g == pulp.lpSum(g * turn_form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+            prob += starters_f == pulp.lpSum(f * turn_form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+            prob += starters_c == pulp.lpSum(c * turn_form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+        form_vars = {}
+    else:
+        prob += pulp.lpSum(starter) == rules.starters
+        prob += pulp.lpSum(sixth) == rules.sixth_man
+        prob += pulp.lpSum(bench) == rules.bench
+        form_vars = {
+            (g, f, c): _binary_variable(prob, f"form_{g}_{f}_{c}") for g, f, c in FORMATIONS
+        }
+        prob += pulp.lpSum(form_vars.values()) == 1
+        starters_g = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "G")
+        starters_f = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "F")
+        starters_c = pulp.lpSum(starter[i] for i in range(n) if df.loc[i, "role"] == "C")
+        prob += starters_g == pulp.lpSum(g * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+        prob += starters_f == pulp.lpSum(f * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
+        prob += starters_c == pulp.lpSum(c * form_vars[(g, f, c)] for g, f, c in FORMATIONS)
 
     # Budget
     player_cost = pulp.lpSum(x[i] * float(df.loc[i, "cr"]) for i in range(n))
@@ -385,12 +571,19 @@ def _solve_once(
         p90 = float(df.loc[i].get("p90", ep))
         if settings.optimizer_objective == "risk_adjusted":
             ep = ep - settings.risk_lambda * (p90 - p10)
-        mult = (
-            rules.starter_multiplier * starter[i]
-            + rules.sixth_man_multiplier * sixth[i]
-            + rules.bench_multiplier * bench[i]
-            + (rules.captain_multiplier - rules.starter_multiplier) * captain[i]
-        )
+        if dynamic_turn_mode:
+            mult = (
+                rules.bench_multiplier * x[i]
+                + (rules.starter_multiplier - rules.bench_multiplier) * full_score[i]
+                + (rules.captain_multiplier - rules.starter_multiplier) * captain_bonus[i]
+            )
+        else:
+            mult = (
+                rules.starter_multiplier * starter[i]
+                + rules.sixth_man_multiplier * sixth[i]
+                + rules.bench_multiplier * bench[i]
+                + (rules.captain_multiplier - rules.starter_multiplier) * captain[i]
+            )
         is_new = 1 if current_set and player_key(df.loc[i, "player_name"]) not in current_set else 0
         malus = settings.transfer_penalty * is_new
         objective_terms.append(mult * ep - malus * x[i])
@@ -416,10 +609,9 @@ def _solve_once(
 
     prob += pulp.lpSum(objective_terms)
     prob.solve(
-        pulp.PULP_CBC_CMD(
-            msg=0,
-            timeLimit=settings.optimizer_time_limit_seconds,
-            gapRel=settings.optimizer_relative_gap,
+        _cbc_solver(
+            time_limit=settings.optimizer_time_limit_seconds,
+            relative_gap=settings.optimizer_relative_gap,
         )
     )
     solver_diagnostics = {
@@ -446,14 +638,25 @@ def _solve_once(
     sel_df = df.loc[sel].copy()
     statuses = []
     starter_roles: dict[int, str] = {}
-    cap_name = ""
+    cap_name = (
+        str(df.loc[next(
+            i for i in sel for turn in turn_values
+            if pulp.value(captain_by_turn[(i, turn)]) > 0.5
+        ), "player_name"])
+        if dynamic_turn_mode and settings.optimize_captain else ""
+    )
     for i in sel:
         role = df.loc[i, "role"]
         if pulp.value(starter[i]) > 0.5:
             starter_roles[i] = role
-            if pulp.value(captain[i]) > 0.5:
+            own_turn_captain = (
+                pulp.value(captain_by_turn[(i, player_turn_by_index[i])]) > 0.5
+                if dynamic_turn_mode else pulp.value(captain[i]) > 0.5
+            )
+            if own_turn_captain and settings.optimize_captain:
                 statuses.append("Captain")
-                cap_name = df.loc[i, "player_name"]
+                if not dynamic_turn_mode:
+                    cap_name = str(df.loc[i, "player_name"])
             else:
                 statuses.append("Starter")
         elif pulp.value(sixth[i]) > 0.5:
@@ -461,6 +664,15 @@ def _solve_once(
         else:
             statuses.append("Bench")
     sel_df["slot"] = statuses
+    if dynamic_turn_mode:
+        sel_df["score_multiplier"] = [
+            float(
+                rules.bench_multiplier
+                + (rules.starter_multiplier - rules.bench_multiplier) * pulp.value(full_score[i])
+                + (rules.captain_multiplier - rules.starter_multiplier) * pulp.value(captain_bonus[i])
+            )
+            for i in sel
+        ]
 
     coach_name = ""
     coach_ep = 0.0
@@ -489,11 +701,14 @@ def _solve_once(
         p10 = float(df.loc[i].get("p10", ep))
         p50 = float(df.loc[i].get("p50", ep))
         p90 = float(df.loc[i].get("p90", ep))
-        mult = player_contribution_multiplier(
-            is_starter=pulp.value(starter[i]) > 0.5,
-            is_sixth=pulp.value(sixth[i]) > 0.5,
-            is_captain=pulp.value(captain[i]) > 0.5,
-            rules=rules,
+        mult = (
+            float(sel_df.iloc[sel.index(i)]["score_multiplier"])
+            if dynamic_turn_mode else player_contribution_multiplier(
+                is_starter=pulp.value(starter[i]) > 0.5,
+                is_sixth=pulp.value(sixth[i]) > 0.5,
+                is_captain=pulp.value(captain[i]) > 0.5,
+                rules=rules,
+            )
         )
         player_ep += ep * mult
         p50_sum += p50 * mult
@@ -510,6 +725,47 @@ def _solve_once(
     team_p50 = p50_sum + coach_p50 - num_trans * settings.transfer_penalty
     team_p10 = team_p50 - _portfolio_spread(lower_spreads)
     team_p90 = team_p50 + _portfolio_spread(upper_spreads)
+    if dynamic_turn_mode:
+        turn_lineups = {}
+        for turn in turn_values:
+            slots_for_turn = {}
+            roles_for_turn = {}
+            for i in sel:
+                if pulp.value(starter_by_turn[(i, turn)]) > 0.5:
+                    slot = "Captain" if pulp.value(captain_by_turn[(i, turn)]) > 0.5 else "Starter"
+                elif pulp.value(sixth_by_turn[(i, turn)]) > 0.5:
+                    slot = "Sixth Man"
+                else:
+                    slot = "Bench"
+                name = str(df.loc[i, "player_name"])
+                slots_for_turn[name] = slot
+                roles_for_turn[name] = str(df.loc[i, "role"])
+            selected_form = next(
+                (f"{g}-{f}-{c}" for (g, f, c), var in form_vars_by_turn[turn].items()
+                 if pulp.value(var) > 0.5),
+                "",
+            )
+            turn_lineups[str(turn)] = {
+                "slots": slots_for_turn,
+                "roles": roles_for_turn,
+                "module": selected_form,
+            }
+        solution_module = "dinamico-per-turno"
+        captain_schedule = (
+            {
+                str(turn): str(df.loc[next(
+                    i for i in sel if pulp.value(captain_by_turn[(i, turn)]) > 0.5
+                ), "player_name"])
+                for turn in turn_values
+                if any(pulp.value(captain_by_turn[(i, turn)]) > 0.5 for i in sel)
+            }
+            if settings.optimize_captain else {}
+        )
+    else:
+        turn_lineups = {}
+        captain_schedule = {}
+        solution_module = _pick_module(starter_roles)
+
     solution = LineupSolution(
         rank=0,
         expected_team_pdk=player_ep + coach_ep - num_trans * settings.transfer_penalty,
@@ -518,7 +774,7 @@ def _solve_once(
         budget_used=budget_used,
         captain=cap_name,
         coach=coach_name,
-        module=_pick_module(starter_roles),
+        module=solution_module,
         num_transfers=num_trans,
         players=sel_df,
         p10_team=team_p10,
@@ -529,8 +785,12 @@ def _solve_once(
         meta={
             "selected_indices": list(sel),
             "selected_coach_index": int(j_sel) if m else None,
-            "captain_index": next(
-                (i for i in sel if pulp.value(captain[i]) > 0.5), None
+            "captain_index": (
+                next((i for i in sel for turn in turn_values
+                      if pulp.value(captain_by_turn[(i, turn)]) > 0.5), None)
+                if dynamic_turn_mode else next(
+                    (i for i in sel if pulp.value(captain[i]) > 0.5), None
+                )
             ),
             "solver_objective_value": solver_diagnostics["objective_value"],
             "expected_budget_gain": float(pd.to_numeric(sel_df["expected_plusvalenza"], errors="coerce").fillna(0.0).sum()),
@@ -538,6 +798,11 @@ def _solve_once(
             "capital_gain_shadow_price": float(capital_gain_shadow_price),
             "coach_matchup_available": coach_matchup_available,
             "initial_dunkest_turn": target_turn,
+            "dynamic_turn_mode": bool(dynamic_turn_mode),
+            "turn_lineups": turn_lineups,
+            "turn_modules": {turn: values["module"] for turn, values in turn_lineups.items()},
+            "captain_schedule": captain_schedule,
+            "captain_management": "optimized" if settings.optimize_captain else "manual",
         },
     )
     validate_solution(
@@ -578,21 +843,115 @@ def validate_solution(
         if int(roles.eq(role).sum()) != count:
             errors.append(f"invalid {role} count")
     slots = selected["slot"].astype(str)
-    if int(slots.isin({"Starter", "Captain"}).sum()) != rules.starters:
-        errors.append("invalid starter count")
-    if int(slots.eq("Sixth Man").sum()) != rules.sixth_man:
-        errors.append("invalid sixth-man count")
-    if int(slots.eq("Bench").sum()) != rules.bench:
-        errors.append("invalid bench count")
+    dynamic_turn_mode = bool(solution.meta.get("dynamic_turn_mode", False))
     captains = selected.loc[slots.eq("Captain"), "player_name"].astype(str).tolist()
-    if len(captains) != rules.captains or captains != [solution.captain]:
-        errors.append("captain slot and captain field disagree")
-    if solution.module not in {f"{g}-{f}-{c}" for g, f, c in FORMATIONS}:
-        errors.append(f"invalid formation {solution.module!r}")
-    starter_roles = roles.loc[slots.isin({"Starter", "Captain"})].value_counts().to_dict()
-    expected_module = f"{starter_roles.get('G', 0)}-{starter_roles.get('F', 0)}-{starter_roles.get('C', 0)}"
-    if solution.module != expected_module:
-        errors.append("reported module does not match starter positions")
+    if not dynamic_turn_mode:
+        expected_captains = rules.captains if settings.optimize_captain else 0
+        if len(captains) != expected_captains:
+            errors.append("captain slot count disagrees with captain-management mode")
+        if settings.optimize_captain and captains != [solution.captain]:
+            errors.append("captain slot and captain field disagree")
+        if not settings.optimize_captain and solution.captain:
+            errors.append("manual captain mode must not assign a captain")
+    valid_modules = {f"{g}-{f}-{c}" for g, f, c in FORMATIONS}
+    if not dynamic_turn_mode:
+        if int(slots.isin({"Starter", "Captain"}).sum()) != rules.starters:
+            errors.append("invalid starter count")
+        if int(slots.eq("Sixth Man").sum()) != rules.sixth_man:
+            errors.append("invalid sixth-man count")
+        if int(slots.eq("Bench").sum()) != rules.bench:
+            errors.append("invalid bench count")
+        if solution.module not in valid_modules:
+            errors.append(f"invalid formation {solution.module!r}")
+        starter_roles = roles.loc[slots.isin({"Starter", "Captain"})].value_counts().to_dict()
+        expected_module = f"{starter_roles.get('G', 0)}-{starter_roles.get('F', 0)}-{starter_roles.get('C', 0)}"
+        if solution.module != expected_module:
+            errors.append("reported module does not match starter positions")
+    else:
+        if solution.module != "dinamico-per-turno":
+            errors.append("dynamic lineup is missing its dynamic module marker")
+        turn_lineups = solution.meta.get("turn_lineups", {})
+        selected_names = set(selected["player_name"].astype(str))
+        selected_roles = selected.assign(
+            _name=selected["player_name"].astype(str),
+            _role=roles.astype(str),
+        ).set_index("_name")["_role"].to_dict()
+        selected_turns = (
+            dict(zip(
+                selected["player_name"].astype(str),
+                pd.to_numeric(selected["dunkest_turn"], errors="coerce").astype(int),
+            ))
+            if "dunkest_turn" in selected else {}
+        )
+        if not turn_lineups:
+            errors.append("dynamic lineup has no per-turn assignments")
+        for turn, lineup in turn_lineups.items():
+            turn_slots = lineup.get("slots", {})
+            if set(turn_slots) != selected_names:
+                errors.append(f"turn {turn}: dynamic lineup does not cover the selected roster")
+                continue
+            turn_slot_values = pd.Series(turn_slots, dtype=str)
+            if int(turn_slot_values.isin({"Starter", "Captain"}).sum()) != rules.starters:
+                errors.append(f"turn {turn}: invalid starter count")
+            if int(turn_slot_values.eq("Sixth Man").sum()) != rules.sixth_man:
+                errors.append(f"turn {turn}: invalid sixth-man count")
+            if int(turn_slot_values.eq("Bench").sum()) != rules.bench:
+                errors.append(f"turn {turn}: invalid bench count")
+            captain_turns = set(solution.meta.get("captain_schedule", {}).keys())
+            expected_captains = (
+                rules.captains
+                if settings.optimize_captain and str(turn) in captain_turns
+                else 0
+            )
+            if int(turn_slot_values.eq("Captain").sum()) != expected_captains:
+                errors.append(f"turn {turn}: captain assignment is inconsistent")
+            module = lineup.get("module", "")
+            if module not in valid_modules:
+                errors.append(f"turn {turn}: invalid formation {module!r}")
+            else:
+                starter_roles = pd.Series({name: selected_roles[name] for name, slot in turn_slots.items()
+                                           if slot in {"Starter", "Captain"}}).value_counts().to_dict()
+                expected_module = f"{starter_roles.get('G', 0)}-{starter_roles.get('F', 0)}-{starter_roles.get('C', 0)}"
+                if module != expected_module:
+                    errors.append(f"turn {turn}: formation does not match starter positions")
+        # Independently check legal post-game substitutions: a player who was
+        # already on the bench cannot be promoted after their game. An active
+        # player may be demoted, which affects the multiplier computed below.
+        ordered_turns = sorted((int(turn), lineup) for turn, lineup in turn_lineups.items())
+        final_turn = max((turn for turn, _ in ordered_turns), default=None)
+        if settings.optimize_captain:
+            previous_captain = None
+            for turn_index, (turn, lineup) in enumerate(ordered_turns):
+                current_captains = [
+                    name for name, slot in lineup.get("slots", {}).items() if slot == "Captain"
+                ]
+                current_captain = current_captains[0] if len(current_captains) == 1 else None
+                recorded_captain = solution.meta.get("captain_schedule", {}).get(str(turn))
+                if recorded_captain != current_captain:
+                    errors.append(f"turn {turn}: captain schedule does not match lineup")
+                if current_captain is not None and current_captain != solution.captain:
+                    errors.append("captain field does not match the optimized initial captain")
+                if current_captain is not None and selected_turns.get(current_captain) != turn:
+                    errors.append("captain must be assigned on their own game turn")
+                previous_captain = current_captain
+            if sum(
+                1 for _, lineup in ordered_turns
+                for slot in lineup.get("slots", {}).values() if slot == "Captain"
+            ) != (rules.captains if settings.optimize_captain else 0):
+                errors.append("initial captain must be assigned exactly once across the gameweek")
+        for name, own_turn in selected_turns.items():
+            own_lineup = turn_lineups.get(str(own_turn), {})
+            own_slot = own_lineup.get("slots", {}).get(name)
+            if str(selected.loc[selected["player_name"].astype(str).eq(name), "slot"].iloc[0]) != own_slot:
+                errors.append(f"player {name}: reported slot does not match their game-turn lineup")
+            previous_slot = own_slot
+            for turn, lineup in ordered_turns:
+                if turn <= own_turn:
+                    continue
+                later_slot = lineup.get("slots", {}).get(name)
+                if previous_slot == "Bench" and later_slot in {"Starter", "Captain", "Sixth Man"}:
+                    errors.append(f"player {name}: promoted after playing in Dunkest turn {own_turn}")
+                previous_slot = later_slot
     player_team_counts = selected.assign(
         _team=selected["team"].astype(str).str.strip().str.upper()
     ).groupby("_team").size()
@@ -620,12 +979,35 @@ def validate_solution(
     raw_player_score = 0.0
     for _, player in selected.iterrows():
         slot = str(player["slot"])
-        multiplier = player_contribution_multiplier(
-            is_starter=slot in {"Starter", "Captain"},
-            is_sixth=slot == "Sixth Man",
-            is_captain=slot == "Captain",
-            rules=rules,
+        multiplier = (
+            float(player["score_multiplier"])
+            if dynamic_turn_mode and "score_multiplier" in selected
+            else player_contribution_multiplier(
+                is_starter=slot in {"Starter", "Captain"},
+                is_sixth=slot == "Sixth Man",
+                is_captain=slot == "Captain",
+                rules=rules,
+            )
         )
+        if dynamic_turn_mode:
+            own_turn = selected_turns.get(str(player["player_name"]))
+            own_slot = turn_lineups.get(str(own_turn), {}).get("slots", {}).get(str(player["player_name"]))
+            final_slot = (
+                turn_lineups.get(str(final_turn), {}).get("slots", {}).get(str(player["player_name"]))
+                if final_turn is not None else None
+            )
+            is_sixth_at_game = own_slot == "Sixth Man"
+            remains_active = final_slot in {"Starter", "Captain", "Sixth Man"}
+            was_captain = own_slot == "Captain"
+            expected_multiplier = (
+                rules.bench_multiplier
+                + (rules.starter_multiplier - rules.bench_multiplier)
+                * float(is_sixth_at_game or remains_active)
+                + (rules.captain_multiplier - rules.starter_multiplier)
+                * float(was_captain and remains_active)
+            )
+            if abs(multiplier - expected_multiplier) > 1e-6:
+                errors.append(f"player {player['player_name']}: score multiplier disagrees with turn substitutions")
         raw_player_score += float(player["expected_pdk"]) * multiplier
     if abs(raw_player_score - solution.expected_player_pdk) > 1e-6:
         errors.append("reported player score does not match slots and multipliers")
@@ -658,8 +1040,12 @@ def validate_solution(
                     float(player.get("p90", score)) - float(player.get("p10", score))
                 )
             slot = str(player["slot"])
-            multiplier = player_contribution_multiplier(
-                slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain", rules
+            multiplier = (
+                float(player["score_multiplier"])
+                if dynamic_turn_mode and "score_multiplier" in selected
+                else player_contribution_multiplier(
+                    slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain", rules
+                )
             )
             recomputed_objective += score * multiplier
             gain = pd.to_numeric(player.get("expected_plusvalenza", 0.0), errors="coerce")

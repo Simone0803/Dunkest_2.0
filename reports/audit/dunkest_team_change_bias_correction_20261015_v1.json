@@ -1,0 +1,343 @@
+{
+  "created_utc": "2026-10-15T07:36:10.876705+00:00",
+  "predictions": "reports/audit/dunkest_production_trainer_walk_forward_20261015_v3_predictions.csv",
+  "model_metadata": "reports/audit/dunkest_production_trainer_walk_forward_20261015_v3.json",
+  "unmatched_rows": 0,
+  "corrections_by_outer_fold_pdk": {
+    "2022-23": 0.13646688499595458,
+    "2023-24": -0.053200345396334066,
+    "2024-25": 0.011007470130675904
+  },
+  "metrics": [
+    {
+      "season": "2022-23",
+      "cohort": "all",
+      "version": "uncorrected",
+      "n": 19165,
+      "mae": 7.5600216163724605,
+      "rmse": 9.815934182890292,
+      "bias_pred_minus_actual": -0.1332310587399477
+    },
+    {
+      "season": "2022-23",
+      "cohort": "all",
+      "version": "corrected",
+      "n": 19165,
+      "mae": 7.560171149614563,
+      "rmse": 9.815984387910923,
+      "bias_pred_minus_actual": -0.13208463721715363
+    },
+    {
+      "season": "2022-23",
+      "cohort": "team_changed",
+      "version": "uncorrected",
+      "n": 161,
+      "mae": 7.208136960334481,
+      "rmse": 8.868742166044663,
+      "bias_pred_minus_actual": 0.3616350034803483
+    },
+    {
+      "season": "2022-23",
+      "cohort": "team_changed",
+      "version": "corrected",
+      "n": 161,
+      "mae": 7.225936988812215,
+      "rmse": 8.875354259033271,
+      "bias_pred_minus_actual": 0.49810188847630266
+    },
+    {
+      "season": "2022-23",
+      "cohort": "no_team_change",
+      "version": "uncorrected",
+      "n": 19004,
+      "mae": 7.56300274821955,
+      "rmse": 9.823568566441962,
+      "bias_pred_minus_actual": -0.1374235148553691
+    },
+    {
+      "season": "2022-23",
+      "cohort": "no_team_change",
+      "version": "corrected",
+      "n": 19004,
+      "mae": 7.56300274821955,
+      "rmse": 9.823568566441962,
+      "bias_pred_minus_actual": -0.1374235148553691
+    },
+    {
+      "season": "2022-23",
+      "cohort": "low_history_le_5",
+      "version": "uncorrected",
+      "n": 456,
+      "mae": 5.43361763814554,
+      "rmse": 7.449700492584002,
+      "bias_pred_minus_actual": -0.2771364968393215
+    },
+    {
+      "season": "2022-23",
+      "cohort": "low_history_le_5",
+      "version": "corrected",
+      "n": 456,
+      "mae": 5.432719829691619,
+      "rmse": 7.449182053322997,
+      "bias_pred_minus_actual": -0.2762386883854007
+    },
+    {
+      "season": "2023-24",
+      "cohort": "all",
+      "version": "uncorrected",
+      "n": 18927,
+      "mae": 7.534475160531811,
+      "rmse": 9.795786542834707,
+      "bias_pred_minus_actual": -0.22580779428664996
+    },
+    {
+      "season": "2023-24",
+      "cohort": "all",
+      "version": "corrected",
+      "n": 18927,
+      "mae": 7.534309322291287,
+      "rmse": 9.795752876269697,
+      "bias_pred_minus_actual": -0.22638963353729938
+    },
+    {
+      "season": "2023-24",
+      "cohort": "team_changed",
+      "version": "uncorrected",
+      "n": 207,
+      "mae": 7.040068961041679,
+      "rmse": 8.908877477776544,
+      "bias_pred_minus_actual": 0.5934060686030408
+    },
+    {
+      "season": "2023-24",
+      "cohort": "team_changed",
+      "version": "corrected",
+      "n": 207,
+      "mae": 7.024905577571226,
+      "rmse": 8.905492090567737,
+      "bias_pred_minus_actual": 0.5402057232067068
+    },
+    {
+      "season": "2023-24",
+      "cohort": "no_team_change",
+      "version": "uncorrected",
+      "n": 18720,
+      "mae": 7.53994215216079,
+      "rmse": 9.80514527004721,
+      "bias_pred_minus_actual": -0.23486640911668022
+    },
+    {
+      "season": "2023-24",
+      "cohort": "no_team_change",
+      "version": "corrected",
+      "n": 18720,
+      "mae": 7.53994215216079,
+      "rmse": 9.80514527004721,
+      "bias_pred_minus_actual": -0.23486640911668022
+    },
+    {
+      "season": "2023-24",
+      "cohort": "low_history_le_5",
+      "version": "uncorrected",
+      "n": 518,
+      "mae": 5.347284712601242,
+      "rmse": 7.240631528273551,
+      "bias_pred_minus_actual": 0.11825210988202633
+    },
+    {
+      "season": "2023-24",
+      "cohort": "low_history_le_5",
+      "version": "corrected",
+      "n": 518,
+      "mae": 5.34707930586226,
+      "rmse": 7.240682271369369,
+      "bias_pred_minus_actual": 0.1174304829260984
+    },
+    {
+      "season": "2024-25",
+      "cohort": "all",
+      "version": "uncorrected",
+      "n": 19590,
+      "mae": 7.562214977278448,
+      "rmse": 9.849930162272038,
+      "bias_pred_minus_actual": -0.07828809936542931
+    },
+    {
+      "season": "2024-25",
+      "cohort": "all",
+      "version": "corrected",
+      "n": 19590,
+      "mae": 7.562240262431889,
+      "rmse": 9.849945750621414,
+      "bias_pred_minus_actual": -0.07818302550558061
+    },
+    {
+      "season": "2024-25",
+      "cohort": "team_changed",
+      "version": "uncorrected",
+      "n": 187,
+      "mae": 6.719626588894642,
+      "rmse": 8.826133243234828,
+      "bias_pred_minus_actual": 1.4557947688967159
+    },
+    {
+      "season": "2024-25",
+      "cohort": "team_changed",
+      "version": "corrected",
+      "n": 187,
+      "mae": 6.7222754453431985,
+      "rmse": 8.827955506605347,
+      "bias_pred_minus_actual": 1.4668022390273918
+    },
+    {
+      "season": "2024-25",
+      "cohort": "no_team_change",
+      "version": "uncorrected",
+      "n": 19403,
+      "mae": 7.57033557866111,
+      "rmse": 9.859279969591238,
+      "bias_pred_minus_actual": -0.09307310665115948
+    },
+    {
+      "season": "2024-25",
+      "cohort": "no_team_change",
+      "version": "corrected",
+      "n": 19403,
+      "mae": 7.57033557866111,
+      "rmse": 9.859279969591238,
+      "bias_pred_minus_actual": -0.09307310665115948
+    },
+    {
+      "season": "2024-25",
+      "cohort": "low_history_le_5",
+      "version": "uncorrected",
+      "n": 480,
+      "mae": 4.939220398982428,
+      "rmse": 6.758189218708714,
+      "bias_pred_minus_actual": 0.2606763913522591
+    },
+    {
+      "season": "2024-25",
+      "cohort": "low_history_le_5",
+      "version": "corrected",
+      "n": 480,
+      "mae": 4.939312127900184,
+      "rmse": 6.758226938548881,
+      "bias_pred_minus_actual": 0.26081398472889256
+    }
+  ],
+  "paired_game_cluster_bootstrap": [
+    {
+      "season": "2022-23",
+      "cohort": "all",
+      "n_rows": 19165,
+      "game_clusters": 1042,
+      "delta_mae_corrected_minus_uncorrected": 0.00010515530645579877,
+      "ci95_low": -5.9451995249645084e-05,
+      "ci95_high": 0.0002808287260147635
+    },
+    {
+      "season": "2022-23",
+      "cohort": "team_changed",
+      "n_rows": 161,
+      "game_clusters": 96,
+      "delta_mae_corrected_minus_uncorrected": 0.01227254278262223,
+      "ci95_low": -0.01293710808195167,
+      "ci95_high": 0.037199072245164576
+    },
+    {
+      "season": "2022-23",
+      "cohort": "no_team_change",
+      "n_rows": 19004,
+      "game_clusters": 1042,
+      "delta_mae_corrected_minus_uncorrected": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    {
+      "season": "2022-23",
+      "cohort": "low_history_le_5",
+      "n_rows": 456,
+      "game_clusters": 286,
+      "delta_mae_corrected_minus_uncorrected": -0.0011928923513632374,
+      "ci95_low": -0.002862941643271768,
+      "ci95_high": 0.0
+    },
+    {
+      "season": "2023-24",
+      "cohort": "all",
+      "n_rows": 18927,
+      "game_clusters": 1013,
+      "delta_mae_corrected_minus_uncorrected": -0.00013982862247022382,
+      "ci95_low": -0.00022716994180253347,
+      "ci95_high": -5.630789586644244e-05
+    },
+    {
+      "season": "2023-24",
+      "cohort": "team_changed",
+      "n_rows": 207,
+      "game_clusters": 114,
+      "delta_mae_corrected_minus_uncorrected": -0.015838250975935917,
+      "ci95_low": -0.023989868714070366,
+      "ci95_high": -0.007597641919296151
+    },
+    {
+      "season": "2023-24",
+      "cohort": "no_team_change",
+      "n_rows": 18720,
+      "game_clusters": 1013,
+      "delta_mae_corrected_minus_uncorrected": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    {
+      "season": "2023-24",
+      "cohort": "low_history_le_5",
+      "n_rows": 518,
+      "game_clusters": 330,
+      "delta_mae_corrected_minus_uncorrected": 7.52328116715836e-05,
+      "ci95_low": -0.0005749936320613889,
+      "ci95_high": 0.0007954526391204405
+    },
+    {
+      "season": "2024-25",
+      "cohort": "all",
+      "n_rows": 19590,
+      "game_clusters": 1038,
+      "delta_mae_corrected_minus_uncorrected": 2.340457949947872e-05,
+      "ci95_low": 7.906402392328561e-06,
+      "ci95_high": 3.905567402340377e-05
+    },
+    {
+      "season": "2024-25",
+      "cohort": "team_changed",
+      "n_rows": 187,
+      "game_clusters": 126,
+      "delta_mae_corrected_minus_uncorrected": 0.002976093776071461,
+      "ci95_low": 0.0012871168777138196,
+      "ci95_high": 0.00464341245773681
+    },
+    {
+      "season": "2024-25",
+      "cohort": "no_team_change",
+      "n_rows": 19403,
+      "game_clusters": 1038,
+      "delta_mae_corrected_minus_uncorrected": 0.0,
+      "ci95_low": 0.0,
+      "ci95_high": 0.0
+    },
+    {
+      "season": "2024-25",
+      "cohort": "low_history_le_5",
+      "n_rows": 480,
+      "game_clusters": 279,
+      "delta_mae_corrected_minus_uncorrected": 0.00013808654285793863,
+      "ci95_low": -1.972664897971234e-05,
+      "ci95_high": 0.0003156263836752924
+    }
+  ],
+  "method": "subtract the recorded correction from the same outer-fold prediction to recover the identical model's uncorrected prediction; no refit and no look-ahead",
+  "uses_full_lineups": false,
+  "uses_2025_26_holdout": false,
+  "uses_2026_27_prospective_bundle": false
+}

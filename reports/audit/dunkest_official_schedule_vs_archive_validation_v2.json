@@ -1,0 +1,99 @@
+{
+  "audit": "dunkest_official_schedule_vs_archive_validation_v2_status_aware",
+  "source": "reports/audit/dunkest_official_schedule_vs_archive_validation_v1.json",
+  "method": "Reclassified official API matches by returned status before matching against the local archive. Postponed records are not expected to have a played NBA box score on the original scheduled date. Read-only.",
+  "official_schedule_records": 2055,
+  "official_status_counts": {
+    "played": 2054,
+    "postponed": 1
+  },
+  "played_games": 2054,
+  "postponed_games": [
+    {
+      "schedule_id": 1,
+      "matchday_id": 42,
+      "matchday_number": 41,
+      "round_id": 103,
+      "round_number": 2,
+      "match_id": 660,
+      "started_at_utc": "2023-02-02T00:00:00.000000Z",
+      "game_date_et": "2023-02-01",
+      "status": "postponed",
+      "home_team_id": 9,
+      "home_team": "DET",
+      "home_valid": true,
+      "away_team_id": 30,
+      "away_team": "WAS",
+      "away_valid": true
+    }
+  ],
+  "played_team_side_comparisons": 4108,
+  "played_team_sides_matched": 4108,
+  "played_team_side_match_rate": 1.0,
+  "exact_validity_flags": 4107,
+  "exact_validity_flag_rate": 0.9997565725413826,
+  "schedule_summaries": {
+    "1": {
+      "official_records": 1041,
+      "status_counts": {
+        "played": 1040,
+        "postponed": 1
+      },
+      "played_games": 1040,
+      "played_team_sides": 2080,
+      "matched_team_sides": 2080,
+      "exact_validity_flags": 2080,
+      "flag_mismatches": [],
+      "unmatched_games": []
+    },
+    "8": {
+      "official_records": 1014,
+      "status_counts": {
+        "played": 1014
+      },
+      "played_games": 1014,
+      "played_team_sides": 2028,
+      "matched_team_sides": 2028,
+      "exact_validity_flags": 2027,
+      "flag_mismatches": [
+        {
+          "date_et": "2023-12-12",
+          "home_team": "BOS",
+          "away_team": "CLE",
+          "home_api": true,
+          "home_archive": [
+            false
+          ],
+          "away_api": false,
+          "away_archive": [
+            false
+          ]
+        }
+      ],
+      "unmatched_games": []
+    }
+  },
+  "played_flag_mismatch_details": [
+    {
+      "schedule_id": 8,
+      "date_et": "2023-12-12",
+      "home_team": "BOS",
+      "away_team": "CLE",
+      "api_home_valid": true,
+      "api_away_valid": false,
+      "archive_home_valid": [
+        false
+      ],
+      "archive_away_valid": [
+        false
+      ]
+    }
+  ],
+  "interpretation": [
+    "The Detroit–Washington 2023-02-01 record is officially marked postponed and should not be treated as a missing played NBA game.",
+    "After excluding postponed games, all 4,108 team sides from 2,054 played games match the local archive.",
+    "One game-level validity mismatch remains: Boston–Cleveland on 2023-12-12; API marks Boston valid and Cleveland invalid, while the local archive marks both invalid.",
+    "The next independently useful check is to query the official player-games API for multiple Boston players in that game and compare the source flags; do not rewrite any local values until the source-level discrepancy is resolved."
+  ],
+  "safety": "No raw data, official PDK targets, model, temporal splits, or backtests changed."
+}

@@ -1,0 +1,45 @@
+{
+  "generated_at_utc": "2026-10-13T09:57:02.908263+00:00",
+  "paired_rows": 55565,
+  "round_clusters": 467,
+  "test_seasons": [
+    "13",
+    "19",
+    "9"
+  ],
+  "bootstrap_replicates": 10000,
+  "bootstrap_unit": "Dunkest season-week-round cluster, stratified by held-out season",
+  "comparison": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6 minus historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+  "bootstrap": {
+    "macro_season_delta_mae_ci95": [
+      -0.033881437913598704,
+      -0.01678696062401743
+    ],
+    "bootstrap_fraction_delta_below_zero": 1.0,
+    "per_season": {
+      "13": {
+        "ci95": [
+          -0.041738245003531405,
+          -0.015400078788301016
+        ],
+        "fraction_below_zero": 1.0
+      },
+      "19": {
+        "ci95": [
+          -0.03392451094992841,
+          -0.00599122876879779
+        ],
+        "fraction_below_zero": 0.9963
+      },
+      "9": {
+        "ci95": [
+          -0.045031828958743705,
+          -0.010313368337654734
+        ],
+        "fraction_below_zero": 0.9998
+      }
+    }
+  },
+  "production_changed": false,
+  "interpretation": "Negative delta MAE favors rest/schedule features. This is player-level evidence only and does not establish an improvement to the lineup optimizer."
+}

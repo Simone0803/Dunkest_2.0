@@ -1,0 +1,77 @@
+{
+  "generated_at_utc": "2026-10-13T11:35:52.024077+00:00",
+  "source_tot_rows": 93785,
+  "source_gp1_rows": 93779,
+  "link_status_counts": {
+    "unique_exact_team_signature": 85477,
+    "unique_boxscore_pdk_match_team_code_differs": 7828,
+    "ambiguous_exact_team_signature": 410,
+    "ambiguous_boxscore_pdk_match_without_team": 33,
+    "unresolved_no_exact_signature": 19,
+    "unique_boxscore_pdk_match_nba_team_unknown": 12
+  },
+  "linked_rows": 93317,
+  "linked_rows_with_team_code_mismatch": 7828,
+  "by_season_id": {
+    "13": {
+      "ambiguous_boxscore_pdk_match_without_team": 4,
+      "ambiguous_exact_team_signature": 139,
+      "unique_boxscore_pdk_match_nba_team_unknown": 0,
+      "unique_boxscore_pdk_match_team_code_differs": 1439,
+      "unique_exact_team_signature": 17345,
+      "unresolved_no_exact_signature": 0
+    },
+    "19": {
+      "ambiguous_boxscore_pdk_match_without_team": 11,
+      "ambiguous_exact_team_signature": 92,
+      "unique_boxscore_pdk_match_nba_team_unknown": 0,
+      "unique_boxscore_pdk_match_team_code_differs": 1548,
+      "unique_exact_team_signature": 17939,
+      "unresolved_no_exact_signature": 0
+    },
+    "5": {
+      "ambiguous_boxscore_pdk_match_without_team": 4,
+      "ambiguous_exact_team_signature": 56,
+      "unique_boxscore_pdk_match_nba_team_unknown": 7,
+      "unique_boxscore_pdk_match_team_code_differs": 1396,
+      "unique_exact_team_signature": 16193,
+      "unresolved_no_exact_signature": 19
+    },
+    "7": {
+      "ambiguous_boxscore_pdk_match_without_team": 6,
+      "ambiguous_exact_team_signature": 58,
+      "unique_boxscore_pdk_match_nba_team_unknown": 5,
+      "unique_boxscore_pdk_match_team_code_differs": 1691,
+      "unique_exact_team_signature": 16662,
+      "unresolved_no_exact_signature": 0
+    },
+    "9": {
+      "ambiguous_boxscore_pdk_match_without_team": 8,
+      "ambiguous_exact_team_signature": 65,
+      "unique_boxscore_pdk_match_nba_team_unknown": 0,
+      "unique_boxscore_pdk_match_team_code_differs": 1754,
+      "unique_exact_team_signature": 17338,
+      "unresolved_no_exact_signature": 0
+    }
+  },
+  "matching": "Exact PDK rounded to 2 decimals plus all 17 boxscore fields, canonical player and season. Prefer a unique source-team-inclusive signature; if absent, accept only a unique team-free candidate. Ambiguous and unresolved rows remain unlinked.",
+  "source_hashes": {
+    "data/processed/dunkest_historical_stats_2020-25_v2.parquet": "01a657ee1e483cb46d88b4bb66364cfc42bf9ad7984709615a6853faf4db2e86",
+    "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet": "8fcc27e13f9f68962f8b6c24a3bf4a387c57b77d8e0431db78b32291e2fd0c93"
+  },
+  "guardrails": [
+    "Original source team_code, team_name, PDK, boxscore fields and validity flag are preserved.",
+    "The linked NBA game team is stored separately and only populated for unique matches.",
+    "Ambiguous and unresolved rows are not imputed, relabeled, or interpreted as DNP/zero.",
+    "This derivative is not a pre-lock market snapshot and does not provide historical CR, injury, availability, or complete candidate universe.",
+    "Production code/config and frozen 2026/27 GW1 holdout were not changed; cutoff remains 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "parquet": "data/processed/dunkest_historical_game_linked_rows_20261013_v2.parquet",
+    "summary_csv": "reports/audit/dunkest_historical_game_linked_rows_20261013_v2_summary.csv",
+    "unresolved_csv": "reports/audit/dunkest_historical_game_linked_rows_20261013_v2_unresolved.csv",
+    "json": "reports/audit/dunkest_historical_game_linked_rows_20261013_v2.json",
+    "markdown": "reports/audit/dunkest_historical_game_linked_rows_20261013_v2.md"
+  },
+  "production_changed": false
+}

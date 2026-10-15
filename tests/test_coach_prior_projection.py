@@ -35,10 +35,10 @@ def test_gameweek_one_does_not_recommend_coaches_from_historical_team_prior():
     assert not result.matchup_projection_available
 
 
-def test_opening_schedule_projects_coaches_even_without_team_logs():
+def test_opening_schedule_without_team_logs_keeps_matchup_but_refuses_fake_score_forecast():
     coaches = pd.DataFrame([
-        {"coach": "Coach A", "team": "BOS", "coach_cr": 9.0},
-        {"coach": "Coach B", "team": "NYK", "coach_cr": 7.0},
+        {"coach": "Coach A", "team": "BOS", "coach_cr": 9.0, "opponent_coach_cr": 7.0},
+        {"coach": "Coach B", "team": "NYK", "coach_cr": 7.0, "opponent_coach_cr": 9.0},
     ])
     schedule = pd.DataFrame([{
         "GAME_DATE": "2026-10-20T23:00:00Z",
@@ -52,8 +52,10 @@ def test_opening_schedule_projects_coaches_even_without_team_logs():
 
     assert result.loc["BOS", "opponent"] == "NYK"
     assert result.loc["NYK", "opponent"] == "BOS"
-    assert result["matchup_projection_available"].all()
-    assert result["coach_projection_source"].eq("verified_matchup").all()
+    assert not result["matchup_projection_available"].any()
+    assert result["coach_projection_source"].eq("missing_team_history").all()
+    assert result["expected_coach_pdk"].eq(0.0).all()
+    assert result["expected_team_pts"].isna().all()
 
 
 def test_historical_team_results_create_distinct_coach_point_priors(monkeypatch):
@@ -83,8 +85,8 @@ def test_coach_price_does_not_stand_in_for_team_strength_without_matchup_data():
 
     result = predict_coach_points(coaches).set_index("coach")
 
-    assert result.loc["Higher priced", "expected_margin"] == 0.0
-    assert result.loc["Lower priced", "expected_margin"] == 0.0
+    assert pd.isna(result.loc["Higher priced", "expected_margin"])
+    assert pd.isna(result.loc["Lower priced", "expected_margin"])
     assert result.loc["Higher priced", "expected_coach_pdk"] == 0.0
     assert result.loc["Lower priced", "expected_coach_pdk"] == 0.0
 
@@ -297,6 +299,14 @@ def test_current_roster_adjustment_applies_when_efficiency_data_is_available():
     adjustment = current_roster.loc["BOS", "team_roster_points_adjustment"]
     assert adjustment > 0.0
     assert current_roster.loc["BOS", "expected_team_pts"] == baseline.loc["BOS", "expected_team_pts"] + adjustment
+    assert abs(
+        current_roster.loc["BOS", "win_probability_before_roster_adjustment"]
+        - baseline.loc["BOS", "win_probability"]
+    ) < 1e-9
+    assert abs(
+        current_roster.loc["BOS", "win_probability"]
+        + current_roster.loc["BKN", "win_probability"] - 1.0
+    ) < 1e-9
 
 
 def test_constant_game_scores_use_neutral_correlation_without_runtime_warning():
@@ -377,3 +387,55 @@ def test_all_zero_team_forecasts_do_not_collapse_historical_coach_strength():
     adjustments = _roster_point_adjustments(player_logs, team_logs, forecasts)
 
     assert "OKC" not in adjustments
+
+
+def test_coach_simulation_never_returns_tied_final_scores():
+    from dunkest.models.coach import _simulate_matchup_scores
+
+    args = (108.0, 108.0, 14.0, 14.0, 0.15, "BOS-NYK", 0.0)
+    team_a, opponent_a, overtime_a = _simulate_matchup_scores(*args, draws=4096)
+    team_b, opponent_b, overtime_b = _simulate_matchup_scores(*args, draws=4096)
+
+    assert (team_a == opponent_a).sum() == 0
+    assert (team_b == opponent_b).sum() == 0
+    assert (team_a == team_b).all()
+    assert (opponent_a == opponent_b).all()
+    assert (overtime_a == overtime_b).all()
+    assert overtime_a.any()  # ties in rounded regulation-score draws force overtime
+
+
+def test_coach_synthetic_matchup_uses_fallback_date_when_primary_date_is_nullable():
+    coaches = pd.DataFrame([{
+        "coach": "Coach A", "team": "BOS", "opponent": "NYK", "coach_cr": 8.0,
+        "opponent_coach_cr": 7.0, "date": pd.NA, "matchup_date": "2026-10-20",
+    }])
+    logs = pd.DataFrame([
+        {"Game_ID": "a1", "TEAM_ABBREVIATION": "BOS", "PTS": 115.0, "GAME_DATE": "2026-04-01"},
+        {"Game_ID": "a1", "TEAM_ABBREVIATION": "NYK", "PTS": 105.0, "GAME_DATE": "2026-04-01"},
+    ])
+    result = predict_coach_points(coaches, team_logs=logs, upcoming_schedule=pd.DataFrame())
+
+    assert result.loc[0, "matchup_date"] == pd.Timestamp("2026-10-20")
+
+
+def test_missing_opponent_coach_credit_is_not_imputed_from_selected_coach():
+    coaches = pd.DataFrame([{
+        "coach": "Coach A", "team": "BOS", "coach_cr": 10.0,
+        "opponent": "NYK", "opponent_coach_cr": float("nan"),
+    }])
+    team_logs = pd.DataFrame([
+        {"Game_ID": f"g{i}", "TEAM_ABBREVIATION": team, "PTS": pts,
+         "GAME_DATE": pd.Timestamp("2026-03-01") + pd.Timedelta(days=i)}
+        for i in range(12) for team, pts in (("BOS", 120.0), ("NYK", 105.0))
+    ])
+    schedule = pd.DataFrame([{
+        "GAME_DATE": "2026-10-20", "HOME_TEAM": "BOS", "AWAY_TEAM": "NYK",
+        "NBA_WEEK_NUMBER": 1,
+    }])
+
+    result = predict_coach_points(coaches, team_logs, schedule, gameweek=1).iloc[0]
+
+    assert pd.isna(result.opponent_coach_cr)
+    assert result.coach_projection_source == "missing_opponent_coach_cr"
+    assert not result.matchup_projection_available
+    assert result.expected_coach_pdk == 0.0

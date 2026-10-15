@@ -1,0 +1,74 @@
+{
+  "generated_at_utc": "2026-10-13T10:03:49.864584+00:00",
+  "source": "reports/audit/dunkest_historical_lineups_rest_schedule_20261013_v1_rounds.csv",
+  "evaluated_rounds": 409,
+  "seasons": [
+    "13",
+    "19",
+    "9"
+  ],
+  "bootstrap_replicates": 10000,
+  "resampling_unit": "whole evaluated Dunkest round, stratified by held-out season",
+  "delta_definition": "V6 realized team score minus V2 realized team score; positive favors V6",
+  "macro_season_ci95": [
+    -1.9495381068662843,
+    5.079915697284071
+  ],
+  "macro_season_bootstrap_fraction_positive": 0.8102,
+  "metrics": [
+    {
+      "scope": "13",
+      "n_rounds": 132,
+      "mean_v2_realized_team_score": 163.11594696969698,
+      "mean_v6_realized_team_score": 164.84318181818182,
+      "delta_v6_minus_v2": 1.7272348484848479,
+      "median_delta_v6_minus_v2": 0.0,
+      "v6_win_rate": 0.49242424242424243,
+      "ci95_low": -4.307169507575758,
+      "ci95_high": 7.833641098484848,
+      "bootstrap_fraction_delta_positive": 0.7129
+    },
+    {
+      "scope": "19",
+      "n_rounds": 138,
+      "mean_v2_realized_team_score": 166.38,
+      "mean_v6_realized_team_score": 169.7482608695652,
+      "delta_v6_minus_v2": 3.368260869565218,
+      "median_delta_v6_minus_v2": 0.32000000000000733,
+      "v6_win_rate": 0.5144927536231884,
+      "ci95_low": -1.6792753623188392,
+      "ci95_high": 8.40366213768116,
+      "bootstrap_fraction_delta_positive": 0.9045
+    },
+    {
+      "scope": "9",
+      "n_rounds": 139,
+      "mean_v2_realized_team_score": 150.33075539568347,
+      "mean_v6_realized_team_score": 149.92823741007194,
+      "delta_v6_minus_v2": -0.4025179856115091,
+      "median_delta_v6_minus_v2": 0.0,
+      "v6_win_rate": 0.4676258992805755,
+      "ci95_low": -7.147412769784173,
+      "ci95_high": 6.151424460431656,
+      "bootstrap_fraction_delta_positive": 0.4575
+    },
+    {
+      "scope": "macro_season",
+      "n_rounds": 409,
+      "mean_v2_realized_team_score": 159.9422341217935,
+      "mean_v6_realized_team_score": 161.50656003260633,
+      "delta_v6_minus_v2": 1.564325910812852,
+      "median_delta_v6_minus_v2": 0.0,
+      "v6_win_rate": 0.49151429844266875,
+      "ci95_low": -1.9495381068662843,
+      "ci95_high": 5.079915697284071,
+      "bootstrap_fraction_delta_positive": 0.8102
+    }
+  ],
+  "limitations": [
+    "This is a restricted candidate-pool lineup proxy, not a complete pre-lock market backtest.",
+    "Historical coach prices/credit multipliers and transfer carry-over/malus are unavailable; coach CR is fixed at 10 and transfer malus is zero.",
+    "Lineup outcomes depend on archived candidate coverage and the configured MILP time limit."
+  ],
+  "production_changed": false
+}

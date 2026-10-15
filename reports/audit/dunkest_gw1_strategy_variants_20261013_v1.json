@@ -1,0 +1,44 @@
+{
+  "generated_at_utc": "2026-10-14T06:52:15.717167+00:00",
+  "source_run_id": "20261013T184846Z_21d331f5",
+  "source_run_timestamp_utc": "2026-10-13T18:48:46.412658+00:00",
+  "season_id": "26",
+  "gameweek": 1,
+  "mapped_fixtures": 16,
+  "player_forecast_rows": 546,
+  "coach_forecast_rows": 30,
+  "snapshot_files_hash_verified": 11,
+  "variants": [
+    {
+      "key": "risk_adjusted_corrected_gain",
+      "objective": "risk_adjusted",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted + corrected plusvalenza"
+    },
+    {
+      "key": "expected_value_corrected_gain",
+      "objective": "expected_value",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Expected value + corrected plusvalenza"
+    },
+    {
+      "key": "risk_adjusted_no_gain",
+      "objective": "risk_adjusted",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted, plusvalenza excluded"
+    },
+    {
+      "key": "expected_value_no_gain",
+      "objective": "expected_value",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Expected value, plusvalenza excluded"
+    }
+  ],
+  "variant_runs_root": "/Users/simone/Documents/Dunkest/data/workspaces/dunkest_preflight_20261013/predictions/strategy_variants_20261013",
+  "comparison_policy": "Identical frozen player/coach forecasts and snapshot bytes across variants. Only objective/risk penalty and whether corrected expected plusvalenza enters optimization differ. No actual outcomes read.",
+  "limitation": "Tests the lineup-score impact of including corrected plusvalenza in the optimizer, not the standalone accuracy gain of the correction versus the old uncorrected model."
+}

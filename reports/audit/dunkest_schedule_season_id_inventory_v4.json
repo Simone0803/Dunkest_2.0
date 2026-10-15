@@ -1,0 +1,134 @@
+{
+  "source_endpoint": "https://fantaking-api.dunkest.com/api/v1/schedules/{schedule_id}/matchdays/{matchday_id}",
+  "created_date": "2026-10-12",
+  "confirmed_regular_season_schedules": [
+    {
+      "season": "2022/23",
+      "schedule_id": 1,
+      "matchdays_with_matches": 65,
+      "official_matches": 1041,
+      "official_date_min": "2022-10-18",
+      "official_date_max": "2023-04-09",
+      "team_sides_matched": 4108,
+      "team_side_comparisons": 4110,
+      "flags_exact": 4107,
+      "flags_compared": 4108,
+      "flag_agreement_rate": 0.9997565725413826,
+      "status": "confirmed regular-season schedule"
+    },
+    {
+      "season": "2023/24",
+      "schedule_id": 8,
+      "matchdays_with_matches": 63,
+      "official_matches": 1014,
+      "official_date_min": "2023-10-24",
+      "official_date_max": "2024-04-12",
+      "team_sides_matched": 4108,
+      "team_side_comparisons": 4110,
+      "flags_exact": 4107,
+      "flags_compared": 4108,
+      "flag_agreement_rate": 0.9997565725413826,
+      "status": "confirmed regular-season schedule"
+    },
+    {
+      "season": "2024/25",
+      "schedule_id": 19,
+      "matchdays_with_matches": 64,
+      "official_matches": 1040,
+      "official_date_min": "2024-10-22",
+      "official_date_max": "2025-04-11",
+      "team_sides_matched": 2076,
+      "team_side_comparisons": 2076,
+      "flags_exact": 2076,
+      "flags_compared": 2076,
+      "flag_agreement_rate": 1.0,
+      "postponed_game_count": 2,
+      "api_status_counts": {
+        "played": 1037,
+        "playing": 1,
+        "postponed": 2
+      },
+      "status": "confirmed regular-season schedule; status-aware comparison"
+    }
+  ],
+  "additional_confirmed_samples": [
+    {
+      "schedule_id": 3,
+      "classification": "NBA playoff schedule, not regular season",
+      "evidence_dates": [
+        "2023-04-24",
+        "2023-05-20"
+      ],
+      "sample_matchday_ids": [
+        101,
+        106,
+        111
+      ]
+    },
+    {
+      "schedule_id": 20,
+      "classification": "NBA playoff schedule, not regular season",
+      "evidence_dates": [
+        "2025-05-29",
+        "2025-05-30"
+      ],
+      "sample_matchday_ids": [
+        750
+      ]
+    },
+    {
+      "schedule_id": 36,
+      "classification": "NBA regular season 2025/26, sample only",
+      "evidence_dates": [
+        "2026-02-01",
+        "2026-02-04"
+      ],
+      "sample_matchday_ids": [
+        1250
+      ]
+    },
+    {
+      "schedule_id": 57,
+      "classification": "current NBA 2026/27 schedule from league config",
+      "current_matchday_id": 1858,
+      "current_matchday_number": 1,
+      "current_round_id": 2890,
+      "date": "2026-10-20"
+    }
+  ],
+  "unresolved_seasons": [
+    {
+      "season": "2018/19",
+      "stats_api_season_id": 1,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2019/20",
+      "stats_api_season_id": 3,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2020/21",
+      "stats_api_season_id": 5,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2021/22",
+      "stats_api_season_id": 7,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    }
+  ],
+  "method_notes": [
+    "Schedule IDs and stats API season IDs are separate namespaces.",
+    "Confirmed regular-season schedule IDs are 1 (2022/23), 8 (2023/24), and 19 (2024/25).",
+    "For 2022/23–2023/24, 4,108 of 4,110 team sides matched; 4,107 of 4,108 matched validity flags agreed. Two unresolved discrepancies remain: DET–WAS on 2023-02-01 has no local game match, and BOS–CLE on 2023-12-12 has official BOS valid=true while the archive flag is false for both sides.",
+    "For 2024/25, 1,040 official records include 1,037 status=played, one status=playing that is present in the archive, and two status=postponed. The archive-backed set matches 2,076/2,076 team sides with 2,076/2,076 exact validity flags.",
+    "A read-only survey of candidate schedule IDs 1–60 and sampled matchday IDs 1–65 found NBA regular-season records only under schedule 1 (2022/23); a survey of sampled IDs 66–230 found NBA playoff records under schedule 3 but did not recover earlier NBA regular-season calendars for 2018/19–2021/22. This is not proof of nonexistence; those seasons remain unresolved.",
+    "Schedule ID 36 was identified by a sampled matchday in 2025/26; not fully audited against the local archive.",
+    "No raw data, official PDK targets, model, temporal splits, or backtests were modified."
+  ]
+}

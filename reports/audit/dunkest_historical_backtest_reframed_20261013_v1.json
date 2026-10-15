@@ -1,0 +1,70 @@
+{
+  "generated_at_utc": "2026-10-13T08:33:58.680179+00:00",
+  "methodology": "Historical player-round outcomes are forecast using only previous observed player-rounds and lagged CR. Candidate lineups use each player’s latest observed CR/role/team strictly before the target round; prices are carried forward if the player had no row in the immediately prior round. Opponent features use reconstructed high-confidence target dates and NBA team statistics strictly before the target date. Coach base-score outcomes are reconstructed from final NBA team scores/margin/OT with equal coach CR so the price-difference coefficient is neutral.",
+  "player_score_walk_forward": {
+    "pooled_oof_rows": 55565,
+    "form_only_mae": 7.717582817485449,
+    "lagged_credit_matchup_mae": 7.512200194338725,
+    "previous5_baseline_mae": 8.002258901809428,
+    "pooled_oof_mae": 7.512161302010111,
+    "pooled_oof_rmse": 9.809629510409497,
+    "matchup_increment_vs_credit_only_mae": -0.00866365597310903,
+    "held_out_seasons": [
+      "2022-23",
+      "2023-24",
+      "2024-25"
+    ]
+  },
+  "coach_base_score_walk_forward": {
+    "games_reconstructed": 9519,
+    "overtime_games": 502,
+    "mean_fold_mae_model": 16.07311247342375,
+    "mean_fold_mae_previous10_baseline": 16.595965447154473,
+    "mean_fold_rmse_model": 17.933172453173686,
+    "mean_fold_rmse_previous10_baseline": 19.096324887949972,
+    "test_seasons": [
+      "2022-23",
+      "2023-24",
+      "2024-25",
+      "2025-26"
+    ],
+    "exact_historical_credit_adjusted_score_available": false
+  },
+  "lineup_proxy_backtest": {
+    "held_out_seasons": [
+      "2022-23",
+      "2023-24",
+      "2024-25"
+    ],
+    "rounds_evaluated": 409,
+    "round_status_counts": {
+      "evaluated": 409,
+      "optimization_failed": 49,
+      "candidate_pool_too_small": 6
+    },
+    "mean_model_realized_team_score": 160.875391198044,
+    "mean_previous5_baseline_realized_team_score": 140.33721271393642,
+    "mean_delta": 20.53817848410758,
+    "median_delta": 17.655,
+    "model_win_rate_vs_baseline": 0.6381418092909535,
+    "mean_candidate_count": 209.68215158924207,
+    "target_players_covered": 0.9493132497936748,
+    "candidate_pool_played_in_target_round_fraction": 0.6053331998698909,
+    "coach_credit_assumption": 10.0,
+    "transfer_malus": 0.0
+  },
+  "limitations": [
+    "Historical credit is the last observed prior-round CR, carried forward for players with no appearance row in the immediately prior round; the archived tables are not full timestamped market snapshots.",
+    "The candidate universe contains players who have appeared earlier in the season; it misses players not yet observed in the archive. It covers on average about 94.9% of players listed in the target-round outcomes, but this is not the same as proving full market coverage.",
+    "Historical coach CR and opponent coach CR are missing. Coach outcomes are reconstructed with equal prices, so coach selection/price-difference multiplier and exact coach PDK are not validated.",
+    "Lineup experiment uses no transfer malus because historical carried rosters are not archived. The model-versus-baseline result is a fresh-lineup proxy comparison, not a complete transfer-policy backtest.",
+    "Target-round date mapping uses high-consensus official player/game identity matching to infer the schedule date; target PDK is used only for linkage, never as a model feature.",
+    "Seasons 2018/19 and 2019/20 remain excluded from supervised player-score targets where the official Dunkest validity flag is false; NBA results from those years can still train the reconstructed coach base-score model."
+  ],
+  "production_changed": false,
+  "artifacts": [
+    "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v1.md",
+    "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1.md",
+    "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v5.md"
+  ]
+}

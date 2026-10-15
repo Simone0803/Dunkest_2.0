@@ -1,0 +1,100 @@
+{
+  "created_utc": "2026-10-12T17:28:19.878918+00:00",
+  "source_predictions": "data/processed/dunkest_pdk_game_walk_forward_predictions_2020-26_v3.csv",
+  "calibration_train_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "final_holdout_season": "2025-26",
+  "ensemble_weights": {
+    "random_forest": 0.6,
+    "ridge": 0.35,
+    "baseline_prev10_mean": 0.05
+  },
+  "parameters": {
+    "random_forest_linear": {
+      "intercept": -0.3086382544138857,
+      "slope": 1.0250168552667815
+    },
+    "random_forest_isotonic": {
+      "threshold_count": 274
+    },
+    "ensemble_raw_linear": {
+      "intercept": -0.2810327831945223,
+      "slope": 1.01758895255368
+    },
+    "ensemble_raw_isotonic": {
+      "threshold_count": 264
+    }
+  },
+  "final_holdout_used_for_fit_or_selection": false,
+  "metrics": [
+    {
+      "split": "final_holdout_2025-26",
+      "method": "random_forest_raw",
+      "n": 18412,
+      "mae": 7.577480168868869,
+      "rmse": 9.856336535795888,
+      "bias_pred_minus_actual": -0.1724664427687624,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 15.96919171495446
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "method": "random_forest_linear_calibration",
+      "n": 18412,
+      "mae": 7.574735336144568,
+      "rmse": 9.858351680544251,
+      "bias_pred_minus_actual": -0.08160573932214539,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 16.060052418401078
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "method": "random_forest_isotonic_calibration",
+      "n": 18412,
+      "mae": 7.578983018872576,
+      "rmse": 9.86412353698968,
+      "bias_pred_minus_actual": -0.06567291912717296,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 16.075985238596054
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "method": "ensemble_raw_raw",
+      "n": 18412,
+      "mae": 7.5567952763948245,
+      "rmse": 9.83057873471441,
+      "bias_pred_minus_actual": -0.08854473679674899,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 16.053113420926476
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "method": "ensemble_raw_linear_calibration",
+      "n": 18412,
+      "mae": 7.549693610621203,
+      "rmse": 9.833073706182796,
+      "bias_pred_minus_actual": -0.08722006969175036,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 16.054438088031475
+    },
+    {
+      "split": "final_holdout_2025-26",
+      "method": "ensemble_raw_isotonic_calibration",
+      "n": 18412,
+      "mae": 7.55435815962131,
+      "rmse": 9.83932924001806,
+      "bias_pred_minus_actual": -0.0725210890757012,
+      "actual_mean": 16.14165815772322,
+      "predicted_mean": 16.069137068647525
+    }
+  ],
+  "caveats": [
+    "Calibration maps are fitted only on earlier walk-forward prediction folds, never on 2025/26 targets.",
+    "This is a separate game-level experiment and does not change production inference.",
+    "Calibration may improve aggregate MAE while worsening subgroups; inspect residuals before any integration.",
+    "The final holdout should be considered consumed for this calibration experiment and not reused for further iterative tuning."
+  ]
+}

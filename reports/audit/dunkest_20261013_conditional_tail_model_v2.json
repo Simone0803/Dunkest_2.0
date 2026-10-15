@@ -1,0 +1,129 @@
+{
+  "created_utc": "2026-10-13T14:03:18.083469+00:00",
+  "training_source": "dunkest_pdk_game_training_2020-25_v2.parquet",
+  "target_minutes_link_source": "dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "seasons_loaded": {
+    "5": "2020-21",
+    "7": "2021-22",
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "validation_folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "holdout_2025_26_loaded": false,
+  "prospective_snapshot_loaded": false,
+  "method": "Expanding-origin high-score classifier and conditional high/low regressors; E[PDK|x] approximated as p_high*mu_high+(1-p_high)*mu_low. Classifier is unweighted; probabilities are not assumed calibrated unless diagnostics support that.",
+  "calibration": [
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "threshold": 25.0,
+      "prevalence": 0.22488912079311243,
+      "mean_predicted_probability": 0.22932765434823393,
+      "brier": 0.12362361015163408,
+      "roc_auc": 0.8403169774955271,
+      "observed_high_count": 4310
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "threshold": 30.0,
+      "prevalence": 0.15147404122097574,
+      "mean_predicted_probability": 0.1508300738921106,
+      "brier": 0.09486903569015362,
+      "roc_auc": 0.8532000301809506,
+      "observed_high_count": 2903
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "threshold": 25.0,
+      "prevalence": 0.23083425793839488,
+      "mean_predicted_probability": 0.22971561765447981,
+      "brier": 0.1229533851057723,
+      "roc_auc": 0.848631660994635,
+      "observed_high_count": 4369
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "threshold": 30.0,
+      "prevalence": 0.15702435673905005,
+      "mean_predicted_probability": 0.15804339490541786,
+      "brier": 0.09619149444129074,
+      "roc_auc": 0.8588531506639003,
+      "observed_high_count": 2972
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "threshold": 25.0,
+      "prevalence": 0.22588055130168452,
+      "mean_predicted_probability": 0.22887449515070263,
+      "brier": 0.12396545734575276,
+      "roc_auc": 0.8420159116013866,
+      "observed_high_count": 4425
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "threshold": 30.0,
+      "prevalence": 0.14900459418070444,
+      "mean_predicted_probability": 0.1541448017661344,
+      "brier": 0.09386463480080551,
+      "roc_auc": 0.852628326912495,
+      "observed_high_count": 2919
+    }
+  ],
+  "pooled_metrics": [
+    {
+      "candidate": "mixture_threshold_25",
+      "n": 57682,
+      "mae": 7.563293143115739,
+      "rmse": 9.83079216584644,
+      "bias_pred_minus_actual": -0.05042975977301754,
+      "mae_actual_ge25": 12.04409812664754,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 13.979330275418642,
+      "n_actual_ge30": 8794
+    },
+    {
+      "candidate": "direct_et12",
+      "n": 57682,
+      "mae": 7.565764117768566,
+      "rmse": 9.839017628454702,
+      "bias_pred_minus_actual": -0.1989034185519164,
+      "mae_actual_ge25": 12.291717903374346,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.311637146732842,
+      "n_actual_ge30": 8794
+    },
+    {
+      "candidate": "mixture_threshold_30",
+      "n": 57682,
+      "mae": 7.5674892205569515,
+      "rmse": 9.833753687113873,
+      "bias_pred_minus_actual": -0.07084620130504372,
+      "mae_actual_ge25": 12.114272806322132,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.05284168638193,
+      "n_actual_ge30": 8794
+    },
+    {
+      "candidate": "direct_hgb",
+      "n": 57682,
+      "mae": 7.572267697708284,
+      "rmse": 9.83061009141618,
+      "bias_pred_minus_actual": 0.022123445754141283,
+      "mae_actual_ge25": 12.027392742457797,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 13.909334613175963,
+      "n_actual_ge30": 8794
+    }
+  ],
+  "production_changed": false
+}

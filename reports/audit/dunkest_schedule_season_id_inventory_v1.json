@@ -1,0 +1,135 @@
+{
+  "source_endpoint": "https://fantaking-api.dunkest.com/api/v1/schedules/{schedule_id}/matchdays/{matchday_id}",
+  "created_date": "2026-10-12",
+  "mapping": [
+    {
+      "season": "2022/23",
+      "schedule_id": 1,
+      "status": "confirmed regular-season schedule",
+      "matchday_id_range_scanned": [
+        1,
+        100
+      ],
+      "matchdays_with_matches": 65,
+      "official_matches": 1041,
+      "official_date_min": "2022-10-18",
+      "official_date_max": "2023-04-09",
+      "team_side_matches": null,
+      "team_side_comparisons": null,
+      "flag_agreement": null,
+      "notes": "See detailed previous audit for archive comparison."
+    },
+    {
+      "season": "2023/24",
+      "schedule_id": 8,
+      "status": "confirmed regular-season schedule",
+      "matchday_id_range_scanned": [
+        230,
+        360
+      ],
+      "matchdays_with_matches": 63,
+      "official_matches": 1014,
+      "official_date_min": "2023-10-24",
+      "official_date_max": "2024-04-12",
+      "team_side_matches": null,
+      "team_side_comparisons": null,
+      "flag_agreement": null,
+      "notes": "See detailed previous audit for archive comparison."
+    },
+    {
+      "season": "2024/25",
+      "schedule_id": 19,
+      "status": "confirmed regular-season schedule",
+      "matchday_id_range_scanned": [
+        500,
+        850
+      ],
+      "matchdays_with_matches": 64,
+      "official_matches": 1040,
+      "official_date_min": "2024-10-22",
+      "official_date_max": "2025-04-11",
+      "team_side_matches": 2076,
+      "team_side_comparisons": 2080,
+      "flag_agreement": "2076/2076 (100.00%)",
+      "notes": "Four team sides from two games did not match the local archive; all matched team-side validity flags agree."
+    }
+  ],
+  "additional_confirmed_samples": [
+    {
+      "schedule_id": 3,
+      "classification": "NBA playoff schedule, not regular season",
+      "evidence_dates": [
+        "2023-04-24",
+        "2023-05-20"
+      ],
+      "sample_matchday_ids": [
+        101,
+        106,
+        111
+      ]
+    },
+    {
+      "schedule_id": 20,
+      "classification": "NBA playoff schedule, not regular season",
+      "evidence_dates": [
+        "2025-05-29",
+        "2025-05-30"
+      ],
+      "sample_matchday_ids": [
+        750
+      ]
+    },
+    {
+      "schedule_id": 36,
+      "classification": "NBA regular season 2025/26, sample only",
+      "evidence_dates": [
+        "2026-02-01",
+        "2026-02-04"
+      ],
+      "sample_matchday_ids": [
+        1250
+      ]
+    },
+    {
+      "schedule_id": 57,
+      "classification": "current NBA 2026/27 schedule from league config",
+      "current_matchday_id": 1858,
+      "current_matchday_number": 1,
+      "current_round_id": 2890,
+      "date": "2026-10-20"
+    }
+  ],
+  "unresolved_seasons": [
+    {
+      "season": "2018/19",
+      "stats_api_season_id": 1,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2019/20",
+      "stats_api_season_id": 3,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2020/21",
+      "stats_api_season_id": 5,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    },
+    {
+      "season": "2021/22",
+      "stats_api_season_id": 7,
+      "schedule_id": null,
+      "status": "not recovered from public schedule endpoint in this audit; do not infer schedule_id from stats_api_season_id"
+    }
+  ],
+  "method_notes": [
+    "Schedule IDs are not the same namespace as stats API season IDs.",
+    "Confirmed regular-season schedule IDs are 1 (2022/23), 8 (2023/24), and 19 (2024/25).",
+    "A read-only survey of candidate schedule IDs and matchday IDs 66–230 found NBA playoff records under schedule 3 but no earlier NBA regular-season calendar. This is evidence of non-recovery, not proof the data never existed.",
+    "The 2025/26 schedule ID 36 was identified by a sampled matchday, but not fully audited against the local archive because the archive ends at 2024/25.",
+    "No raw data, official PDK targets, model, temporal splits, or backtests were modified."
+  ]
+}

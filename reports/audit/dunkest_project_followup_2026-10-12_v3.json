@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-12",
+  "status": "read-only historical-source verification; one confirmed cross-season contamination cluster found",
+  "confirmed_cluster": {
+    "table_season_id": "5",
+    "expected_season": "2020-21",
+    "week": 43,
+    "round": "2",
+    "files": [
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet"
+    ],
+    "rows_in_each_response": 118,
+    "nba_game_id": "0022100292",
+    "nba_game_date": "2021-11-27",
+    "nba_matchup": "PHI vs MIN",
+    "matched_player_rows": 15,
+    "official_history_season_id": "7",
+    "official_history_valid_true_rows": 15,
+    "pdk_matches_at_table_precision_half_up": 15,
+    "live_read_only_requery_reproduced": true
+  },
+  "weekly_avg_vs_official_valid_rows": [
+    {"season_id": "5", "season": "2020-21", "weekly_rows": 17681, "official_valid_rows": 17662, "table_only_score_entries": 25, "history_only_score_entries": 6, "status": "mismatch; confirmed contamination cluster exists"},
+    {"season_id": "7", "season": "2021-22", "weekly_rows": 18422, "official_valid_rows": 18422, "player_groups_exact_score_multiset": 492},
+    {"season_id": "9", "season": "2022-23", "weekly_rows": 19165, "official_valid_rows": 19165, "player_groups_exact_score_multiset": 482},
+    {"season_id": "13", "season": "2023-24", "weekly_rows": 18927, "official_valid_rows": 18927, "player_groups_exact_score_multiset": 512},
+    {"season_id": "19", "season": "2024-25", "weekly_rows": 19590, "official_valid_rows": 19590, "player_groups_exact_score_multiset": 509}
+  ],
+  "broad_signature_scan": {
+    "avg_unique_cross_season_candidate_rows": 45,
+    "tot_unique_cross_season_candidate_rows": 45,
+    "confirmed_multi_player_game_clusters": 1,
+    "confirmed_players_in_cluster": 15,
+    "isolated_candidates_are_not_confirmed_errors": true
+  },
+  "safeguards": [
+    "No raw data modified",
+    "No PDK targets or validity flags modified",
+    "No model, production config, temporal split, or backtest modified",
+    "No proxy substituted for official targets"
+  ],
+  "tests": {"passed": 213, "warnings": 6800}
+}

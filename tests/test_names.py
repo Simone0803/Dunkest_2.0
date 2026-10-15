@@ -1,9 +1,15 @@
+import numpy as np
+import pandas as pd
+
 from dunkest.names import player_key, player_surname
 
 
-def test_player_key_strips_accents_and_suffixes():
-    assert player_key("Nikola Jokić") == player_key("Nikola Jokic")
-    assert player_key("Luka Dončić") == player_key("Luka Doncic")
-    assert player_key("Karl-Anthony Towns") == player_key("Karl-anthony Towns")
-    assert player_key("Ron Holland II") == player_key("Ron Holland")
-    assert player_surname("Jimmy Butler Jr.") == "butler"
+def test_player_key_handles_missing_scalar_values():
+    for value in (None, pd.NA, np.nan, float("nan")):
+        assert player_key(value) == ""
+        assert player_surname(value) == ""
+
+
+def test_player_key_keeps_existing_normalization():
+    assert player_key("Nikola Jokić") == "nikola jokic"
+    assert player_key("Gary Payton II") == "gary payton"

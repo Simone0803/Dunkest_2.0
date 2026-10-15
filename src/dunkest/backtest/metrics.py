@@ -24,6 +24,56 @@ class BacktestReport:
     regret_vs_ex_post_player_score: float = float("nan")
 
 
+def compute_lineup_coverage(
+    results: pd.DataFrame, requested_gameweeks: list[int]
+) -> dict[str, int]:
+    """Count complete lineup outcomes against the full requested period."""
+    requested = sorted({int(gw) for gw in requested_gameweeks})
+    if results.empty or "gameweek" not in results:
+        return {
+            "requested_gameweeks": len(requested),
+            "gameweeks_with_results": 0,
+            "gameweeks_with_complete_rank1": 0,
+            "gameweeks_with_three_complete_lineups": 0,
+            "generated_lineups": 0,
+            "complete_lineups": 0,
+            "incomplete_lineups": 0,
+        }
+
+    frame = results.copy()
+    complete = (
+        frame["actual_score_complete"].fillna(False).astype(bool)
+        if "actual_score_complete" in frame
+        else pd.Series(False, index=frame.index)
+    )
+    frame["_score_complete"] = complete
+    frame["_gameweek"] = pd.to_numeric(frame["gameweek"], errors="coerce")
+    frame = frame.loc[frame["_gameweek"].isin(requested)]
+    present_weeks = set(frame["_gameweek"].dropna().astype(int))
+
+    if "rank" in frame:
+        rank1 = frame.loc[pd.to_numeric(frame["rank"], errors="coerce").eq(1)]
+    else:
+        rank1 = frame
+    rank1_complete = int(rank1.groupby("_gameweek")["_score_complete"].any().sum())
+    three_complete = 0
+    for _, week in frame.groupby("_gameweek"):
+        if len(week) == 3 and bool(week["_score_complete"].all()):
+            three_complete += 1
+
+    complete_lineups = int(frame["_score_complete"].sum())
+    generated_lineups = int(len(frame))
+    return {
+        "requested_gameweeks": len(requested),
+        "gameweeks_with_results": len(present_weeks),
+        "gameweeks_with_complete_rank1": rank1_complete,
+        "gameweeks_with_three_complete_lineups": three_complete,
+        "generated_lineups": generated_lineups,
+        "complete_lineups": complete_lineups,
+        "incomplete_lineups": generated_lineups - complete_lineups,
+    }
+
+
 def compute_backtest_metrics(results: pd.DataFrame) -> BacktestReport:
     if results.empty:
         unavailable = float("nan")

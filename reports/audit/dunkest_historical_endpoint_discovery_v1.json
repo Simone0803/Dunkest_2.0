@@ -1,0 +1,137 @@
+{
+  "date": "2026-10-12",
+  "method": "Read-only public endpoint probes and public website HTML inspection",
+  "results": [
+    {
+      "path": "/api/v1/games/1/config",
+      "status": 200,
+      "content_type": "application/json",
+      "length": 2140,
+      "json_type": "dict",
+      "keys": [
+        "data"
+      ],
+      "config_summary": {
+        "data": [
+          "display_name",
+          "default_league_id",
+          "default_game_mode_id",
+          "default_formation_id",
+          "default_language",
+          "leagues",
+          "league_statuses",
+          "fantasy_league_statuses",
+          "fantasy_league_types",
+          "game_modes",
+          "formations",
+          "positions",
+          "tournament_types",
+          "tournament_categories",
+          "stores",
+          "avatar_urls",
+          "languages",
+          "markets",
+          "avatar_customization_enabled",
+          "jersey_customization_enabled"
+        ]
+      }
+    },
+    {
+      "path": "/api/v1/leagues/1/config",
+      "status": 200,
+      "content_type": "application/json",
+      "length": 20790,
+      "json_type": "dict",
+      "keys": [
+        "data"
+      ]
+    },
+    {
+      "path": "/api/v1/leagues/1/schedules",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "path": "/api/v1/leagues/1/competitions",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "path": "/api/v1/leagues/1/seasons",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "path": "/api/v1/schedules",
+      "status": 401,
+      "content_type": "application/json",
+      "length": 55,
+      "snippet": "{\"code\":\"UNAUTHENTICATED\",\"message\":\"Unauthenticated.\"}"
+    },
+    {
+      "path": "/api/v1/schedules/1",
+      "status": 405,
+      "content_type": "application/json",
+      "length": 140,
+      "snippet": "{\n    \"code\": \"METHOD_NOT_ALLOWED\",\n    \"message\": \"The GET method is not supported for route api/v1/schedules/1. Suppor"
+    },
+    {
+      "path": "/api/v1/schedules/1/config",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "path": "/api/v1/competitions/1/config",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "path": "/api/v1/matchdays/1",
+      "status": 405,
+      "content_type": "application/json",
+      "length": 140,
+      "snippet": "{\n    \"code\": \"METHOD_NOT_ALLOWED\",\n    \"message\": \"The GET method is not supported for route api/v1/matchdays/1. Suppor"
+    },
+    {
+      "path": "/api/v1/matchdays/1/config",
+      "status": 404,
+      "content_type": "application/json",
+      "length": 43,
+      "snippet": "{\"code\":\"NOT_FOUND\",\"message\":\"Not Found.\"}"
+    },
+    {
+      "website": "https://www.dunkest.com/it",
+      "status": 200,
+      "final_url": "https://www.dunkest.com/it",
+      "html_length": 39211,
+      "script_urls": [
+        "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6928759504783120",
+        "https://cdn.adkaora.space/dunkest/prod/adk-init.js",
+        "https://code.jquery.com/jquery-3.5.1.min.js",
+        "https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js",
+        "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/it.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/js/bootstrap-select.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.17/js/i18n/defaults-it_IT.min.js",
+        "https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js",
+        "https://www.dunkest.com/js/nouislider.min.js",
+        "https://www.dunkest.com/js/mapsort.min.js",
+        "https://www.dunkest.com/js/paginationjs.min.js",
+        "https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@8.3.2/dist/js/autoComplete.min.js",
+        "https://www.dunkest.com/js/main.js"
+      ]
+    }
+  ],
+  "conclusion": "No authenticated calls; endpoint probes are exploratory and HTTP failures do not prove endpoint absence."
+}

@@ -1,0 +1,76 @@
+{
+  "generated_at_utc": "2026-10-14T06:55:21.404422+00:00",
+  "source_run_id": "20261013T184846Z_21d331f5",
+  "source_run_timestamp_utc": "2026-10-13T18:48:46.412658+00:00",
+  "season_id": "26",
+  "gameweek": 1,
+  "mapped_fixtures": 16,
+  "player_forecast_rows": 546,
+  "coach_forecast_rows": 30,
+  "snapshot_files_hash_verified": 11,
+  "variants": [
+    {
+      "key": "risk_adjusted_corrected_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "corrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted + corrected plusvalenza"
+    },
+    {
+      "key": "expected_value_corrected_gain",
+      "objective": "expected_value",
+      "gain_mode": "corrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Expected value + corrected plusvalenza"
+    },
+    {
+      "key": "risk_adjusted_uncorrected_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "uncorrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted + reconstructed uncorrected plusvalenza"
+    },
+    {
+      "key": "expected_value_uncorrected_gain",
+      "objective": "expected_value",
+      "gain_mode": "uncorrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Expected value + reconstructed uncorrected plusvalenza"
+    },
+    {
+      "key": "risk_adjusted_no_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "none",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted, plusvalenza excluded"
+    },
+    {
+      "key": "expected_value_no_gain",
+      "objective": "expected_value",
+      "gain_mode": "none",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Expected value, plusvalenza excluded"
+    }
+  ],
+  "variant_runs_root": "/Users/simone/Documents/Dunkest/data/workspaces/dunkest_preflight_20261013/predictions/strategy_variants_20261013_v2",
+  "comparison_policy": "Identical frozen player/coach forecasts and snapshot bytes across variants. Only objective/risk penalty and whether corrected expected plusvalenza enters optimization differ. No actual outcomes read.",
+  "limitation": "Uncorrected plusvalenza is reconstructed by subtracting the stored CR bias correction from the archived corrected expectation; because the output was quantized to 0.1 CR, this is an ablation approximation, not an exact refit of the legacy model.",
+  "freshness_warning": {
+    "status": "exploratory_only_not_decisive",
+    "forecast_age_hours_at_earliest_kickoff": 149.2,
+    "required_snapshot_age_hours_at_earliest_kickoff": {
+      "current_lineups_market.csv": 150.7,
+      "lineups_availability.csv": 150.7,
+      "player_credits_26_gw1.parquet": 149.2,
+      "coach_market_26_gw1.parquet": 149.2,
+      "injuries_26_gw1.parquet": 149.2
+    },
+    "reason": "All captures precede kickoff and hashes validate, but the frozen state is more than six days old. The strict V3 builder requires <=36 hours before earliest kickoff."
+  }
+}

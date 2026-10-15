@@ -1,0 +1,104 @@
+{
+  "source": "reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v9_persisted_date_link_predictions.csv",
+  "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+  "seasons_loaded": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "validation_seasons": [
+    "2023-24",
+    "2024-25"
+  ],
+  "target_season_2025_26_loaded": false,
+  "methods": [
+    "ridge_residual",
+    "hgb_residual",
+    "et_residual"
+  ],
+  "features": [
+    "predicted_pdk_round_total",
+    "lagged_cr",
+    "lag1_pdk",
+    "opponent_def_allowed_pts_prev10",
+    "opponent_def_allowed_reb_prev10",
+    "opponent_def_allowed_ast_prev10",
+    "opponent_def_allowed_stl_prev10",
+    "opponent_def_allowed_blk_prev10",
+    "opponent_def_allowed_tov_prev10",
+    "opponent_pace_prev10",
+    "opponent_possessions_allowed_prev10",
+    "round_index"
+  ],
+  "past_only": true,
+  "production_changed": false,
+  "metrics": [
+    {
+      "season": "2023-24",
+      "method": "et_residual",
+      "n": 18918,
+      "date_clusters": 153,
+      "raw_mae": 7.463761087342568,
+      "corrected_mae": 7.454644887631902,
+      "delta_mae_corrected_minus_raw": -0.009116199710665462,
+      "ci95_low": -0.015673580372191687,
+      "ci95_high": -0.0024276134549711587
+    },
+    {
+      "season": "2023-24",
+      "method": "hgb_residual",
+      "n": 18918,
+      "date_clusters": 153,
+      "raw_mae": 7.463761087342568,
+      "corrected_mae": 7.451586502615534,
+      "delta_mae_corrected_minus_raw": -0.01217458472703381,
+      "ci95_low": -0.01888861350427638,
+      "ci95_high": -0.005108857004912782
+    },
+    {
+      "season": "2023-24",
+      "method": "ridge_residual",
+      "n": 18918,
+      "date_clusters": 153,
+      "raw_mae": 7.463761087342568,
+      "corrected_mae": 7.484066600972447,
+      "delta_mae_corrected_minus_raw": 0.020305513629879535,
+      "ci95_low": 0.008235463983720857,
+      "ci95_high": 0.031625364819324785
+    },
+    {
+      "season": "2024-25",
+      "method": "et_residual",
+      "n": 19589,
+      "date_clusters": 158,
+      "raw_mae": 7.463217903821078,
+      "corrected_mae": 7.453295321186696,
+      "delta_mae_corrected_minus_raw": -0.00992258263438206,
+      "ci95_low": -0.021152662129250963,
+      "ci95_high": 0.0013748077962161649
+    },
+    {
+      "season": "2024-25",
+      "method": "hgb_residual",
+      "n": 19589,
+      "date_clusters": 158,
+      "raw_mae": 7.463217903821078,
+      "corrected_mae": 7.462666692774629,
+      "delta_mae_corrected_minus_raw": -0.0005512110464485076,
+      "ci95_low": -0.011777086662411757,
+      "ci95_high": 0.010877727058192186
+    },
+    {
+      "season": "2024-25",
+      "method": "ridge_residual",
+      "n": 19589,
+      "date_clusters": 158,
+      "raw_mae": 7.463217903821078,
+      "corrected_mae": 7.468518496389907,
+      "delta_mae_corrected_minus_raw": 0.005300592568829643,
+      "ci95_low": -0.005434789407430809,
+      "ci95_high": 0.01583193147470141
+    }
+  ],
+  "note": "Correction is fit on saved prior-season OOF residuals. Exploratory second-stage correction, not independent model selection; no production promotion without repeatable improvement and lineup-level validation."
+}

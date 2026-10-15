@@ -1,0 +1,7 @@
+left,right,n_paired_rounds,mean_difference,median_difference,win_rate,ci95_low,ci95_high,bootstrap_replicates,seed,experiment,comparison
+model_realized_team_score,baseline_realized_team_score,2,7.284999999999997,7.284999999999997,0.5,-0.4800000000000182,15.050000000000011,10000,20261014,same_constraint_baselines,model_milp_minus_previous5
+model_realized_team_score,pdk_per_cr_realized_team_score,2,73.65249999999999,73.65249999999999,1.0,59.92499999999998,87.38,10000,20261015,same_constraint_baselines,model_milp_minus_pdk_per_cr
+model_realized_team_score,role_rank_realized_team_score,2,8.320000000000007,8.320000000000007,0.5,-6.1299999999999955,22.77000000000001,10000,20261016,same_constraint_baselines,model_milp_minus_role_rank
+2.5,0.0,11,10.976818181818178,2.75,0.5454545454545454,2.001363636363635,22.87728409090909,10000,20261114,sequential_transfer_policy,penalty_2_5_minus_penalty_0
+2.5,5.0,11,0.7363636363636332,0.0,0.18181818181818182,-0.14272727272727728,1.9597727272727083,10000,20261115,sequential_transfer_policy,penalty_2_5_minus_penalty_5
+5.0,0.0,11,10.240454545454545,0.0,0.36363636363636365,0.9436363636363633,22.167727272727276,10000,20261116,sequential_transfer_policy,penalty_5_minus_penalty_0

@@ -1,0 +1,479 @@
+{
+  "scope": "NBA regular season 2018-19 through 2025-26; strict walk-forward; forecasts for all games on a date precede same-date results entering history",
+  "input": "data/processed/team_game_logs_2018-26_v1.parquet",
+  "method": "Compare recency-weighted/shrunk points-only score estimates with box-score possession/efficiency estimates; select blend weight on 2024-25 validation only",
+  "fit_seasons": [
+    "2018-19",
+    "2019-20",
+    "2020-21",
+    "2021-22",
+    "2022-23",
+    "2023-24"
+  ],
+  "validation_seasons": [
+    "2024-25"
+  ],
+  "final_holdout_seasons": [
+    "2025-26"
+  ],
+  "blend_selection_objective": "minimum validation Brier score, then log loss, among alpha in 0.0..1.0 by 0.1; alpha=0 points-only, alpha=1 efficiency-only",
+  "selected_alpha_efficiency": 0.0,
+  "validation_blend_grid": [
+    {
+      "alpha_efficiency": 0.0,
+      "brier": 0.20978332474752792,
+      "log_loss": 0.6066407721207492,
+      "accuracy": 0.6626016260162602,
+      "margin_mae": 11.10380238825148
+    },
+    {
+      "alpha_efficiency": 0.1,
+      "brier": 0.20980855020390507,
+      "log_loss": 0.6067388944965482,
+      "accuracy": 0.6658536585365854,
+      "margin_mae": 11.082942573445017
+    },
+    {
+      "alpha_efficiency": 0.2,
+      "brier": 0.209970279386928,
+      "log_loss": 0.6072198441377391,
+      "accuracy": 0.6650406504065041,
+      "margin_mae": 11.070109211554135
+    },
+    {
+      "alpha_efficiency": 0.3,
+      "brier": 0.21027975130287901,
+      "log_loss": 0.6080908859542542,
+      "accuracy": 0.6699186991869919,
+      "margin_mae": 11.06834848758327
+    },
+    {
+      "alpha_efficiency": 0.4,
+      "brier": 0.21074846518744494,
+      "log_loss": 0.6093592760693168,
+      "accuracy": 0.6699186991869919,
+      "margin_mae": 11.07846899577435
+    },
+    {
+      "alpha_efficiency": 0.5,
+      "brier": 0.21138807942597546,
+      "log_loss": 0.6110322430687711,
+      "accuracy": 0.6691056910569105,
+      "margin_mae": 11.09605214339226
+    },
+    {
+      "alpha_efficiency": 0.6,
+      "brier": 0.21221029105959188,
+      "log_loss": 0.613116969663919,
+      "accuracy": 0.6699186991869919,
+      "margin_mae": 11.122801250525997
+    },
+    {
+      "alpha_efficiency": 0.7,
+      "brier": 0.21322669582789225,
+      "log_loss": 0.6156205749688095,
+      "accuracy": 0.6723577235772358,
+      "margin_mae": 11.162199745816208
+    },
+    {
+      "alpha_efficiency": 0.8,
+      "brier": 0.21444862950678148,
+      "log_loss": 0.6185500975707712,
+      "accuracy": 0.6739837398373983,
+      "margin_mae": 11.210074167975067
+    },
+    {
+      "alpha_efficiency": 0.9,
+      "brier": 0.2158869922353403,
+      "log_loss": 0.6219124795475857,
+      "accuracy": 0.6682926829268293,
+      "margin_mae": 11.267970760271837
+    },
+    {
+      "alpha_efficiency": 1.0,
+      "brier": 0.2175520585498232,
+      "log_loss": 0.6257145515573378,
+      "accuracy": 0.6601626016260163,
+      "margin_mae": 11.340802238336122
+    }
+  ],
+  "period_metrics": {
+    "validation_2024_25": {
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 9.206788625084348,
+        "away_points_mae": 9.293337516697536,
+        "combined_team_points_mae": 9.250063070890942,
+        "margin_mae": 11.10380238825148,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.402322010779297,
+        "away_points_mae": 9.499920706273567,
+        "combined_team_points_mae": 9.451121358526432,
+        "margin_mae": 11.340802238336122,
+        "brier": 0.2175520585498232,
+        "log_loss": 0.6257145515573378,
+        "accuracy": 0.6601626016260163
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 9.206788625084348,
+        "away_points_mae": 9.293337516697536,
+        "combined_team_points_mae": 9.250063070890942,
+        "margin_mae": 11.10380238825148,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602
+      }
+    },
+    "final_holdout_2025_26": {
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 10.009055466388753,
+        "away_points_mae": 9.442757776644886,
+        "combined_team_points_mae": 9.725906621516819,
+        "margin_mae": 11.44582970446835,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.875369380022379,
+        "away_points_mae": 9.52415402945601,
+        "combined_team_points_mae": 9.699761704739196,
+        "margin_mae": 11.786968865465873,
+        "brier": 0.21545120843006887,
+        "log_loss": 0.6216306725453711,
+        "accuracy": 0.6853658536585366
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 10.009055466388753,
+        "away_points_mae": 9.442757776644886,
+        "combined_team_points_mae": 9.725906621516819,
+        "margin_mae": 11.44582970446835,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992
+      }
+    }
+  },
+  "season_metrics": {
+    "2018-19": {
+      "games": 1228,
+      "points_only": {
+        "games": 1228,
+        "home_points_mae": 9.399151326475492,
+        "away_points_mae": 9.103934046215793,
+        "combined_team_points_mae": 9.251542686345642,
+        "margin_mae": 10.292924179912076,
+        "brier": 0.2151823556759034,
+        "log_loss": 0.619506464853749,
+        "accuracy": 0.6604234527687296
+      },
+      "efficiency_only": {
+        "games": 1228,
+        "home_points_mae": 9.576559175861492,
+        "away_points_mae": 9.387892650624629,
+        "combined_team_points_mae": 9.48222591324306,
+        "margin_mae": 10.568856509315314,
+        "brier": 0.22186854250815988,
+        "log_loss": 0.6348865581887148,
+        "accuracy": 0.6498371335504886
+      },
+      "selected_blend": {
+        "games": 1228,
+        "home_points_mae": 9.399151326475492,
+        "away_points_mae": 9.103934046215793,
+        "combined_team_points_mae": 9.251542686345642,
+        "margin_mae": 10.292924179912076,
+        "brier": 0.2151823556759034,
+        "log_loss": 0.619506464853749,
+        "accuracy": 0.6604234527687296
+      },
+      "efficiency_features_available_rate": 0.988599348534202,
+      "date_range": [
+        "2018-10-17",
+        "2019-04-10"
+      ]
+    },
+    "2019-20": {
+      "games": 1059,
+      "points_only": {
+        "games": 1059,
+        "home_points_mae": 9.18562112899889,
+        "away_points_mae": 9.354511670645477,
+        "combined_team_points_mae": 9.270066399822182,
+        "margin_mae": 10.376894477052481,
+        "brier": 0.22064169468876949,
+        "log_loss": 0.6301795701075403,
+        "accuracy": 0.6449480642115203
+      },
+      "efficiency_only": {
+        "games": 1059,
+        "home_points_mae": 9.331754509590604,
+        "away_points_mae": 9.376843766859084,
+        "combined_team_points_mae": 9.354299138224842,
+        "margin_mae": 10.44514815067513,
+        "brier": 0.2261907349524531,
+        "log_loss": 0.6436909655121105,
+        "accuracy": 0.6411709159584513
+      },
+      "selected_blend": {
+        "games": 1059,
+        "home_points_mae": 9.18562112899889,
+        "away_points_mae": 9.354511670645477,
+        "combined_team_points_mae": 9.270066399822182,
+        "margin_mae": 10.376894477052481,
+        "brier": 0.22064169468876949,
+        "log_loss": 0.6301795701075403,
+        "accuracy": 0.6449480642115203
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2019-10-22",
+        "2020-08-14"
+      ]
+    },
+    "2020-21": {
+      "games": 1080,
+      "points_only": {
+        "games": 1080,
+        "home_points_mae": 9.488541862972424,
+        "away_points_mae": 9.255593939370366,
+        "combined_team_points_mae": 9.372067901171395,
+        "margin_mae": 11.160954386521016,
+        "brier": 0.22555719814872047,
+        "log_loss": 0.6424106160301787,
+        "accuracy": 0.6370370370370371
+      },
+      "efficiency_only": {
+        "games": 1080,
+        "home_points_mae": 9.644237321294087,
+        "away_points_mae": 9.45039538744025,
+        "combined_team_points_mae": 9.547316354367169,
+        "margin_mae": 11.319609636636747,
+        "brier": 0.23023171441069737,
+        "log_loss": 0.6523545279133666,
+        "accuracy": 0.6046296296296296
+      },
+      "selected_blend": {
+        "games": 1080,
+        "home_points_mae": 9.488541862972424,
+        "away_points_mae": 9.255593939370366,
+        "combined_team_points_mae": 9.372067901171395,
+        "margin_mae": 11.160954386521016,
+        "brier": 0.22555719814872047,
+        "log_loss": 0.6424106160301787,
+        "accuracy": 0.6370370370370371
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2020-12-22",
+        "2021-05-16"
+      ]
+    },
+    "2021-22": {
+      "games": 1230,
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 9.325503025276646,
+        "away_points_mae": 9.631027019075052,
+        "combined_team_points_mae": 9.478265022175847,
+        "margin_mae": 11.180543555507322,
+        "brier": 0.22065052940488047,
+        "log_loss": 0.633641272449896,
+        "accuracy": 0.656910569105691
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.39819183838226,
+        "away_points_mae": 9.648761104998723,
+        "combined_team_points_mae": 9.523476471690492,
+        "margin_mae": 11.342479666670227,
+        "brier": 0.2259333433777567,
+        "log_loss": 0.6438289697033072,
+        "accuracy": 0.6430894308943089
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 9.325503025276646,
+        "away_points_mae": 9.631027019075052,
+        "combined_team_points_mae": 9.478265022175847,
+        "margin_mae": 11.180543555507322,
+        "brier": 0.22065052940488047,
+        "log_loss": 0.633641272449896,
+        "accuracy": 0.656910569105691
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2021-10-19",
+        "2022-04-10"
+      ]
+    },
+    "2022-23": {
+      "games": 1230,
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 9.465697234372431,
+        "away_points_mae": 9.01026229916761,
+        "combined_team_points_mae": 9.23797976677002,
+        "margin_mae": 10.326421329061883,
+        "brier": 0.22910370193421564,
+        "log_loss": 0.651225194152251,
+        "accuracy": 0.6292682926829268
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.27934695450842,
+        "away_points_mae": 8.82173810026409,
+        "combined_team_points_mae": 9.050542527386254,
+        "margin_mae": 10.353228410930333,
+        "brier": 0.23065789646773938,
+        "log_loss": 0.6536861796315856,
+        "accuracy": 0.6365853658536585
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 9.465697234372431,
+        "away_points_mae": 9.01026229916761,
+        "combined_team_points_mae": 9.23797976677002,
+        "margin_mae": 10.326421329061883,
+        "brier": 0.22910370193421564,
+        "log_loss": 0.651225194152251,
+        "accuracy": 0.6292682926829268
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2022-10-18",
+        "2023-04-09"
+      ]
+    },
+    "2023-24": {
+      "games": 1230,
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 9.658089123959918,
+        "away_points_mae": 9.606288351490601,
+        "combined_team_points_mae": 9.63218873772526,
+        "margin_mae": 11.084514385276124,
+        "brier": 0.21297121916160974,
+        "log_loss": 0.6128712542744879,
+        "accuracy": 0.6382113821138211
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.659152524654278,
+        "away_points_mae": 9.507368576864149,
+        "combined_team_points_mae": 9.583260550759212,
+        "margin_mae": 11.352546734971245,
+        "brier": 0.2208660907828751,
+        "log_loss": 0.6326157187065137,
+        "accuracy": 0.6455284552845528
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 9.658089123959918,
+        "away_points_mae": 9.606288351490601,
+        "combined_team_points_mae": 9.63218873772526,
+        "margin_mae": 11.084514385276124,
+        "brier": 0.21297121916160974,
+        "log_loss": 0.6128712542744879,
+        "accuracy": 0.6382113821138211
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2023-10-24",
+        "2024-04-14"
+      ]
+    },
+    "2024-25": {
+      "games": 1230,
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 9.206788625084348,
+        "away_points_mae": 9.293337516697536,
+        "combined_team_points_mae": 9.250063070890942,
+        "margin_mae": 11.10380238825148,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.402322010779297,
+        "away_points_mae": 9.499920706273567,
+        "combined_team_points_mae": 9.451121358526432,
+        "margin_mae": 11.340802238336122,
+        "brier": 0.2175520585498232,
+        "log_loss": 0.6257145515573378,
+        "accuracy": 0.6601626016260163
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 9.206788625084348,
+        "away_points_mae": 9.293337516697536,
+        "combined_team_points_mae": 9.250063070890942,
+        "margin_mae": 11.10380238825148,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2024-10-22",
+        "2025-04-13"
+      ]
+    },
+    "2025-26": {
+      "games": 1230,
+      "points_only": {
+        "games": 1230,
+        "home_points_mae": 10.009055466388753,
+        "away_points_mae": 9.442757776644886,
+        "combined_team_points_mae": 9.725906621516819,
+        "margin_mae": 11.44582970446835,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992
+      },
+      "efficiency_only": {
+        "games": 1230,
+        "home_points_mae": 9.875369380022379,
+        "away_points_mae": 9.52415402945601,
+        "combined_team_points_mae": 9.699761704739196,
+        "margin_mae": 11.786968865465873,
+        "brier": 0.21545120843006887,
+        "log_loss": 0.6216306725453711,
+        "accuracy": 0.6853658536585366
+      },
+      "selected_blend": {
+        "games": 1230,
+        "home_points_mae": 10.009055466388753,
+        "away_points_mae": 9.442757776644886,
+        "combined_team_points_mae": 9.725906621516819,
+        "margin_mae": 11.44582970446835,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992
+      },
+      "efficiency_features_available_rate": 1.0,
+      "date_range": [
+        "2025-10-21",
+        "2026-04-12"
+      ]
+    }
+  },
+  "decision": "selected blend does not improve both Brier and log loss on validation; keep points-only baseline",
+  "limitations": [
+    "This audit covers team score expectations and base win probabilities, not current roster adjustments, injuries, or the production coach-score Monte Carlo.",
+    "Possessions use FGA + 0.44*FTA - OREB + TOV and therefore remain an estimate.",
+    "2025-26 was not used to choose the blend weight.",
+    "No production predictor was changed by this audit."
+  ]
+}

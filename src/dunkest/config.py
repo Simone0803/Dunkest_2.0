@@ -24,6 +24,8 @@ class Settings:
     transfer_penalty: float = 5.0
     max_from_same_nba_team: int = 3
     model_type: str = "ensemble"
+    # auto prefers official Dunkest PDK labels when at least 1,000 verified targets exist.
+    training_target: str = "auto"
     rolling_windows: list[int] = field(default_factory=lambda: [3, 5, 10, 15])
     use_betting_lines: bool = False
     use_injuries: bool = True
@@ -38,6 +40,9 @@ class Settings:
     http_retries: int = 3
     market_cache_max_age_hours: float = 6.0
     optimizer_top_k: int = 3
+    # When false, optimize the roster/slots without assigning a captain bonus.
+    # Captain choice is manual and the displayed expected score excludes +50%.
+    optimize_captain: bool = True
     # Top-k means the best distinct player rosters. Larger values are an
     # explicit diversification constraint and can reduce the achievable score.
     min_different_players_top_k: int = 1
@@ -58,15 +63,22 @@ class Settings:
     allow_synthetic_logs: bool = False
     impute_missing_cr: bool = False
     feature_season: str = "2025-26"
+    # Opening-round supervised training uses certified Dunkest labels from 2020/21–2024/25.
+    opening_multiseason_training: bool = True
     opening_prior_season_id: str = "25"
     opening_use_pdk_cr_proxy: bool = False
     opening_pdk_cr_scale: float = 2.75
+    # Conservative weight for the separately validated historical game-level PDK model.
+    historical_pdk_blend_weight: float = 0.20
     opening_player_names: list[str] = field(default_factory=list)
     current_roster: list[str] = field(default_factory=list)
     current_coach: str | None = None
 
     def __post_init__(self) -> None:
         self.model_type = self.model_type.strip().casefold()
+        self.training_target = self.training_target.strip().casefold()
+        if self.training_target not in {"auto", "target_pdk", "target_pdk_official"}:
+            raise ValueError("training_target must be one of: auto, target_pdk, target_pdk_official.")
         self.optimizer_objective = self.optimizer_objective.strip().casefold()
         if self.optimizer_objective not in {"expected_value", "risk_adjusted"}:
             raise ValueError(
@@ -80,6 +92,8 @@ class Settings:
             raise ValueError("transfer_penalty must be finite and nonnegative.")
         if self.max_from_same_nba_team < 1:
             raise ValueError("max_from_same_nba_team must be positive.")
+        if not isfinite(self.historical_pdk_blend_weight) or not 0.0 <= self.historical_pdk_blend_weight <= 1.0:
+            raise ValueError("historical_pdk_blend_weight must be finite and between 0 and 1.")
         if not isfinite(self.risk_lambda) or self.risk_lambda < 0:
             raise ValueError("risk_lambda must be finite and nonnegative.")
         if not self.rolling_windows or any(window < 1 for window in self.rolling_windows):
@@ -148,6 +162,7 @@ class Settings:
                 data.get("max_from_same_nba_team", cls.max_from_same_nba_team)
             ),
             model_type=str(data.get("model_type", cls.model_type)),
+            training_target=str(data.get("training_target", cls.training_target)),
             rolling_windows=[int(x) for x in rolling],
             use_betting_lines=bool(data.get("use_betting_lines", cls.use_betting_lines)),
             use_injuries=bool(data.get("use_injuries", cls.use_injuries)),
@@ -164,6 +179,7 @@ class Settings:
                 data.get("market_cache_max_age_hours", cls.market_cache_max_age_hours)
             ),
             optimizer_top_k=int(data.get("optimizer_top_k", cls.optimizer_top_k)),
+            optimize_captain=bool(data.get("optimize_captain", cls.optimize_captain)),
             min_different_players_top_k=int(
                 data.get("min_different_players_top_k", cls.min_different_players_top_k)
             ),
@@ -195,12 +211,16 @@ class Settings:
             ),
             impute_missing_cr=bool(data.get("impute_missing_cr", cls.impute_missing_cr)),
             feature_season=str(opener.get("prior_season", data.get("feature_season", cls.feature_season))),
+            opening_multiseason_training=bool(data.get("opening_multiseason_training", cls.opening_multiseason_training)),
             opening_prior_season_id=str(data.get("opening_prior_season_id", cls.opening_prior_season_id)),
             opening_use_pdk_cr_proxy=bool(
                 opener.get("use_pdk_cr_proxy", data.get("opening_use_pdk_cr_proxy", cls.opening_use_pdk_cr_proxy))
             ),
             opening_pdk_cr_scale=float(
                 opener.get("pdk_cr_scale", data.get("opening_pdk_cr_scale", cls.opening_pdk_cr_scale))
+            ),
+            historical_pdk_blend_weight=float(
+                data.get("historical_pdk_blend_weight", cls.historical_pdk_blend_weight)
             ),
             opening_player_names=list(data.get("opening_player_names", [])),
             current_roster=list(data.get("current_roster", [])),

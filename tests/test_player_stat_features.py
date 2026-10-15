@@ -4,6 +4,7 @@ import pytest
 
 from dunkest.features.builder import (
     _history_features,
+    _attach_inference_team_transitions,
     _normalize_player_opponents,
     _player_opponent_features,
     _rolling_features,
@@ -45,6 +46,14 @@ def test_game_features_use_only_previous_box_scores():
     assert actual["blk_per36_5"] == 0.0
     assert actual["three_point_bonus_mean_5"] == 3.0
     assert actual["pdk_category_bonus_mean_5"] == 5.0
+    assert actual["lag1_pdk"] == pytest.approx(20.0)
+    assert pd.isna(actual["lag2_pdk"])
+    assert actual["lag1_nba_min"] == pytest.approx(30.0)
+    assert actual["prev3_nba_min_mean"] == pytest.approx(30.0)
+    assert actual["min_trend_3v5"] == pytest.approx(0.0)
+    assert actual["min_last_vs_prev5"] == pytest.approx(0.0)
+    assert actual["history_games_before_target"] == pytest.approx(1.0)
+    assert actual["nba_history_games_before_target"] == pytest.approx(1.0)
     assert changed["stl_per36_5"] == actual["stl_per36_5"]
     assert changed["three_point_bonus_mean_5"] == actual["three_point_bonus_mean_5"]
 
@@ -59,6 +68,12 @@ def test_inference_features_summarize_recent_stat_rates_and_efficiency():
     assert inference["ft_pct_5"] == pytest.approx(6 / 9)
     assert inference["three_point_bonus_mean_5"] == 3.5
     assert inference["pdk_category_bonus_mean_5"] == 7.5
+    assert inference["lag1_pdk"] == pytest.approx(25.0)
+    assert inference["lag2_pdk"] == pytest.approx(20.0)
+    assert inference["lag1_nba_min"] == pytest.approx(36.0)
+    assert inference["prev3_nba_min_mean"] == pytest.approx(33.0)
+    assert inference["history_games_before_target"] == pytest.approx(2.0)
+    assert inference["nba_history_games_before_target"] == pytest.approx(2.0)
 
 
 def test_vectorized_rolling_features_match_history_slice_reference():
@@ -103,6 +118,33 @@ def test_vectorized_rolling_features_match_history_slice_reference():
             assert pd.isna(actual_value), column
         else:
             assert actual_value == pytest.approx(expected_value), column
+
+
+def test_team_transition_and_minute_volatility_features_are_past_only():
+    logs = pd.DataFrame([
+        {"PLAYER_NAME":"Player", "GAME_DATE":"2026-01-01", "OPPONENT":"BOS", "TEAM_ABBREVIATION":"NYK", "PDK":20.0, "MIN":30.0, "PTS":12, "REB":4, "AST":2},
+        {"PLAYER_NAME":"Player", "GAME_DATE":"2026-01-03", "OPPONENT":"MIA", "TEAM_ABBREVIATION":"NYK", "PDK":25.0, "MIN":36.0, "PTS":20, "REB":5, "AST":4},
+        {"PLAYER_NAME":"Player", "GAME_DATE":"2026-01-05", "OPPONENT":"BOS", "TEAM_ABBREVIATION":"GSW", "PDK":18.0, "MIN":20.0, "PTS":8, "REB":3, "AST":1},
+        {"PLAYER_NAME":"Player", "GAME_DATE":"2026-01-07", "OPPONENT":"MIA", "TEAM_ABBREVIATION":"GSW", "PDK":19.0, "MIN":22.0, "PTS":9, "REB":4, "AST":2},
+    ])
+    actual = _rolling_features(logs, [3, 5])
+
+    assert actual.loc[0, "team_history_known"] == 0.0
+    assert actual.loc[1, "team_history_known"] == 1.0
+    assert actual.loc[1, "team_changed_from_previous_game"] == 0.0
+    assert actual.loc[2, "team_changed_from_previous_game"] == 1.0
+    assert actual.loc[2, "team_games_since_change"] == 0.0
+    assert actual.loc[3, "team_changed_from_previous_game"] == 0.0
+    assert actual.loc[3, "team_games_since_change"] == 1.0
+    assert actual.loc[2, "min_std_5"] == pytest.approx(3.0)
+    assert actual.loc[2, "abs_min_last_vs_prev5"] == pytest.approx(abs(36.0 - 33.0))
+
+    inference = actual.iloc[-1:]
+    overridden = _attach_inference_team_transitions(inference, logs, {"Player":"BOS"})
+    assert overridden.iloc[0]["TEAM_ABBREVIATION"] == "BOS"
+    assert overridden.iloc[0]["team_history_known"] == 1.0
+    assert overridden.iloc[0]["team_changed_from_previous_game"] == 1.0
+    assert overridden.iloc[0]["team_games_since_change"] == 0.0
 
 
 def test_vectorized_expected_minutes_match_history_slice_reference():
@@ -187,3 +229,39 @@ def test_opponents_are_repaired_from_game_id_and_team_matchup():
     repaired = _normalize_player_opponents(player_logs, team_logs)
 
     assert repaired.OPPONENT.tolist() == ["BBB", "AAA"]
+
+
+def test_lagged_pdk_features_prefer_verified_official_scores_without_target_leakage():
+    logs = _logs().copy()
+    logs["PDK_OFFICIAL_VALID"] = [30.0, np.nan]
+
+    actual = _rolling_features(logs, [3, 5])
+
+    # The second game's features may use the first game's verified official
+    # score, but never its own current-game target.
+    assert actual.loc[1, "pdk_mean_3"] == pytest.approx(30.0)
+    assert actual.loc[1, "history_games_before_target"] == pytest.approx(1.0)
+    assert actual.iloc[-1]["history_games_before_target"] == pytest.approx(1.0)
+    assert actual.iloc[-1]["nba_history_games_before_target"] == pytest.approx(2.0)
+    assert actual.loc[1, "target_pdk"] == pytest.approx(25.0)
+    assert pd.isna(actual.loc[1, "target_pdk_official"])
+
+    # For inference, use official labels where verified and proxy labels only
+    # where the official overlay has no certified score.
+    inference = actual.iloc[-1]
+    assert inference["pdk_mean_3"] == pytest.approx((30.0 + 25.0) / 2.0)
+    assert inference["pdk_season_mean"] == pytest.approx((30.0 + 25.0) / 2.0)
+
+
+def test_rolling_features_reject_ambiguous_duplicate_player_dates():
+    logs = _logs()
+    duplicate = pd.concat([logs, logs.iloc[[0]]], ignore_index=True)
+    with pytest.raises(ValueError, match="duplicate player/date"):
+        _rolling_features(duplicate, [3, 5])
+
+
+def test_rolling_features_accept_non_unique_dataframe_index_when_dates_are_unique():
+    logs = _logs()
+    logs.index = [7, 7]
+    actual = _rolling_features(logs, [3, 5])
+    assert len(actual) == 3

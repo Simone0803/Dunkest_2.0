@@ -1,0 +1,74 @@
+{
+  "created_utc": "2026-10-13T14:06:39.691087+00:00",
+  "mixture_predictions": "dunkest_20261013_conditional_tail_model_v2_predictions.csv",
+  "direct_predictions": "dunkest_20261013_minutes_rate_decomposition_v1_predictions.csv",
+  "holdout_2025_26_loaded": false,
+  "prospective_snapshot_loaded": false,
+  "definition": "delta MAE = mixture threshold-25 minus direct model; negative favors mixture. Resampling is stratified by season and clusters all player rows on a target date.",
+  "results": {
+    "mixture_threshold_25_vs_direct_et12": {
+      "overall": {
+        "n": 57682,
+        "season_date_clusters": 475,
+        "delta_mae_mixture_minus_direct": -0.0024709746528280116,
+        "ci95": [
+          -0.013447891882411576,
+          0.00883953799349907
+        ],
+        "bootstrap_reps": 3000
+      },
+      "actual_pdk_ge25": {
+        "n": 13104,
+        "season_date_clusters": 475,
+        "delta_mae_mixture_minus_direct": -0.24761977672680843,
+        "ci95": [
+          -0.28042083440125104,
+          -0.21295573290203382
+        ],
+        "bootstrap_reps": 3000
+      },
+      "actual_pdk_ge30": {
+        "n": 8794,
+        "season_date_clusters": 474,
+        "delta_mae_mixture_minus_direct": -0.3323068713141996,
+        "ci95": [
+          -0.3718696354160374,
+          -0.2892246899695747
+        ],
+        "bootstrap_reps": 3000
+      }
+    },
+    "mixture_threshold_25_vs_direct_hgb": {
+      "overall": {
+        "n": 57682,
+        "season_date_clusters": 475,
+        "delta_mae_mixture_minus_direct": -0.008974554592545517,
+        "ci95": [
+          -0.017608351685726123,
+          -0.00021408333749637655
+        ],
+        "bootstrap_reps": 3000
+      },
+      "actual_pdk_ge25": {
+        "n": 13104,
+        "season_date_clusters": 475,
+        "delta_mae_mixture_minus_direct": 0.01670538418974406,
+        "ci95": [
+          -0.00812464218635997,
+          0.042526586209150105
+        ],
+        "bootstrap_reps": 3000
+      },
+      "actual_pdk_ge30": {
+        "n": 8794,
+        "season_date_clusters": 474,
+        "delta_mae_mixture_minus_direct": 0.06999566224267723,
+        "ci95": [
+          0.03711660005039429,
+          0.10236557589013823
+        ],
+        "bootstrap_reps": 3000
+      }
+    }
+  }
+}

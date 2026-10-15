@@ -6,6 +6,7 @@ import logging
 import warnings
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -18,11 +19,41 @@ from dunkest.names import player_key
 from dunkest.rules.coach import coach_points_from_game
 
 PLUSVALENZA_SAMPLE_GAMEWEEKS = tuple(range(1, 92))
+# A genuine NBA Dunkest gameweek should expose nearly the entire 30-team league.
+# Some non-NBA competitions reuse NBA team codes for a handful of players; one
+# matching code is not enough to classify a season as NBA history.
+MIN_NBA_TEAMS_FOR_PLUSVALENZA = 28
 logger = logging.getLogger(__name__)
 
 
 def _processed(settings: Settings, name: str) -> Path:
     return settings.data_path / "processed" / name
+
+
+def _plusvalenza_season_team_coverage(history: pd.DataFrame | None) -> dict[str, int]:
+    """Count distinct NBA team codes per season without trusting row volume."""
+    if history is None or history.empty or not {"season_id", "team_code"}.issubset(history.columns):
+        return {}
+    team = history["team_code"].astype("string").str.strip().str.upper()
+    team = team.mask(team.isna() | team.isin(["", "NAN", "NONE", "<NA>"]), pd.NA)
+    coverage = history.assign(_nba_team=team).groupby("season_id")["_nba_team"].nunique(dropna=True)
+    result: dict[str, int] = {}
+    for season, count in coverage.items():
+        try:
+            number = float(season)
+            label = str(int(number)) if number.is_integer() else str(season)
+        except (TypeError, ValueError):
+            label = str(season)
+        result[label] = int(count)
+    return result
+
+
+def _has_complete_plusvalenza_season(history: pd.DataFrame | None) -> bool:
+    """A usable cache must contain only seasons with broad NBA-team coverage."""
+    coverage = _plusvalenza_season_team_coverage(history)
+    return bool(coverage) and all(
+        teams >= MIN_NBA_TEAMS_FOR_PLUSVALENZA for teams in coverage.values()
+    )
 
 
 def _check_live_market_freshness(settings: Settings, path: Path) -> None:
@@ -47,6 +78,75 @@ def _check_live_market_freshness(settings: Settings, path: Path) -> None:
             f"Lineups market is stale ({age_hours:.1f}h; limit "
             f"{settings.market_cache_max_age_hours:.1f}h): {path}. Refresh the Lineups scrape."
         )
+
+
+def _merge_live_market_pool(season_players: pd.DataFrame, live_market: pd.DataFrame) -> pd.DataFrame:
+    """Use the current Lineups market as the candidate universe and enrich it with season stats."""
+    if live_market.empty:
+        return season_players.copy()
+    required = {"player_name", "cr", "position", "team_code"}
+    missing = sorted(required.difference(live_market.columns))
+    if missing:
+        raise RuntimeError(
+            "Lineups market missing candidate identity fields: " + ", ".join(missing)
+        )
+
+    market = live_market.copy()
+    market["_market_key"] = market["player_name"].map(player_key)
+    market["cr"] = pd.to_numeric(market["cr"], errors="coerce")
+    market["position"] = market["position"].fillna("").astype(str).str.upper().replace({"A": "F"})
+    market["team_code"] = market["team_code"].fillna("").astype(str).str.upper().str.strip()
+    invalid = (
+        market["player_name"].isna()
+        | market["player_name"].astype(str).str.strip().eq("")
+        | market["_market_key"].eq("")
+        | ~np.isfinite(market["cr"].to_numpy(dtype=float, na_value=np.nan))
+        | ~market["position"].isin({"G", "F", "C"})
+        | market["team_code"].isin({"", "NAN", "NONE"})
+    )
+    if invalid.any():
+        raise RuntimeError(
+            "Lineups market contains player rows with missing or invalid name, CR, role, or team."
+        )
+    if market["_market_key"].eq("").any() or market["_market_key"].duplicated(keep=False).any():
+        raise RuntimeError(
+            "Lineups market contains blank or duplicate normalized player identities."
+        )
+    for column in ("lineup_group", "status"):
+        if column not in market:
+            market[column] = pd.NA
+
+    season = season_players.copy()
+    if season.empty:
+        out = market.drop(columns="_market_key").copy()
+        out["role"] = out["position"]
+        return out
+    if "player_name" not in season:
+        raise RuntimeError("NBA season player table is missing player_name.")
+    season["_market_key"] = season["player_name"].map(player_key)
+    valid_season_keys = season["_market_key"].ne("")
+    if season.loc[valid_season_keys, "_market_key"].duplicated(keep=False).any():
+        raise RuntimeError("NBA season player table contains duplicate normalized player identities.")
+
+    market_index = market.set_index("_market_key", drop=False)
+    out = season.copy()
+    for column in ("cr", "position", "team_code", "lineup_group", "status"):
+        market_values = out["_market_key"].map(market_index[column])
+        if column not in out:
+            out[column] = market_values
+        else:
+            out[column] = market_values.combine_first(out[column])
+    out["role"] = out["position"]
+
+    known = set(out.loc[out["_market_key"].ne(""), "_market_key"])
+    candidates_without_stats = market.loc[~market["_market_key"].isin(known)].copy()
+    if not candidates_without_stats.empty:
+        candidates_without_stats = candidates_without_stats.drop(columns="_market_key")
+        candidates_without_stats["role"] = candidates_without_stats["position"]
+        out = pd.concat([out.drop(columns="_market_key"), candidates_without_stats], ignore_index=True, sort=False)
+    else:
+        out = out.drop(columns="_market_key")
+    return out
 
 
 def save_player_credit_snapshot(
@@ -162,11 +262,14 @@ def get_plusvalenza_history(
     active_cutoff = min(through_gameweek, max(PLUSVALENZA_SAMPLE_GAMEWEEKS))
     anchor = _processed(
         settings,
-        f"plusvalenza_history_multiseason_{active_season}_pre_gw{through_gameweek}_{settings.capital_gain_history_seasons}y_nba_v3.parquet",
+        f"plusvalenza_history_multiseason_{active_season}_pre_gw{through_gameweek}_{settings.capital_gain_history_seasons}y_nba_v4.parquet",
     )
     if not force_refresh and cache_valid(anchor):
         cached = read_parquet(anchor)
-        if cached is not None:
+        # Older cache builds could accept non-NBA competitions that happened to
+        # contain one or two NBA team codes. Rebuild those archives instead of
+        # repeatedly training on them or silently accepting incomplete seasons.
+        if cached is not None and _has_complete_plusvalenza_season(cached):
             return cached
 
     columns = ["player_name", "team_code", "role", "cr", "pdk", "plus", "min", "starter", "gameweek", "season_id"]
@@ -183,7 +286,13 @@ def get_plusvalenza_history(
         if first_week.empty or not {"player_name", "team_code", "cr", "pdk", "plus"}.issubset(first_week.columns):
             continue
         nba_week = first_week.loc[first_week["team_code"].astype(str).str.upper().isin(NBA_TEAM_CODES)].copy()
-        if nba_week.empty:
+        team_coverage = nba_week["team_code"].astype(str).str.upper().nunique()
+        if team_coverage < MIN_NBA_TEAMS_FOR_PLUSVALENZA:
+            logger.debug(
+                "Skipping Dunkest season %s during NBA history discovery: first-week "
+                "NBA-team coverage is %s/%s, below the required %s.",
+                candidate, team_coverage, 30, MIN_NBA_TEAMS_FOR_PLUSVALENZA,
+            )
             continue
         selected_seasons.append(str(candidate))
         first_weeks[str(candidate)] = nba_week
@@ -193,9 +302,9 @@ def get_plusvalenza_history(
     samples: list[pd.DataFrame] = []
     for historical_season in selected_seasons:
         cutoff = active_cutoff if historical_season == active_season and through_gameweek > 0 else 91
-        season_path = _processed(settings, f"plusvalenza_history_nba_{historical_season}_through_gw{cutoff}_v3.parquet")
+        season_path = _processed(settings, f"plusvalenza_history_nba_{historical_season}_through_gw{cutoff}_v4.parquet")
         cached_season = None if force_refresh or not cache_valid(season_path) else read_parquet(season_path)
-        if cached_season is not None and not cached_season.empty:
+        if cached_season is not None and not cached_season.empty and _has_complete_plusvalenza_season(cached_season):
             samples.append(cached_season)
             continue
         prior_settings = copy(settings)
@@ -234,8 +343,14 @@ def get_plusvalenza_history(
         if season_samples:
             season_history = pd.concat(season_samples, ignore_index=True)
             season_history = season_history.drop_duplicates(["player_name", "gameweek"], keep="last")
+            if not _has_complete_plusvalenza_season(season_history):
+                logger.warning(
+                    "Skipping Dunkest season %s: fetched history has insufficient NBA-team coverage (%s).",
+                    historical_season, _plusvalenza_season_team_coverage(season_history),
+                )
+                continue
             write_parquet(
-                season_history, season_path, source="dunkest_official_nba_plusvalenza_all_gameweeks",
+                season_history, season_path, source="dunkest_official_nba_plusvalenza_all_gameweeks_v4",
                 season_id=historical_season, through_gameweek=cutoff,
                 gameweeks=int(season_history["gameweek"].nunique()),
             )
@@ -253,7 +368,7 @@ def get_plusvalenza_history(
     history = history.loc[history["team_code"].astype(str).str.upper().isin(NBA_TEAM_CODES)]
     if not history.empty:
         write_parquet(
-            history, anchor, source="dunkest_official_multiseason_nba_plusvalenza",
+            history, anchor, source="dunkest_official_multiseason_nba_plusvalenza_v4",
             season_ids=selected_seasons, through_gameweek=through_gameweek,
             sample_gameweeks="all_available",
         )
@@ -280,7 +395,9 @@ def get_dunkest_data(
         path, max_age_hours=settings.market_cache_max_age_hours
     ):
         df = read_parquet(path)
-        if df is not None and {"official_plusvalenza", "actual_pdk", "gameweek_stats_available"}.issubset(df.columns):
+        if df is not None and {
+            "official_plusvalenza", "actual_pdk", "gameweek_stats_available", "prior_pdk"
+        }.issubset(df.columns):
             df = add_previous_credit_change(settings, df, gw)
             if use_live_market:
                 save_player_credit_snapshot(settings, df, gw)
@@ -291,9 +408,10 @@ def get_dunkest_data(
         live = pd.read_csv(live_market_path)
         live.columns = [str(column).strip().lower() for column in live.columns]
         live = live[live.get("role", pd.Series(index=live.index, dtype=str)).astype(str).str.upper() != "HC"].copy()
+        if not {"role", "team"}.issubset(live.columns):
+            raise RuntimeError("Lineups market is missing player role or team columns.")
         live["cr"] = pd.to_numeric(live.get("cr"), errors="coerce")
-        live = live.dropna(subset=["player_name", "cr"])
-        live_role = live["role"] if "role" in live else pd.Series("F", index=live.index)
+        live_role = live["role"]
         live["position"] = live_role.astype(str).str.upper().replace({"A": "F", "HC": "F"})
         live["pdk"] = float("nan")
         live["team_code"] = live.get("team", "").astype(str).str.upper()
@@ -302,23 +420,13 @@ def get_dunkest_data(
             ("player_name", "cr", "position", "pdk", "team_code", "lineup_group", "status")
             if column in live.columns
         ]
-        if df.empty:
-            df = live[live_columns].copy()
-        else:
-            lookup_columns = [
-                column for column in
-                ("player_name", "cr", "position", "team_code", "lineup_group", "status")
-                if column in live.columns
-            ]
-            lookup = live[lookup_columns].drop_duplicates("player_name", keep="last")
-            df = df.merge(lookup, on="player_name", how="left", suffixes=("", "_lineups"))
-            df["cr"] = df["cr_lineups"].fillna(df["cr"])
-            for column in ("position", "team_code", "lineup_group", "status"):
-                lineups_column = f"{column}_lineups"
-                if lineups_column in df:
-                    df[column] = df[lineups_column].fillna(df.get(column))
-            df = df.drop(columns=[c for c in df.columns if c.endswith("_lineups")])
-            df["role"] = df["position"]
+        df = _merge_live_market_pool(df, live[live_columns])
+    # Capture the season-to-date prior before attaching this game's outcomes.
+    # `predict_players` consumes prior_pdk ahead of pdk, so current-week PDK
+    # must remain in actual_pdk and never overwrite the forecast input.
+    df["prior_pdk"] = pd.to_numeric(
+        df.get("pdk", pd.Series(float("nan"), index=df.index)), errors="coerce"
+    )
     cr_updates = df[["player_name", "cr"]].copy()
     cr_updates["key"] = cr_updates["player_name"].map(player_key)
     current_week_stats = pd.DataFrame()
@@ -345,10 +453,12 @@ def get_dunkest_data(
     df["cr"] = df["cr_latest"].fillna(df["cr"])
     df = df.drop(columns=[c for c in df.columns if c.endswith("_dup") or c == "cr_latest"])
     if has_live_market:
-        current_prices = live[["player_name", "cr"]].drop_duplicates("player_name", keep="last")
-        df = df.merge(current_prices.rename(columns={"cr": "cr_lineups_live"}), on="player_name", how="left")
-        df["cr"] = df["cr_lineups_live"].fillna(df["cr"])
-        df = df.drop(columns="cr_lineups_live")
+        live_prices = live[["player_name", "cr"]].copy()
+        live_prices["_market_key"] = live_prices["player_name"].map(player_key)
+        price_lookup = live_prices.drop_duplicates("_market_key", keep="last").set_index("_market_key")["cr"]
+        df["_market_key"] = df["player_name"].map(player_key)
+        df["cr"] = df["_market_key"].map(price_lookup).combine_first(df["cr"])
+        df = df.drop(columns="_market_key")
     if settings.impute_missing_cr:
         missing = df["cr"] < settings.min_cr
         df.loc[missing, "cr"] = (
@@ -366,8 +476,10 @@ def get_dunkest_data(
         gw_pdk = gw_copy.drop_duplicates("key", keep="last").set_index("key")["pdk"]
         df["key"] = df["player_name"].map(player_key)
         df["pdk_gw"] = df["key"].map(gw_pdk)
-        df["actual_pdk"] = df["pdk_gw"].fillna(0.0)
-        df["pdk"] = df["pdk_gw"].fillna(df["pdk"])
+        # Absence from the API result table is not proof of a zero score: it
+        # can also reflect incomplete coverage or an unresolved identity.
+        # Keep the actual missing so backtests cannot silently score it as 0.
+        df["actual_pdk"] = df["pdk_gw"]
         df = df.drop(columns=["key", "pdk_gw"], errors="ignore")
     df["gameweek"] = gw
     df = add_previous_credit_change(settings, df, gw)
@@ -385,13 +497,17 @@ def save_injury_snapshot(
         return
     snapshot = injuries.copy()
     snapshot["gameweek"] = int(gameweek)
+    if "observed_at_utc" not in snapshot:
+        snapshot["observed_at_utc"] = datetime.now(timezone.utc).isoformat()
     path = _processed(
         settings, f"injuries_{settings.season_id}_gw{gameweek}.parquet"
     )
+    dedupe_columns = ["player_name", "team"] if "team" in snapshot.columns else ["player_name"]
     write_parquet(
-        snapshot.drop_duplicates("player_name", keep="last"),
+        snapshot.drop_duplicates(dedupe_columns, keep="last"),
         path,
-        source="dunkest_pregame_availability_snapshot",
+        source="dunkest_official_injuries_page_snapshot",
+        source_url="https://www.dunkest.com/it/nba/infortuni",
         season_id=settings.season_id,
         gameweek=gameweek,
         dunkest_turn=settings.target_dunkest_turn,
@@ -434,103 +550,128 @@ def save_coach_market_snapshot(
 
 
 def get_injuries(settings: Settings, force_refresh: bool = False) -> pd.DataFrame:
+    """Get availability from Dunkest's dedicated injury page, scoped to this gameweek.
+
+    Lineups remains a source for prices/roster data, but its browser scrape is no
+    longer used as the injury-status feed. A cached report is reusable only for
+    the same season and gameweek; otherwise the official injury page is fetched.
+    """
+    import warnings
+
     path = _processed(settings, "injuries.parquet")
-    live_path = settings.data_path / "current_lineups_market.csv"
-    live = pd.DataFrame()
-    lineup_updated_names: set[str] = set()
-    if live_path.exists():
-        market = pd.read_csv(live_path)
-        market.columns = [str(column).strip().lower() for column in market.columns]
-        if "dunkest_turn" in market.columns:
-            if settings.target_dunkest_turn is None:
-                market = market.iloc[0:0]
+    target_gameweek = int(settings.target_gameweek)
+    metadata = read_cache_metadata(path) or {}
+    cached = read_parquet(path) if path.is_file() else None
+    cache_matches_scope = (
+        str(metadata.get("source", "")).startswith("dunkest_official_injuries_page")
+        and str(metadata.get("season_id", settings.season_id)) == str(settings.season_id)
+        and pd.to_numeric(metadata.get("gameweek"), errors="coerce") == target_gameweek
+    )
+    if (
+        not force_refresh
+        and cache_matches_scope
+        and cache_valid(path, max_age_hours=6)
+        and cached is not None
+        and not cached.empty
+    ):
+        df = cached.copy()
+    else:
+        try:
+            df = dk_module.scrape_injuries(settings)
+        except Exception as exc:
+            if not force_refresh and cache_matches_scope and cached is not None and not cached.empty:
+                warnings.warn(
+                    f"Pagina infortuni Dunkest non raggiungibile; riuso lo snapshot "
+                    f"della stessa giornata ({exc}).",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+                df = cached.copy()
             else:
-                market = market[
-                    pd.to_numeric(market["dunkest_turn"], errors="coerce")
-                    == settings.target_dunkest_turn
-                ]
-        elif "gameweek" in market.columns:
-            # Legacy scraper files mislabeled a Turno number as a Giornata.
-            market = market.iloc[0:0]
-        if {"player_name", "team", "status"}.issubset(market.columns):
-            status = market["status"].astype(str).str.strip().str.upper()
-            current = market.loc[status.isin({
-                "OUT", "INJURED", "UNAVAILABLE", "INDISPONIBILE", "AVAILABLE"
-            })].copy()
-            lineup_updated_names = set(current["player_name"].astype(str).str.casefold())
-            live = market.loc[status.isin({"OUT", "INJURED", "UNAVAILABLE", "INDISPONIBILE"}),
-                              ["player_name", "team", "status"]].copy()
-    # The scraper keeps a per-round injury snapshot, separate from the live
-    # prices file. This remains available even after a later round is scraped.
-    availability_path = settings.data_path / "lineups_availability.csv"
-    if availability_path.exists():
-        availability = pd.read_csv(availability_path)
-        availability.columns = [str(column).strip().lower() for column in availability.columns]
-        if {"player_name", "team", "status", "dunkest_turn"}.issubset(availability.columns):
-            if settings.target_dunkest_turn is None:
-                availability = availability.iloc[0:0]
+                raise RuntimeError(
+                    "Impossibile acquisire lo stato infortuni dalla pagina ufficiale "
+                    "Dunkest per la giornata richiesta; non uso lo scraping Lineups come fallback."
+                ) from exc
+
+        required = {"player_name", "team", "status"}
+        if not required.issubset(df.columns) or df.empty:
+            if not force_refresh and cache_matches_scope and cached is not None and not cached.empty:
+                warnings.warn(
+                    "La pagina infortuni Dunkest ha restituito una lista vuota/invalida; "
+                    "riuso lo snapshot valido della stessa giornata.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+                df = cached.copy()
             else:
-                availability = availability[
-                    pd.to_numeric(availability["dunkest_turn"], errors="coerce")
-                    == settings.target_dunkest_turn
-                ]
-            if not availability.empty:
-                lineup_updated_names.update(availability["player_name"].astype(str).str.casefold())
-                live = pd.concat([live, availability[["player_name", "team", "status"]]], ignore_index=True)
-    # Explicit user-confirmed overrides are kept separately because a later
-    # browser scrape replaces the per-round availability snapshot.
+                raise RuntimeError(
+                    "La pagina infortuni Dunkest non ha restituito righe valide per la "
+                    "giornata richiesta; non considero automaticamente sani tutti i giocatori."
+                )
+        else:
+            df = df.copy()
+            df["observed_at_utc"] = datetime.now(timezone.utc).isoformat()
+            write_parquet(
+                df,
+                path,
+                source="dunkest_official_injuries_page",
+                source_url="https://fantasy.dunkest.com/1/injuries",
+                season_id=settings.season_id,
+                gameweek=target_gameweek,
+            )
+
+    # Explicit user-confirmed overrides are retained, but the browser Lineups
+    # availability files are deliberately not merged into the health feed.
     override_path = settings.data_path / "injury_overrides.csv"
-    if override_path.exists():
+    if override_path.is_file():
         overrides = pd.read_csv(override_path)
         overrides.columns = [str(column).strip().lower() for column in overrides.columns]
-        if {"player_name", "team", "status", "gameweek"}.issubset(overrides.columns):
-            overrides = overrides[
-                pd.to_numeric(overrides["gameweek"], errors="coerce") == settings.target_gameweek
-            ]
+        required_overrides = {"player_name", "team", "status", "gameweek"}
+        if required_overrides.issubset(overrides.columns):
+            overrides = overrides.loc[
+                pd.to_numeric(overrides["gameweek"], errors="coerce").eq(target_gameweek)
+            ].copy()
             if not overrides.empty:
-                lineup_updated_names.update(overrides["player_name"].astype(str).str.casefold())
-                live = pd.concat([live, overrides[["player_name", "team", "status"]]], ignore_index=True)
-    # When Lineups has already provided a turn-specific availability snapshot,
-    # treat it as authoritative for this turn and skip the abbreviated web
-    # injuries page (e.g. "S. Curry") which over-excludes via surname matching.
-    lineups_authoritative = not live.empty and settings.target_dunkest_turn is not None
-    if not force_refresh and cache_valid(path, max_age_hours=6) and not lineups_authoritative:
-        df = read_parquet(path)
-        if df is not None and (not df.empty or not live.empty):
-            if "player_name" not in df.columns:
-                df = pd.DataFrame(columns=["player_name", "status", "team"])
-            if lineup_updated_names and "player_name" in df:
-                df = df[~df["player_name"].astype(str).str.casefold().isin(lineup_updated_names)]
-            return pd.concat([df, live], ignore_index=True).drop_duplicates("player_name", keep="last")
-    if lineups_authoritative:
-        merged = live.drop_duplicates("player_name", keep="last")
-        write_parquet(merged, path, source="lineups_availability", gameweek=settings.target_gameweek)
-        return merged
-    cached = read_parquet(path)
-    try:
-        df = dk_module.scrape_injuries(settings)
-    except Exception:
-        if live.empty and (cached is None or cached.empty):
-            raise
-        df = pd.DataFrame()
-    if "player_name" not in df.columns:
-        df = pd.DataFrame(columns=["player_name", "status", "team"])
-    if lineup_updated_names and "player_name" in df:
-        df = df[~df["player_name"].astype(str).str.casefold().isin(lineup_updated_names)]
-    if df.empty and live.empty and cached is not None and not cached.empty:
-        import warnings
+                # Apply explicit overrides to matching official rows instead of
+                # appending a duplicate that would erase injury type/severity
+                # during keep-last deduplication. Preserve the official reason,
+                # description and estimated return alongside the overridden status.
+                df = df.copy()
+                df["_injury_name_key"] = df["player_name"].map(
+                    lambda value: str(value or "").strip().casefold()
+                )
+                df["_injury_team_key"] = df["team"].astype(str).str.strip().str.upper()
+                for _, override in overrides.iterrows():
+                    name_key = str(override.get("player_name") or "").strip().casefold()
+                    team_key = str(override.get("team") or "").strip().upper()
+                    match = df["_injury_name_key"].eq(name_key) & df["_injury_team_key"].eq(team_key)
+                    if match.any():
+                        idx = df.index[match][-1]
+                        df.loc[idx, "status"] = str(override.get("status") or "").strip().upper()
+                        df.loc[idx, "source"] = "user_confirmed_override"
+                        df.loc[idx, "override_gameweek"] = target_gameweek
+                    else:
+                        extra = {column: pd.NA for column in df.columns if not column.startswith("_")}
+                        extra.update({
+                            "player_name": str(override.get("player_name") or "").strip(),
+                            "team": team_key,
+                            "status": str(override.get("status") or "").strip().upper(),
+                            "injury_type": "USER_OVERRIDE",
+                            "injury_severity": "OVERRIDE",
+                            "expected_return_days": pd.NA,
+                            "season_ending": False,
+                            "source": "user_confirmed_override",
+                            "override_gameweek": target_gameweek,
+                        })
+                        df = pd.concat([df, pd.DataFrame([extra])], ignore_index=True, sort=False)
+                df = df.drop(columns=["_injury_name_key", "_injury_team_key"], errors="ignore")
 
-        warnings.warn(
-            "La pagina infortuni ha restituito una lista vuota; mantengo l'ultimo archivio "
-            "valido invece di interpretare il risultato come tutti disponibili.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
-        df = cached
-    df = pd.concat([df, live], ignore_index=True).drop_duplicates("player_name", keep="last")
-    if not df.empty:
-        write_parquet(df, path, source="dunkest_html/infortuni")
-    return df
+    df["player_name"] = df["player_name"].astype(str).str.strip()
+    df["team"] = df["team"].astype(str).str.strip().str.upper()
+    df["status"] = df["status"].astype(str).str.strip().str.upper()
+    df = df.loc[df["player_name"].ne("") & df["player_name"].ne("NAN")]
+    dedupe_columns = ["player_name", "team"] if "team" in df.columns else ["player_name"]
+    return df.drop_duplicates(dedupe_columns, keep="last").reset_index(drop=True)
 
 
 def get_player_data(settings: Settings, force_refresh: bool = False) -> pd.DataFrame:

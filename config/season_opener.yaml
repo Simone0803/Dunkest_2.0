@@ -1,3 +1,7 @@
+training_target: target_pdk_official
+opening_multiseason_training: true
+# Conservatively blend the historical PDK estimator after current-minute allocation.
+historical_pdk_blend_weight: 0.20
 # Preset: prima giornata NBA 2026/27, squadra nuova (95 CR, trasferimenti gratis)
 season: "2026-27"
 season_id: "26"
@@ -13,7 +17,11 @@ season_opener:
   pdk_cr_scale: 2.75
 
 max_player_log_entries: 0
+# Risk-adjusted objective: reduce concentration in high-variance rookie forecasts.
 optimizer_top_k: 3
+# Capitano scelto manualmente dopo aver osservato i risultati dei turni precedenti.
+optimize_captain: true
 min_different_players_top_k: 1
-optimizer_objective: expected_value
+optimizer_objective: risk_adjusted
+risk_lambda: 0.10
 use_injuries: true

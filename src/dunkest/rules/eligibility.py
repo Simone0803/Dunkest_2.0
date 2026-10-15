@@ -33,12 +33,16 @@ _HARD_GROUPS = {"INDISPONIBILI", "UNAVAILABLE", "INJURED"}
 
 
 def _clean_status(value: object) -> str:
-    return (
-        str(value or "")
-        .upper()
-        .strip()
-        .replace("-", " ")
-    )
+    # pandas.NA cannot be used in a boolean expression (value or "").
+    # Scraped/merged injury feeds routinely contain nullable status cells.
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    return str(value).upper().strip().replace("-", " ")
 
 
 def _status_letters(value: object) -> str:
@@ -46,7 +50,7 @@ def _status_letters(value: object) -> str:
 
 
 def play_probability(status: object = "", lineup_group: object = "") -> float:
-    group = str(lineup_group or "").upper().strip()
+    group = _clean_status(lineup_group)
     if group in _HARD_GROUPS:
         return 0.0
     letters = _status_letters(status)
@@ -92,43 +96,44 @@ def filter_injured(df: pd.DataFrame, injuries: pd.DataFrame) -> pd.DataFrame:
     keys = df["player_name"].map(player_key)
     remove = keys.isin(out_keys)
 
-    out_surnames = {player_surname(name) for name in out_rows["player_name"].astype(str)}
-    out_surnames.discard("")
     surnames = df["player_name"].map(player_surname)
-    counts = surnames.value_counts()
-    unique_surnames = {name for name in out_surnames if counts.get(name, 0) == 1}
-    remove |= surnames.isin(unique_surnames)
+    team_series = df["team"].astype(str).str.strip().str.casefold() if "team" in df.columns else None
 
-    if "team" in df.columns and "team" in inj.columns:
-        team_series = df["team"].astype(str).str.casefold()
-        for _, injury in out_rows.iterrows():
-            surname = player_surname(injury.get("player_name", ""))
-            team = str(injury.get("team", "")).strip().casefold()
-            if surname and team:
-                remove |= surnames.eq(surname) & team_series.eq(team)
-
-    # Abbreviated injury names ("D. Barlow", "S. Curry") must still hit full
-    # market names when the initial + surname pair is unique on that team or
-    # across the pool.
+    # Resolve each hard-out identity conservatively. Never remove every player
+    # sharing a surname on the same team before considering the initial: an
+    # injury row such as "J. Miller, LAC" must exclude Jordan Miller, not Baba
+    # Miller as well. If a team-specific match is unavailable, only fall back to
+    # a unique surname across the full candidate pool.
     for _, injury in out_rows.iterrows():
-        injury_key = player_key(injury.get("player_name", ""))
+        injury_name = str(injury.get("player_name", "")).strip()
+        injury_key = player_key(injury_name)
         tokens = injury_key.split()
-        if len(tokens) < 2 or len(tokens[0]) > 1:
+        surname = player_surname(injury_name)
+        if not surname:
             continue
-        initial, surname = tokens[0], tokens[-1]
-        team = str(injury.get("team", "")).strip().casefold()
         candidates = df.loc[surnames.eq(surname)]
-        if team and "team" in df.columns:
-            team_hits = candidates.loc[
-                candidates["team"].astype(str).str.casefold().eq(team)
-            ]
+        team = str(injury.get("team", "")).strip().casefold()
+        if team and team_series is not None:
+            team_hits = candidates.loc[team_series.loc[candidates.index].eq(team)]
             if not team_hits.empty:
                 candidates = team_hits
-        initial_hits = candidates.loc[
-            candidates["player_name"].map(_initial_token).eq(initial)
-        ]
-        if len(initial_hits) == 1:
-            remove |= df.index.isin(initial_hits.index)
-        elif len(initial_hits) == 0 and len(candidates) == 1:
+        elif len(candidates) != 1:
+            continue
+
+        if len(tokens) >= 2 and len(tokens[0]) == 1:
+            initial = tokens[0]
+            initial_hits = candidates.loc[
+                candidates["player_name"].map(_initial_token).eq(initial)
+            ]
+            if len(initial_hits) == 1:
+                remove |= df.index.isin(initial_hits.index)
+            elif len(initial_hits) == 0 and len(candidates) == 1:
+                # OCR may lose or corrupt an initial; allow only a unique
+                # surname candidate, never a multi-player surname collision.
+                remove |= df.index.isin(candidates.index)
+        elif len(tokens) == 1 and len(candidates) == 1:
+            # Surname-only UI labels may be resolved only when unique. A full
+            # official name with a different first name must never be reduced
+            # to a surname-only match, even if it is the sole same-team candidate.
             remove |= df.index.isin(candidates.index)
     return df.loc[~remove].copy()

@@ -1,0 +1,22 @@
+{
+  "generated_at_utc": "2026-10-12T21:10:51.486465+00:00",
+  "capture_path": "data/raw/dunkest_lineups_id_probe_20261012/capture_20261012T210428Z/lineups_api_responses.json",
+  "capture_sha256": "8a3ed16aef317688190d87b2338099046547ea1c3ffa930531e2e78ba11b70cb",
+  "catalog_path": "data/raw/dunkest_player_games_history_v1/player_catalog_current.json",
+  "catalog_sha256": "378b5212b6578b89a61f790948cca5dbd2d46b2c2b875758166757110d3255bb",
+  "api_responses": 18,
+  "http_200_responses": 18,
+  "unique_lineups_entity_ids": 600,
+  "unique_entities_with_same_numeric_id_in_profile_catalog": 335,
+  "same_name_at_same_numeric_id": 0,
+  "exact_profile_slug_name_matches": 474,
+  "entities_without_profile_slug_name_match": 126,
+  "ids_per_team_name_role_identity_max": 1,
+  "conclusion": "The Lineups API field id is a Lineups entity identifier, not a Dunkest player-profile ID. Numeric overlap with the profile catalogue is not sufficient evidence: this capture has 335 overlapping numeric IDs but 0 same-player matches at those IDs. Do not use Lineups id to query /api/player/games. Resolve historical player-game IDs only from the official profile catalogue or a verified profile URL.",
+  "policy": [
+    "No Lineups entity ID is written into the official Dunkest player ID field.",
+    "Names matched to profile slugs are a separate matching dimension.",
+    "Unmatched rookies remain unresolved until a profile ID is published or an explicit official cross-reference is available."
+  ],
+  "csv": "reports/audit/dunkest_lineups_internal_id_semantics_v1.csv"
+}

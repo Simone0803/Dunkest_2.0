@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import copy
+import json
 from pathlib import Path
 
 import numpy as np
@@ -9,11 +10,14 @@ import pandas as pd
 from dunkest.backtest.metrics import BacktestReport, compute_backtest_metrics
 from dunkest.config import Settings
 from dunkest.data.access import (
-    get_dunkest_data,
     get_player_data,
     get_team_data,
 )
-from dunkest.data.dunkest.fixtures import check_backtest_readiness, get_fixture_mapping
+from dunkest.data.dunkest.fixtures import (
+    check_backtest_readiness,
+    get_fixture_mapping,
+    load_post_match_results_archive,
+)
 from dunkest.features.builder import build_feature_matrix
 from dunkest.models.predictor import predict_players, train_models
 from dunkest.models.coach import predict_coach_points
@@ -22,7 +26,7 @@ from dunkest.optimize.milp import optimize_top_k_lineups
 from dunkest.pipeline.ablation import run_ablation_summary
 from dunkest.pipeline.importance import feature_importance_summary
 from dunkest.rules.roster import player_contribution_multiplier
-from dunkest.rules.coach import coach_points_from_game
+from dunkest.backtest.realized_scoring import score_realized_team
 
 MIN_HISTORICAL_MARKET_PLAYERS = 250
 
@@ -49,20 +53,25 @@ def _realized_player_scores(dk: pd.DataFrame) -> dict[str, float]:
     return dict(zip(valid_rows["key"], valid_rows["score"]))
 
 
-_POST_MATCH_MARKET_COLUMNS = (
-    "pdk", "prior_pdk", "actual_pdk", "target_pdk", "target_min",
-    "plus", "official_plusvalenza", "gameweek_stats_available",
-    "game_status_final", "final_score", "home_score", "away_score",
-)
-
-
-def _mask_post_match_market_outcomes(dk: pd.DataFrame) -> pd.DataFrame:
-    """Remove same-round outcomes from the input used to generate historical forecasts."""
-    out = dk.copy()
-    for column in _POST_MATCH_MARKET_COLUMNS:
-        if column in out.columns:
-            out[column] = np.nan
-    return out
+def _archived_coach_scores(results: pd.DataFrame) -> dict[str, float]:
+    """Read finite coach outcomes from the same immutable post-match archive."""
+    required = {"coach", "actual_coach_pdk", "nba_game_id"}
+    if results.empty or not required.issubset(results.columns):
+        return {}
+    scores = pd.to_numeric(results["actual_coach_pdk"], errors="coerce")
+    keys = results["coach"].map(player_key)
+    valid = (
+        keys.ne("")
+        & results["nba_game_id"].notna()
+        & np.isfinite(scores.to_numpy(dtype=float, na_value=np.nan))
+    )
+    rows = pd.DataFrame({"key": keys.loc[valid], "score": scores.loc[valid].astype(float)})
+    duplicates = rows["key"].duplicated(keep=False)
+    if duplicates.any():
+        conflicts = rows.loc[duplicates].groupby("key")["score"].nunique()
+        ambiguous = set(conflicts[conflicts > 1].index)
+        rows = rows.loc[~rows["key"].isin(ambiguous)].drop_duplicates("key", keep="last")
+    return dict(zip(rows["key"], rows["score"]))
 
 
 def _realized_player_score(
@@ -76,67 +85,20 @@ def _realized_player_score(
     for _, player in solution.players.iterrows():
         value = float(realized_map[player_key(player["player_name"])])
         slot = str(player.get("slot", "Bench"))
-        score += value * player_contribution_multiplier(
-            slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
+        supplied_multiplier = pd.to_numeric(player.get("score_multiplier", float("nan")), errors="coerce")
+        multiplier = (
+            float(supplied_multiplier)
+            if pd.notna(supplied_multiplier)
+            else player_contribution_multiplier(
+                slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
+            )
         )
+        if not np.isfinite(multiplier) or multiplier < 0:
+            return float("nan"), False
+        score += value * multiplier
     return score - solution.num_transfers * transfer_penalty, True
 
 
-
-def _realized_coach_scores(
-    coach_market: pd.DataFrame, team_logs: pd.DataFrame, gw_games: pd.DataFrame
-) -> dict[str, float]:
-    """Compute official coach points from verified final scores and archived coach credits."""
-    required = {"coach", "team", "coach_cr", "opponent", "opponent_coach_cr"}
-    game_col = "Game_ID" if "Game_ID" in team_logs else "GAME_ID" if "GAME_ID" in team_logs else None
-    if coach_market.empty or not required.issubset(coach_market.columns) or game_col is None:
-        return {}
-    if not {"TEAM_ABBREVIATION", "PTS"}.issubset(team_logs.columns):
-        return {}
-    logs = team_logs.copy()
-    logs["_game_id"] = logs[game_col].astype(str)
-    logs["_team"] = logs["TEAM_ABBREVIATION"].astype(str).str.upper().str.strip()
-    logs["_pts"] = pd.to_numeric(logs["PTS"], errors="coerce")
-    logs["_minutes"] = pd.to_numeric(logs.get("MIN", pd.Series(np.nan, index=logs.index)), errors="coerce")
-    if logs["_minutes"].isna().all() and "MIN" in logs:
-        logs["_minutes"] = pd.to_timedelta(logs["MIN"], errors="coerce").dt.total_seconds() / 60.0
-    allowed_ids = set(gw_games.get("nba_game_id", pd.Series(dtype=str)).astype(str))
-    scores = {}
-    for _, row in coach_market.iterrows():
-        name = str(row.get("coach", "")).strip()
-        team = str(row.get("team", "")).strip().upper()
-        opponent = str(row.get("opponent", "")).strip().upper()
-        coach_cr = pd.to_numeric(pd.Series([row.get("coach_cr")]), errors="coerce").iloc[0]
-        opponent_cr = pd.to_numeric(pd.Series([row.get("opponent_coach_cr")]), errors="coerce").iloc[0]
-        if not name or not team or not opponent or not np.isfinite(coach_cr) or not np.isfinite(opponent_cr):
-            continue
-        game_id = str(row.get("nba_game_id", "")).strip()
-        candidates = logs.loc[logs["_game_id"].eq(game_id)] if game_id not in {"", "nan", "None", "<NA>"} else logs.iloc[0:0]
-        if game_id and allowed_ids and game_id not in allowed_ids:
-            continue
-        if candidates.empty:
-            pairs = gw_games.loc[
-                (gw_games["HOME_TEAM"].eq(team) & gw_games["AWAY_TEAM"].eq(opponent))
-                | (gw_games["HOME_TEAM"].eq(opponent) & gw_games["AWAY_TEAM"].eq(team))
-            ]
-            target_ids = pairs.get("nba_game_id", pd.Series(dtype=str)).astype(str).tolist()
-            # A fallback is valid only if the archived matchup resolves to one unique NBA game.
-            if len(target_ids) == 1:
-                candidates = logs.loc[logs["_game_id"].eq(target_ids[0])]
-        own = candidates.loc[candidates["_team"].eq(team)]
-        opp = candidates.loc[candidates["_team"].eq(opponent)]
-        if own.empty or opp.empty:
-            continue
-        own_pts = float(own["_pts"].iloc[0]) if pd.notna(own["_pts"].iloc[0]) else np.nan
-        opp_pts = float(opp["_pts"].iloc[0]) if pd.notna(opp["_pts"].iloc[0]) else np.nan
-        if not np.isfinite(own_pts) or not np.isfinite(opp_pts):
-            continue
-        minutes = pd.concat([own["_minutes"], opp["_minutes"]], ignore_index=True)
-        overtime = bool(minutes.gt(240.0).any()) if minutes.notna().any() else False
-        scores[player_key(name)] = coach_points_from_game(
-            own_pts, opp_pts, float(coach_cr), float(opponent_cr), overtime
-        )
-    return scores
 
 def _compare_risk_objectives(
     players: pd.DataFrame,
@@ -204,6 +166,7 @@ def _compare_risk_objectives(
             "realized_team_score": realized_team_score,
             "player_actuals_complete": complete,
             "captain": solution.captain,
+            "captain_schedule": json.dumps(solution.meta.get("captain_schedule", {}), ensure_ascii=False, sort_keys=True),
             "coach": solution.coach,
             "solver_status": solution.meta["solver"]["status"],
             "solver_time_seconds": solution.meta["solver"]["solve_time_seconds"],
@@ -268,27 +231,26 @@ def _load_historical_market_snapshot(path: Path, gameweek: int) -> pd.DataFrame:
     return snapshot.set_index("_key", drop=False)
 
 
-def _apply_historical_market_snapshot(
-    players: pd.DataFrame, snapshot: pd.DataFrame
-) -> pd.DataFrame:
-    out = players.copy()
-    out["_key"] = out["player_name"].map(player_key)
-    out = out.loc[out["_key"].isin(snapshot.index)].copy()
-    for source, target in (
-        ("cr", "cr"),
-        ("team_code", "team_code"),
-        ("role", "role"),
-        ("role", "position"),
-        ("lineup_group", "lineup_group"),
-        ("status", "status"),
-    ):
-        out[target] = out["_key"].map(snapshot[source])
-    if len(out) < MIN_HISTORICAL_MARKET_PLAYERS:
+def _historical_candidate_pool(snapshot: pd.DataFrame) -> pd.DataFrame:
+    """Build the forecast universe from the frozen pregame market, not result rows."""
+    required = {"player_name", "team_code", "role", "cr"}
+    missing = sorted(required.difference(snapshot.columns))
+    if missing:
         raise ValueError(
-            "Backtest non valido: il listino storico si allinea a meno di "
-            f"{MIN_HISTORICAL_MARKET_PLAYERS} giocatori nei dati Dunkest "
-            f"({len(out)} allineati)."
+            "Backtest non valido: snapshot mercato senza colonne per il pool "
+            f"pregara ({', '.join(missing)})."
         )
+    market_columns = [
+        column for column in (
+            "player_name", "team_code", "role", "cr", "lineup_group",
+            "status", "dunkest_turn", "gameweek",
+        )
+        if column in snapshot.columns
+    ]
+    out = snapshot[market_columns].reset_index(drop=True).copy()
+    out["position"] = out["role"]
+    # Result/season-stat fields deliberately do not enter the forecast pool.
+    # They are consumed separately by _realized_player_scores after prediction.
     return out
 
 
@@ -376,21 +338,19 @@ def run_walk_forward_backtest(
             continue
         models, _ = train_models(round_settings, train_feats)
 
-        # Re-fetch each historical GW without today's Lineups market. This
-        # prevents current prices/team assignments from overriding archived
-        # gameweek data; only the historical Dunkest API data is eligible here.
-        dk = get_dunkest_data(
-            round_settings, gw, force_refresh=True, use_live_market=False
-        )
-        if dk.empty:
+        # Outcomes come only from the hash-verified immutable post-match
+        # archive that satisfied readiness. Never refetch today's aggregate
+        # Dunkest table for a historical round.
+        outcome_archive = load_post_match_results_archive(settings, gw)
+        if outcome_archive is None:
             continue
         market_snapshot_path = settings.data_path / "processed" / (
             f"player_credits_{settings.season_id}_gw{gw}.parquet"
         )
         market_snapshot = _load_historical_market_snapshot(market_snapshot_path, gw)
-        # The archived market defines who was selectable and their actual
-        # pregame metadata. Current API values must never fill historical gaps.
-        dk = _apply_historical_market_snapshot(dk, market_snapshot)
+        # Keep prediction candidates and realized outcomes separate. The
+        # season-stat response may omit market-listed players with no stats;
+        # only the frozen pregame market defines the selectable universe.
         injury_snapshot_path = settings.data_path / "processed" / (
             f"injuries_{settings.season_id}_gw{gw}.parquet"
         )
@@ -399,25 +359,31 @@ def run_walk_forward_backtest(
             pd.read_parquet(injury_snapshot_path)
             if historical_injuries_available else pd.DataFrame()
         )
-        if dk.empty:
-            continue
-        realized_map = _realized_player_scores(dk)
-        # The GW table contains outcomes. Do not pass those scores into inference.
-        dk_for_prediction = _mask_post_match_market_outcomes(dk)
+        archived_player_results = outcome_archive["players"].copy()
+        archived_player_results["gameweek_stats_available"] = True
+        realized_map = _realized_player_scores(archived_player_results)
+        # Keep archived outcomes out of inference, and do not let result-row
+        # coverage shrink the candidate pool from the pregame market snapshot.
+        historical_candidate_pool = _historical_candidate_pool(market_snapshot)
         preds = predict_players(
-            round_settings, models, feats, dk_for_prediction, historical_injuries
+            round_settings, models, feats, historical_candidate_pool, historical_injuries
         )
         metric_frame = preds.copy()
         if "player_name" in metric_frame and "expected_pdk" in metric_frame:
+            metric_frame["expected_pdk"] = pd.to_numeric(metric_frame["expected_pdk"], errors="coerce")
+            metric_frame = metric_frame.loc[
+                np.isfinite(metric_frame["expected_pdk"])
+                & metric_frame["player_name"].map(player_key).ne("")
+            ].copy()
+            n_predictions = int(len(metric_frame))
             metric_frame["actual_pdk"] = metric_frame["player_name"].map(
                 lambda name: realized_map.get(player_key(name), np.nan)
             )
-            metric_frame["expected_pdk"] = pd.to_numeric(metric_frame["expected_pdk"], errors="coerce")
             metric_frame = metric_frame.loc[
                 np.isfinite(pd.to_numeric(metric_frame["actual_pdk"], errors="coerce"))
-                & np.isfinite(metric_frame["expected_pdk"])
             ].copy()
-            if not metric_frame.empty:
+            if n_predictions:
+                n_scored = int(len(metric_frame))
                 error = metric_frame["expected_pdk"] - metric_frame["actual_pdk"]
                 interval = metric_frame[[column for column in ("p10", "p90") if column in metric_frame]].apply(
                     pd.to_numeric, errors="coerce"
@@ -426,10 +392,13 @@ def run_walk_forward_backtest(
                 forecast_metric_rows.append({
                     "gameweek": gw,
                     "evaluation_split": "holdout" if gw >= holdout_start_gw else "selection",
-                    "n_player_games": int(len(metric_frame)),
-                    "mae": float(np.mean(np.abs(error))),
-                    "rmse": float(np.sqrt(np.mean(np.square(error)))),
-                    "bias": float(np.mean(error)),
+                    "n_predictions": n_predictions,
+                    "n_player_games": n_scored,
+                    "n_missing_actual": n_predictions - n_scored,
+                    "actual_coverage": n_scored / n_predictions,
+                    "mae": float(np.mean(np.abs(error))) if n_scored else float("nan"),
+                    "rmse": float(np.sqrt(np.mean(np.square(error)))) if n_scored else float("nan"),
+                    "bias": float(np.mean(error)) if n_scored else float("nan"),
                     "p10_coverage": float(metric_frame.loc[valid_interval.index, "actual_pdk"].ge(valid_interval["p10"]).mean()) if not valid_interval.empty else float("nan"),
                     "p90_coverage": float(metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"]).mean()) if not valid_interval.empty else float("nan"),
                     "interval_80_coverage": float((metric_frame.loc[valid_interval.index, "actual_pdk"].ge(valid_interval["p10"]) & metric_frame.loc[valid_interval.index, "actual_pdk"].le(valid_interval["p90"])).mean()) if not valid_interval.empty else float("nan"),
@@ -462,9 +431,10 @@ def run_walk_forward_backtest(
             # No historical coach list is available for this round; don't use
             # today's prices to fill the gap.
             coach_df = _neutral_coaches(gw_games, round_settings.min_cr)
-        realized_coach_map = _realized_coach_scores(
-            coach_market, team_logs, gw_games
-        ) if historical_coach_market_available else {}
+        realized_coach_map = (
+            _archived_coach_scores(outcome_archive["coaches"])
+            if historical_coach_market_available else {}
+        )
         risk_rows = (
             _compare_risk_objectives(
                 preds, coach_df, round_settings, realized_map, gw,
@@ -558,24 +528,24 @@ def run_walk_forward_backtest(
                 slot = str(player.get("slot", "Bench"))
                 value = realized_map.get(player_key(player["player_name"]))
                 if value is not None:
-                    ex_post_score += float(value) * player_contribution_multiplier(
-                        slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
+                    supplied_multiplier = pd.to_numeric(player.get("score_multiplier", float("nan")), errors="coerce")
+                    multiplier = (
+                        float(supplied_multiplier)
+                        if pd.notna(supplied_multiplier)
+                        else player_contribution_multiplier(
+                            slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
+                        )
                     )
+                    ex_post_score += float(value) * multiplier
             ex_post_score += float(realized_coach_map[player_key(ex_sol.coach)])
 
 
         for rank, sol in enumerate(lineups, start=1):
             actuals: dict[str, float] = {}
-            player_score_before_transfers = 0.0
             for _, player in sol.players.iterrows():
                 key = player_key(player["player_name"])
-                if key not in realized_map:
-                    continue
-                actuals[key] = float(realized_map[key])
-                slot = str(player.get("slot", "Bench"))
-                player_score_before_transfers += actuals[key] * player_contribution_multiplier(
-                    slot in {"Starter", "Captain"}, slot == "Sixth Man", slot == "Captain"
-                )
+                if key in realized_map:
+                    actuals[key] = float(realized_map[key])
             complete = set(sol.players["player_name"].map(player_key)).issubset(actuals)
             coach_score = realized_coach_map.get(player_key(sol.coach), float("nan"))
             coach_actuals_complete = bool(
@@ -589,26 +559,46 @@ def run_walk_forward_backtest(
                 if np.isfinite(coach_score) and coach_actuals_complete else float("nan")
             )
             transfer_count = float(sol.num_transfers) if carried_roster_known else float("nan")
-            transfer_malus = transfer_count * round_settings.transfer_penalty if np.isfinite(transfer_count) else float("nan")
-            player_score = (
-                player_score_before_transfers - transfer_malus
-                if complete and np.isfinite(transfer_malus) else float("nan")
+            realized = score_realized_team(
+                sol.players,
+                actuals,
+                actual_coach_score=coach_score,
+                transfer_count=transfer_count,
+                transfer_penalty=round_settings.transfer_penalty,
+                coach_fixture_verified=bool(historical_coach_market_available and np.isfinite(coach_score)),
             )
-            team_score = (
-                player_score + coach_score
-                if np.isfinite(player_score) and np.isfinite(coach_score) else float("nan")
-            )
+            complete = bool(complete and realized.complete)
+            player_score_before_transfers = realized.player_score_before_transfers
+            transfer_malus = realized.transfer_malus
+            player_score = player_score_before_transfers - transfer_malus if realized.complete else float("nan")
+            team_score = realized.team_score if realized.complete else float("nan")
             captain_hit = float("nan")
-            captain_row = sol.players.loc[sol.players["slot"].eq("Captain")]
-            eligible = sol.players.loc[
-                sol.players["slot"].isin({"Starter", "Captain"})
-                & pd.to_numeric(sol.players["expected_min"], errors="coerce").ge(22.0)
-            ]
-            if not captain_row.empty:
-                cap_key = player_key(captain_row.iloc[0]["player_name"])
-                eligible_scores = eligible["player_name"].map(player_key).map(actuals).dropna()
-                if cap_key in actuals and not eligible_scores.empty:
-                    captain_hit = float(actuals[cap_key] >= eligible_scores.max())
+            captain_schedule = sol.meta.get("captain_schedule", {})
+            captain_hits = []
+            if captain_schedule and "dunkest_turn" in sol.players:
+                player_turns = pd.to_numeric(sol.players["dunkest_turn"], errors="coerce")
+                expected_minutes = pd.to_numeric(sol.players["expected_min"], errors="coerce")
+                for turn, captain_name in captain_schedule.items():
+                    eligible = sol.players.loc[
+                        player_turns.ge(int(turn)) & expected_minutes.ge(22.0)
+                    ]
+                    cap_key = player_key(captain_name)
+                    eligible_scores = eligible["player_name"].map(player_key).map(actuals).dropna()
+                    if cap_key in actuals and not eligible_scores.empty:
+                        captain_hits.append(float(actuals[cap_key] >= eligible_scores.max()))
+            else:
+                captain_row = sol.players.loc[sol.players["slot"].eq("Captain")]
+                eligible = sol.players.loc[
+                    sol.players["slot"].isin({"Starter", "Captain"})
+                    & pd.to_numeric(sol.players["expected_min"], errors="coerce").ge(22.0)
+                ]
+                if not captain_row.empty:
+                    cap_key = player_key(captain_row.iloc[0]["player_name"])
+                    eligible_scores = eligible["player_name"].map(player_key).map(actuals).dropna()
+                    if cap_key in actuals and not eligible_scores.empty:
+                        captain_hits.append(float(actuals[cap_key] >= eligible_scores.max()))
+            if captain_hits:
+                captain_hit = float(np.mean(captain_hits))
             rows.append({
                 "gameweek": gw, "rank": rank,
                 "evaluation_split": "holdout" if gw >= holdout_start_gw else "selection",
@@ -622,7 +612,9 @@ def run_walk_forward_backtest(
                 "realized_team_score": team_score,
                 "ex_post_optimum": ex_post_score,
                 "ex_post_player_optimum": ex_post_score,
-                "captain": sol.captain, "coach": sol.coach,
+                "captain": sol.captain,
+                "captain_schedule": json.dumps(captain_schedule, ensure_ascii=False, sort_keys=True),
+                "coach": sol.coach,
                 "num_transfers": transfer_count,
                 "captain_hit": captain_hit, "coach_hit": coach_hit,
                 "player_actuals_complete": complete,

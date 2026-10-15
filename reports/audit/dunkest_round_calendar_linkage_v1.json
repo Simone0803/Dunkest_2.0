@@ -1,0 +1,237 @@
+{
+  "audit": "dunkest_round_calendar_linkage_v1",
+  "purpose": "Determine whether available historical week/round snapshots independently establish the game-level semantics of gameValidForDunkest.",
+  "game_source": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "game_seasons": [
+    {
+      "season_id": "1",
+      "season_label": "2018-19",
+      "game_rows": 26094,
+      "date_min": "2018-10-16",
+      "date_max": "2019-04-10",
+      "valid_true_rows": 0,
+      "valid_false_rows": 26094,
+      "valid_null_rows": 0,
+      "unique_players": 530,
+      "nba_matched_rows": 26094
+    },
+    {
+      "season_id": "13",
+      "season_label": "2023-24",
+      "game_rows": 25732,
+      "date_min": "2023-10-24",
+      "date_max": "2024-04-14",
+      "valid_true_rows": 18927,
+      "valid_false_rows": 6805,
+      "valid_null_rows": 0,
+      "unique_players": 512,
+      "nba_matched_rows": 25732
+    },
+    {
+      "season_id": "19",
+      "season_label": "2024-25",
+      "game_rows": 25631,
+      "date_min": "2024-10-22",
+      "date_max": "2025-04-13",
+      "valid_true_rows": 19590,
+      "valid_false_rows": 6041,
+      "valid_null_rows": 0,
+      "unique_players": 509,
+      "nba_matched_rows": 25631
+    },
+    {
+      "season_id": "3",
+      "season_label": "2019-20",
+      "game_rows": 22384,
+      "date_min": "2019-10-22",
+      "date_max": "2020-08-14",
+      "valid_true_rows": 0,
+      "valid_false_rows": 22384,
+      "valid_null_rows": 0,
+      "unique_players": 529,
+      "nba_matched_rows": 22384
+    },
+    {
+      "season_id": "5",
+      "season_label": "2020-21",
+      "game_rows": 22568,
+      "date_min": "2020-12-22",
+      "date_max": "2021-05-16",
+      "valid_true_rows": 17662,
+      "valid_false_rows": 4906,
+      "valid_null_rows": 0,
+      "unique_players": 500,
+      "nba_matched_rows": 22561
+    },
+    {
+      "season_id": "7",
+      "season_label": "2021-22",
+      "game_rows": 24424,
+      "date_min": "2021-10-19",
+      "date_max": "2022-04-10",
+      "valid_true_rows": 18422,
+      "valid_false_rows": 6002,
+      "valid_null_rows": 0,
+      "unique_players": 492,
+      "nba_matched_rows": 24417
+    },
+    {
+      "season_id": "9",
+      "season_label": "2022-23",
+      "game_rows": 25265,
+      "date_min": "2022-10-18",
+      "date_max": "2023-04-09",
+      "valid_true_rows": 19165,
+      "valid_false_rows": 6100,
+      "valid_null_rows": 0,
+      "unique_players": 482,
+      "nba_matched_rows": 25265
+    }
+  ],
+  "weekly_archive_dir": "data/raw/dunkest_history",
+  "weekly_archives": [
+    {
+      "season_id": "13",
+      "files": 308,
+      "rows": 37854,
+      "unique_weeks": 62,
+      "week_min": 1,
+      "week_max": 62,
+      "rounds": [
+        1,
+        2,
+        3
+      ],
+      "types": [
+        "avg",
+        "tot"
+      ],
+      "date_columns": [],
+      "sample_files": [
+        "season_13_week_10_round_1_avg.parquet",
+        "season_13_week_10_round_1_tot.parquet",
+        "season_13_week_10_round_2_avg.parquet"
+      ],
+      "has_any_date_or_game_id_field": false
+    },
+    {
+      "season_id": "16",
+      "files": 58,
+      "rows": 870,
+      "unique_weeks": 23,
+      "week_min": 1,
+      "week_max": 25,
+      "rounds": [
+        1,
+        2,
+        3
+      ],
+      "types": [
+        "avg",
+        "tot"
+      ],
+      "date_columns": [],
+      "sample_files": [
+        "season_16_week_10_round_1_avg.parquet",
+        "season_16_week_10_round_1_tot.parquet",
+        "season_16_week_11_round_1_avg.parquet"
+      ],
+      "has_any_date_or_game_id_field": false
+    },
+    {
+      "season_id": "19",
+      "files": 316,
+      "rows": 39180,
+      "unique_weeks": 64,
+      "week_min": 1,
+      "week_max": 64,
+      "rounds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "types": [
+        "avg",
+        "tot"
+      ],
+      "date_columns": [],
+      "sample_files": [
+        "season_19_week_10_round_1_avg.parquet",
+        "season_19_week_10_round_1_tot.parquet",
+        "season_19_week_10_round_2_avg.parquet"
+      ],
+      "has_any_date_or_game_id_field": false
+    },
+    {
+      "season_id": "22",
+      "files": 70,
+      "rows": 1038,
+      "unique_weeks": 25,
+      "week_min": 1,
+      "week_max": 27,
+      "rounds": [
+        1,
+        2
+      ],
+      "types": [
+        "avg",
+        "tot"
+      ],
+      "date_columns": [],
+      "sample_files": [
+        "season_22_week_10_round_2_avg.parquet",
+        "season_22_week_10_round_2_tot.parquet",
+        "season_22_week_11_round_2_avg.parquet"
+      ],
+      "has_any_date_or_game_id_field": false
+    },
+    {
+      "season_id": "25",
+      "files": 5,
+      "rows": 64,
+      "unique_weeks": 3,
+      "week_min": 1,
+      "week_max": 3,
+      "rounds": [
+        1,
+        2
+      ],
+      "types": [
+        "avg"
+      ],
+      "date_columns": [],
+      "sample_files": [
+        "season_25_week_1_round_2_avg.parquet",
+        "season_25_week_2_round_1_avg.parquet",
+        "season_25_week_2_round_2_avg.parquet"
+      ],
+      "has_any_date_or_game_id_field": false
+    }
+  ],
+  "wide_dataset": {
+    "exists": true,
+    "rows": 93785,
+    "season_ids": [
+      "13",
+      "19",
+      "5",
+      "7",
+      "9"
+    ],
+    "date_or_game_id_columns": [],
+    "has_player_week_round_keys": true
+  },
+  "findings": [
+    "The enriched game-level archive has dated game rows and the flag, but these alone do not identify the fantasy-round calendar rule.",
+    "Archived week/round parquet files are player aggregates keyed by season/week/round and avg/tot; the inspected schemas contain no game date, timestamp, NBA game ID, or per-game key.",
+    "Weekly archive coverage is uneven across seasons; only seasons with files can be compared, and even those files do not directly map a fantasy round to a date interval.",
+    "Therefore a direct independent validation of gameValidForDunkest from these archives is not possible without a dated Dunkest round calendar, timestamped snapshot, or another authoritative source linking rounds to games."
+  ],
+  "decision": "Do not infer or relabel the flag from weekly archives. Keep raw gameValidForDunkest and official PDK unchanged; retain the strict official-target policy and existing walk-forward splits.",
+  "limitations": [
+    "This is a schema/linkage audit, not proof of the business rule behind the flag.",
+    "No source files were modified; only this new audit JSON/Markdown and script are written."
+  ],
+  "archive_file_count": 757
+}

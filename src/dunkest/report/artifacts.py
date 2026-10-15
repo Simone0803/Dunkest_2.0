@@ -78,6 +78,11 @@ def _input_paths(settings: Settings) -> list[Path]:
         processed / f"injuries_{settings.season_id}_gw{settings.target_gameweek}.parquet",
         processed / f"plusvalenza_history_{settings.opening_prior_season_id}.parquet",
         processed / f"dunkest_players_{settings.opening_prior_season_id}_gw35.parquet",
+        processed / "dunkest_pdk_historical_random_forest_train_2020-25_test_2025-26_v1.joblib",
+        processed / "dunkest_pdk_historical_random_forest_train_2020-25_test_2025-26_v1.json",
+        processed / "dunkest_pdk_game_training_2020-26_v3.parquet",
+        processed / "player_game_logs_2025-26.parquet",
+        settings.data_path / "raw" / "nba_historical_logs_2018-25_v1" / "collection_manifest.json",
         settings.data_path / "current_lineups_market.csv",
         settings.data_path / "lineups_availability.csv",
         settings.data_path / "injury_overrides.csv",
@@ -133,6 +138,7 @@ def save_run_artifacts(
     predictions: pd.DataFrame,
     solutions: list[LineupSolution],
     models: dict | None = None,
+    run_metadata: dict | None = None,
 ) -> Path:
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid4().hex[:8]
     out_dir = settings.data_path / "predictions" / run_id
@@ -141,12 +147,30 @@ def save_run_artifacts(
     predictions.to_parquet(out_dir / "predictions.parquet", index=False)
     lineup_rows = []
     for sol in solutions:
+        coach_matchup = sol.meta.get("coach_matchup", {})
+        turn_lineups = sol.meta.get("turn_lineups", {})
         for _, p in sol.players.iterrows():
+            player_name = str(p["player_name"])
+            turn_slots = {
+                f"slot_turn_{turn}": lineup.get("slots", {}).get(player_name)
+                for turn, lineup in turn_lineups.items()
+            }
+            turn_modules = {
+                f"module_turn_{turn}": lineup.get("module")
+                for turn, lineup in turn_lineups.items()
+            }
             lineup_rows.append(
                 {
                     "rank": sol.rank,
                     "player_name": p["player_name"],
+                    "team": p.get("team"),
+                    "opponent": p.get("opponent"),
+                    "dunkest_turn": p.get("dunkest_turn"),
+                    "nba_game_id": p.get("nba_game_id"),
                     "slot": p.get("slot"),
+                    "score_multiplier": p.get("score_multiplier"),
+                    **turn_slots,
+                    **turn_modules,
                     "expected_team_pdk": sol.expected_team_pdk,
                     "expected_player_pdk": sol.expected_player_pdk,
                     "expected_coach_pdk": sol.expected_coach_pdk,
@@ -155,11 +179,39 @@ def save_run_artifacts(
                     "p10_team": sol.p10_team,
                     "p50_team": sol.p50_team,
                     "p90_team": sol.p90_team,
+                    "overlap_with_previous": sol.overlap_with_previous,
+                    "overlap_with_prior_ranks": json.dumps(
+                        sol.meta.get("overlap_with_prior_ranks", {}), sort_keys=True
+                    ),
                     "budget_used": sol.budget_used,
                     "module": sol.module,
                     "num_transfers": sol.num_transfers,
                     "captain": sol.captain,
+                    "captain_schedule": json.dumps(sol.meta.get("captain_schedule", {}), ensure_ascii=False, sort_keys=True),
                     "coach": sol.coach,
+                    "coach_team": coach_matchup.get("coach_team"),
+                    "coach_opponent": coach_matchup.get("coach_opponent"),
+                    "coach_dunkest_turn": coach_matchup.get("coach_dunkest_turn"),
+                    "coach_nba_game_id": coach_matchup.get("coach_nba_game_id"),
+                    "coach_cr": coach_matchup.get("coach_cr"),
+                    "opponent_coach": coach_matchup.get("opponent_coach"),
+                    "opponent_coach_cr": coach_matchup.get("opponent_coach_cr"),
+                    "coach_expected_pdk": coach_matchup.get("expected_coach_pdk", sol.expected_coach_pdk),
+                    "coach_p10_pdk": coach_matchup.get("p10_coach_pdk"),
+                    "coach_p50_pdk": coach_matchup.get("p50_coach_pdk"),
+                    "coach_p90_pdk": coach_matchup.get("p90_coach_pdk"),
+                    "coach_expected_team_pts": coach_matchup.get("expected_team_pts"),
+                    "coach_expected_opp_pts": coach_matchup.get("expected_opp_pts"),
+                    "coach_expected_margin": coach_matchup.get("expected_margin"),
+                    "coach_win_probability": coach_matchup.get("win_probability"),
+                    "coach_win_probability_before_roster_adjustment": coach_matchup.get("win_probability_before_roster_adjustment"),
+                    "coach_projection_source": coach_matchup.get("coach_projection_source"),
+                    "coach_matchup_available": coach_matchup.get("matchup_projection_available"),
+                    "coach_opportunity_cost_pdk": coach_matchup.get("coach_opportunity_cost_pdk"),
+                    "budget_shadow_price": sol.meta.get("budget_shadow_price"),
+                    "capital_gain_shadow_price_method": sol.meta.get("capital_gain_shadow_price_method"),
+                    "expected_budget_gain": sol.meta.get("expected_budget_gain"),
+                    "future_budget_value_pdk": sol.meta.get("future_budget_value_pdk"),
                     "solver": sol.meta.get("solver", {}).get("solver"),
                     "solver_status": sol.meta.get("solver", {}).get("status"),
                     "solver_time_seconds": sol.meta.get("solver", {}).get("solve_time_seconds"),
@@ -182,7 +234,21 @@ def save_run_artifacts(
     snapshot_paths = [processed_dir / name for name in snapshot_names]
     snapshot_paths.extend(sorted(processed_dir.glob(f"dunkest_fixture_mapping_{settings.season_id}_*.parquet")))
     snapshot_paths.extend(
-        [settings.data_path / "current_lineups_market.csv", settings.data_path / "lineups_availability.csv"]
+        [
+            settings.data_path / "current_lineups_market.csv",
+            settings.data_path / "lineups_availability.csv",
+            # Preserve the decision/provenance record explaining whether the
+            # fixture mapping used a fresh observation or a verified fallback.
+            settings.data_path / "lineups_fixtures_validation.json",
+        ]
+    )
+    # Preserve acquisition metadata (especially fetched_at/source) alongside
+    # the data bytes. The manifest hashes both files, so later audits can
+    # distinguish "saved before tip-off" from a genuinely timestamped capture.
+    snapshot_paths.extend(
+        source_path.with_name(source_path.name + ".meta.json")
+        for source_path in list(snapshot_paths)
+        if source_path.with_name(source_path.name + ".meta.json").is_file()
     )
     for source_path in sorted(snapshot_paths, key=str):
         if not source_path.is_file():
@@ -222,11 +288,30 @@ def save_run_artifacts(
             ),
         },
         "dataset_identifier": _json_hash(input_fingerprints),
+        "run_metadata": dict(run_metadata or {}),
         "model_details": {
             "effective_models": sorted(
                 key for key in fitted_models if not key.startswith("_")
             ),
             "feature_columns": fitted_models.get("_feature_cols", []),
+            "training_target": fitted_models.get("_training_target"),
+            "training_target_source": fitted_models.get("_training_target_source"),
+            "training_rows": fitted_models.get("_training_rows"),
+            "training_rows_before_target_filter": fitted_models.get("_training_rows_before_target_filter"),
+            "official_labels_available_before_filter": fitted_models.get("_official_labels_available_before_filter"),
+            "training_date_min_utc": fitted_models.get("_training_date_min_utc"),
+            "training_date_max_utc": fitted_models.get("_training_date_max_utc"),
+            "training_seasons": fitted_models.get("_training_seasons", []),
+            "training_dataset": fitted_models.get("_training_dataset"),
+            "training_label_certification": fitted_models.get("_training_label_certification"),
+            "sample_weighted_training": fitted_models.get("_sample_weighted_training", False),
+            "sample_weight_mean": fitted_models.get("_sample_weight_mean"),
+            "residual_std": fitted_models.get("_residual_std"),
+            "residual_q10": fitted_models.get("_residual_q10"),
+            "residual_q50": fitted_models.get("_residual_q50"),
+            "residual_q90": fitted_models.get("_residual_q90"),
+            "rookie_policy": fitted_models.get("_rookie_policy"),
+            "prediction_is_absolute": fitted_models.get("_prediction_is_absolute", False),
             "model_weights": fitted_models.get("_weights", {}),
             "projection_weights": fitted_models.get("_projection_weights", {}),
             "calibration_samples": fitted_models.get("_calibration_samples"),
@@ -272,10 +357,18 @@ def save_post_match_snapshot(
     coach_results: pd.DataFrame,
     *,
     source: str,
+    metadata: dict | None = None,
 ) -> Path:
     """Archive realized outcomes immutably for future fixture-linked replay."""
     if not source.strip():
         raise ValueError("Post-match result source must be explicit.")
+    extra_metadata = dict(metadata or {})
+    reserved_fields = {
+        "season_id", "dunkest_gameweek", "retrieved_at_utc", "source", "schema_version", "sha256"
+    }
+    conflicts = sorted(reserved_fields.intersection(extra_metadata))
+    if conflicts:
+        raise ValueError(f"Post-match metadata cannot override reserved fields: {conflicts}")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     out = settings.data_path / "archive" / str(settings.season_id) / f"gw{int(gameweek)}" / f"post_match_{stamp}_{uuid4().hex[:8]}"
     out.mkdir(parents=True, exist_ok=False)
@@ -292,5 +385,6 @@ def save_post_match_snapshot(
         "schema_version": 1,
         "sha256": payloads,
     }
+    manifest.update(extra_metadata)
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     return out

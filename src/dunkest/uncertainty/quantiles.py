@@ -60,9 +60,9 @@ def _mixture_quantile(
 def add_uncertainty_columns(
     df: pd.DataFrame,
     residual_std: float = 5.0,
-    residual_q10: float | None = None,
-    residual_q50: float | None = None,
-    residual_q90: float | None = None,
+    residual_q10: float | pd.Series | np.ndarray | None = None,
+    residual_q50: float | pd.Series | np.ndarray | None = None,
+    residual_q90: float | pd.Series | np.ndarray | None = None,
 ) -> pd.DataFrame:
     out = df.copy()
     residual_std = float(residual_std)
@@ -80,20 +80,45 @@ def add_uncertainty_columns(
     mu = out["expected_pdk"]
     out["pred_std"] = std
     quantiles = [residual_q10, residual_q50, residual_q90]
-    if all(value is not None for value in quantiles) and np.isfinite(quantiles).all():
-        residuals = np.maximum.accumulate(np.asarray(quantiles, dtype=float))
-    else:
-        residuals = np.array([-1.28 * residual_std, 0.0, 1.28 * residual_std])
+    has_calibrated_quantiles = all(value is not None for value in quantiles)
+    quantile_matrix = None
+    if has_calibrated_quantiles:
+        columns = []
+        for value in quantiles:
+            if np.isscalar(value):
+                column = np.full(len(out), float(value), dtype=float)
+            elif isinstance(value, pd.Series):
+                column = pd.to_numeric(value.reindex(out.index), errors="coerce").to_numpy(dtype=float)
+            else:
+                column = pd.to_numeric(pd.Series(value), errors="coerce").to_numpy(dtype=float)
+            if len(column) != len(out) or not np.isfinite(column).all():
+                has_calibrated_quantiles = False
+                break
+            columns.append(column)
+        if has_calibrated_quantiles:
+            # Each row may use the residual quantiles calibrated for its forecast
+            # score band. They are already in PDK units and must not be rescaled
+            # by player volatility, which would distort empirical coverage.
+            quantile_matrix = np.maximum.accumulate(np.column_stack(columns), axis=1)
+    if not has_calibrated_quantiles:
+        fallback = np.array([-1.28 * residual_std, 0.0, 1.28 * residual_std], dtype=float)
+        quantile_matrix = np.tile(fallback, (len(out), 1))
     # Conditional score quantiles use on-court variability. The Bernoulli
     # availability variance is added once by the mixture quantile below.
     conditional_scale = base_std / max(float(residual_std), 1e-9)
-    for quantile_index in range(1, len(residuals)):
-        if residuals[quantile_index] <= residuals[quantile_index - 1]:
-            residuals[quantile_index] = residuals[quantile_index - 1] + 1e-9
     quantile_levels = (0.10, 0.50, 0.90)
     values = np.empty((len(out), len(quantile_levels)), dtype=float)
     for row_index in range(len(out)):
-        scaled_residuals = residuals * float(conditional_scale.iloc[row_index])
+        row_residuals = quantile_matrix[row_index].copy()
+        for quantile_index in range(1, len(row_residuals)):
+            if row_residuals[quantile_index] <= row_residuals[quantile_index - 1]:
+                row_residuals[quantile_index] = row_residuals[quantile_index - 1] + 1e-9
+        # Only fallback Gaussian intervals need a player-specific scale.
+        scaled_residuals = (
+            row_residuals
+            if has_calibrated_quantiles
+            else row_residuals * float(conditional_scale.iloc[row_index])
+        )
         for quantile_index, level in enumerate(quantile_levels):
             values[row_index, quantile_index] = _mixture_quantile(
                 level,

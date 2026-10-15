@@ -1,0 +1,674 @@
+{
+  "generated_at_utc": "2026-10-13T09:25:38.576639+00:00",
+  "input": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "target_definition": "Official-valid Dunkest PDK total from each archived player-week/round row.",
+  "feature_policy": "Every CR/form feature is shifted from the player's last observed earlier round. The current-round CR, PDK, minutes, boxscore stats, plusvalenza, and starter status are never features. Matchup uses target opponent defensive PTS/REB/AST/STL/BLK/TOV, rolling pace/possessions, and selected 5-game recent trends. Every NBA rolling feature is shifted to exclude the target game. H2H features use only prior calendar-date games against the target opponent; same-day games are excluded and historical PDK is limited to official-valid labels.",
+  "matchup_reconstruction": {
+    "rounds_total": 779,
+    "rounds_with_confident_date": 768,
+    "rounds_date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links_per_round": 10,
+    "rows_with_target_opponent": 90219,
+    "rows_with_all_eight_expanded_opponent_features": 90219,
+    "date_mapping_by_season": [
+      {
+        "season_id": "13",
+        "rounds": 154,
+        "confident_rounds": 150,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "19",
+        "rounds": 158,
+        "confident_rounds": 155,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "5",
+        "rounds": 140,
+        "confident_rounds": 140,
+        "median_confidence": 0.9916787016023657
+      },
+      {
+        "season_id": "7",
+        "rounds": 165,
+        "confident_rounds": 161,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "9",
+        "rounds": 162,
+        "confident_rounds": 162,
+        "median_confidence": 1.0
+      }
+    ],
+    "mapping_method": "Official-valid Dunkest PDK and player/team identity are used only to link historical outcome rows to candidate NBA dates. A round date is accepted only if >=75% of unique player-date links agree and >=10 unique links exist. Matchup features use NBA schedule and opponent defensive stats strictly before that date."
+  },
+  "player_opponent_history": {
+    "source_rows": 172084,
+    "player_opponent_history_keys": 25981,
+    "rows_with_prior_h2h_game": 82008,
+    "rows_with_prior_official_valid_h2h_pdk": 70370,
+    "feature_policy": "Player-vs-opponent history uses only games strictly before the target calendar date. Same-day games are excluded. PDK features require official-valid labels; NBA minutes are treated separately.",
+    "features": [
+      "h2h_pdk_mean_prev5",
+      "h2h_pdk_mean_shrunk_prev5",
+      "h2h_minutes_mean_prev5",
+      "h2h_pdk_last",
+      "h2h_minutes_last",
+      "h2h_games_prev5",
+      "h2h_valid_pdk_games_prev5"
+    ]
+  },
+  "round_price_semantics": "Historical weekly-round tables are not timestamped market snapshots. Lagged CR is a prior-observed-round proxy, not proof of exact pre-lock credit for every player. Rows also report whether the prior archived round had a player row.",
+  "season_policy": {
+    "valid_target_season_ids": [
+      "5",
+      "7",
+      "9",
+      "13",
+      "19"
+    ],
+    "test_season_ids": [
+      "9",
+      "13",
+      "19"
+    ],
+    "invalid_official_target_seasons_excluded": [
+      "1",
+      "3"
+    ]
+  },
+  "folds": [
+    {
+      "test_season_id": "9",
+      "status": "evaluated",
+      "train_rows": 34654,
+      "test_rows": 18404,
+      "train_rows_all": 36103,
+      "test_rows_all": 19165,
+      "train_seasons": [
+        "5",
+        "7"
+      ],
+      "test_rounds": 162,
+      "test_rows_with_target_opponent": 18404,
+      "test_rows_with_lagged_cr": 17951,
+      "test_rows_with_exact_previous_round_cr": 1392,
+      "test_rows_with_lagged_pdk": 17951
+    },
+    {
+      "test_season_id": "13",
+      "status": "evaluated",
+      "train_rows": 53058,
+      "test_rows": 18279,
+      "train_rows_all": 55268,
+      "test_rows_all": 18927,
+      "train_seasons": [
+        "5",
+        "7",
+        "9"
+      ],
+      "test_rounds": 150,
+      "test_rows_with_target_opponent": 18279,
+      "test_rows_with_lagged_cr": 17787,
+      "test_rows_with_exact_previous_round_cr": 1423,
+      "test_rows_with_lagged_pdk": 17787
+    },
+    {
+      "test_season_id": "19",
+      "status": "evaluated",
+      "train_rows": 71337,
+      "test_rows": 18882,
+      "train_rows_all": 74195,
+      "test_rows_all": 19590,
+      "train_seasons": [
+        "13",
+        "5",
+        "7",
+        "9"
+      ],
+      "test_rounds": 155,
+      "test_rows_with_target_opponent": 18882,
+      "test_rows_with_lagged_cr": 18404,
+      "test_rows_with_exact_previous_round_cr": 1631,
+      "test_rows_with_lagged_pdk": 18404
+    }
+  ],
+  "rows_input": 93785,
+  "rows_with_lagged_cr": 91290,
+  "rows_with_exact_previous_round_row": 6549,
+  "feature_families": {
+    "historical_form_only": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present"
+      ],
+      "categorical": []
+    },
+    "historical_form_plus_lagged_credit": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr"
+      ],
+      "categorical": [
+        "lagged_role"
+      ]
+    },
+    "historical_form_plus_lagged_credit_and_matchup_v1": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr",
+        "opp_def_allowed_pts_prev10",
+        "opp_def_allowed_reb_prev10",
+        "opp_def_allowed_ast_prev10"
+      ],
+      "categorical": [
+        "lagged_role",
+        "target_opponent"
+      ]
+    },
+    "historical_form_plus_lagged_credit_and_expanded_matchup_v2": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr",
+        "opp_def_allowed_pts_prev10",
+        "opp_def_allowed_reb_prev10",
+        "opp_def_allowed_ast_prev10",
+        "opp_def_allowed_stl_prev10",
+        "opp_def_allowed_blk_prev10",
+        "opp_def_allowed_tov_prev10",
+        "opp_pace_prev10",
+        "opp_possessions_allowed_prev10",
+        "opp_def_allowed_pts_prev5",
+        "opp_def_allowed_reb_prev5",
+        "opp_def_allowed_ast_prev5",
+        "opp_pace_prev5"
+      ],
+      "categorical": [
+        "lagged_role",
+        "target_opponent"
+      ]
+    },
+    "historical_form_plus_lagged_credit_expanded_matchup_and_h2h_v3": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr",
+        "opp_def_allowed_pts_prev10",
+        "opp_def_allowed_reb_prev10",
+        "opp_def_allowed_ast_prev10",
+        "opp_def_allowed_stl_prev10",
+        "opp_def_allowed_blk_prev10",
+        "opp_def_allowed_tov_prev10",
+        "opp_pace_prev10",
+        "opp_possessions_allowed_prev10",
+        "opp_def_allowed_pts_prev5",
+        "opp_def_allowed_reb_prev5",
+        "opp_def_allowed_ast_prev5",
+        "opp_pace_prev5",
+        "h2h_pdk_mean_prev5",
+        "h2h_minutes_mean_prev5",
+        "h2h_pdk_last",
+        "h2h_minutes_last",
+        "h2h_games_prev5",
+        "h2h_valid_pdk_games_prev5"
+      ],
+      "categorical": [
+        "lagged_role",
+        "target_opponent"
+      ]
+    },
+    "historical_form_plus_lagged_credit_expanded_matchup_and_shrunk_h2h_v4": {
+      "numeric": [
+        "lag1_pdk",
+        "prev3_pdk_mean",
+        "prev5_pdk_mean",
+        "prev10_pdk_mean",
+        "lag1_min_avg",
+        "prev3_min_mean",
+        "prev5_min_mean",
+        "lag1_plus",
+        "lag1_pts_avg",
+        "lag1_reb_avg",
+        "lag1_ast_avg",
+        "lag1_stl_avg",
+        "lag1_blk_avg",
+        "lag1_tov_avg",
+        "lag1_plus_minus_avg",
+        "lag1_gp",
+        "history_rounds_before_target",
+        "credit_age_rounds",
+        "prior_round_present",
+        "lag1_cr",
+        "opp_def_allowed_pts_prev10",
+        "opp_def_allowed_reb_prev10",
+        "opp_def_allowed_ast_prev10",
+        "opp_def_allowed_stl_prev10",
+        "opp_def_allowed_blk_prev10",
+        "opp_def_allowed_tov_prev10",
+        "opp_pace_prev10",
+        "opp_possessions_allowed_prev10",
+        "opp_def_allowed_pts_prev5",
+        "opp_def_allowed_reb_prev5",
+        "opp_def_allowed_ast_prev5",
+        "opp_pace_prev5",
+        "h2h_pdk_mean_shrunk_prev5",
+        "h2h_minutes_mean_prev5",
+        "h2h_pdk_last",
+        "h2h_minutes_last",
+        "h2h_games_prev5",
+        "h2h_valid_pdk_games_prev5"
+      ],
+      "categorical": [
+        "lagged_role",
+        "target_opponent"
+      ]
+    }
+  },
+  "fold_metrics": [
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_last_round",
+      "n": 17951,
+      "mae": 9.913281154253244,
+      "rmse": 13.074393733348566,
+      "bias_pred_minus_actual": -0.13230850648988912
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_previous5_mean",
+      "n": 17951,
+      "mae": 7.996100560785842,
+      "rmse": 10.519848742393409,
+      "bias_pred_minus_actual": -0.30895436651625724
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "baseline_train_median",
+      "n": 18404,
+      "mae": 10.403841556183437,
+      "rmse": 13.752562515560632,
+      "bias_pred_minus_actual": -3.800301021517061
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_only",
+      "n": 18404,
+      "mae": 7.696681618935851,
+      "rmse": 10.041012589013343,
+      "bias_pred_minus_actual": -0.38731514507711406
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 18404,
+      "mae": 7.493187460808802,
+      "rmse": 9.741778291637203,
+      "bias_pred_minus_actual": -0.17858169675995114
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit_and_matchup_v1",
+      "n": 18404,
+      "mae": 7.489628345171241,
+      "rmse": 9.740678714290894,
+      "bias_pred_minus_actual": -0.08137661822165279
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "n": 18404,
+      "mae": 7.4831739474904335,
+      "rmse": 9.738036977670466,
+      "bias_pred_minus_actual": -0.13314222644292886
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_h2h_v3",
+      "n": 18404,
+      "mae": 7.450335409394012,
+      "rmse": 9.658123508375816,
+      "bias_pred_minus_actual": 0.014199898300284702
+    },
+    {
+      "test_season_id": "9",
+      "test_season": "2022-23",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_shrunk_h2h_v4",
+      "n": 18404,
+      "mae": 7.452628563755406,
+      "rmse": 9.660289405894957,
+      "bias_pred_minus_actual": 0.029435544886003532
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_last_round",
+      "n": 17787,
+      "mae": 9.892343284421205,
+      "rmse": 13.127909559626993,
+      "bias_pred_minus_actual": -0.05732782369146006
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_previous5_mean",
+      "n": 17787,
+      "mae": 7.986132521879275,
+      "rmse": 10.493967422221619,
+      "bias_pred_minus_actual": -0.22688618091864848
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "baseline_train_median",
+      "n": 18279,
+      "mae": 10.69723507850539,
+      "rmse": 13.990179976443898,
+      "bias_pred_minus_actual": -3.3574954866239946
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_only",
+      "n": 18279,
+      "mae": 7.733338969711346,
+      "rmse": 10.031815907802219,
+      "bias_pred_minus_actual": -0.12837761384082658
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 18279,
+      "mae": 7.535737523898646,
+      "rmse": 9.868543413948219,
+      "bias_pred_minus_actual": -1.1591286113125812
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit_and_matchup_v1",
+      "n": 18279,
+      "mae": 7.533676804855472,
+      "rmse": 9.850587507113312,
+      "bias_pred_minus_actual": -0.9991600314140039
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "n": 18279,
+      "mae": 7.5223313527970435,
+      "rmse": 9.830148307786448,
+      "bias_pred_minus_actual": -0.9605969851126557
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_h2h_v3",
+      "n": 18279,
+      "mae": 7.46915616695802,
+      "rmse": 9.741476953750501,
+      "bias_pred_minus_actual": -0.8483811962644896
+    },
+    {
+      "test_season_id": "13",
+      "test_season": "2023-24",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_shrunk_h2h_v4",
+      "n": 18279,
+      "mae": 7.469818607790468,
+      "rmse": 9.73942598102964,
+      "bias_pred_minus_actual": -0.8343086709373725
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_last_round",
+      "n": 18404,
+      "mae": 9.949684851119322,
+      "rmse": 13.12215307549283,
+      "bias_pred_minus_actual": -0.09954031732232124
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_previous5_mean",
+      "n": 18404,
+      "mae": 8.024543622763167,
+      "rmse": 10.508091837725958,
+      "bias_pred_minus_actual": -0.2902953252916033
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "baseline_train_median",
+      "n": 18882,
+      "mae": 10.415704374536597,
+      "rmse": 13.569995041343793,
+      "bias_pred_minus_actual": -3.036716979133567
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_only",
+      "n": 18882,
+      "mae": 7.722727863809152,
+      "rmse": 10.050095712671935,
+      "bias_pred_minus_actual": -0.22420631085726656
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 18882,
+      "mae": 7.533666566228052,
+      "rmse": 9.860828070745583,
+      "bias_pred_minus_actual": -0.9585342180746592
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit_and_matchup_v1",
+      "n": 18882,
+      "mae": 7.513295432989464,
+      "rmse": 9.836828142949344,
+      "bias_pred_minus_actual": -0.8074543831437989
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "n": 18882,
+      "mae": 7.502885941659105,
+      "rmse": 9.820831555764077,
+      "bias_pred_minus_actual": -0.7720401868431717
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_h2h_v3",
+      "n": 18882,
+      "mae": 7.443107555002688,
+      "rmse": 9.730861675328216,
+      "bias_pred_minus_actual": -0.6546308076762732
+    },
+    {
+      "test_season_id": "19",
+      "test_season": "2024-25",
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_shrunk_h2h_v4",
+      "n": 18882,
+      "mae": 7.441029511692193,
+      "rmse": 9.722286172173979,
+      "bias_pred_minus_actual": -0.6369621157852013
+    }
+  ],
+  "pooled_oof_metrics": [
+    {
+      "feature_family": "baseline_last_round",
+      "n": 54142,
+      "pooled_mae": 9.91877691995124,
+      "pooled_rmse": 13.10823126637916,
+      "pooled_bias": -0.09653688448893652
+    },
+    {
+      "feature_family": "baseline_previous5_mean",
+      "n": 54142,
+      "pooled_mae": 8.002494203514216,
+      "pooled_rmse": 10.507354937144067,
+      "pooled_bias": -0.2756503176831296
+    },
+    {
+      "feature_family": "baseline_train_median",
+      "n": 55565,
+      "pooled_mae": 10.504389273823453,
+      "pooled_rmse": 13.769767171337648,
+      "pooled_bias": -3.3951532439485286
+    },
+    {
+      "feature_family": "historical_form_only",
+      "n": 55565,
+      "pooled_mae": 7.717591632622936,
+      "pooled_rmse": 10.041076585269714,
+      "pooled_bias": -0.24670612606861483
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit",
+      "n": 55565,
+      "pooled_mae": 7.5209405260791256,
+      "pooled_rmse": 9.824105642420855,
+      "pooled_bias": -0.7661904533256282
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "n": 55565,
+      "pooled_mae": 7.502753900437295,
+      "pooled_rmse": 9.796560644420822,
+      "pooled_bias": -0.6224559459066439
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_matchup_v1",
+      "n": 55565,
+      "pooled_mae": 7.512161302010111,
+      "pooled_rmse": 9.809629510409497,
+      "pooled_bias": -0.6300306876359054
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_h2h_v3",
+      "n": 55565,
+      "pooled_mae": 7.454070643460339,
+      "pooled_rmse": 9.71033201183979,
+      "pooled_bias": -0.49684088668664733
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_and_shrunk_h2h_v4",
+      "n": 55565,
+      "pooled_mae": 7.454341935731637,
+      "pooled_rmse": 9.70744940636531,
+      "pooled_bias": -0.4811610743856456
+    }
+  ],
+  "production_changed": false,
+  "limitations": [
+    "This phase validates round-level player score prediction with lagged historical credits; it does not yet claim a complete historical optimal-lineup result.",
+    "Historical player-round archives list observed player rows, not a complete timestamped pre-lock player universe. Full lineup optimization needs a verified candidate universe and historically correct role/budget rules.",
+    "Opponent matching is accepted only for rounds with a high-confidence date mapping. Matchup model metrics therefore apply to the subset with a reliable historical fixture link.",
+    "Historical coach credit markets are not present in these player archives. Coach outcome components can be reconstructed from final NBA team scores, but exact credit-adjusted coach PDK requires historical coach CRs or a separately validated reconstruction."
+  ]
+}

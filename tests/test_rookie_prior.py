@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from dunkest.models.rookie_prior import load_college_rookie_priors
+from dunkest.names import player_key
 
 
 def _historical_and_current_classes() -> pd.DataFrame:
@@ -76,4 +77,27 @@ def test_rookie_minutes_prior_uses_past_classes_and_passes_temporal_baseline(tmp
     assert priors["college_minutes_cv_mae"].nunique() == 1
     assert priors["college_minutes_baseline_cv_mae"].nunique() == 1
     assert priors["college_minutes_cv_mae"].iloc[0] < priors["college_minutes_baseline_cv_mae"].iloc[0]
-    assert priors["college_minutes_prior_weight"].between(0.0, 0.35).all()
+    assert priors["college_minutes_prior_weight"].between(0.0, 0.15).all()
+
+
+def test_rookie_prior_prefers_verified_official_dunkest_labels(tmp_path):
+    source = tmp_path / "rookie_college.csv"
+    raw = _historical_and_current_classes()
+    raw.to_csv(source, index=False)
+
+    historical = raw.loc[raw["nba_pdk_per_min"].notna()].copy()
+    official = pd.DataFrame({
+        "player_name": historical["player_name"],
+        "player_key": historical["player_name"].map(player_key),
+        "draft_year": historical["draft_year"],
+        "official_dunkest_pdk_per_min": historical["nba_pdk_per_min"] + 0.10,
+        "official_dunkest_rookie_minutes": historical["nba_rookie_minutes"],
+    })
+    official.to_csv(tmp_path / "rookie_official_pdk.csv", index=False)
+
+    priors = load_college_rookie_priors(source)
+
+    assert len(priors) == 3
+    assert set(priors["college_target_source"]) == {"official_dunkest_pdk_per_min"}
+    assert priors["college_cv_mae"].notna().all()
+    assert priors["college_prior_base_weight"].between(0.0, 0.20).all()

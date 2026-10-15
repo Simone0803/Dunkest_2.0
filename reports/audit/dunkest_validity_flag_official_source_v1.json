@@ -1,0 +1,117 @@
+{
+  "audit": "dunkest_validity_flag_official_source_v1",
+  "source_dataset": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "official_sources": [
+    {
+      "title": "Calendario Dunkest NBA: squadre a riposo e punteggi medi",
+      "url": "https://www.dunkest.com/it/nba/notizie/fantabasket/18229/calendario-dunkest-nba-squadre-valide-punteggi-medi",
+      "published": "2025-09-25",
+      "evidence": "La giornata fantasy NBA può durare più giorni; se una squadra ricompare nella stessa giornata, conta una sola partita e non necessariamente la prima in ordine cronologico. La squadra non valida non prende punteggio. L’articolo dichiara che il calendario completo è disponibile nella sezione Calendario dell’app."
+    },
+    {
+      "title": "Calendario Dunkest: la Giornata e i Turni di Gioco",
+      "url": "https://www.dunkest.com/it/notizie/fantabasket/8774/calendario-dunkest-cosa-sono-giornata-turni",
+      "published": "official Dunkest guide; page crawled 2026-10-12",
+      "evidence": "Conferma che le giornate NBA Dunkest coprono un numero variabile di giorni e che, se una squadra compare più volte, soltanto una partita attribuisce punti."
+    }
+  ],
+  "method": "Count distinct season/game/date/team records using only rows matched to NBA player/date/opponent; then check whether player rows within each team-game disagree on the flag and whether PDK remains populated for false-flag rows.",
+  "season_results": [
+    {
+      "season_id": "1",
+      "season_label": "2018-19",
+      "team_games": 2460,
+      "true_team_games": 0,
+      "false_team_games": 2460,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 26094,
+      "false_flag_player_rows_with_pdk": 26094,
+      "false_flag_player_rows": 26094
+    },
+    {
+      "season_id": "13",
+      "season_label": "2023-24",
+      "team_games": 2460,
+      "true_team_games": 1812,
+      "false_team_games": 648,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 25732,
+      "false_flag_player_rows_with_pdk": 6805,
+      "false_flag_player_rows": 6805
+    },
+    {
+      "season_id": "19",
+      "season_label": "2024-25",
+      "team_games": 2460,
+      "true_team_games": 1878,
+      "false_team_games": 582,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 25631,
+      "false_flag_player_rows_with_pdk": 6041,
+      "false_flag_player_rows": 6041
+    },
+    {
+      "season_id": "3",
+      "season_label": "2019-20",
+      "team_games": 2118,
+      "true_team_games": 0,
+      "false_team_games": 2118,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 22384,
+      "false_flag_player_rows_with_pdk": 22384,
+      "false_flag_player_rows": 22384
+    },
+    {
+      "season_id": "5",
+      "season_label": "2020-21",
+      "team_games": 2160,
+      "true_team_games": 1689,
+      "false_team_games": 471,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 22561,
+      "false_flag_player_rows_with_pdk": 4906,
+      "false_flag_player_rows": 4906
+    },
+    {
+      "season_id": "7",
+      "season_label": "2021-22",
+      "team_games": 2460,
+      "true_team_games": 1851,
+      "false_team_games": 609,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 24417,
+      "false_flag_player_rows_with_pdk": 6001,
+      "false_flag_player_rows": 6001
+    },
+    {
+      "season_id": "9",
+      "season_label": "2022-23",
+      "team_games": 2460,
+      "true_team_games": 1866,
+      "false_team_games": 594,
+      "null_team_games": 0,
+      "team_games_with_mixed_player_flags": 0,
+      "player_rows": 25265,
+      "false_flag_player_rows_with_pdk": 6100,
+      "false_flag_player_rows": 6100
+    }
+  ],
+  "interpretation": [
+    "Official Dunkest documentation establishes the intended product rule: a team can have multiple NBA games in one Dunkest fantasy matchday, but only one game is eligible to contribute points; the eligible game is not necessarily the first chronologically.",
+    "For seasons 2020/21 through 2024/25, archived game-level flags are consistent across players within every matched team-game, and false-flag player rows still have PDK values. This is consistent with false meaning “this NBA game does not count for Dunkest scoring,” not “the score is missing or zero.”",
+    "For seasons 2018/19 and 2019/20, every archived flag is false. This is inconsistent with using the field as a reliable valid/invalid discriminator in those seasons; treat it as legacy/unverified rather than evidence that every game was excluded.",
+    "The documentation explains the rule but does not publish a downloadable historical round-to-date mapping. Therefore it validates the conceptual meaning, not a complete row-by-row reconstruction of historical fantasy rounds."
+  ],
+  "decision": "Keep the raw flag and official PDK unchanged. Continue strict training only on gameValidForDunkest=True for seasons where the flag is populated with both true and false values and the existing audit policy permits use (2020/21 onward). Do not reinterpret 2018/19 or 2019/20 as valid targets without independent historical evidence.",
+  "guardrails": [
+    "No raw data, target, model, split, or backtest files modified.",
+    "No reconstructed proxy substituted for official PDK.",
+    "This audit does not establish historical round boundaries or exception handling for postponed games."
+  ]
+}

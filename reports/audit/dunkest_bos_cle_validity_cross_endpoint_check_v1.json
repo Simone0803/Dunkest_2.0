@@ -1,0 +1,104 @@
+{
+  "audit": "BOS-CLE schedule validity discrepancy source verification",
+  "date": "2026-10-12",
+  "endpoint": "https://www.dunkest.com/api/player/games",
+  "season_id": "13",
+  "local_gameId": "8469",
+  "official_schedule_record": {
+    "schedule_id": 8,
+    "matchday_id": 278,
+    "match_id": 2440,
+    "date_et": "2023-12-12",
+    "home_team": "BOS",
+    "away_team": "CLE",
+    "home_valid": true,
+    "away_valid": false
+  },
+  "player_profile_api_checks": [
+    {
+      "player_id": "436",
+      "status": 200,
+      "api_rows": 74,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "CLE",
+          "pdk": 34.13
+        }
+      ]
+    },
+    {
+      "player_id": "65",
+      "status": 200,
+      "api_rows": 70,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "CLE",
+          "pdk": 27.04
+        }
+      ]
+    },
+    {
+      "player_id": "212",
+      "status": 200,
+      "api_rows": 69,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "CLE",
+          "pdk": 24.68
+        }
+      ]
+    },
+    {
+      "player_id": "326",
+      "status": 200,
+      "api_rows": 55,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "BOS",
+          "pdk": 30.5
+        }
+      ]
+    },
+    {
+      "player_id": "8",
+      "status": 200,
+      "api_rows": 77,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "BOS",
+          "pdk": 25.5
+        }
+      ]
+    },
+    {
+      "player_id": "606",
+      "status": 200,
+      "api_rows": 57,
+      "relevant_rows": [
+        {
+          "gameId": "8469",
+          "gameDate": "2023-12-12",
+          "gameValidForDunkest": false,
+          "opponentTeamCode": "BOS",
+          "pdk": 30
+        }
+      ]
+    }
+  ],
+  "interpretation": "The player profile API is the source used by the local official player-game archive. If its flags are false for both teams on this game, the schedule-level is_valid value is not equivalent to the per-player gameValidForDunkest flag or is inconsistent for this match. Do not overwrite either source; retain as an unresolved cross-endpoint semantic discrepancy."
+}
