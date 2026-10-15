@@ -1,0 +1,365 @@
+{
+  "created_at_utc": "2026-10-12T11:55:48.887696+00:00",
+  "profile_url": "https://www.dunkest.com/it/giocatore/127/luka-doncic",
+  "api_url": "https://www.dunkest.com/api/player/games",
+  "profile_ui_evidence": {
+    "validity_checkbox_label": "Solo partite valevoli per Dunkest",
+    "filter_function_snippet": "function filterGames(data, filters) { var filteredData = []; data.forEach(element => { // Filter by opponentTeamId if (filters['opponentTeamId'] !== null && element['opponentTeamId'] != filters['opponentTeamId']) { return; }",
+    "interpretation": "The public profile UI only establishes that the checkbox excludes rows whose gameValidForDunkest is explicitly false. The frontend code does not explain why a row is false."
+  },
+  "season_audit": [
+    {
+      "season_id": "1",
+      "season": "2018-19",
+      "file": "official_dunkest_player_games_2018-19_season_id_1.parquet",
+      "rows": 26094,
+      "players": 530,
+      "unique_game_ids": 1230,
+      "date_min": "2018-10-16",
+      "date_max": "2019-04-10",
+      "true_rows": 0,
+      "false_rows": 26094,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 26094,
+      "game_flag_patterns": {
+        "all_false": 1230
+      },
+      "players_with_both_true_and_false": 0,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 26094,
+          "mean": 13.94223767915996,
+          "median": 11.75,
+          "min": -13.5,
+          "max": 83.0
+        }
+      ]
+    },
+    {
+      "season_id": "3",
+      "season": "2019-20",
+      "file": "official_dunkest_player_games_2019-20_season_id_3.parquet",
+      "rows": 22384,
+      "players": 529,
+      "unique_game_ids": 1059,
+      "date_min": "2019-10-22",
+      "date_max": "2020-08-14",
+      "true_rows": 0,
+      "false_rows": 22384,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 22384,
+      "game_flag_patterns": {
+        "all_false": 1059
+      },
+      "players_with_both_true_and_false": 0,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 22384,
+          "mean": 13.916547533952823,
+          "median": 11.75,
+          "min": -10.5,
+          "max": 78.5
+        }
+      ]
+    },
+    {
+      "season_id": "5",
+      "season": "2020-21",
+      "file": "official_dunkest_player_games_2020-21_season_id_5.parquet",
+      "rows": 22568,
+      "players": 500,
+      "unique_game_ids": 1080,
+      "date_min": "2020-12-22",
+      "date_max": "2021-05-16",
+      "true_rows": 17662,
+      "false_rows": 4906,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 4906,
+      "game_flag_patterns": {
+        "all_true": 749,
+        "mixed": 191,
+        "all_false": 140
+      },
+      "players_with_both_true_and_false": 490,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 4906,
+          "mean": 14.133051365674683,
+          "median": 12.0,
+          "min": -11.75,
+          "max": 67.75
+        },
+        {
+          "valid": true,
+          "count": 17662,
+          "mean": 14.142919827879062,
+          "median": 12.0,
+          "min": -16.5,
+          "max": 79.0
+        }
+      ]
+    },
+    {
+      "season_id": "7",
+      "season": "2021-22",
+      "file": "official_dunkest_player_games_2021-22_season_id_7.parquet",
+      "rows": 24424,
+      "players": 492,
+      "unique_game_ids": 1230,
+      "date_min": "2021-10-19",
+      "date_max": "2022-04-10",
+      "true_rows": 18422,
+      "false_rows": 6002,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 6002,
+      "game_flag_patterns": {
+        "all_true": 806,
+        "mixed": 239,
+        "all_false": 185
+      },
+      "players_with_both_true_and_false": 477,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 6002,
+          "mean": 14.67294235254915,
+          "median": 12.5,
+          "min": -11.5,
+          "max": 75.5
+        },
+        {
+          "valid": true,
+          "count": 18422,
+          "mean": 14.765782759743784,
+          "median": 12.25,
+          "min": -15.0,
+          "max": 88.25
+        }
+      ]
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "file": "official_dunkest_player_games_2022-23_season_id_9.parquet",
+      "rows": 25265,
+      "players": 482,
+      "unique_game_ids": 1230,
+      "date_min": "2022-10-18",
+      "date_max": "2023-04-09",
+      "true_rows": 19165,
+      "false_rows": 6100,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 6100,
+      "game_flag_patterns": {
+        "all_true": 824,
+        "mixed": 218,
+        "all_false": 188
+      },
+      "players_with_both_true_and_false": 477,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 6100,
+          "mean": 15.83822786885246,
+          "median": 13.190000000000001,
+          "min": -7.0,
+          "max": 95.29
+        },
+        {
+          "valid": true,
+          "count": 19165,
+          "mean": 15.953061831463605,
+          "median": 13.5,
+          "min": -12.25,
+          "max": 83.74
+        }
+      ]
+    },
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "file": "official_dunkest_player_games_2023-24_season_id_13.parquet",
+      "rows": 25732,
+      "players": 512,
+      "unique_game_ids": 1230,
+      "date_min": "2023-10-24",
+      "date_max": "2024-04-14",
+      "true_rows": 18927,
+      "false_rows": 6805,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 6805,
+      "game_flag_patterns": {
+        "all_true": 799,
+        "all_false": 217,
+        "mixed": 214
+      },
+      "players_with_both_true_and_false": 505,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 6805,
+          "mean": 15.568270389419546,
+          "median": 13.0,
+          "min": -13.5,
+          "max": 95.55
+        },
+        {
+          "valid": true,
+          "count": 18927,
+          "mean": 15.961143340201827,
+          "median": 13.25,
+          "min": -9.75,
+          "max": 89.51
+        }
+      ]
+    },
+    {
+      "season_id": "19",
+      "season": "2024-25",
+      "file": "official_dunkest_player_games_2024-25_season_id_19.parquet",
+      "rows": 25631,
+      "players": 509,
+      "unique_game_ids": 1230,
+      "date_min": "2024-10-22",
+      "date_max": "2025-04-13",
+      "true_rows": 19590,
+      "false_rows": 6041,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 6041,
+      "game_flag_patterns": {
+        "all_true": 840,
+        "mixed": 198,
+        "all_false": 192
+      },
+      "players_with_both_true_and_false": 507,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 6041,
+          "mean": 15.718237046846548,
+          "median": 13.13,
+          "min": -10.0,
+          "max": 93.19
+        },
+        {
+          "valid": true,
+          "count": 19590,
+          "mean": 15.921156202143951,
+          "median": 13.5,
+          "min": -10.5,
+          "max": 92.4
+        }
+      ]
+    },
+    {
+      "season_id": "25",
+      "season": "2025-26",
+      "file": "official_dunkest_player_games_2025-26.parquet",
+      "rows": 27706,
+      "players": 527,
+      "unique_game_ids": 1305,
+      "date_min": "2025-10-21",
+      "date_max": "2026-06-13",
+      "true_rows": 21889,
+      "false_rows": 5817,
+      "missing_flags": 0,
+      "missing_pdk": 0,
+      "false_rows_with_pdk": 5817,
+      "game_flag_patterns": {
+        "all_true": 924,
+        "mixed": 209,
+        "all_false": 172
+      },
+      "players_with_both_true_and_false": 516,
+      "pdk_distribution_by_flag": [
+        {
+          "valid": false,
+          "count": 5817,
+          "mean": 15.433797490115179,
+          "median": 13.39,
+          "min": -6.5,
+          "max": 77.18
+        },
+        {
+          "valid": true,
+          "count": 21889,
+          "mean": 15.55131892731509,
+          "median": 13.13,
+          "min": -12.0,
+          "max": 104.21
+        }
+      ]
+    }
+  ],
+  "live_luka_sample": [
+    {
+      "season": "2018-19",
+      "player_id": "127",
+      "status": 200,
+      "rows": 72,
+      "true": 0,
+      "false": 72,
+      "missing": 0
+    },
+    {
+      "season": "2019-20",
+      "player_id": "127",
+      "status": 200,
+      "rows": 61,
+      "true": 0,
+      "false": 61,
+      "missing": 0
+    },
+    {
+      "season": "2020-21",
+      "player_id": "127",
+      "status": 200,
+      "rows": 66,
+      "true": 51,
+      "false": 15,
+      "missing": 0
+    },
+    {
+      "season": "2024-25",
+      "player_id": "127",
+      "status": 200,
+      "rows": 50,
+      "true": 39,
+      "false": 11,
+      "missing": 0
+    },
+    {
+      "season": "2025-26",
+      "player_id": "127",
+      "status": 200,
+      "rows": 64,
+      "true": 50,
+      "false": 14,
+      "missing": 0
+    }
+  ],
+  "local_week_round_avg_archive_file_counts_by_season_id": {
+    "19": 158,
+    "13": 154,
+    "22": 35,
+    "16": 29,
+    "25": 5
+  },
+  "conclusions": [
+    "The endpoint returns non-null PDK values for many rows marked false; false is a validity/filter flag, not a missing-score indicator and must not be replaced with zero.",
+    "The profile UI applies the flag as a display filter, but neither its label nor its filtering code defines the business rule that sets the flag.",
+    "All collected rows for seasons 2018/19 and 2019/20 are false; therefore the strict valid-target policy yields zero target rows from those seasons. This alone does not prove their PDK numbers are arithmetically wrong, but their official Dunkest-game eligibility cannot be established from this flag.",
+    "In later seasons, true and false can coexist for a single Dunkest gameId and for a single player across different dates. Thus the flag is not merely a season-level indicator.",
+    "Keep raw PDK and raw flag, keep the current strict target selection for seasons with true flags, and exclude 2018/19–2019/20 from strict official-target training unless an independent historical round/calendar source verifies eligibility. No model or split was changed."
+  ]
+}

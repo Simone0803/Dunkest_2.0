@@ -1,0 +1,73 @@
+{
+  "created_utc": "2026-10-14T11:00:56.298975+00:00",
+  "prediction_source": "data/processed/dunkest_pdk_game_walk_forward_predictions_2020-26_v3.csv",
+  "history_source": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "prediction_model": "saved walk-forward Random Forest predictions; not the current multi-model production ensemble",
+  "test_seasons": [
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "folds": [
+    {
+      "test_season": "2023-24",
+      "calibration_seasons": [
+        "2022-23"
+      ],
+      "n_calibration": 19165,
+      "n_test": 18927,
+      "calibration_residual_quantiles": {
+        "q10": -13.522131815488478,
+        "q50": 1.1910440083577853,
+        "q90": 10.795916982795523
+      },
+      "test_history_coverage": {
+        "history_over_10": 18015,
+        "low_history_0_5": 518,
+        "history_6_10": 394
+      }
+    },
+    {
+      "test_season": "2024-25",
+      "calibration_seasons": [
+        "2022-23",
+        "2023-24"
+      ],
+      "n_calibration": 38092,
+      "n_test": 19590,
+      "calibration_residual_quantiles": {
+        "q10": -13.43675808850539,
+        "q50": 1.3227069269866796,
+        "q90": 10.887789794581334
+      },
+      "test_history_coverage": {
+        "history_over_10": 18726,
+        "low_history_0_5": 480,
+        "history_6_10": 384
+      }
+    },
+    {
+      "test_season": "2025-26",
+      "calibration_seasons": [
+        "2022-23",
+        "2023-24",
+        "2024-25"
+      ],
+      "n_calibration": 57682,
+      "n_test": 18412,
+      "calibration_residual_quantiles": {
+        "q10": -13.303329325327608,
+        "q50": 1.2866241604881337,
+        "q90": 10.901078766375086
+      },
+      "test_history_coverage": {
+        "history_over_10": 17501,
+        "low_history_0_5": 524,
+        "history_6_10": 387
+      }
+    }
+  ],
+  "methods": "expanding-origin residual q10/q50/q90 from prior OOF seasons only; cohort residual quantiles compared against pooled quantiles on identical cohort rows; cohort estimates shrunk to pooled when calibration n < 500",
+  "production_changed": false,
+  "holdout_caveat": "2025/26 has been examined in prior experiments and is not globally untouched."
+}

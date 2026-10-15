@@ -1,0 +1,2401 @@
+{
+  "generated_at_utc": "2026-10-12T20:48:33.873658+00:00",
+  "run_count": 39,
+  "runs_with_valid_snapshot_hashes": 39,
+  "runs_before_first_fixture_date_with_valid_hashes": 31,
+  "runs_with_source_capture_timestamp_in_bundle": 0,
+  "current_2026_27_run_count": 39,
+  "non_2026_27_run_count": 0,
+  "runs": [
+    {
+      "run_id": "20261008T093000Z_3051df18",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-08T09:30:01.041460+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "e50e112be32ae737ee72a3acf53982549a1c0c99956f75636f1d79fb473b6e5a",
+          "actual_sha256": "e50e112be32ae737ee72a3acf53982549a1c0c99956f75636f1d79fb473b6e5a",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "f78ddcb75fbfec506800e30fa738a69f4f996387465c5a22e2d70816ade72e04",
+          "actual_sha256": "f78ddcb75fbfec506800e30fa738a69f4f996387465c5a22e2d70816ade72e04",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "a852bd702b046f18aa7c74272466d2fa170d092aa7fdf3b1ff323833364cb5d6",
+          "actual_sha256": "a852bd702b046f18aa7c74272466d2fa170d092aa7fdf3b1ff323833364cb5d6",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "bae2eeac4b40c19ba830cc4853ce7ad07870488341082cd6df337c2acb61e9a3",
+          "actual_sha256": "bae2eeac4b40c19ba830cc4853ce7ad07870488341082cd6df337c2acb61e9a3",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261008T094331Z_12d79429",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-08T09:43:31.600138+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "a34037154137e17b31be3472774655543f0f9826009d2d17f6b53d54fbfbcb40",
+          "actual_sha256": "a34037154137e17b31be3472774655543f0f9826009d2d17f6b53d54fbfbcb40",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "02978b0155f5fd59a025c816f64e429dc37d215cb332282bf2f5b306d4740f24",
+          "actual_sha256": "02978b0155f5fd59a025c816f64e429dc37d215cb332282bf2f5b306d4740f24",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "e95c3290031e9e3c65d42dbaaca2ab3605c7567a299b3549682288b4c0913685",
+          "actual_sha256": "e95c3290031e9e3c65d42dbaaca2ab3605c7567a299b3549682288b4c0913685",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "32885e38f43f37cfe40961114e40044347977fca900dd63f4170723d2b2d91f8",
+          "actual_sha256": "32885e38f43f37cfe40961114e40044347977fca900dd63f4170723d2b2d91f8",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261008T100031Z_a02fed37",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-08T10:00:31.676622+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "cc3e1d2a9791fed8c4dcd98e692a49fd96e875b692c5d7b3d8cd79305f350e68",
+          "actual_sha256": "cc3e1d2a9791fed8c4dcd98e692a49fd96e875b692c5d7b3d8cd79305f350e68",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "02978b0155f5fd59a025c816f64e429dc37d215cb332282bf2f5b306d4740f24",
+          "actual_sha256": "02978b0155f5fd59a025c816f64e429dc37d215cb332282bf2f5b306d4740f24",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "e95c3290031e9e3c65d42dbaaca2ab3605c7567a299b3549682288b4c0913685",
+          "actual_sha256": "e95c3290031e9e3c65d42dbaaca2ab3605c7567a299b3549682288b4c0913685",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2ae9e95b2332cd0ad2e1f8b211b63fe3de58eecf23835c72342a3fbb5bc30641",
+          "actual_sha256": "2ae9e95b2332cd0ad2e1f8b211b63fe3de58eecf23835c72342a3fbb5bc30641",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261009T135323Z_fb0fee15",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-09T13:53:23.213077+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "actual_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "actual_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "actual_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261009T141219Z_18e83d63",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-09T14:12:19.732367+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "actual_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "actual_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "actual_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261009T141921Z_39483857",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-09T14:19:21.086824+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "actual_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "actual_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "actual_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261009T142424Z_2c78a7be",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-09T14:24:24.929382+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "actual_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "actual_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "actual_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261009T150558Z_4e8ff850",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-09T15:05:58.420390+00:00",
+      "first_fixture_date_utc": null,
+      "last_fixture_date_utc": null,
+      "run_before_first_fixture_date": false,
+      "snapshot_file_count": 5,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "actual_sha256": "5b8fb85c22213def5fa710f45b9a33ab87ab7422bdfdb6c1a7d4041d395b0e9e",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "actual_sha256": "7ef0b65fb5b2e5fb6b4a029cc979bd5976bd11dbfb1684837b97621dbdc31b8d",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "actual_sha256": "ce27bb59d1b4d5294f05897ce2140f0f54051a49d8b0dab0b575549078515d54",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 0,
+      "unique_fixture_ids": 0,
+      "mapping_source_retrieval_timestamps": [],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "incomplete_or_temporal_evidence_needs_review"
+    },
+    {
+      "run_id": "20261010T083359Z_22ec70d9",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T08:33:59.573247+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "b8205ac786308c03d9122c7a0908a2758196c31262c1db4d410ebc270665b494",
+          "actual_sha256": "b8205ac786308c03d9122c7a0908a2758196c31262c1db4d410ebc270665b494",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "actual_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "actual_sha256": "2f1f5311a63d113520ff952b87f8c5202ca92ca34ca2a7c04ba5599177fccf45",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_first_appearance_v1.parquet",
+          "exists": true,
+          "expected_sha256": "f9a7d1eded60a26e3d90812c9a0fe5cdb7a7e4dfe3304f3c7055d442c70e7ee3",
+          "actual_sha256": "f9a7d1eded60a26e3d90812c9a0fe5cdb7a7e4dfe3304f3c7055d442c70e7ee3",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "e6cfd2ee6af3c2aa9251eebfd90ab3c24be10d5ead4a02ea0d3b35e5c0780863",
+          "actual_sha256": "e6cfd2ee6af3c2aa9251eebfd90ab3c24be10d5ead4a02ea0d3b35e5c0780863",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "baa280cc8a442e30443ae77e4ab2eacf114a1006c33629ee183fda236e32cc31",
+          "actual_sha256": "baa280cc8a442e30443ae77e4ab2eacf114a1006c33629ee183fda236e32cc31",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-09T15:57:13.964128+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T085257Z_5076b845",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T08:52:57.415630+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "b8205ac786308c03d9122c7a0908a2758196c31262c1db4d410ebc270665b494",
+          "actual_sha256": "b8205ac786308c03d9122c7a0908a2758196c31262c1db4d410ebc270665b494",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "actual_sha256": "af0237816a03690de2f99e5fab9be51c22a9ac98463faa259b363cefc5521995",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "actual_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "9258e7da6d5a46b6462f11badb812b170b26d30553e4efef3c9040112b9382af",
+          "actual_sha256": "9258e7da6d5a46b6462f11badb812b170b26d30553e4efef3c9040112b9382af",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "bff5566c01a3e29b2799fc0ff6a4dbfe69ddbb973e2812423637da38121b1457",
+          "actual_sha256": "bff5566c01a3e29b2799fc0ff6a4dbfe69ddbb973e2812423637da38121b1457",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "baa280cc8a442e30443ae77e4ab2eacf114a1006c33629ee183fda236e32cc31",
+          "actual_sha256": "baa280cc8a442e30443ae77e4ab2eacf114a1006c33629ee183fda236e32cc31",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T08:52:07.433092+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T131128Z_df206ae1",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T13:11:28.541043+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "f6a92aeba08a2c4d58b88a107a890b6973070d977a5d9f0d307add66bbedb9a2",
+          "actual_sha256": "f6a92aeba08a2c4d58b88a107a890b6973070d977a5d9f0d307add66bbedb9a2",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "6f5a43e990c1b83e76f7a30e659155ed0971273450449af2c5fc43c4cdca16c5",
+          "actual_sha256": "6f5a43e990c1b83e76f7a30e659155ed0971273450449af2c5fc43c4cdca16c5",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "actual_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "c6f270423110abbf1f187cdecd1e80f75924d5bc07af4040b23958041c812ea8",
+          "actual_sha256": "c6f270423110abbf1f187cdecd1e80f75924d5bc07af4040b23958041c812ea8",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78df206651d85ac9ca5586ef146153a0ab85137ed0943bdfde27602a614489ea",
+          "actual_sha256": "78df206651d85ac9ca5586ef146153a0ab85137ed0943bdfde27602a614489ea",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "98a2c74e7f4854ac29166b828e8a8aa2a6f946a8b312cdcce73c80add52face2",
+          "actual_sha256": "98a2c74e7f4854ac29166b828e8a8aa2a6f946a8b312cdcce73c80add52face2",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T13:10:34.804485+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T132258Z_86251ef3",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T13:22:58.585643+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "f6a92aeba08a2c4d58b88a107a890b6973070d977a5d9f0d307add66bbedb9a2",
+          "actual_sha256": "f6a92aeba08a2c4d58b88a107a890b6973070d977a5d9f0d307add66bbedb9a2",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "6f5a43e990c1b83e76f7a30e659155ed0971273450449af2c5fc43c4cdca16c5",
+          "actual_sha256": "6f5a43e990c1b83e76f7a30e659155ed0971273450449af2c5fc43c4cdca16c5",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "actual_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "a831693c2f65a594a6b660a6a0795ee5c610838532819afebb9d9cb3932136d1",
+          "actual_sha256": "a831693c2f65a594a6b660a6a0795ee5c610838532819afebb9d9cb3932136d1",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78df206651d85ac9ca5586ef146153a0ab85137ed0943bdfde27602a614489ea",
+          "actual_sha256": "78df206651d85ac9ca5586ef146153a0ab85137ed0943bdfde27602a614489ea",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "98a2c74e7f4854ac29166b828e8a8aa2a6f946a8b312cdcce73c80add52face2",
+          "actual_sha256": "98a2c74e7f4854ac29166b828e8a8aa2a6f946a8b312cdcce73c80add52face2",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T13:22:08.511140+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T135249Z_830f6057",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T13:52:49.052963+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "88e606489f6e8daa5632575cea78f0615ac2dd4bf57f42e34e9737921130d058",
+          "actual_sha256": "88e606489f6e8daa5632575cea78f0615ac2dd4bf57f42e34e9737921130d058",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "7f59081f9cc2be3f015a1727897856153bfef32563bbf00ad95c002fefec6e62",
+          "actual_sha256": "7f59081f9cc2be3f015a1727897856153bfef32563bbf00ad95c002fefec6e62",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "actual_sha256": "0a109b99127cfd98bcf42ea99b7725a763973276c87dd4dd8c59cd79fa509395",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "actual_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "82721e7bfb118ee72906c689ae9ede0cecd7ff4ae913bcc3597e2c33cae6755a",
+          "actual_sha256": "82721e7bfb118ee72906c689ae9ede0cecd7ff4ae913bcc3597e2c33cae6755a",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "3d5218ed750dbe7daa8ea6c2ebc3e98bb5215dab44e334c39149fcbc52e93deb",
+          "actual_sha256": "3d5218ed750dbe7daa8ea6c2ebc3e98bb5215dab44e334c39149fcbc52e93deb",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T13:51:59.017710+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T144213Z_100ee7de",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T14:42:13.748589+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "c7f15330a678ea9645b6e5dde30bb6b3ae0ef9a9126eeedf45c39111f9382d49",
+          "actual_sha256": "c7f15330a678ea9645b6e5dde30bb6b3ae0ef9a9126eeedf45c39111f9382d49",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "actual_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "actual_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "actual_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "1d3018d7f58d9cb00984e8bbb68bbf69be954c716307fefc1f87e6259c6c94f8",
+          "actual_sha256": "1d3018d7f58d9cb00984e8bbb68bbf69be954c716307fefc1f87e6259c6c94f8",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "bc46fba1b651be0a3f23f0cb5970bf839140893c07f420233abaef467e02479c",
+          "actual_sha256": "bc46fba1b651be0a3f23f0cb5970bf839140893c07f420233abaef467e02479c",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T13:51:59.017710+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261010T144856Z_28b368a0",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-10T14:48:56.082594+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-20",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "c7f15330a678ea9645b6e5dde30bb6b3ae0ef9a9126eeedf45c39111f9382d49",
+          "actual_sha256": "c7f15330a678ea9645b6e5dde30bb6b3ae0ef9a9126eeedf45c39111f9382d49",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "actual_sha256": "a09dfc3fca552137e7ce89e78034bb2c487142cf87e598b8f95e735e930b7339",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "actual_sha256": "dd50e2ef7b380ea6267ea3709f7f371d32b8fb78e223e551038ca8fe15b0a5a4",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_g1_lineups_turn1.parquet",
+          "exists": true,
+          "expected_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "actual_sha256": "ad548b3335a746825270c4f8116c0a88d96c1de43870d59709feee3002fed6c9",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "1d3018d7f58d9cb00984e8bbb68bbf69be954c716307fefc1f87e6259c6c94f8",
+          "actual_sha256": "1d3018d7f58d9cb00984e8bbb68bbf69be954c716307fefc1f87e6259c6c94f8",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "bc46fba1b651be0a3f23f0cb5970bf839140893c07f420233abaef467e02479c",
+          "actual_sha256": "bc46fba1b651be0a3f23f0cb5970bf839140893c07f420233abaef467e02479c",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 3,
+      "unique_fixture_ids": 3,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-10T13:51:59.017710+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T085417Z_327ebd5e",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T08:54:17.435351+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "5749c1ec214cf3c288c337f83dbab14cd158fc8b1ba625e4031af461b5448021",
+          "actual_sha256": "5749c1ec214cf3c288c337f83dbab14cd158fc8b1ba625e4031af461b5448021",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "ecf7c8b270c55d63529ff804d80b58be5d46db85306cce9ec4923ef7cdfc2bff",
+          "actual_sha256": "ecf7c8b270c55d63529ff804d80b58be5d46db85306cce9ec4923ef7cdfc2bff",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "f9c8ed29de3bf0bcf7c8d35fc5bfd2884f08512246dbc84b54296f46c9826713",
+          "actual_sha256": "f9c8ed29de3bf0bcf7c8d35fc5bfd2884f08512246dbc84b54296f46c9826713",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "0d10947d42a4b19bcd505727e56522c694a07aa3fdef46fa57b216d00044abb0",
+          "actual_sha256": "0d10947d42a4b19bcd505727e56522c694a07aa3fdef46fa57b216d00044abb0",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T090223Z_464324bb",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:02:23.232910+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T093023Z_01411bbd",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:30:23.995432+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T093847Z_2b4a2ab6",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:38:47.055858+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T093945Z_6f9fc7a3",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:39:45.397286+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T094038Z_43bedafe",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:40:38.399288+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T094126Z_2bb5f9bb",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:41:26.100147+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T094835Z_9a175ece",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:48:35.964412+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T095005Z_538872ad",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:50:05.732069+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T095227Z_f4f126c9",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:52:27.468218+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T095616Z_e0474c53",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T09:56:16.359380+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "actual_sha256": "bf65d760fc3b6e7e6be959a6dffbef23c1830e8c170b442d75d85bb3eae33199",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "actual_sha256": "da73c22ff079c81c543ea34053b93ce9c3b19e0354dc30c9a17b9898bfa809dd",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "actual_sha256": "78243525b39a66c9c48c4d44ae27776578c4fe45f8e1bda724e6e498e7bab874",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "actual_sha256": "17ad62e0ec3b6a51f890d7db753de031dfe67a83feb9b6297faa9c3b07f1e007",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T102807Z_869c3c41",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T10:28:07.221801+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "7266f2d1de9137ecf2aac29d7cd3ad686c35526e4d08d9059706bd72d1b7a1e2",
+          "actual_sha256": "7266f2d1de9137ecf2aac29d7cd3ad686c35526e4d08d9059706bd72d1b7a1e2",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "e8f806addac1c01342622814d44e67de6f00ee0024684ea908676b17837a1686",
+          "actual_sha256": "e8f806addac1c01342622814d44e67de6f00ee0024684ea908676b17837a1686",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "7f8fc8ed6ef848162a44d38c71c4c74999edc4ae1b8ff2d7a1ab324cfb0353e2",
+          "actual_sha256": "7f8fc8ed6ef848162a44d38c71c4c74999edc4ae1b8ff2d7a1ab324cfb0353e2",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "2279cb851e06781ef8bd8225ca95c00bfc05e8177a092a16c6fc8d58d5f0c02e",
+          "actual_sha256": "2279cb851e06781ef8bd8225ca95c00bfc05e8177a092a16c6fc8d58d5f0c02e",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T103952Z_6c140c29",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T10:39:52.677482+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "abb27ec16daab0c78936648e753b4655dbeff8799f5908cb6ac6b07719d907b8",
+          "actual_sha256": "abb27ec16daab0c78936648e753b4655dbeff8799f5908cb6ac6b07719d907b8",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T105557Z_d94a9ea8",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T10:55:57.875026+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "actual_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T105854Z_4bc44e97",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T10:58:54.990120+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "actual_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T110150Z_652b80ff",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T11:01:50.552392+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "actual_sha256": "30c7832c486bd3b748e2db8d57fcbfc8d5efb1ab13e2215b4a171a8fe7dc0c25",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T150816Z_2c74817c",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T15:08:16.583827+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "actual_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T152359Z_acb7432b",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T15:23:59.250249+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "actual_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T152844Z_dcb3a29b",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T15:28:44.421537+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "actual_sha256": "4abc0f6ffb59207b1fe6e96e5e69ff219c64c171a1ce5dc252b18c661a52d748",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T161757Z_1aa46622",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T16:17:57.896717+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "actual_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T161852Z_53156b20",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T16:18:52.918480+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "actual_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T162125Z_5b670240",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T16:21:25.606306+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "actual_sha256": "95ba228afef90cce523bca6f743f25009406f49c1cdd9b0f95e3ea898042b24b",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T162434Z_7a50d394",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T16:24:34.742560+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "1396cf1aed553f191d4b6fde29a9144d36453e371dd3989767523269a1371bec",
+          "actual_sha256": "1396cf1aed553f191d4b6fde29a9144d36453e371dd3989767523269a1371bec",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    },
+    {
+      "run_id": "20261012T171217Z_2f98f42b",
+      "season": "2026-27",
+      "target_gameweek": 1,
+      "run_timestamp_utc": "2026-10-12T17:12:17.430088+00:00",
+      "first_fixture_date_utc": "2026-10-20",
+      "last_fixture_date_utc": "2026-10-22",
+      "run_before_first_fixture_date": true,
+      "snapshot_file_count": 6,
+      "hash_checks": [
+        {
+          "path": "current_lineups_market.csv",
+          "exists": true,
+          "expected_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "actual_sha256": "796400a128acaab802b44da2e5d6f238553a7e095c5263b6c7a6ad890b557c54",
+          "hash_matches": true
+        },
+        {
+          "path": "lineups_availability.csv",
+          "exists": true,
+          "expected_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "actual_sha256": "2ba6693a610314c20de196245feef4a4c2f2487c8b2d3082ef121275c627802d",
+          "hash_matches": true
+        },
+        {
+          "path": "coach_market_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "actual_sha256": "9f192bd682c5911d4d585567d9be7097dabf232a32122dfa84610131fedd7187",
+          "hash_matches": true
+        },
+        {
+          "path": "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
+          "exists": true,
+          "expected_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "actual_sha256": "9ed560c4d0e762c811803bb1bbfbca8ce343b23f1913237e548e40b2c672d918",
+          "hash_matches": true
+        },
+        {
+          "path": "injuries_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "1396cf1aed553f191d4b6fde29a9144d36453e371dd3989767523269a1371bec",
+          "actual_sha256": "1396cf1aed553f191d4b6fde29a9144d36453e371dd3989767523269a1371bec",
+          "hash_matches": true
+        },
+        {
+          "path": "player_credits_26_gw1.parquet",
+          "exists": true,
+          "expected_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "actual_sha256": "30b21f164b2f8806926564f54a1b8f2d8f25c0615c27149c2ebe7fe51b5e5c0d",
+          "hash_matches": true
+        }
+      ],
+      "all_snapshot_hashes_valid": true,
+      "mapping_rows": 16,
+      "unique_fixture_ids": 16,
+      "mapping_source_retrieval_timestamps": [
+        "2026-10-12T08:53:22.144840+00:00"
+      ],
+      "source_capture_timestamps_in_bundle": [],
+      "source_capture_times_before_fixture_day": [],
+      "classification": "hash_valid_and_run_precedes_fixture_day"
+    }
+  ],
+  "conclusion": {
+    "historical_pre_match_snapshots": "No non-2026/27 season run-level snapshots were found in data/predictions; historical weekly-round tables are outcomes, not authenticated pre-game market captures.",
+    "temporal_limit": "Run timestamps and frozen file hashes establish what was saved in a run and that the run predates the mapped fixture date. They do not alone prove the exact retrieval time of each source; that requires source-side metadata copied into the bundle.",
+    "future_capture": "New prediction runs now copy any adjacent *.meta.json source metadata files into pre_match_snapshot and hash them in manifest.json."
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "scope": "Historical team PDK output used as a lagged proxy for team/roster strength; training 2020-21 through 2023-24, validation 2024-25, final holdout 2025-26",
+  "sources": {
+    "team_logs": "data/processed/team_game_logs_2018-26_v1.parquet",
+    "verified_pdk_player_game_training": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+    "baseline_forecasts": "reports/audit/coach_points_model_tuning_walk_forward_2018-26_v3.csv"
+  },
+  "feature_definition": "Sum verified official player-game PDK by NBA game/team; require >=7 matched players; use the mean of the prior five available team-game PDK sums (minimum three), centered against the historical league mean available before that date",
+  "fit": {
+    "method": "Ridge regression on team-game point residuals after the walk-forward baseline forecast",
+    "alpha": 10.0,
+    "training_seasons": [
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24"
+    ],
+    "training_team_game_rows": 6160,
+    "coefficients": {
+      "pdk_strength_delta": -0.01146804967348823,
+      "opponent_pdk_strength_delta": 0.008199476141462728
+    },
+    "intercept": -1.1962139664447575,
+    "minimum_players_per_team_game": 7,
+    "minimum_prior_pdk_games": 3
+  },
+  "validation": {
+    "all_games": {
+      "baseline": {
+        "games": 1230,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602,
+        "margin_mae": 11.10380238825148
+      },
+      "adjusted_with_baseline_fallback": {
+        "games": 1230,
+        "brier": 0.21015925264683802,
+        "log_loss": 0.6075914671118471,
+        "accuracy": 0.6634146341463415,
+        "margin_mae": 11.106626711861615
+      }
+    },
+    "matched_pdk_feature_games": {
+      "games": 840,
+      "coverage": 0.6829268292682927,
+      "baseline": {
+        "games": 840,
+        "brier": 0.20594167165644192,
+        "log_loss": 0.5973747123270893,
+        "accuracy": 0.6666666666666666,
+        "margin_mae": 10.845339577171075
+      },
+      "adjusted": {
+        "games": 840,
+        "brier": 0.2064921375090031,
+        "log_loss": 0.5987668014211971,
+        "accuracy": 0.6678571428571428,
+        "margin_mae": 10.849475193885917
+      },
+      "mean_absolute_home_adjustment": 1.21329555412332,
+      "mean_absolute_away_adjustment": 1.2297126466778112
+    }
+  },
+  "final_holdout": {
+    "all_games": {
+      "baseline": {
+        "games": 1230,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992,
+        "margin_mae": 11.44582970446835
+      },
+      "adjusted_with_baseline_fallback": {
+        "games": 1230,
+        "brier": 0.20703564797130006,
+        "log_loss": 0.602531799459489,
+        "accuracy": 0.6926829268292682,
+        "margin_mae": 11.448845459563163
+      }
+    },
+    "matched_pdk_feature_games": {
+      "games": 800,
+      "coverage": 0.6504065040650406,
+      "baseline": {
+        "games": 800,
+        "brier": 0.21082651154616613,
+        "log_loss": 0.610683157904195,
+        "accuracy": 0.67,
+        "margin_mae": 11.241063863130956
+      },
+      "adjusted": {
+        "games": 800,
+        "brier": 0.21152383557710266,
+        "log_loss": 0.6124329787857522,
+        "accuracy": 0.67875,
+        "margin_mae": 11.245700586589228
+      },
+      "mean_absolute_home_adjustment": 1.1989770553177823,
+      "mean_absolute_away_adjustment": 1.1958518854657867
+    }
+  },
+  "decision": "do not deploy: PDK-based roster-strength proxy does not improve both Brier and log loss on validation",
+  "limitations": [
+    "This is a historical aggregate-PDK proxy, not a true archived pre-game Dunkest roster or price snapshot.",
+    "The model uses only past PDK totals for features and walk-forward baseline residuals for training; same-game PDK is never a feature.",
+    "The 2025-26 season was not used to fit or choose the proxy model.",
+    "No production predictor or optimizer was changed."
+  ]
+}

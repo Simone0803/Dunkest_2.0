@@ -1,0 +1,567 @@
+market_player_name,normalized_key,candidate_ids,candidate_names,resolution,resolved_player_id
+Aaron Wiggins,aaron wiggins,1026,Aaron Wiggins;Wiggins Aaron,unique_name_match,1026
+Asa Newell,asa newell,2965,Asa Newell;Newell Asa,unique_name_match,2965
+CJ Mccollum,cj mccollum,307,Cj Mccollum;McCollum CJ,unique_name_match,307
+Corey Kispert,corey kispert,969,Corey Kispert;Kispert Corey,unique_name_match,969
+Dorian Finney-Smith,dorian finney smith,152,Dorian Finney Smith;Finney-Smith Dorian,unique_name_match,152
+Dyson Daniels,dyson daniels,1149,Daniels Dyson;Dyson Daniels,unique_name_match,1149
+Gabe Vincent,gabe vincent,675,Gabe Vincent;Vincent Gabe,unique_name_match,675
+Henri Veesaar,henri veesaar,,,unmatched,
+Jalen Johnson,jalen johnson,963,Jalen Johnson;Johnson Jalen,unique_name_match,963
+Jalen Wilson,jalen wilson,1839,Jalen Wilson;Wilson Jalen,unique_name_match,1839
+Jock Landale,jock landale,971,Jock Landale;Landale Jock,unique_name_match,971
+Keaton Wallace,keaton wallace,1166,Keaton Wallace;Wallace Keaton,unique_name_match,1166
+Kingston Flemings,kingston flemings,,,unmatched,
+Luguentz Dort,luguentz dort,600,Dort Luguentz;Luguentz Dort,unique_name_match,600
+Mouhamed Gueye,mouhamed gueye,1867,Gueye Mouhamed;Mouhamed Gueye,unique_name_match,1867
+Nickeil Alexander-Walker,nickeil alexander walker,575,Alexander-Walker Nickeil;Nickeil Alexander Walker,unique_name_match,575
+Onyeka Okongwu,onyeka okongwu,751,Okongwu Onyeka;Onyeka Okongwu,unique_name_match,751
+Rayj Dennis,rayj dennis,2544,Dennis RayJ;Rayj Dennis,unique_name_match,2544
+Tony Bradley,tony bradley,57,Bradley Tony;Tony Bradley,unique_name_match,57
+Zuby Ejiofor,zuby ejiofor,,,unmatched,
+Ben Saraf,ben saraf,2976,Ben Saraf;Saraf Ben,unique_name_match,2976
+Chaney Johnson,chaney johnson,2951,Chaney Johnson;Johnson Chaney,unique_name_match,2951
+Danny Wolf,danny wolf,2945,Danny Wolf;Wolf Danny,unique_name_match,2945
+Day'ron Sharpe,dayron sharpe,1002,Dayron Sharpe;Sharpe Day'Ron,unique_name_match,1002
+Drake Powell,drake powell,2968,Drake Powell;Powell Drake,unique_name_match,2968
+E.J. Liddell,e j liddell,1104,Ej Liddell;Liddell E.J.,unique_name_match,1104
+Egor Demin,egor demin,2964,Demin Egor;Egor Demin,unique_name_match,2964
+Josh Minott,josh minott,1130,Josh Minott;Minott Josh,unique_name_match,1130
+Joshua Jefferson,joshua jefferson,,,unmatched,
+Julius Randle,julius randle,391,Julius Randle;Randle Julius,unique_name_match,391
+Keon Ellis,keon ellis,1114,Ellis Keon;Keon Ellis,unique_name_match,1114
+Kylan Boswell,kylan boswell,,,unmatched,
+Michael Ajayi,michael ajayi,,,unmatched,
+Michael Porter Jr,michael porter,381,Michael Porter Jr;Porter Jr. Michael,unique_name_match,381
+Mikel Brown Jr.,mikel brown,,,unmatched,
+Moritz Wagner,moritz wagner,462,Moritz Wagner;Wagner Moritz,unique_name_match,462
+Noah Clowney,noah clowney,1881,Clowney Noah;Noah Clowney,unique_name_match,1881
+Nolan Traore,nolan traore,2972,Nolan Traore;Traore Nolan,unique_name_match,2972
+Terance Mann,terance mann,635,Mann Terance;Terance Mann,unique_name_match,635
+Tyler Bilodeau,tyler bilodeau,,,unmatched,
+Amari Williams,amari williams,2895,Amari Williams;Williams Amari,unique_name_match,2895
+Baylor Scheierman,baylor scheierman,2398,Baylor Scheierman;Scheierman Baylor,unique_name_match,2398
+Chris Cenac Jr.,chris cenac,,,unmatched,
+Derrick White,derrick white,474,Derrick White;White Derrick,unique_name_match,474
+Devin Carter,devin carter,2429,Carter Devin;Devin Carter,unique_name_match,2429
+Dillon Mitchell,dillon mitchell,,,unmatched,
+Hugo Gonzalez,hugo gonzalez,2975,Gonzalez Hugo;Hugo Gonzalez,unique_name_match,2975
+Jayson Tatum,jayson tatum,436,Jayson Tatum;Tatum Jayson,unique_name_match,436
+Jordan Walsh,jordan walsh,1884,Jordan Walsh;Walsh Jordan,unique_name_match,1884
+Luka Garza,luka garza,945,Garza Luka;Luka Garza,unique_name_match,945
+Max Shulga,max shulga,2892,Max Shulga;Shulga Max,unique_name_match,2892
+Mike Conley,mike conley,100,Conley Mike;Mike Conley,unique_name_match,100
+Milos Uzan,milos uzan,,,unmatched,
+Mitchell Robinson,mitchell robinson,401,Mitchell Robinson;Robinson Mitchell,unique_name_match,401
+Neemias Queta,neemias queta,996,Neemias Queta;Queta Neemias,unique_name_match,996
+Paul George,paul george,169,George Paul;Paul George,unique_name_match,169
+Payton Pritchard,payton pritchard,756,Payton Pritchard;Pritchard Payton,unique_name_match,756
+Ron Harper Jr,ron harper,1090,Harper Jr. Ron;Ron Harper Jr,unique_name_match,1090
+Sam Hauser,sam hauser,953,Hauser Sam;Sam Hauser,unique_name_match,953
+Brandon Miller,brandon miller,1882,Brandon Miller;Miller Brandon,unique_name_match,1882
+Christian Anderson,christian anderson,,,unmatched,
+Coby White,coby white,681,Coby White;White Coby,unique_name_match,681
+Dennis Schroder,dennis schroder,413,Dennis Schroder;Schroder Dennis,unique_name_match,413
+Grant Williams,grant williams,682,Grant Williams;Williams Grant,unique_name_match,682
+Grayson Allen,grayson allen,7,Allen Grayson;Grayson Allen,unique_name_match,7
+Hannes Steinbach,hannes steinbach,,,unmatched,
+Kon Knueppel,kon knueppel,2957,Knueppel Kon;Kon Knueppel,unique_name_match,2957
+Liam Mcneeley,liam mcneeley,2963,Liam Mcneeley;McNeeley Liam,unique_name_match,2963
+Moussa Diabate,moussa diabate,1132,Diabate Moussa;Moussa Diabate,unique_name_match,1132
+Naz Reid,naz reid,662,Naz Reid;Reid Naz,unique_name_match,662
+Pat Connaughton,pat connaughton,101,Connaughton Pat;Pat Connaughton,unique_name_match,101
+Pj Hall,pj hall,2420,Hall PJ;Pj Hall,unique_name_match,2420
+Royce O'Neale,royce oneale,358,O'Neale Royce;Royce Oneale,unique_name_match,358
+Ryan Kalkbrenner,ryan kalkbrenner,2908,Kalkbrenner Ryan;Ryan Kalkbrenner,unique_name_match,2908
+Ryan Nembhard,ryan nembhard,2921,Nembhard Ryan;Ryan Nembhard,unique_name_match,2921
+Sion James,sion james,2897,James Sion;Sion James,unique_name_match,2897
+Tidjane Salaun,tidjane salaun,2474,Salaun Tidjane;Tidjane Salaun,unique_name_match,2474
+Xavier Tillman,xavier tillman,772,Tillman Xavier;Xavier Tillman,unique_name_match,772
+Buddy Hield,buddy hield,207,Buddy Hield;Hield Buddy,unique_name_match,207
+Caleb Wilson,caleb wilson,,,unmatched,
+Dailyn Swain,dailyn swain,,,unmatched,
+Isaac Okoro,isaac okoro,752,Isaac Okoro;Okoro Isaac,unique_name_match,752
+Jalen Smith,jalen smith,764,Jalen Smith;Smith Jalen,unique_name_match,764
+Josh Giddey,josh giddey,946,Giddey Josh;Josh Giddey,unique_name_match,946
+Leonard Miller,leonard miller,1879,Leonard Miller;Miller Leonard,unique_name_match,1879
+Matas Buzelis,matas buzelis,2469,Buzelis Matas;Matas Buzelis,unique_name_match,2469
+Nicolas Claxton,nicolas claxton,593,Claxton Nic;Nic Claxton,unique_name_match,593
+Noa Essengue,noa essengue,2953,Essengue Noa;Noa Essengue,unique_name_match,2953
+Norman Powell,norman powell,386,Norman Powell;Powell Norman,unique_name_match,386
+Patrick Williams,patrick williams,776,Patrick Williams;Williams Patrick,unique_name_match,776
+Tobe Awaka,tobe awaka,,,unmatched,
+Tre Jones,tre jones,731,Jones Tre;Tre Jones,unique_name_match,731
+Zach Collins,zach collins,97,Collins Zach;Zach Collins,unique_name_match,97
+Craig Porter,craig porter,1858,Craig Porter Jr;Porter Jr. Craig,unique_name_match,1858
+Donovan Mitchell,donovan mitchell,326,Donovan Mitchell;Mitchell Donovan,unique_name_match,326
+Ernest Udeh Jr.,ernest udeh,,,unmatched,
+Evan Mobley,evan mobley,983,Evan Mobley;Mobley Evan,unique_name_match,983
+James Harden,james harden,190,Harden James;James Harden,unique_name_match,190
+Jarrett Allen,jarrett allen,8,Allen Jarrett;Jarrett Allen,unique_name_match,8
+Jaylon Tyson,jaylon tyson,2430,Jaylon Tyson;Tyson Jaylon,unique_name_match,2430
+Mario Hezonja,mario hezonja,205,Hezonja Mario;Mario Hezonja,unique_name_match,205
+Meleek Thomas,meleek thomas,,,unmatched,
+Nae'qwan Tomlin,naeqwan tomlin,2631,Naeqwan Tomlin;Tomlin Nae'Qwan,unique_name_match,2631
+Peyton Watson,peyton watson,1137,Peyton Watson;Watson Peyton,unique_name_match,1137
+Riley Minix,riley minix,2467,Minix Riley;Riley Minix,unique_name_match,2467
+Sam Merrill,sam merrill,746,Merrill Sam;Sam Merrill,unique_name_match,746
+Thomas Bryant,thomas bryant,69,Bryant Thomas;Thomas Bryant,unique_name_match,69
+Tristan Enaruna,tristan enaruna,2390,Enaruna Tristan;Tristan Enaruna,unique_name_match,2390
+Tyrese Proctor,tyrese proctor,2939,Proctor Tyrese;Tyrese Proctor,unique_name_match,2939
+Caleb Martin,caleb martin,636,Caleb Martin;Martin Caleb,unique_name_match,636
+Cooper Flagg,cooper flagg,2956,Cooper Flagg;Flagg Cooper,unique_name_match,2956
+Daniel Gafford,daniel gafford,605,Daniel Gafford;Gafford Daniel,unique_name_match,605
+Dereck Lively II,dereck lively,1886,Dereck Lively Ii;Lively II Dereck,unique_name_match,1886
+Dwight Powell,dwight powell,385,Dwight Powell;Powell Dwight,unique_name_match,385
+Jett Howard,jett howard,1896,Howard Jett;Jett Howard,unique_name_match,1896
+John Poulakidas,john poulakidas,2936,John Poulakidas;Poulakidas John,unique_name_match,2936
+Kyrie Irving,kyrie irving,229,Irving Kyrie;Kyrie Irving,unique_name_match,229
+Marcus Sasser,marcus sasser,1840,Marcus Sasser;Sasser Marcus,unique_name_match,1840
+Max Christie,max christie,1139,Christie Max;Max Christie,unique_name_match,1139
+Morez Johnson,morez johnson,,,unmatched,
+Moussa Cisse,moussa cisse,2890,Cisse Moussa;Moussa Cisse,unique_name_match,2890
+Naji Marshall,naji marshall,739,Marshall Naji;Naji Marshall,unique_name_match,739
+P.J. Washington,p j washington,677,Pj Washington;Washington PJ,unique_name_match,677
+Santi Aldama,santi aldama,912,Aldama Santi;Santi Aldama,unique_name_match,912
+Sergio De Larrea,sergio de larrea,,,unmatched,
+Tarik Biberovic,tarik biberovic,1874,Biberovic Tarik;Tarik Biberovic,unique_name_match,1874
+Tobias Lawal,tobias lawal,,,unmatched,
+Vsevolod Ishchenko,vsevolod ishchenko,,,unmatched,
+Zaccharie Risacher,zaccharie risacher,2453,Risacher Zaccharie;Zaccharie Risacher,unique_name_match,2453
+Aaron Gordon,aaron gordon,176,Aaron Gordon;Gordon Aaron,unique_name_match,176
+Alpha Diallo,alpha diallo,,,unmatched,
+Bruce Brown,bruce brown,64,Brown Bruce;Bruce Brown,unique_name_match,64
+Cam Whitmore,cam whitmore,1895,Cam Whitmore;Whitmore Cam,unique_name_match,1895
+Cameron Johnson,cameron johnson,626,Cameron Johnson;Johnson Cameron,unique_name_match,626
+Christian Braun,christian braun,1100,Braun Christian;Christian Braun,unique_name_match,1100
+Curtis Jones,curtis jones,2923,Curtis Jones;Jones Curtis,unique_name_match,2923
+Daron Holmes Ii,daron holmes,2427,Daron Holmes Ii;Holmes II DaRon,unique_name_match,2427
+David Roddy,david roddy,1110,David Roddy;Roddy David,unique_name_match,1110
+Demar Derozan,demar derozan,120,DeRozan DeMar;Demar Derozan,unique_name_match,120
+Emanuel Miller,emanuel miller,2411,Emanuel Miller;Miller Emanuel,unique_name_match,2411
+Jamal Murray,jamal murray,341,Jamal Murray;Murray Jamal,unique_name_match,341
+Julian Strawther,julian strawther,1861,Julian Strawther;Strawther Julian,unique_name_match,1861
+Kj Simpson,kj simpson,2424,Kj Simpson;Simpson KJ,unique_name_match,2424
+Marvin Bagley III,marvin bagley,22,Bagley III Marvin;Marvin Bagley Iii,unique_name_match,22
+Nikola Jokic,nikola jokic,248,Jokic Nikola;Nikola Jokic,unique_name_match,248
+Spencer Jones,spencer jones,2394,Jones Spencer;Spencer Jones,unique_name_match,2394
+Trevon Brazile,trevon brazile,,,unmatched,
+Tyus Jones,tyus jones,251,Jones Tyus;Tyus Jones,unique_name_match,251
+Zeke Nnaji,zeke nnaji,748,Nnaji Zeke;Zeke Nnaji,unique_name_match,748
+Ausar Thompson,ausar thompson,1901,Ausar Thompson;Thompson Ausar,unique_name_match,1901
+Cade Cunningham,cade cunningham,934,Cade Cunningham;Cunningham Cade,unique_name_match,934
+Chaz Lanier,chaz lanier,2901,Chaz Lanier;Lanier Chaz,unique_name_match,2901
+Daniss Jenkins,daniss jenkins,2402,Daniss Jenkins;Jenkins Daniss,unique_name_match,2402
+Duncan Robinson,duncan robinson,399,Duncan Robinson;Robinson Duncan,unique_name_match,399
+Ebuka Okorie,ebuka okorie,,,unmatched,
+Elijah Harkless,elijah harkless,,,unmatched,
+Gary Harris,gary harris,194,Gary Harris;Harris Gary,unique_name_match,194
+Isaac Jones,isaac jones,2441,Isaac Jones;Jones Isaac,unique_name_match,2441
+Isaiah Joe,isaiah joe,729,Isaiah Joe;Joe Isaiah,unique_name_match,729
+Jalen Duren,jalen duren,1146,Duren Jalen;Jalen Duren,unique_name_match,1146
+Javonte Green,javonte green,608,Green Javonte;Javonte Green,unique_name_match,608
+John Collins,john collins,96,Collins John;John Collins,unique_name_match,96
+Kevin Huerter,kevin huerter,220,Huerter Kevin;Kevin Huerter,unique_name_match,220
+Paul Reed,paul reed,759,Paul Reed;Reed Paul,unique_name_match,759
+Ron Holland II,ron holland,2470,Holland II Ronald;Ronald Holland Ii,explicit_alias_match,2470
+Taurean Prince,taurean prince,388,Prince Taurean;Taurean Prince,unique_name_match,388
+Tolu Smith,tolu smith,2542,Smith Tolu;Tolu Smith,unique_name_match,2542
+Ugonna Onyenso,ugonna onyenso,,,unmatched,
+Wendell Moore,wendell moore,1099,Moore Jr. Wendell;Wendell Moore Jr,unique_name_match,1099
+Al Horford,al horford,217,Al Horford;Horford Al,unique_name_match,217
+Alex Toohey,alex toohey,2946,Alex Toohey;Toohey Alex,unique_name_match,2946
+Brandin Podziemski,brandin podziemski,1864,Brandin Podziemski;Podziemski Brandin,unique_name_match,1864
+Brandon Williams,brandon williams,1066,Brandon Williams;Williams Brandon,unique_name_match,1066
+Charles Bassey,charles bassey,920,Bassey Charles;Charles Bassey,unique_name_match,920
+Dalen Terry,dalen terry,1123,Dalen Terry;Terry Dalen,unique_name_match,1123
+De'Anthony Melton,deanthony melton,316,Deanthony Melton;Melton De'Anthony,unique_name_match,316
+Draymond Green,draymond green,184,Draymond Green;Green Draymond,unique_name_match,184
+Gary Payton II,gary payton,561,Gary Payton Ii;Payton II Gary,unique_name_match,561
+Georges Niang,georges niang,350,Georges Niang;Niang Georges,unique_name_match,350
+Gui Santos,gui santos,2197,Gui Santos;Santos Gui,unique_name_match,2197
+Jimmy Butler,jimmy butler,74,Butler Jimmy;Jimmy Butler,unique_name_match,74
+Kristaps Porzingis,kristaps porzingis,384,Kristaps Porzingis;Porzingis Kristaps,unique_name_match,384
+Lajae Jones,lajae jones,,,unmatched,
+Lj Cryer,lj cryer,2915,Cryer L.J.;Lj Cryer,unique_name_match,2915
+Malevy Leons,malevy leons,2502,Leons Malevy;Malevy Leons,unique_name_match,2502
+Moses Moody,moses moody,984,Moody Moses;Moses Moody,unique_name_match,984
+Nate Williams,nate williams,1170,Nate Williams;Williams Nate,unique_name_match,1170
+Seth Curry,seth curry,110,Curry Seth;Seth Curry,unique_name_match,110
+Stephen Curry,stephen curry,111,Curry Stephen;Stephen Curry,unique_name_match,111
+Will Richard,will richard,2920,Richard Will;Will Richard,unique_name_match,2920
+Yaxel Lendeborg,yaxel lendeborg,,,unmatched,
+Alperen Sengun,alperen sengun,1001,Alperen Sengun;Sengun Alperen,unique_name_match,1001
+Amen Thompson,amen thompson,1900,Amen Thompson;Thompson Amen,unique_name_match,1900
+Bogdan Bogdanovic,bogdan bogdanovic,49,Bogdan Bogdanovic;Bogdanovic Bogdan,unique_name_match,49
+Bruce Thornton,bruce thornton,,,unmatched,
+Clint Capela,clint capela,78,Capela Clint;Clint Capela,unique_name_match,78
+Fred Vanvleet,fred vanvleet,458,Fred Vanvleet;VanVleet Fred,unique_name_match,458
+Isaiah Crawford,isaiah crawford,2395,Crawford Isaiah;Isaiah Crawford,unique_name_match,2395
+Jabari Smith Jr,jabari smith,1144,Jabari Smith Jr;Smith Jr. Jabari,unique_name_match,1144
+Jae'Sean Tate,jaesean tate,768,Jaesean Tate;Tate Jae'Sean,unique_name_match,768
+Jeff Green,jeff green,187,Green Jeff;Jeff Green,unique_name_match,187
+Julian Phillips,julian phillips,1890,Julian Phillips;Phillips Julian,unique_name_match,1890
+Kevin Durant,kevin durant,135,Durant Kevin;Kevin Durant,unique_name_match,135
+Marcus Smart,marcus smart,424,Marcus Smart;Smart Marcus,unique_name_match,424
+Oscar Tshiebwe,oscar tshiebwe,1842,Oscar Tshiebwe;Tshiebwe Oscar,unique_name_match,1842
+Quadir Copeland,quadir copeland,,,unmatched,
+Reed Sheppard,reed sheppard,2465,Reed Sheppard;Sheppard Reed,unique_name_match,2465
+Sean Pedulla,sean pedulla,3062,Pedulla Sean;Sean Pedulla,unique_name_match,3062
+Steven Adams,steven adams,2,Adams Steven;Steven Adams,unique_name_match,2
+Tari Eason,tari eason,1121,Eason Tari;Tari Eason,unique_name_match,1121
+Aaron Nesmith,aaron nesmith,747,Aaron Nesmith;Nesmith Aaron,unique_name_match,747
+Andrew Nembhard,andrew nembhard,1092,Andrew Nembhard;Nembhard Andrew,unique_name_match,1092
+Ben Sheppard,ben sheppard,1843,Ben Sheppard;Sheppard Ben,unique_name_match,1843
+Braden Smith,braden smith,,,unmatched,
+Ivica Zubac,ivica zubac,496,Ivica Zubac;Zubac Ivica,unique_name_match,496
+Jalen Slawson,jalen slawson,1835,Jalen Slawson;Slawson Jalen,unique_name_match,1835
+Jarace Walker,jarace walker,1887,Jarace Walker;Walker Jarace,unique_name_match,1887
+Jay Huff,jay huff,957,Huff Jay;Jay Huff,unique_name_match,957
+Johnny Furphy,johnny furphy,2466,Furphy Johnny;Johnny Furphy,unique_name_match,2466
+Kelly Oubre Jr,kelly oubre,367,Kelly Oubre Jr;Oubre Jr. Kelly,unique_name_match,367
+Kobe Brown,kobe brown,1845,Brown Kobe;Kobe Brown,unique_name_match,1845
+Larry Nance Jr,larry nance,346,Larry Nance Jr;Nance Jr. Larry,unique_name_match,346
+Obi Toppin,obi toppin,773,Obi Toppin;Toppin Obi,unique_name_match,773
+Pascal Siakam,pascal siakam,420,Pascal Siakam;Siakam Pascal,unique_name_match,420
+Quenton Jackson,quenton jackson,1165,Jackson Quenton;Quenton Jackson,unique_name_match,1165
+T.J. Mcconnell,t j mcconnell,308,McConnell T.J.;Tj Mcconnell,unique_name_match,308
+Tyrese Haliburton,tyrese haliburton,722,Haliburton Tyrese;Tyrese Haliburton,unique_name_match,722
+Baba Miller,baba miller,,,unmatched,
+Bradley Beal,bradley beal,33,Beal Bradley;Bradley Beal,unique_name_match,33
+Brandon Ingram,brandon ingram,228,Brandon Ingram;Ingram Brandon,unique_name_match,228
+Brook Lopez,brook lopez,286,Brook Lopez;Lopez Brook,unique_name_match,286
+Cam Christie,cam christie,2459,Cam Christie;Christie Cam,unique_name_match,2459
+Darius Garland,darius garland,606,Darius Garland;Garland Darius,unique_name_match,606
+Derrick Jones Jr,derrick jones,252,Derrick Jones Jr;Jones Jr. Derrick,unique_name_match,252
+Gradey Dick,gradey dick,1899,Dick Gradey;Gradey Dick,unique_name_match,1899
+Isaiah Jackson,isaiah jackson,960,Isaiah Jackson;Jackson Isaiah,unique_name_match,960
+Jalen Pickett,jalen pickett,1837,Jalen Pickett;Pickett Jalen,unique_name_match,1837
+Jordan Miller,jordan miller,1829,Jordan Miller;Miller Jordan,unique_name_match,1829
+Keaton Wagler,keaton wagler,,,unmatched,
+Kobe Sanders,kobe sanders,2891,Kobe Sanders;Sanders Kobe,unique_name_match,2891
+Kris Dunn,kris dunn,134,Dunn Kris;Kris Dunn,unique_name_match,134
+Nick Martinelli,nick martinelli,,,unmatched,
+Rui Hachimura,rui hachimura,611,Hachimura Rui;Rui Hachimura,unique_name_match,611
+Yuki Kawamura,yuki kawamura,2504,Kawamura Yuki;Yuki Kawamura,unique_name_match,2504
+Adou Thiero,adou thiero,2943,Adou Thiero;Thiero Adou,unique_name_match,2943
+Ak Okereke,ak okereke,,,unmatched,
+Arthur Kaluma,arthur kaluma,,,unmatched,
+Austin Reaves,austin reaves,998,Austin Reaves;Reaves Austin,unique_name_match,998
+Bronny James,bronny james,2463,Bronny James;James Bronny,unique_name_match,2463
+Cameron Carr,cameron carr,,,unmatched,
+Chris Manon,chris manon,2905,Chris Manon;Manon Chris,unique_name_match,2905
+Collin Sexton,collin sexton,417,Collin Sexton;Sexton Collin,unique_name_match,417
+Dalton Knecht,dalton knecht,2425,Dalton Knecht;Knecht Dalton,unique_name_match,2425
+Jaden Hardy,jaden hardy,1151,Hardy Jaden;Jaden Hardy,unique_name_match,1151
+Jake Laravia,jake laravia,1102,Jake Laravia;LaRavia Jake,unique_name_match,1102
+Jarred Vanderbilt,jarred vanderbilt,457,Jarred Vanderbilt;Vanderbilt Jarred,unique_name_match,457
+Kevon Looney,kevon looney,285,Kevon Looney;Looney Kevon,unique_name_match,285
+Luka Doncic,luka doncic,127,Doncic Luka;Luka Doncic,unique_name_match,127
+Matisse Thybulle,matisse thybulle,671,Matisse Thybulle;Thybulle Matisse,unique_name_match,671
+Quentin Grimes,quentin grimes,950,Grimes Quentin;Quentin Grimes,unique_name_match,950
+Sandro Mamukelashvili,sandro mamukelashvili,975,Mamukelashvili Sandro;Sandro Mamukelashvili,unique_name_match,975
+Walker Kessler,walker kessler,1124,Kessler Walker;Walker Kessler,unique_name_match,1124
+Ziaire Williams,ziaire williams,1027,Williams Ziaire;Ziaire Williams,unique_name_match,1027
+Aj Johnson,aj johnson,2472,Aj Johnson;Johnson AJ,unique_name_match,2472
+Cam Spencer,cam spencer,2396,Cam Spencer;Spencer Cam,unique_name_match,2396
+Cameron Boozer,cameron boozer,,,unmatched,
+Cedric Coward,cedric coward,2937,Cedric Coward;Coward Cedric,unique_name_match,2937
+Gregory Jackson,gregory jackson,1889,Gregory Jackson;Jackson Gregory,unique_name_match,1889
+Isaiah Stewart,isaiah stewart,767,Isaiah Stewart;Stewart Isaiah,unique_name_match,767
+Jahmai Mashack,jahmai mashack,3009,Jahmai Mashack;Mashack Jahmai,unique_name_match,3009
+Javon Small,javon small,2924,Javon Small;Small Javon,unique_name_match,2924
+Jaylen Wells,jaylen wells,2448,Jaylen Wells;Wells Jaylen,unique_name_match,2448
+Jerami Grant,jerami grant,180,Grant Jerami;Jerami Grant,unique_name_match,180
+Karim Lopez,karim lopez,,,unmatched,
+Kris Murray,kris murray,1850,Kris Murray;Murray Kris,unique_name_match,1850
+Olivier Maxence-Prosper,olivier maxence prosper,1856,Olivier Maxence Prosper;Prosper Olivier-Maxence,unique_name_match,1856
+Quinten Post,quinten post,2408,Post Quinten;Quinten Post,unique_name_match,2408
+Scotty Pippen Jr,scotty pippen,1105,Pippen Jr. Scotty;Scotty Pippen Jr,unique_name_match,1105
+Taj Gibson,taj gibson,171,Gibson Taj;Taj Gibson,unique_name_match,171
+Taylor Hendricks,taylor hendricks,1891,Hendricks Taylor;Taylor Hendricks,unique_name_match,1891
+Ty Jerome,ty jerome,625,Jerome Ty;Ty Jerome,unique_name_match,625
+Walter Clayton Jr.,walter clayton,2934,Clayton Jr. Walter;Walter Clayton Jr,unique_name_match,2934
+Zach Edey,zach edey,2414,Edey Zach;Zach Edey,unique_name_match,2414
+Andrew Wiggins,andrew wiggins,477,Andrew Wiggins;Wiggins Andrew,unique_name_match,477
+Bam Adebayo,bam adebayo,3,Adebayo Bam;Bam Adebayo,unique_name_match,3
+Bobby Portis,bobby portis,383,Bobby Portis;Portis Bobby,unique_name_match,383
+Davion Mitchell,davion mitchell,982,Davion Mitchell;Mitchell Davion,unique_name_match,982
+Dru Smith,dru smith,1007;1085,Dru Smith;Smith Dru,ambiguous,
+Giannis Antetokounmpo,giannis antetokounmpo,14,Antetokounmpo Giannis;Giannis Antetokounmpo,unique_name_match,14
+Jahmir Young,jahmir young,2393,Jahmir Young;Young Jahmir,unique_name_match,2393
+Keshad Johnson,keshad johnson,2399,Johnson Keshad;Keshad Johnson,unique_name_match,2399
+Klay Thompson,klay thompson,444,Klay Thompson;Thompson Klay,unique_name_match,444
+Myron Gardner,myron gardner,2887,Gardner Myron;Myron Gardner,unique_name_match,2887
+Nick Richards,nick richards,760,Nick Richards;Richards Nick,unique_name_match,760
+Nikola Jovic,nikola jovic,1147,Jovic Nikola;Nikola Jovic,unique_name_match,1147
+Pelle Larsson,pelle larsson,2417,Larsson Pelle;Pelle Larsson,unique_name_match,2417
+Ryan Conwell,ryan conwell,,,unmatched,
+Simone Fontecchio,simone fontecchio,1125,Fontecchio Simone;Simone Fontecchio,unique_name_match,1125
+Tim Hardaway Jr,tim hardaway,189,Hardaway Jr. Tim;Tim Hardaway Jr,unique_name_match,189
+Tre Donaldson,tre donaldson,,,unmatched,
+Vladislav Goldin,vladislav goldin,2910,Goldin Vladislav;Vladislav Goldin,unique_name_match,2910
+A.J. Green,a j green,1098,Aj Green;Green AJ,unique_name_match,1098
+Bogoljub Markovic,bogoljub markovic,,,unmatched,
+Brayden Burries,brayden burries,,,unmatched,
+Caris Levert,caris levert,281,Caris Levert;LeVert Caris,unique_name_match,281
+Cormac Ryan,cormac ryan,2499,Cormac Ryan;Ryan Cormac,unique_name_match,2499
+Gary Trent Jr,gary trent,449,Gary Trent Jr;Trent Jr. Gary,unique_name_match,449
+Jaime Jaquez Jr,jaime jaquez,1846,Jaime Jaquez Jr;Jaquez Jr. Jaime,unique_name_match,1846
+Jericho Sims,jericho sims,1004,Jericho Sims;Sims Jericho,unique_name_match,1004
+Kam Jones,kam jones,2927,Jones Kam;Kam Jones,unique_name_match,2927
+Kasparas Jakucionis,kasparas jakucionis,2948,Jakucionis Kasparas;Kasparas Jakucionis,unique_name_match,2948
+Kel'el Ware,kelel ware,2443,Kelel Ware;Ware Kel'el,unique_name_match,2443
+Kevin Porter Jr,kevin porter,659,Kevin Porter Jr;Porter Jr. Kevin,unique_name_match,659
+Kyle Kuzma,kyle kuzma,268,Kuzma Kyle;Kyle Kuzma,unique_name_match,268
+Malique Lewis,malique lewis,,,unmatched,
+Myles Turner,myles turner,453,Myles Turner;Turner Myles,unique_name_match,453
+Nate Ament,nate ament,,,unmatched,
+Ousmane Dieng,ousmane dieng,1153,Dieng Ousmane;Ousmane Dieng,unique_name_match,1153
+Pete Nance,pete nance,2140,Nance Pete;Pete Nance,unique_name_match,2140
+Ryan Rollins,ryan rollins,1119,Rollins Ryan;Ryan Rollins,unique_name_match,1119
+Tyler Herro,tyler herro,617,Herro Tyler;Tyler Herro,unique_name_match,617
+Anthony Edwards,anthony edwards,715,Anthony Edwards;Edwards Anthony,unique_name_match,715
+Antonio Reeves,antonio reeves,2409,Antonio Reeves;Reeves Antonio,unique_name_match,2409
+Ayo Dosunmu,ayo dosunmu,937,Ayo Dosunmu;Dosunmu Ayo,unique_name_match,937
+Cody Williams,cody williams,2457,Cody Williams;Williams Cody,unique_name_match,2457
+Donte DiVincenzo,donte divincenzo,126,DiVincenzo Donte;Donte Divincenzo,unique_name_match,126
+Drew Timme,drew timme,2130,Drew Timme;Timme Drew,unique_name_match,2130
+Enrique Freeman,enrique freeman,2412,Enrique Freeman;Freeman Enrique,unique_name_match,2412
+Isaiah Evans,isaiah evans,,,unmatched,
+Jaden Mcdaniels,jaden mcdaniels,744,Jaden Mcdaniels;McDaniels Jaden,unique_name_match,744
+Jaylen Clark,jaylen clark,1851,Clark Jaylen;Jaylen Clark,unique_name_match,1851
+Joan Beringer,joan beringer,2974,Beringer Joan;Joan Beringer,unique_name_match,2974
+Jonathan Kuminga,jonathan kuminga,970,Jonathan Kuminga;Kuminga Jonathan,unique_name_match,970
+Kenyon Martin Jr,kenyon martin,740,Kj Martin;Martin KJ,explicit_alias_match,740
+Lamelo Ball,lamelo ball,705,Ball LaMelo;Lamelo Ball,unique_name_match,705
+Nah'shon Hyland,nahshon hyland,959,Bones Hyland;Hyland Bones,explicit_alias_match,959
+Norchad Omier,norchad omier,2889,Norchad Omier;Omier Norchad,unique_name_match,2889
+Rocco Zikarsky,rocco zikarsky,2954,Rocco Zikarsky;Zikarsky Rocco,unique_name_match,2954
+Rudy Gobert,rudy gobert,174,Gobert Rudy;Rudy Gobert,unique_name_match,174
+Terrence Shannon,terrence shannon,2401,Shannon Jr. Terrence;Terrence Shannon Jr,unique_name_match,2401
+Trey Kaufman-renn,trey kaufman renn,,,unmatched,
+Trey Lyles,trey lyles,294,Lyles Trey;Trey Lyles,unique_name_match,294
+Zyon Pullin,zyon pullin,2552,Pullin Zyon;Zyon Pullin,unique_name_match,2552
+Bennedict Mathurin,bennedict mathurin,1122,Bennedict Mathurin;Mathurin Bennedict,unique_name_match,1122
+Bryce McGowens,bryce mcgowens,1131,Bryce Mcgowens;McGowens Bryce,unique_name_match,1131
+Caleb Houstan,caleb houstan,1133,Caleb Houstan;Houstan Caleb,unique_name_match,1133
+Christian Koloko,christian koloko,1111,Christian Koloko;Koloko Christian,unique_name_match,1111
+Deandre Jordan,deandre jordan,253,Deandre Jordan;Jordan DeAndre,unique_name_match,253
+Dejounte Murray,dejounte murray,340,Dejounte Murray;Murray Dejounte,unique_name_match,340
+Derik Queen,derik queen,2962,Derik Queen;Queen Derik,unique_name_match,2962
+Herbert Jones,herbert jones,966,Herbert Jones;Jones Herbert,unique_name_match,966
+Jaron Pierre Jr,jaron pierre,,,unmatched,
+Jeremiah Fears,jeremiah fears,2971,Fears Jeremiah;Jeremiah Fears,unique_name_match,2971
+Jordan Hawkins,jordan hawkins,1869,Hawkins Jordan;Jordan Hawkins,unique_name_match,1869
+Jordan Poole,jordan poole,657,Jordan Poole;Poole Jordan,unique_name_match,657
+Julian Reese,julian reese,2987,Julian Reese;Reese Julian,unique_name_match,2987
+Karlo Matkovic,karlo matkovic,2432,Karlo Matkovic;Matkovic Karlo,unique_name_match,2432
+Kobe Bufkin,kobe bufkin,1865,Bufkin Kobe;Kobe Bufkin,unique_name_match,1865
+Micah Peavy,micah peavy,2909,Micah Peavy;Peavy Micah,unique_name_match,2909
+Saddiq Bey,saddiq bey,707,Bey Saddiq;Saddiq Bey,unique_name_match,707
+Trendon Watford,trendon watford,1023,Trendon Watford;Watford Trendon,unique_name_match,1023
+Trey Murphy III,trey murphy,985,Murphy III Trey;Trey Murphy Iii,unique_name_match,985
+Yves Missi,yves missi,2455,Missi Yves;Yves Missi,unique_name_match,2455
+Zion Williamson,zion williamson,684,Williamson Zion;Zion Williamson,unique_name_match,684
+Andre Drummond,andre drummond,132,Andre Drummond;Drummond Andre,unique_name_match,132
+Dillon Jones,dillon jones,2415,Dillon Jones;Jones Dillon,unique_name_match,2415
+Jack Kayil,jack kayil,,,unmatched,
+Jalen Brunson,jalen brunson,68,Brunson Jalen;Jalen Brunson,unique_name_match,68
+Jordan Clarkson,jordan clarkson,95,Clarkson Jordan;Jordan Clarkson,unique_name_match,95
+Jose Alvarado,jose alvarado,914,Alvarado Jose;Jose Alvarado,unique_name_match,914
+Josh Hart,josh hart,198,Hart Josh;Josh Hart,unique_name_match,198
+Karl-anthony Towns,karl anthony towns,448,Karl Anthony Towns;Towns Karl-Anthony,unique_name_match,448
+Kevin Mccullar Jr,kevin mccullar,2388,Kevin Mccullar Jr;McCullar Jr. Kevin,unique_name_match,2388
+Landry Shamet,landry shamet,418,Landry Shamet;Shamet Landry,unique_name_match,418
+Mikal Bridges,mikal bridges,59,Bridges Mikal;Mikal Bridges,unique_name_match,59
+Miles McBride,miles mcbride,977,McBride Miles;Miles Mcbride,unique_name_match,977
+Mohamed Diawara,mohamed diawara,2947,Diawara Mohamed;Mohamed Diawara,unique_name_match,2947
+Og Anunoby,og anunoby,16,Anunoby OG;Og Anunoby,unique_name_match,16
+Pacome Dadiet,pacome dadiet,2468,Dadiet Pacome;Pacome Dadiet,unique_name_match,2468
+Tyler Kolek,tyler kolek,2418,Kolek Tyler;Tyler Kolek,unique_name_match,2418
+Tyler Nickel,tyler nickel,,,unmatched,
+Aday Mara,aday mara,,,unmatched,
+Ajay Mitchell,ajay mitchell,2428,Ajay Mitchell;Mitchell Ajay,unique_name_match,2428
+Alex Caruso,alex caruso,84,Alex Caruso;Caruso Alex,unique_name_match,84
+Bennett Stirtz,bennett stirtz,,,unmatched,
+Brooks Barnhizer,brooks barnhizer,2928,Barnhizer Brooks;Brooks Barnhizer,unique_name_match,2928
+Cason Wallace,cason wallace,1893,Cason Wallace;Wallace Cason,unique_name_match,1893
+Chet Holmgren,chet holmgren,1145,Chet Holmgren;Holmgren Chet,unique_name_match,1145
+Isaiah Hartenstein,isaiah hartenstein,199,Hartenstein Isaiah;Isaiah Hartenstein,unique_name_match,199
+Jalen Williams,jalen williams,1106,Jalen Williams;Williams Jalen,unique_name_match,1106
+Jared Mccain,jared mccain,2456,Jared Mccain;McCain Jared,unique_name_match,2456
+Jaylin Williams,jaylin williams,1115;2406,Jaylin Williams;Williams Jaylin,ambiguous,
+Kenrich Williams,kenrich williams,481,Kenrich Williams;Williams Kenrich,unique_name_match,481
+Nikola Topic,nikola topic,2452,Nikola Topic;Topic Nikola,unique_name_match,2452
+Otega Oweh,otega oweh,,,unmatched,
+Shai Gilgeous-Alexander,shai gilgeous alexander,173,Gilgeous-Alexander Shai;Shai Gilgeous Alexander,unique_name_match,173
+Thomas Sorber,thomas sorber,2970,Sorber Thomas;Thomas Sorber,unique_name_match,2970
+Alex Morales,alex morales,2567,Alex Morales;Morales Alex,unique_name_match,2567
+Anthony Black,anthony black,1883,Anthony Black;Black Anthony,unique_name_match,1883
+Colin Castleton,colin castleton,1828,Castleton Colin;Colin Castleton,unique_name_match,1828
+Desmond Bane,desmond bane,706,Bane Desmond;Desmond Bane,unique_name_match,706
+Franz Wagner,franz wagner,1019,Franz Wagner;Wagner Franz,unique_name_match,1019
+Goga Bitadze,goga bitadze,579,Bitadze Goga;Goga Bitadze,unique_name_match,579
+Izaiyah Nelson,izaiyah nelson,,,unmatched,
+Jalen Suggs,jalen suggs,1011,Jalen Suggs;Suggs Jalen,unique_name_match,1011
+Jamal Cain,jamal cain,1087,Cain Jamal;Jamal Cain,unique_name_match,1087
+Jase Richardson,jase richardson,2966,Jase Richardson;Richardson Jase,unique_name_match,2966
+Jevon Carter,jevon carter,80,Carter Jevon;Jevon Carter,unique_name_match,80
+Jonathan Isaac,jonathan isaac,230,Isaac Jonathan;Jonathan Isaac,unique_name_match,230
+Nikola Vucevic,nikola vucevic,460,Nikola Vucevic;Vucevic Nikola,unique_name_match,460
+Noah Penda,noah penda,2973,Noah Penda;Penda Noah,unique_name_match,2973
+Paolo Banchero,paolo banchero,1128,Banchero Paolo;Paolo Banchero,unique_name_match,1128
+Tristan Da Silva,tristan da silva,2421,Tristan Da Silva;da Silva Tristan,unique_name_match,2421
+Wendell Carter Jr,wendell carter,82,Carter Jr. Wendell;Wendell Carter Jr,unique_name_match,82
+Adem Bona,adem bona,2434,Adem Bona;Bona Adem,unique_name_match,2434
+Anfernee Simons,anfernee simons,423,Anfernee Simons;Simons Anfernee,unique_name_match,423
+Caleb Love,caleb love,2912,Caleb Love;Love Caleb,unique_name_match,2912
+Dean Wade,dean wade,676,Dean Wade;Wade Dean,unique_name_match,676
+Dominick Barlow,dominick barlow,1155,Barlow Dominick;Dominick Barlow,unique_name_match,1155
+Duke Miles,duke miles,,,unmatched,
+Jabari Walker,jabari walker,1120,Jabari Walker;Walker Jabari,unique_name_match,1120
+Jaylen Brown,jaylen brown,65,Brown Jaylen;Jaylen Brown,unique_name_match,65
+Joel Embiid,joel embiid,140,Embiid Joel;Joel Embiid,unique_name_match,140
+Justin Edwards,justin edwards,2464,Edwards Justin;Justin Edwards,unique_name_match,2464
+Kentavious Caldwell-Pope,kentavious caldwell pope,77,Caldwell-Pope Kentavious;Kentavious Caldwell Pope,unique_name_match,77
+Labaron Philon,labaron philon,,,unmatched,
+Lebron James,lebron james,237,James LeBron;Lebron James,unique_name_match,237
+Rayan Rupert,rayan rupert,1904,Rayan Rupert;Rupert Rayan,unique_name_match,1904
+Tyrese Martin,tyrese martin,1091,Martin Tyrese;Tyrese Martin,unique_name_match,1091
+Tyrese Maxey,tyrese maxey,742,Maxey Tyrese;Tyrese Maxey,unique_name_match,742
+Vj Edgecombe,vj edgecombe,2958,Edgecombe VJ;Vj Edgecombe,unique_name_match,2958
+Amir Coffey,amir coffey,596,Amir Coffey;Coffey Amir,unique_name_match,596
+Cj Huntley,cj huntley,2888,Cj Huntley;Huntley CJ,unique_name_match,2888
+Collin Gillespie,collin gillespie,1088,Collin Gillespie;Gillespie Collin,unique_name_match,1088
+Devin Booker,devin booker,54,Booker Devin;Devin Booker,unique_name_match,54
+Dillon Brooks,dillon brooks,63,Brooks Dillon;Dillon Brooks,unique_name_match,63
+Haywood Highsmith,haywood highsmith,208,Haywood Highsmith;Highsmith Haywood,unique_name_match,208
+Isaiah Livers,isaiah livers,974,Isaiah Livers;Livers Isaiah,unique_name_match,974
+Jalen Green,jalen green,949,Green Jalen;Jalen Green,unique_name_match,949
+Jamaree Bouyea,jamaree bouyea,1163,Bouyea Jamaree;Jamaree Bouyea,unique_name_match,1163
+Jordan Goodwin,jordan goodwin,947,Goodwin Jordan;Jordan Goodwin,unique_name_match,947
+Kennedy Chandler,kennedy chandler,1138,Chandler Kennedy;Kennedy Chandler,unique_name_match,1138
+Khaman Maluach,khaman maluach,2950,Khaman Maluach;Maluach Khaman,unique_name_match,2950
+Koa Peat,koa peat,,,unmatched,
+Koby Brea,koby brea,2911,Brea Koby;Koby Brea,unique_name_match,2911
+Luke Kennard,luke kennard,257,Kennard Luke;Luke Kennard,unique_name_match,257
+Mark Williams,mark williams,1112,Mark Williams;Williams Mark,unique_name_match,1112
+Miles Bridges,miles bridges,60,Bridges Miles;Miles Bridges,unique_name_match,60
+Oso Ighodaro,oso ighodaro,2419,Ighodaro Oso;Oso Ighodaro,unique_name_match,2419
+Pat Spencer,pat spencer,2242,Pat Spencer;Spencer Pat,unique_name_match,2242
+Rasheer Fleming,rasheer fleming,2942,Fleming Rasheer;Rasheer Fleming,unique_name_match,2942
+Ryan Dunn,ryan dunn,2446,Dunn Ryan;Ryan Dunn,unique_name_match,2446
+Blake Wesley,blake wesley,1135,Blake Wesley;Wesley Blake,unique_name_match,1135
+Branden Carlson,branden carlson,2397,Branden Carlson;Carlson Branden,unique_name_match,2397
+Chris Youngblood,chris youngblood,2906,Chris Youngblood;Youngblood Chris,unique_name_match,2906
+Damian Lillard,damian lillard,282,Damian Lillard;Lillard Damian,unique_name_match,282
+Deni Avdija,deni avdija,703,Avdija Deni;Deni Avdija,unique_name_match,703
+Donovan Clingan,donovan clingan,2444,Clingan Donovan;Donovan Clingan,unique_name_match,2444
+Ja Morant,ja morant,646,Ja Morant;Morant Ja,unique_name_match,646
+Jayson Kent,jayson kent,3068,Jayson Kent;Kent Jayson,unique_name_match,3068
+Jeremy Sochan,jeremy sochan,1142,Jeremy Sochan;Sochan Jeremy,unique_name_match,1142
+John Tonje,john tonje,2886,John Tonje;Tonje John,unique_name_match,2886
+Jrue Holiday,jrue holiday,212,Holiday Jrue;Jrue Holiday,unique_name_match,212
+Micah Potter,micah potter,992,Micah Potter;Potter Micah,unique_name_match,992
+Robert Williams III,robert williams,485,Robert Williams;Williams Robert,unique_name_match,485
+Scoot Henderson,scoot henderson,1875,Henderson Scoot;Scoot Henderson,unique_name_match,1875
+Shaedon Sharpe,shaedon sharpe,1152,Shaedon Sharpe;Sharpe Shaedon,unique_name_match,1152
+Sidy Cissoko,sidy cissoko,1903,Cissoko Sidy;Sidy Cissoko,unique_name_match,1903
+Toumani Camara,toumani camara,1844,Camara Toumani;Toumani Camara,unique_name_match,1844
+Vit Krejci,vit krejci,835,Krejci Vit;Vit Krejci,unique_name_match,835
+Yang Hansen,yang hansen,2977,Hansen Yang;Yang Hansen,unique_name_match,2977
+Adam Flagler,adam flagler,2180,Adam Flagler;Flagler Adam,unique_name_match,2180
+Alex Karaban,alex karaban,,,unmatched,
+Ben Simmons,ben simmons,421,Ben Simmons;Simmons Ben,unique_name_match,421
+Daeqwon Plowden,daeqwon plowden,2172,Daeqwon Plowden;Plowden Daeqwon,unique_name_match,2172
+Darius Acuff Jr,darius acuff,,,unmatched,
+De'Andre Hunter,deandre hunter,622,Deandre Hunter;Hunter De'Andre,unique_name_match,622
+Domantas Sabonis,domantas sabonis,409,Domantas Sabonis;Sabonis Domantas,unique_name_match,409
+Dylan Cardwell,dylan cardwell,2917,Cardwell Dylan;Dylan Cardwell,unique_name_match,2917
+Emanuel Sharp,emanuel sharp,,,unmatched,
+Jonathan Mogbo,jonathan mogbo,2442,Jonathan Mogbo;Mogbo Jonathan,unique_name_match,2442
+Keegan Murray,keegan murray,1113,Keegan Murray;Murray Keegan,unique_name_match,1113
+Malik Monk,malik monk,328,Malik Monk;Monk Malik,unique_name_match,328
+Maxime Raynaud,maxime raynaud,2929,Maxime Raynaud;Raynaud Maxime,unique_name_match,2929
+Nique Clifford,nique clifford,2903,Clifford Nique;Nique Clifford,unique_name_match,2903
+Precious Achiuwa,precious achiuwa,700,Achiuwa Precious;Precious Achiuwa,unique_name_match,700
+Zach Lavine,zach lavine,271,LaVine Zach;Zach Lavine,unique_name_match,271
+Carter Bryant,carter bryant,2967,Bryant Carter;Carter Bryant,unique_name_match,2967
+David Jones Garcia,david jones garcia,2422,David Jones Garcia;Jones-Garcia David,unique_name_match,2422
+De'Aaron Fox,deaaron fox,155,Deaaron Fox;Fox De'Aaron,unique_name_match,155
+Devin Vassell,devin vassell,774,Devin Vassell;Vassell Devin,unique_name_match,774
+Dylan Harper,dylan harper,2959,Dylan Harper;Harper Dylan,unique_name_match,2959
+Harrison Barnes,harrison barnes,26,Barnes Harrison;Harrison Barnes,unique_name_match,26
+Ja'kobi Gillespie,jakobi gillespie,,,unmatched,
+Jayden Quaintance,jayden quaintance,,,unmatched,
+Jordan McLaughlin,jordan mclaughlin,642,Jordan Mclaughlin;McLaughlin Jordan,unique_name_match,642
+Julian Champagnie,julian champagnie,1103,Champagnie Julian;Julian Champagnie,unique_name_match,1103
+Keldon Johnson,keldon johnson,627,Johnson Keldon;Keldon Johnson,unique_name_match,627
+Luke Kornet,luke kornet,264,Kornet Luke;Luke Kornet,unique_name_match,264
+Maliq Brown,maliq brown,,,unmatched,
+Stephon Castle,stephon castle,2461,Castle Stephon;Stephon Castle,unique_name_match,2461
+Taelon Peter,taelon peter,2914,Peter Taelon;Taelon Peter,unique_name_match,2914
+Tarris Reed Jr,tarris reed,,,unmatched,
+Tobias Harris,tobias harris,196,Harris Tobias;Tobias Harris,unique_name_match,196
+Victor Wembanyama,victor wembanyama,1877,Victor Wembanyama;Wembanyama Victor,unique_name_match,1877
+A.j. Lawson,a j lawson,1157,Aj Lawson;Lawson AJ,unique_name_match,1157
+Alijah Martin,alijah martin,2898,Alijah Martin;Martin Alijah,unique_name_match,2898
+Allen Graves,allen graves,,,unmatched,
+Andre Jackson Jr,andre jackson,1853,Andre Jackson Jr;Jackson Jr. Andre,unique_name_match,1853
+Chucky Hepburn,chucky hepburn,2930,Chucky Hepburn;Hepburn Chucky,unique_name_match,2930
+Collin Murray-boyles,collin murray boyles,2949,Collin Murray Boyles;Murray-Boyles Collin,unique_name_match,2949
+Immanuel Quickley,immanuel quickley,757,Immanuel Quickley;Quickley Immanuel,unique_name_match,757
+Ja'kobe Walter,jakobe walter,2454,Jakobe Walter;Walter Ja'Kobe,unique_name_match,2454
+Jaden Bradley,jaden bradley,,,unmatched,
+Jakob Poeltl,jakob poeltl,379,Jakob Poeltl;Poeltl Jakob,unique_name_match,379
+Jamal Shead,jamal shead,2416,Jamal Shead;Shead Jamal,unique_name_match,2416
+Jamison Battle,jamison battle,2391,Battle Jamison;Jamison Battle,unique_name_match,2391
+Kawhi Leonard,kawhi leonard,278,Kawhi Leonard;Leonard Kawhi,unique_name_match,278
+Kyle Anderson,kyle anderson,12,Anderson Kyle;Kyle Anderson,unique_name_match,12
+Malachi Smith,malachi smith,2984,Malachi Smith;Smith Malachi,unique_name_match,2984
+Nate Bittle,nate bittle,,,unmatched,
+RJ Barrett,rj barrett,577,Barrett RJ;Rj Barrett,unique_name_match,577
+Scottie Barnes,scottie barnes,919,Barnes Scottie;Scottie Barnes,unique_name_match,919
+Trayce Jackson-Davis,trayce jackson davis,1848,Jackson-Davis Trayce;Trayce Jackson Davis,unique_name_match,1848
+Trey Jemison,trey jemison,2148,Jemison Trey;Trey Jemison,unique_name_match,2148
+Ace Bailey,ace bailey,2960,Ace Bailey;Bailey Ace,unique_name_match,2960
+Bez Mbeng,bez mbeng,2988,Bez Mbeng;Mbeng Bez,unique_name_match,2988
+Blake Hinson,blake hinson,2540,Blake Hinson;Hinson Blake,unique_name_match,2540
+Brice Sensabaugh,brice sensabaugh,1898,Brice Sensabaugh;Sensabaugh Brice,unique_name_match,1898
+Darryn Peterson,darryn peterson,,,unmatched,
+Harrison Ingram,harrison ingram,2426,Harrison Ingram;Ingram Harrison,unique_name_match,2426
+Hayden Gray,hayden gray,3074,Gray Hayden;Hayden Gray,unique_name_match,3074
+Isaiah Collier,isaiah collier,2462,Collier Isaiah;Isaiah Collier,unique_name_match,2462
+Jaren Jackson Jr,jaren jackson,236,Jackson Jr. Jaren;Jaren Jackson Jr,unique_name_match,236
+Jaxson Hayes,jaxson hayes,615,Hayes Jaxson;Jaxson Hayes,unique_name_match,615
+Josh Green,josh green,720,Green Josh;Josh Green,unique_name_match,720
+Josh Okogie,josh okogie,363,Josh Okogie;Okogie Josh,unique_name_match,363
+Jusuf Nurkic,jusuf nurkic,356,Jusuf Nurkic;Nurkic Jusuf,unique_name_match,356
+Kevin Love,kevin love,288,Kevin Love;Love Kevin,unique_name_match,288
+Keyonte George,keyonte george,1892,George Keyonte;Keyonte George,unique_name_match,1892
+Kyle Filipowski,kyle filipowski,2440,Filipowski Kyle;Kyle Filipowski,unique_name_match,2440
+Lauri Markkanen,lauri markkanen,301,Lauri Markkanen;Markkanen Lauri,unique_name_match,301
+Mo Bamba,mo bamba,24,Bamba Mo;Mo Bamba,unique_name_match,24
+Svi Mykhailiuk,svi mykhailiuk,344,Mykhailiuk Svi;Svi Mykhailiuk,unique_name_match,344
+Tamar Bates,tamar bates,2933,Bates Tamar;Tamar Bates,unique_name_match,2933
+Trey Alexander,trey alexander,2423,Alexander Trey;Trey Alexander,unique_name_match,2423
+Aj Dybantsa,aj dybantsa,,,unmatched,
+Alex Sarr,alex sarr,2449,Alexandre Sarr;Sarr Alexandre,explicit_alias_match,2449
+Anthony Davis,anthony davis,113,Anthony Davis;Davis Anthony,unique_name_match,113
+Anthony Gill,anthony gill,719,Anthony Gill;Gill Anthony,unique_name_match,719
+Bilal Coulibaly,bilal coulibaly,1905,Bilal Coulibaly;Coulibaly Bilal,unique_name_match,1905
+Carlton Carrington,carlton carrington,2460,Bub Carrington;Carrington Bub,explicit_alias_match,2460
+Chris Livingston,chris livingston,1894,Chris Livingston;Livingston Chris,unique_name_match,1894
+Deandre Ayton,deandre ayton,20,Ayton Deandre;Deandre Ayton,unique_name_match,20
+Felix Okpara,felix okpara,,,unmatched,
+Jamir Watkins,jamir watkins,2896,Jamir Watkins;Watkins Jamir,unique_name_match,2896
+Justin Champagnie,justin champagnie,929,Champagnie Justin;Justin Champagnie,unique_name_match,929
+Khris Middleton,khris middleton,318,Khris Middleton;Middleton Khris,unique_name_match,318
+Kyshawn George,kyshawn george,2458,George Kyshawn;Kyshawn George,unique_name_match,2458
+Sharife Cooper,sharife cooper,932,Cooper Sharife;Sharife Cooper,unique_name_match,932
+Trae Young,trae young,492,Trae Young;Young Trae,unique_name_match,492
+Tre Johnson,tre johnson,2969,Johnson Tre;Tre Johnson,unique_name_match,2969
+Tre Mann,tre mann,976,Mann Tre;Tre Mann,unique_name_match,976
+Trevor Keels,trevor keels,1127,Keels Trevor;Trevor Keels,unique_name_match,1127
+Tristan Vukcevic,tristan vukcevic,1873,Tristan Vukcevic;Vukcevic Tristan,unique_name_match,1873
+Will Riley,will riley,2961,Riley Will;Will Riley,unique_name_match,2961

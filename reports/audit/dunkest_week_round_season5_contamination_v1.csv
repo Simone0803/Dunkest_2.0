@@ -1,0 +1,16 @@
+player_name,team_code,dunkest_player_id,table_pdk,pts,reb,ast,stl,blk,tov,plus_minus,game_date,game_id,matchup,season_7_gameValidForDunkest,official_history_pdk,opponentTeamCode,pdk_diff_table_minus_history,rounded_pdk_match_1dp
+Anthony Edwards,MIN,715,26.5,19.0,6.0,7.0,3.0,1.0,4.0,8.0,2021-11-27,0022100292,MIN @ PHI,True,26.5,PHI,0.0,True
+D'Angelo Russell,MIN,408,45.0,35.0,4.0,8.0,2.0,2.0,5.0,1.0,2021-11-27,0022100292,MIN @ PHI,True,45.0,PHI,0.0,True
+Jaden McDaniels,MIN,744,6.5,8.0,4.0,1.0,1.0,0.0,0.0,-4.0,2021-11-27,0022100292,MIN @ PHI,True,6.5,PHI,0.0,True
+Jarred Vanderbilt,MIN,457,18.0,5.0,14.0,2.0,1.0,1.0,2.0,5.0,2021-11-27,0022100292,MIN @ PHI,True,18.0,PHI,0.0,True
+Karl-Anthony Towns,MIN,448,34.5,28.0,10.0,0.0,0.0,1.0,3.0,-2.0,2021-11-27,0022100292,MIN @ PHI,True,34.5,PHI,0.0,True
+Malik Beasley,MIN,34,4.8,5.0,2.0,0.0,0.0,0.0,1.0,-4.0,2021-11-27,0022100292,MIN @ PHI,True,4.75,PHI,0.04999999999999982,True
+Naz Reid,MIN,662,13.5,13.0,5.0,0.0,0.0,1.0,4.0,3.0,2021-11-27,0022100292,MIN @ PHI,True,13.5,PHI,0.0,True
+Danny Green,PHI,183,17.0,11.0,3.0,3.0,4.0,0.0,2.0,11.0,2021-11-27,0022100292,PHI vs. MIN,True,17.0,MIN,0.0,True
+Furkan Korkmaz,PHI,263,2.8,7.0,1.0,1.0,2.0,0.0,2.0,-9.0,2021-11-27,0022100292,PHI vs. MIN,True,2.75,MIN,0.04999999999999982,True
+Isaiah Joe,PHI,729,0.5,0.0,0.0,2.0,1.0,0.0,0.0,1.0,2021-11-27,0022100292,PHI vs. MIN,True,0.5,MIN,0.0,True
+Joel Embiid,PHI,140,45.5,42.0,14.0,3.0,1.0,2.0,4.0,11.0,2021-11-27,0022100292,PHI vs. MIN,True,45.5,MIN,0.0,True
+Matisse Thybulle,PHI,671,11.3,6.0,5.0,1.0,3.0,0.0,1.0,-12.0,2021-11-27,0022100292,PHI vs. MIN,True,11.25,MIN,0.05000000000000071,False
+Seth Curry,PHI,110,10.0,14.0,3.0,1.0,0.0,0.0,1.0,-5.0,2021-11-27,0022100292,PHI vs. MIN,True,10.0,MIN,0.0,True
+Tobias Harris,PHI,196,20.8,17.0,9.0,4.0,2.0,0.0,0.0,0.0,2021-11-27,0022100292,PHI vs. MIN,True,20.75,MIN,0.05000000000000071,True
+Tyrese Maxey,PHI,742,14.0,15.0,4.0,9.0,0.0,1.0,4.0,7.0,2021-11-27,0022100292,PHI vs. MIN,True,14.0,MIN,0.0,True

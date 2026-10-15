@@ -1,0 +1,15 @@
+{
+  "generated_at_utc": "2026-10-13T11:07:46.396579+00:00",
+  "failed_records_in_source_csv": 147,
+  "unique_failed_date_slices": 49,
+  "failed_slices_with_structural_team_capacity_below_10": 49,
+  "all_failed_slices_capacity_limited": true,
+  "mean_candidate_teams_per_failed_date_slice": 2.489795918367347,
+  "mean_available_pregame_coach_teams_per_date": 13.142857142857142,
+  "max_player_capacity_min": 3,
+  "max_player_capacity_max": 9,
+  "mean_capacity_shortfall": 2.5306122448979593,
+  "root_cause_interpretation": "The proxy filters the candidate pool to teams with a non-null matchup in the historical feature join for the target date. Across all 49 failed slices, this leaves only 1\u20133 candidate teams even though the pregame coach source contains 4\u201326 teams for the date. With the coach allowed to come from a different team, the unchanged max-three-per-team rule still permits only 3\u20139 player slots from those restricted pools, fewer than the required 10. CBC infeasibility is therefore expected for the supplied inputs; do not relax the production team cap to compensate.",
+  "production_changed": false,
+  "round_details_csv": "reports/audit/dunkest_historical_lineup_infeasibility_20261013_v1_rounds.csv"
+}

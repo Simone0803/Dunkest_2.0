@@ -1,0 +1,126 @@
+{
+  "generated_at_utc": "2026-10-13T08:27:54.391131+00:00",
+  "supersedes_diagnostic_v1": "V1 used inconsistent player-key normalization between the model feature table and the outcome join; V2 uses the optimizer canonical key throughout.",
+  "input": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "coach_prediction_source": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_predictions.csv",
+  "candidate_policy": "For target round r, each candidate's latest observed row strictly before r is carried forward. CR, role and team are therefore lagged; when a player has no row in r-1, the last observed CR is carried forward because no intervening appearance was recorded. Current target-round PDK is used only as realized outcome. This expands coverage beyond players who appeared in r-1 but still excludes players who have never appeared in the archived season.",
+  "target_date_mapping": {
+    "rounds_total": 779,
+    "rounds_with_confident_date": 768,
+    "rounds_date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links_per_round": 10,
+    "rows_with_target_opponent": 90219,
+    "rows_with_all_three_opponent_defense_features": 90219,
+    "date_mapping_by_season": [
+      {
+        "season_id": "13",
+        "rounds": 154,
+        "confident_rounds": 150,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "19",
+        "rounds": 158,
+        "confident_rounds": 155,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "5",
+        "rounds": 140,
+        "confident_rounds": 140,
+        "median_confidence": 0.9916787016023657
+      },
+      {
+        "season_id": "7",
+        "rounds": 165,
+        "confident_rounds": 161,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "9",
+        "rounds": 162,
+        "confident_rounds": 162,
+        "median_confidence": 1.0
+      }
+    ],
+    "mapping_method": "Official-valid Dunkest PDK and player/team identity are used only to link historical outcome rows to candidate NBA dates. A round date is accepted only if >=75% of unique player-date links agree and >=10 unique links exist. Matchup features use NBA schedule and opponent defensive stats strictly before that date."
+  },
+  "coach_policy": "Historical coach CR is missing; use fixed coach_cr=10 for every team, and reconstruct neutral-credit base score from final NBA results. Coach budget and price-difference multipliers are therefore proxies, not historical market truth.",
+  "optimizer": {
+    "budget": 95.0,
+    "fixed_coach_cr": 10.0,
+    "player_budget_after_coach": 85.0,
+    "formation": "4G/4F/2C roster; 5 starters, sixth man, 4 bench; one captain; max 3 per NBA team including coach",
+    "transfer_malus": 0.0,
+    "reason": "Historical carry-over roster and exact transfer/coach prices are not archived; this evaluates fresh independent round lineups."
+  },
+  "fold_policy": "Train player score model on earlier valid seasons only; test seasons 2022-23, 2023-24 and 2024-25. No test-season labels are used to fit its model. For runtime, evaluate a deterministic every-third-round sample of each held-out season; do not treat this as an exhaustive season backtest.",
+  "round_sampling": "Sorted high-confidence target rounds, every third round (iloc[::3]) per held-out season.",
+  "metrics": [
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "rounds_evaluated": 44,
+      "mean_model_realized_team_score": 171.52931818181818,
+      "mean_baseline_realized_team_score": 155.18670454545452,
+      "mean_delta_model_minus_baseline": 16.342613636363634,
+      "median_delta_model_minus_baseline": 16.00999999999999,
+      "model_win_rate_vs_baseline": 0.6363636363636364,
+      "mean_candidate_count": 205.8181818181818,
+      "mean_candidate_target_row_coverage": 0.6055211151231904,
+      "mean_target_players_covered": 0.9469708097927255
+    },
+    {
+      "season_id": "19",
+      "season": "2024-25",
+      "rounds_evaluated": 45,
+      "mean_model_realized_team_score": 173.9017777777778,
+      "mean_baseline_realized_team_score": 145.0502222222222,
+      "mean_delta_model_minus_baseline": 28.851555555555564,
+      "median_delta_model_minus_baseline": 22.11500000000001,
+      "model_win_rate_vs_baseline": 0.7111111111111111,
+      "mean_candidate_count": 221.82222222222222,
+      "mean_candidate_target_row_coverage": 0.6029054657252747,
+      "mean_target_players_covered": 0.958063956521554
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "rounds_evaluated": 46,
+      "mean_model_realized_team_score": 157.61869565217393,
+      "mean_baseline_realized_team_score": 120.17652173913041,
+      "mean_delta_model_minus_baseline": 37.44217391304348,
+      "median_delta_model_minus_baseline": 40.46500000000001,
+      "model_win_rate_vs_baseline": 0.7608695652173914,
+      "mean_candidate_count": 212.58695652173913,
+      "mean_candidate_target_row_coverage": 0.6023847593183898,
+      "mean_target_players_covered": 0.9481425876211181
+    },
+    {
+      "season_id": "POOLED",
+      "season": "2022-23–2024-25",
+      "rounds_evaluated": 135,
+      "mean_model_realized_team_score": 167.58022222222223,
+      "mean_baseline_realized_team_score": 139.8784814814815,
+      "mean_delta_model_minus_baseline": 27.701740740740743,
+      "median_delta_model_minus_baseline": 28.12500000000003,
+      "model_win_rate_vs_baseline": 0.7037037037037037,
+      "mean_candidate_count": 213.45925925925926,
+      "mean_candidate_target_row_coverage": 0.6035805477903976,
+      "mean_target_players_covered": 0.9510677978142317
+    }
+  ],
+  "round_status_counts": {
+    "evaluated": 135,
+    "optimization_failed": 18
+  },
+  "lineup_rows": 270,
+  "production_changed": false,
+  "limitations": [
+    "This is a restricted-universe lineup experiment, not a complete historical Dunkest market backtest. The candidate universe contains only players observed in the prior archived round; late additions and players absent from that round may be missing.",
+    "The historical round archives are outcomes, not timestamped complete pre-lock roster snapshots. Candidate coverage is reported; results must not be generalized to the full market without complete roster archives.",
+    "Missing target-round player rows are scored as zero only within this restricted experiment; this assumes absence from the official-valid round table means no fantasy points for that player in the round.",
+    "Historical coach prices and exact credit-difference multipliers are unavailable; coach CR is fixed at 10 and neutral-credit base scores are used.",
+    "No transfer malus is applied because historical carry-over rosters and coach prices are unavailable."
+  ]
+}

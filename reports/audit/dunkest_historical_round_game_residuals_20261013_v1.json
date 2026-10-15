@@ -1,0 +1,41 @@
+{
+  "generated_at_utc": "2026-10-13T11:26:23.879599+00:00",
+  "residual_rows": 19,
+  "source_round_counts": [
+    {
+      "source_week": 43,
+      "source_round": 2,
+      "rows": 16
+    },
+    {
+      "source_week": 53,
+      "source_round": 2,
+      "rows": 3
+    }
+  ],
+  "rows_with_same_player_same_pdk_candidate": 7,
+  "rows_without_same_player_same_pdk_candidate": 12,
+  "nearest_17_stat_field_mismatch_distribution": {
+    "4": 1,
+    "6": 1,
+    "7": 4,
+    "8": 2,
+    "9": 3,
+    "10": 5,
+    "11": 2,
+    "12": 1
+  },
+  "minimum_stat_fields_differing": 4,
+  "maximum_stat_fields_differing": 12,
+  "interpretation": "All residual rows lack an exact 17-stat signature in the official season archive even when team and PDK are ignored. Same-player PDK matches, when present, are not proof of the same game/date; nearest-stat comparison is diagnostic only.",
+  "guardrails": [
+    "No source row or training label was modified.",
+    "Do not infer DNP, zero, or official ineligibility from these mismatches.",
+    "Production model/config and frozen 2026/27 GW1 holdout unchanged."
+  ],
+  "artifacts": {
+    "csv": "reports/audit/dunkest_historical_round_game_residuals_20261013_v1.csv",
+    "json": "reports/audit/dunkest_historical_round_game_residuals_20261013_v1.json",
+    "markdown": "reports/audit/dunkest_historical_round_game_residuals_20261013_v1.md"
+  }
+}

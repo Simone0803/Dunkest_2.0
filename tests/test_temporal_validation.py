@@ -39,3 +39,19 @@ def test_capital_gain_validation_orders_seasons_then_gameweeks():
         test_key = tuple(sample.loc[test, ["season_order", "gameweek"]].iloc[0])
         train_keys = sample.loc[train, ["season_order", "gameweek"]].drop_duplicates()
         assert all(tuple(key) < test_key for key in train_keys.to_numpy())
+
+
+
+def test_official_pdk_overlay_fields_are_forbidden_as_features():
+    import pytest
+
+    from dunkest.data.temporal import validate_prematch_features
+
+    for column in (
+        "PDK_OFFICIAL_RAW",
+        "PDK_OFFICIAL_VALID",
+        "target_pdk_official",
+        "gameValidForDunkest",
+    ):
+        with pytest.raises(ValueError, match="POST_MATCH"):
+            validate_prematch_features(pd.DataFrame({column: [1.0]}), [column])

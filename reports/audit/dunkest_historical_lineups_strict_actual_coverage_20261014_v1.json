@@ -1,0 +1,63 @@
+{
+  "generated_at_utc": "2026-10-14T11:34:12.058801+00:00",
+  "method": "All ten selected players must have a finite target-round outcome row for both strategies on the same round.",
+  "input_lineups": "reports/audit/dunkest_historical_lineups_lagged_market_20261013_v5_lineups.csv",
+  "input_outcomes": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "round_keys_in_lineup_archive": 409,
+  "lineup_rows": 818,
+  "complete_10_player_lineups_by_strategy": {
+    "model": {
+      "sum": 17,
+      "count": 409
+    },
+    "previous5_baseline": {
+      "sum": 9,
+      "count": 409
+    }
+  },
+  "paired_rounds_strict_complete": 3,
+  "pooled": {
+    "mean_model_player_score": 197.015,
+    "mean_baseline_player_score": 203.24,
+    "mean_delta": -6.225000000000013,
+    "median_delta": 10.185000000000002,
+    "model_win_rate": 0.6666666666666666,
+    "bootstrap_95_ci_mean_delta": [
+      -56.515000000000015,
+      27.654999999999973
+    ]
+  },
+  "by_season": {
+    "9": {
+      "paired_rounds": 2,
+      "mean_model_player_score": 208.08999999999997,
+      "mean_baseline_player_score": 189.17000000000002,
+      "mean_delta": 18.919999999999987,
+      "median_delta": 18.919999999999987,
+      "model_win_rate": 1.0,
+      "bootstrap_95_ci_mean_delta": [
+        10.185000000000002,
+        27.654999999999973
+      ]
+    },
+    "13": {
+      "paired_rounds": 1,
+      "mean_model_player_score": 174.86499999999998,
+      "mean_baseline_player_score": 231.38,
+      "mean_delta": -56.515000000000015,
+      "median_delta": -56.515000000000015,
+      "model_win_rate": 0.0,
+      "bootstrap_95_ci_mean_delta": [
+        -56.515000000000015,
+        -56.515000000000015
+      ]
+    }
+  },
+  "limitations": [
+    "Restricted universe: candidates are based on prior observed Dunkest rows, not a complete archived pre-lock market.",
+    "No missing selected-player score is imputed as zero in this strict comparison; target-round row presence is the eligibility gate.",
+    "The metric isolates realized player-lineup points; historical coach prices, exact coach PDK, and transfer counts/malus are unavailable.",
+    "Historical CR and roles are lagged proxies, not certified pre-lock market snapshots.",
+    "Results do not establish complete-market optimum or official team-score superiority."
+  ]
+}

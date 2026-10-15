@@ -1,0 +1,215 @@
+{
+  "generated_at_utc": "2026-10-13T08:17:47.246469+00:00",
+  "input": "data/processed/team_game_logs_2018-26_v1.parquet",
+  "outcome_rows": 19038,
+  "games": 9519,
+  "overtime_games": 502,
+  "target_definition": "Coach scoring rule applied to verified final team scores, margin, thresholds and overtime, with coach CR=opponent coach CR=10 so the credit-difference coefficient equals 1.0.",
+  "not_claimed": "These are reconstructed neutral-credit base scores, not exact historical credit-adjusted coach PDK; historical coach CR markets are absent from local archives.",
+  "feature_policy": "Team and opponent rolling features are shifted by one game and are based only on prior games. All games on the same date are excluded from each other's history.",
+  "test_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "folds": [
+    {
+      "season": "2022-23",
+      "status": "evaluated",
+      "train_rows": 9198,
+      "test_rows": 2460,
+      "train_seasons": [
+        "2018-19",
+        "2019-20",
+        "2020-21",
+        "2021-22"
+      ],
+      "test_games": 1230,
+      "test_overtime_games": 79
+    },
+    {
+      "season": "2023-24",
+      "status": "evaluated",
+      "train_rows": 11658,
+      "test_rows": 2460,
+      "train_seasons": [
+        "2018-19",
+        "2019-20",
+        "2020-21",
+        "2021-22",
+        "2022-23"
+      ],
+      "test_games": 1230,
+      "test_overtime_games": 59
+    },
+    {
+      "season": "2024-25",
+      "status": "evaluated",
+      "train_rows": 14118,
+      "test_rows": 2460,
+      "train_seasons": [
+        "2018-19",
+        "2019-20",
+        "2020-21",
+        "2021-22",
+        "2022-23",
+        "2023-24"
+      ],
+      "test_games": 1230,
+      "test_overtime_games": 60
+    },
+    {
+      "season": "2025-26",
+      "status": "evaluated",
+      "train_rows": 16578,
+      "test_rows": 2460,
+      "train_seasons": [
+        "2018-19",
+        "2019-20",
+        "2020-21",
+        "2021-22",
+        "2022-23",
+        "2023-24",
+        "2024-25"
+      ],
+      "test_games": 1230,
+      "test_overtime_games": 54
+    }
+  ],
+  "metrics": [
+    {
+      "test_season": "2022-23",
+      "method": "model_pregame_team_form",
+      "n": 2460,
+      "mae": 16.127432580701104,
+      "rmse": 17.740191291246457,
+      "bias_pred_minus_actual": 0.028540873672526012
+    },
+    {
+      "test_season": "2022-23",
+      "method": "baseline_previous5_base_score",
+      "n": 2460,
+      "mae": 16.873658536585364,
+      "rmse": 19.506901842993805,
+      "bias_pred_minus_actual": 0.007967479674796694
+    },
+    {
+      "test_season": "2022-23",
+      "method": "baseline_previous10_base_score",
+      "n": 2460,
+      "mae": 16.63654471544715,
+      "rmse": 18.70615708819238,
+      "bias_pred_minus_actual": -0.0018292682926829614
+    },
+    {
+      "test_season": "2022-23",
+      "method": "baseline_train_median",
+      "n": 2460,
+      "mae": 17.397967479674797,
+      "rmse": 18.320886388184945,
+      "bias_pred_minus_actual": 0.38414634146341464
+    },
+    {
+      "test_season": "2023-24",
+      "method": "model_pregame_team_form",
+      "n": 2460,
+      "mae": 16.249609226477073,
+      "rmse": 18.00462667883947,
+      "bias_pred_minus_actual": -0.02776807713323831
+    },
+    {
+      "test_season": "2023-24",
+      "method": "baseline_previous5_base_score",
+      "n": 2460,
+      "mae": 17.007642276422764,
+      "rmse": 20.00512292112775,
+      "bias_pred_minus_actual": -0.005365853658536624
+    },
+    {
+      "test_season": "2023-24",
+      "method": "baseline_previous10_base_score",
+      "n": 2460,
+      "mae": 16.606951219512197,
+      "rmse": 19.124525925363972,
+      "bias_pred_minus_actual": 0.0135365853658536
+    },
+    {
+      "test_season": "2023-24",
+      "method": "baseline_train_median",
+      "n": 2460,
+      "mae": 18.284552845528456,
+      "rmse": 19.409535834244284,
+      "bias_pred_minus_actual": 0.34552845528455284
+    },
+    {
+      "test_season": "2024-25",
+      "method": "model_pregame_team_form",
+      "n": 2460,
+      "mae": 16.000108991453757,
+      "rmse": 17.980020761050096,
+      "bias_pred_minus_actual": 0.019001586871718715
+    },
+    {
+      "test_season": "2024-25",
+      "method": "baseline_previous5_base_score",
+      "n": 2460,
+      "mae": 16.729512195121952,
+      "rmse": 19.850686949265096,
+      "bias_pred_minus_actual": 0.010650406504065069
+    },
+    {
+      "test_season": "2024-25",
+      "method": "baseline_previous10_base_score",
+      "n": 2460,
+      "mae": 16.49113821138211,
+      "rmse": 19.125859564083406,
+      "bias_pred_minus_actual": -0.0008130081300813095
+    },
+    {
+      "test_season": "2024-25",
+      "method": "baseline_train_median",
+      "n": 2460,
+      "mae": 18.44878048780488,
+      "rmse": 19.560059687008874,
+      "bias_pred_minus_actual": 0.37642276422764226
+    },
+    {
+      "test_season": "2025-26",
+      "method": "model_pregame_team_form",
+      "n": 2460,
+      "mae": 15.915299095063068,
+      "rmse": 18.007851081558716,
+      "bias_pred_minus_actual": -0.013994930721379757
+    },
+    {
+      "test_season": "2025-26",
+      "method": "baseline_previous5_base_score",
+      "n": 2460,
+      "mae": 16.964796747967476,
+      "rmse": 20.18302877187921,
+      "bias_pred_minus_actual": -0.012601626016260175
+    },
+    {
+      "test_season": "2025-26",
+      "method": "baseline_previous10_base_score",
+      "n": 2460,
+      "mae": 16.649227642276426,
+      "rmse": 19.428756974160123,
+      "bias_pred_minus_actual": -0.01678861788617882
+    },
+    {
+      "test_season": "2025-26",
+      "method": "baseline_train_median",
+      "n": 2460,
+      "mae": 18.726422764227642,
+      "rmse": 19.88392127331156,
+      "bias_pred_minus_actual": 0.3182926829268293
+    }
+  ],
+  "production_changed": false,
+  "limitations": [
+    "Historical coach CR values are not present, so the credit-difference multiplier cannot be validated historically.",
+    "The reconstructed base score follows the current repository's coach scoring rules; historical rule-version changes are not independently verified."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "generated_at_utc": "2026-10-13T12:10:08.690173+00:00",
+  "base_rows": 93785,
+  "eligible_date_assisted_rows": 475,
+  "date_assisted_unique_resolutions": 441,
+  "date_assisted_resolved_team_differs_from_source": 36,
+  "eligible_unresolved_rows": 34,
+  "unresolved_status_counts": {
+    "no_unique_exact_candidate": 32,
+    "date_candidates_but_signature_mismatch": 2
+  },
+  "multi_game_rows_never_assisted": 0,
+  "base_unique_valid_links": 93316,
+  "v3_unique_valid_links_including_date_assisted": 93757,
+  "date_ready_rounds": 778,
+  "rounds_total": 779,
+  "method": "For rows unresolved by v2, only gp=1 rows on an independently inferred round date (>=10 unique links and >=75% date agreement) are considered. A link is accepted only if one unique official-valid candidate matches rounded source PDK and all 17 box-score fields. Source team is not used to select the candidate.",
+  "guardrails": [
+    "Experimental dataset only; no production code/config or labels changed.",
+    "Unresolved and ambiguous candidates remain unresolved.",
+    "Missing game rows are not interpreted as DNP or OUT.",
+    "Historical outcome linkage is not a pre-lock roster/availability snapshot.",
+    "Frozen 2026/27 GW1 holdout remains untouched until 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "parquet": "data/processed/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.parquet",
+    "resolved_rows": "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted_resolved_rows.csv",
+    "unresolved_rows": "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted_unresolved_rows.csv",
+    "round_dates": "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted_round_dates.csv",
+    "json": "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.json",
+    "markdown": "reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.md"
+  }
+}

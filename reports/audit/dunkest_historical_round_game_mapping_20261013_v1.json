@@ -1,0 +1,100 @@
+{
+  "generated_at_utc": "2026-10-13T11:14:29.305192+00:00",
+  "source_week_round_rows": 93785,
+  "gp1_rows_audited": 93779,
+  "full_signature_status_counts": {
+    "unique_full_boxscore_signature": 85477,
+    "no_full_boxscore_signature_match": 7892,
+    "ambiguous_full_boxscore_signature": 410
+  },
+  "mapped_flag_counts": {
+    "True": 85476,
+    "False": 1
+  },
+  "round_count": 779,
+  "rounds_with_one_mapped_date": 773,
+  "rounds_with_multiple_mapped_dates": 6,
+  "round_mapped_date_count_distribution": {
+    "1": 773,
+    "2": 6
+  },
+  "median_unique_signature_coverage_per_round": 0.8947368421052632,
+  "median_mapped_team_count": 12.0,
+  "example_season9_week22_round3": {
+    "season_id": "9",
+    "source_week": 22,
+    "source_round": 3,
+    "source_rows": 23,
+    "source_gp1_rows": 23,
+    "source_gp_gt1_rows": 0,
+    "unique_signature_rows": 19,
+    "ambiguous_signature_rows": 0,
+    "unmatched_signature_rows": 4,
+    "unique_signature_coverage": 0.8260869565217391,
+    "unique_mapped_dates": 1,
+    "dominant_mapped_date": "2022-12-13",
+    "dominant_date_share_of_linked_rows": 1.0,
+    "mapped_date_span_days": 0,
+    "source_team_count": 4,
+    "mapped_team_count": 2,
+    "valid_true_rows": 19,
+    "valid_false_rows": 0,
+    "valid_true_team_count": 2,
+    "valid_false_team_count": 0,
+    "source_teams": "GSW;LAL;MIN;UTA",
+    "mapped_teams": "GSW;UTA",
+    "valid_true_teams": "GSW;UTA",
+    "valid_false_teams": ""
+  },
+  "by_season": [
+    {
+      "season_id": "13",
+      "rows": 18927,
+      "unique_links": 17345,
+      "ambiguous": 139,
+      "unmatched": 1443
+    },
+    {
+      "season_id": "19",
+      "rows": 19590,
+      "unique_links": 17939,
+      "ambiguous": 92,
+      "unmatched": 1559
+    },
+    {
+      "season_id": "5",
+      "rows": 17675,
+      "unique_links": 16193,
+      "ambiguous": 56,
+      "unmatched": 1426
+    },
+    {
+      "season_id": "7",
+      "rows": 18422,
+      "unique_links": 16662,
+      "ambiguous": 58,
+      "unmatched": 1702
+    },
+    {
+      "season_id": "9",
+      "rows": 19165,
+      "unique_links": 17338,
+      "ambiguous": 65,
+      "unmatched": 1762
+    }
+  ],
+  "method": "A source weekly-round tot row is linked to the official per-player game archive only when season, canonical player, NBA team, PDK (2 decimals), and 17 boxscore statistics match. Only gp=1 rows are eligible for a single-game link. The validity flag is recorded as observed; this audit does not infer or redefine its official semantics.",
+  "interpretation": [
+    "Full boxscore signatures are substantially more specific than PDK-only date joins, which can map the same score to multiple dates and inject unrelated teams into a round matchup map.",
+    "A unique game link is evidence that a weekly row resembles a specific NBA boxscore, not proof that the archive contains the full eligible market or that every missing row is a zero.",
+    "A source round may have a clean dominant date but only a subset of teams/player rows. These tables are outcome archives, not complete pre-lock candidate snapshots.",
+    "Do not automatically repair, remove, relabel, or train on unmatched rows based on this audit. Do not change production model, official labels, or the frozen 2026/27 GW1 holdout."
+  ],
+  "artifacts": {
+    "rows_csv": "reports/audit/dunkest_historical_round_game_mapping_20261013_v1_rows.csv",
+    "rounds_csv": "reports/audit/dunkest_historical_round_game_mapping_20261013_v1_rounds.csv",
+    "json": "reports/audit/dunkest_historical_round_game_mapping_20261013_v1.json",
+    "markdown": "reports/audit/dunkest_historical_round_game_mapping_20261013_v1.md"
+  },
+  "production_changed": false
+}

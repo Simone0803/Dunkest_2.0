@@ -25,6 +25,64 @@ def _to_naive_utc(series_or_value):
     return values
 
 
+def _validate_unique_player_game_dates(frame: pd.DataFrame) -> None:
+    """Fail closed when date-only game logs cannot be ordered without leakage."""
+    if frame.empty or "GAME_DATE" not in frame:
+        return
+    date = pd.to_datetime(frame["GAME_DATE"], errors="coerce", utc=True).dt.normalize()
+    name_identity = frame.get("PLAYER_NAME", pd.Series("", index=frame.index)).map(player_key)
+    name_identity = name_identity.replace("", pd.NA).map(
+        lambda value: f"name:{value}" if pd.notna(value) else pd.NA
+    )
+    if "PLAYER_ID" in frame:
+        player_id = frame["PLAYER_ID"].astype("string").str.strip()
+        player_id = player_id.mask(player_id.str.casefold().isin(["", "<na>", "nan", "none"]))
+        player_id = player_id.map(
+            lambda value: f"id:{value}" if pd.notna(value) else pd.NA
+        )
+        identity = player_id.combine_first(name_identity)
+    else:
+        identity = name_identity
+    valid = identity.notna() & date.notna()
+    keys = pd.DataFrame({
+        "identity": identity.loc[valid].to_numpy(),
+        "date": date.loc[valid].to_numpy(),
+    })
+    duplicate = keys.duplicated(["identity", "date"], keep=False).to_numpy()
+    if duplicate.any():
+        bad = pd.DataFrame({
+            "identity": identity[valid].to_numpy(),
+            "date": date[valid].to_numpy(),
+            "name": frame.loc[valid, "PLAYER_NAME"].astype(str).to_numpy()
+                if "PLAYER_NAME" in frame else identity[valid].to_numpy(),
+            "game_id": frame.loc[valid, "GAME_ID"].astype(str).to_numpy()
+                if "GAME_ID" in frame else frame.loc[valid, "Game_ID"].astype(str).to_numpy()
+                if "Game_ID" in frame else [""] * int(valid.sum()),
+        })
+        bad = bad.loc[duplicate].head(5)
+        raise ValueError(
+            "Player game logs contain duplicate player/date rows; date-only ordering "
+            "would make shift(1) ambiguous. Deduplicate or provide trustworthy game timestamps. "
+            f"Examples: {bad.to_dict(orient='records')}"
+        )
+
+
+def _pdk_feature_series(frame: pd.DataFrame) -> pd.Series:
+    """Prefer verified official Dunkest scores for history; fall back to proxy PDK.
+
+    Targets remain separate (target_pdk / target_pdk_official). This series
+    is only used to construct lagged features, and all rolling operations shift
+    it before aggregating so the current game's score cannot enter its features.
+    """
+    proxy = pd.to_numeric(
+        frame.get("PDK", pd.Series(np.nan, index=frame.index)), errors="coerce"
+    )
+    if "PDK_OFFICIAL_VALID" not in frame:
+        return proxy
+    official = pd.to_numeric(frame["PDK_OFFICIAL_VALID"], errors="coerce")
+    return official.combine_first(proxy)
+
+
 def _empty_window_features(windows: list[int]) -> dict:
     feat: dict = {}
     for w in windows:
@@ -43,6 +101,24 @@ def _empty_window_features(windows: list[int]) -> dict:
     feat["ft_pct_5"] = np.nan
     feat["three_point_bonus_mean_5"] = np.nan
     feat["pdk_category_bonus_mean_5"] = np.nan
+    for lag in range(1, 6):
+        feat[f"lag{lag}_pdk"] = np.nan
+    feat["pdk_trend_3v10"] = np.nan
+    feat["min_trend_3v5"] = np.nan
+    feat["min_last_vs_prev5"] = np.nan
+    feat["abs_min_last_vs_prev5"] = np.nan
+    feat["min_std_5"] = np.nan
+    feat["min_zero_rate_5"] = np.nan
+    feat["team_changed_from_previous_game"] = 0.0
+    feat["team_history_known"] = 0.0
+    feat["team_games_since_change"] = 0.0
+    for lag in range(1, 4):
+        for stat in ("min", "pts", "reb", "ast"):
+            feat[f"lag{lag}_nba_{stat}"] = np.nan
+    for stat in ("min", "pts", "reb", "ast"):
+        feat[f"prev3_nba_{stat}_mean"] = np.nan
+    feat["history_games_before_target"] = 0.0
+    feat["nba_history_games_before_target"] = 0.0
     return feat
 
 
@@ -50,15 +126,55 @@ def _history_features(hist: pd.DataFrame, windows: list[int]) -> dict:
     feat = _empty_window_features(windows)
     if hist.empty:
         return feat
+    pdk = _pdk_feature_series(hist)
+    for lag in range(1, 6):
+        feat[f"lag{lag}_pdk"] = float(pdk.iloc[-lag]) if len(pdk) >= lag and pd.notna(pdk.iloc[-lag]) else np.nan
+    feat["pdk_trend_3v10"] = (feat.get("pdk_mean_3", np.nan) - feat.get("pdk_mean_10", np.nan))
+    for stat, source_col in (("min", "MIN"), ("pts", "PTS"), ("reb", "REB"), ("ast", "AST")):
+        values = pd.to_numeric(hist[source_col], errors="coerce") if source_col in hist else pd.Series(np.nan, index=hist.index)
+        for lag in range(1, 4):
+            feat[f"lag{lag}_nba_{stat}"] = float(values.iloc[-lag]) if len(values) >= lag and pd.notna(values.iloc[-lag]) else np.nan
+        feat[f"prev3_nba_{stat}_mean"] = float(values.tail(3).mean()) if values.notna().any() else np.nan
+    if "PDK_OFFICIAL_VALID" in hist:
+        official_history = pd.to_numeric(hist["PDK_OFFICIAL_VALID"], errors="coerce")
+        feat["history_games_before_target"] = float(official_history.notna().sum())
+    else:
+        feat["history_games_before_target"] = float(pdk.notna().sum())
+    feat["nba_history_games_before_target"] = float(len(hist))
     for w in windows:
         tail = hist.tail(w)
-        feat[f"pdk_mean_{w}"] = tail["PDK"].mean()
-        feat[f"pdk_std_{w}"] = tail["PDK"].std(ddof=0)
-        feat[f"pdk_median_{w}"] = tail["PDK"].median()
+        tail_pdk = pdk.tail(w)
+        feat[f"pdk_mean_{w}"] = tail_pdk.mean()
+        feat[f"pdk_std_{w}"] = tail_pdk.std(ddof=0)
+        feat[f"pdk_median_{w}"] = tail_pdk.median()
         feat[f"min_mean_{w}"] = tail["MIN"].mean()
-    feat["pdk_season_mean"] = hist["PDK"].mean()
+    feat["pdk_trend_3v10"] = feat.get("pdk_mean_3", np.nan) - feat.get("pdk_mean_10", np.nan)
+    feat["min_trend_3v5"] = feat.get("prev3_nba_min_mean", np.nan) - feat.get("min_mean_5", np.nan)
+    feat["min_last_vs_prev5"] = feat.get("lag1_nba_min", np.nan) - feat.get("min_mean_5", np.nan)
+    feat["abs_min_last_vs_prev5"] = (
+        abs(float(feat["min_last_vs_prev5"]))
+        if pd.notna(feat["min_last_vs_prev5"]) else np.nan
+    )
+    recent_minutes = pd.to_numeric(hist.get("MIN", pd.Series(dtype=float)), errors="coerce").tail(5)
+    feat["min_std_5"] = float(recent_minutes.std(ddof=0)) if recent_minutes.notna().sum() >= 2 else np.nan
+    zero_flags = recent_minutes.map(lambda value: float(value == 0) if pd.notna(value) else np.nan)
+    feat["min_zero_rate_5"] = float(zero_flags.mean()) if zero_flags.notna().any() else np.nan
+    team_history = hist.get("TEAM_ABBREVIATION", pd.Series(dtype="string")).astype("string").str.upper().str.strip()
+    team_history = team_history.mask(team_history.isna() | team_history.isin(["", "<NA>", "NAN", "NONE"]))
+    valid_teams = team_history.dropna()
+    if not valid_teams.empty:
+        feat["team_history_known"] = float(len(valid_teams) >= 1)
+        if len(valid_teams) >= 2:
+            feat["team_changed_from_previous_game"] = float(valid_teams.iloc[-1] != valid_teams.iloc[-2])
+        current_team = valid_teams.iloc[-1]
+        streak = 0
+        for prior_team in valid_teams.iloc[::-1]:
+            if prior_team != current_team:
+                break
+            streak += 1
+        feat["team_games_since_change"] = float(streak)
+    feat["pdk_season_mean"] = pdk.mean()
     minutes = pd.to_numeric(hist["MIN"], errors="coerce")
-    pdk = pd.to_numeric(hist["PDK"], errors="coerce")
     valid = minutes.gt(0) & pdk.notna()
     total_minutes = minutes.loc[valid].sum()
     feat["pdk_per_min_season"] = (
@@ -114,6 +230,7 @@ def _row_identity(row: pd.Series, extra: dict | None = None) -> dict:
         "TEAM_ABBREVIATION": row.get("TEAM_ABBREVIATION", ""),
         "is_home": float(is_home) if pd.notna(is_home) else np.nan,
         "target_pdk": row.get("PDK", np.nan),
+        "target_pdk_official": row.get("PDK_OFFICIAL_VALID", np.nan),
         "target_min": row.get("MIN", np.nan),
         "is_inference": False,
         "n_games": np.nan,
@@ -172,7 +289,7 @@ def _player_opponent_features(hist: pd.DataFrame, opponent: object) -> tuple[flo
     if hist.empty:
         return np.nan, 0.0
     minutes = pd.to_numeric(hist["MIN"], errors="coerce")
-    pdk = pd.to_numeric(hist["PDK"], errors="coerce")
+    pdk = _pdk_feature_series(hist)
     valid = minutes.gt(0) & pdk.notna()
     total_minutes = minutes.loc[valid].sum()
     if total_minutes <= 0:
@@ -194,7 +311,13 @@ def _player_opponent_features(hist: pd.DataFrame, opponent: object) -> tuple[flo
 
 
 def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
-    g = g.sort_values("GAME_DATE").reset_index(drop=True)
+    _validate_unique_player_game_dates(g)
+    sort_columns = ["GAME_DATE"]
+    if "GAME_ID" in g:
+        sort_columns.append("GAME_ID")
+    elif "Game_ID" in g:
+        sort_columns.append("Game_ID")
+    g = g.sort_values(sort_columns, kind="stable").reset_index(drop=True)
     count = len(g)
     player_names = g["PLAYER_NAME"]
     dates = g["GAME_DATE"]
@@ -225,6 +348,9 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
             "TEAM_ABBREVIATION": teams,
             "is_home": home.astype(float),
             "target_pdk": g.get("PDK", pd.Series(np.nan, index=g.index)),
+            "target_pdk_official": g.get(
+                "PDK_OFFICIAL_VALID", pd.Series(np.nan, index=g.index)
+            ),
             "target_min": g.get("MIN", pd.Series(np.nan, index=g.index)),
             "is_inference": False,
             "n_games": np.arange(count, dtype=float),
@@ -240,7 +366,8 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
     def rolling(column: str, window: int, operation: str) -> pd.Series:
         if window <= 0:
             return pd.Series(np.nan, index=g.index, dtype=float)
-        history = numeric(column).shift(1).rolling(window=window, min_periods=1)
+        source = _pdk_feature_series(g) if column == "PDK" else numeric(column)
+        history = source.shift(1).rolling(window=window, min_periods=1)
         if operation == "mean":
             return history.mean()
         if operation == "std":
@@ -249,8 +376,18 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
             return history.median()
         raise ValueError(f"Unsupported rolling operation: {operation}")
 
-    pdk = numeric("PDK")
+    pdk = _pdk_feature_series(g)
     minutes = numeric("MIN")
+    for lag in range(1, 6):
+        out[f"lag{lag}_pdk"] = pdk.shift(lag)
+    for stat, source_col in (("min", "MIN"), ("pts", "PTS"), ("reb", "REB"), ("ast", "AST")):
+        values = numeric(source_col)
+        for lag in range(1, 4):
+            out[f"lag{lag}_nba_{stat}"] = values.shift(lag)
+        out[f"prev3_nba_{stat}_mean"] = values.shift(1).rolling(window=3, min_periods=1).mean()
+    history_label = numeric("PDK_OFFICIAL_VALID") if "PDK_OFFICIAL_VALID" in g else pdk
+    out["history_games_before_target"] = history_label.notna().astype(float).cumsum().shift(1).fillna(0.0)
+    out["nba_history_games_before_target"] = np.arange(count, dtype=float)
     valid_pdk = minutes.gt(0) & pdk.notna()
     prior_minutes = minutes.where(valid_pdk, 0.0).cumsum().shift(1)
     prior_pdk = pdk.where(valid_pdk, 0.0).cumsum().shift(1)
@@ -262,6 +399,22 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
         out[f"pdk_std_{window}"] = rolling("PDK", window, "std")
         out[f"pdk_median_{window}"] = rolling("PDK", window, "median")
         out[f"min_mean_{window}"] = rolling("MIN", window, "mean")
+    out["pdk_trend_3v10"] = out.get("pdk_mean_3", pd.Series(np.nan,index=out.index)) - out.get("pdk_mean_10", pd.Series(np.nan,index=out.index))
+    out["min_trend_3v5"] = out["prev3_nba_min_mean"] - out.get("min_mean_5", pd.Series(np.nan,index=out.index))
+    out["min_last_vs_prev5"] = out["lag1_nba_min"] - out.get("min_mean_5", pd.Series(np.nan,index=out.index))
+    out["abs_min_last_vs_prev5"] = out["min_last_vs_prev5"].abs()
+    out["min_std_5"] = minutes.shift(1).rolling(window=5, min_periods=2).std(ddof=0)
+    zero_flags = minutes.shift(1).map(lambda value: float(value == 0) if pd.notna(value) else np.nan)
+    out["min_zero_rate_5"] = zero_flags.rolling(window=5, min_periods=1).mean()
+    team_codes = teams.astype("string").str.upper().str.strip()
+    team_codes = team_codes.mask(team_codes.isna() | team_codes.isin(["", "<NA>", "NAN", "NONE"]))
+    previous_team = team_codes.shift(1)
+    team_history_known = previous_team.notna() & team_codes.notna()
+    team_changed = team_history_known & previous_team.ne(team_codes)
+    out["team_history_known"] = team_history_known.astype(float)
+    out["team_changed_from_previous_game"] = team_changed.astype(float)
+    team_segment = team_changed.astype(int).cumsum()
+    out["team_games_since_change"] = pd.Series(np.arange(count), index=out.index).groupby(team_segment).cumcount().astype(float)
 
     for column, feature in (("PTS", "pts_mean_5"), ("REB", "reb_mean_5"), ("AST", "ast_mean_5")):
         out[feature] = rolling(column, 5, "mean")
@@ -341,6 +494,7 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
             "NBA_GAME_DATETIME_UTC": pd.NaT,
             "OPPONENT": "",
             "target_pdk": np.nan,
+            "target_pdk_official": np.nan,
             "target_min": np.nan,
             "is_inference": True,
             "n_games": float(len(g)),
@@ -499,6 +653,63 @@ def _schedule_features(player_feats: pd.DataFrame) -> pd.DataFrame:
     df["is_b2b"] = (df["rest_days"] <= 1).fillna(False).astype(int)
     df.loc[inference, "is_b2b"] = 0
     return df
+
+
+def _attach_inference_team_transitions(
+    features: pd.DataFrame,
+    player_logs: pd.DataFrame,
+    team_overrides: dict[str, str] | None,
+) -> pd.DataFrame:
+    """Attach target-team transition context using only the player's past logs.
+
+    Current roster/team overrides are known at prediction time. They are compared
+    with the last observed NBA team; no target-game result or future log is read.
+    """
+    if features.empty or "is_inference" not in features:
+        return features
+    out = features.copy()
+    inference = out["is_inference"].fillna(False).astype(bool)
+    if not inference.any():
+        return out
+    overrides = {
+        player_key(name): str(team).strip().upper()
+        for name, team in (team_overrides or {}).items()
+        if str(team).strip()
+    }
+    logs_by_name = {
+        name: group.sort_values("GAME_DATE", kind="stable")
+        for name, group in player_logs.groupby("PLAYER_NAME", sort=False)
+    } if {"PLAYER_NAME", "GAME_DATE"}.issubset(player_logs.columns) else {}
+    for idx in out.index[inference]:
+        name = str(out.at[idx, "PLAYER_NAME"])
+        existing_team = out.at[idx, "TEAM_ABBREVIATION"]
+        existing_team = "" if pd.isna(existing_team) else str(existing_team).strip().upper()
+        target_team = overrides.get(player_key(name), existing_team)
+        if target_team:
+            out.at[idx, "TEAM_ABBREVIATION"] = target_team
+        history = logs_by_name.get(name, pd.DataFrame())
+        teams = (
+            history.get("TEAM_ABBREVIATION", pd.Series(dtype="string"))
+            .astype("string").str.upper().str.strip()
+        )
+        teams = teams.mask(teams.isna() | teams.isin(["", "<NA>", "NAN", "NONE"])).dropna()
+        last_team = str(teams.iloc[-1]) if not teams.empty else ""
+        known = bool(last_team)
+        changed = bool(known and target_team and target_team != last_team)
+        out.at[idx, "team_history_known"] = float(known)
+        out.at[idx, "team_changed_from_previous_game"] = float(changed)
+        if changed:
+            out.at[idx, "team_games_since_change"] = 0.0
+        elif known and target_team == last_team:
+            streak = 0
+            for prior_team in teams.iloc[::-1]:
+                if prior_team != target_team:
+                    break
+                streak += 1
+            out.at[idx, "team_games_since_change"] = float(streak)
+        else:
+            out.at[idx, "team_games_since_change"] = 0.0
+    return out
 
 
 def _attach_next_game_schedule(
@@ -682,6 +893,7 @@ def build_feature_matrix(
 ) -> pd.DataFrame:
     if player_logs.empty:
         return pd.DataFrame()
+    _validate_unique_player_game_dates(player_logs)
     player_logs = _normalize_player_opponents(player_logs, team_logs)
     windows = settings.rolling_windows
     parts = []
@@ -702,6 +914,7 @@ def build_feature_matrix(
 
     minute_feats = expected_minutes_from_history(player_logs, windows)
     feats = combine_minutes_and_pdk_per_min(feats, minute_feats)
+    feats = _attach_inference_team_transitions(feats, player_logs, team_overrides)
     feats = _attach_next_game_schedule(
         feats,
         schedule,

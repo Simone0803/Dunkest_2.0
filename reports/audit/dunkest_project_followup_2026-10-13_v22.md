@@ -1,0 +1,254 @@
+# Dunkest project follow-up — 2026-10-13 V21
+
+## Scope
+
+This iteration pursued alternative empirical proxies for the missing historical participation labels and transfer/roster state. Production predictors, weights, settings, and the frozen prospective 2026/27 GW1 holdout were not changed.
+
+## 1. Participation: label audit and proxy limits
+
+I tested two walk-forward formulations rather than assuming missing NBA player-game rows are DNP/OUT labels.
+
+- **V2 (128,483 candidate-game observations)** treated a missing target player-game row as a proxy non-appearance. Its Brier/AUC looked better than simple recent-rate baselines, but this target mixes actual non-appearances with trades, roster changes and source omissions. Those metrics are not reliable evidence of calibrated Dunkest participation probability.
+- **V3 (96,515 observations)** excludes missing target rows from both training and evaluation. The remaining target rows are positive-minute appearances in **99.64%–99.79%** of cases across the four test seasons. The archive therefore contains almost no explicit negative participation labels; the apparent discrimination is largely a consequence of which players enter the box-score archive.
+
+**Decision:** no production participation model. V2 is a useful sensitivity analysis only; V3 exposes the selection bias and label shortage. A valid p_play model needs a candidate universe assembled before lock and explicit outcomes for every candidate, including DNP/OUT and players absent from the NBA box-score feed. This does not block using historical minutes/score distributions to model expected fantasy points conditional on playing.
+
+Artifacts:
+- `scripts/audit_dunkest_nba_appearance_probability_proxy_walk_forward_v2.py` and `reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v2.md` (missing rows treated as proxy negatives; superseded for label interpretation)
+- `scripts/audit_dunkest_nba_appearance_probability_proxy_walk_forward_v3.py` and `reports/audit/dunkest_nba_appearance_probability_proxy_walk_forward_20261013_v3.md` (missing rows excluded; demonstrates near-absence of negative labels)
+- Both versions include metrics/predictions CSV and audit JSON.
+
+## 2. Transfer malus: sequential walk-forward optimization
+
+I extended the ex-post sensitivity into a chronological optimizer simulation. For every round, the optimizer selects a new lineup using only lagged player features and pregame coach forecasts. Each scenario carries forward its own previous proxy roster and coach, then scores the selected lineup after selection. The optimizer coefficient varies across 0, 2.5 and 5 points per transfer, but **every scenario is scored under the same fixed 5-point transfer malus**. This avoids confusing a tuning coefficient with the official scoring rule.
+
+Across 409 matched source-round/date slices from 2022/23–2024/25 (the original proxy labels these as rounds):
+
+| Optimizer transfer-cost coefficient | Mean gross score | Mean official-net score | Mean transfers/slice |
+|---:|---:|---:|---:|
+| 0.0 | 159.856 | 108.218 | 10.328 |
+| 2.5 | 157.652 | 110.879 | 9.355 |
+| 5.0 | 155.262 | 110.556 | 8.941 |
+
+A paired round bootstrap, stratified by season with 10,000 replicates, gives:
+- Coefficient 2.5 vs 5.0: official-net delta **+0.323 points/slice**, 95% CI **[−2.425, +3.009]** — inconclusive.
+- Coefficient 2.5 vs 0.0: official-net delta **+2.661 points/slice**, 95% CI **[+0.036, +5.313]** — small positive signal in this proxy.
+- Coefficient 0.0 vs 5.0: official-net delta **−2.338 points/slice**, 95% CI **[−5.573, +0.798]** — inconclusive.
+
+The same 49 date slices per scenario were infeasible, plus 6 slices had too few candidates; paired analysis uses only rounds valid in all three scenarios. Candidate coverage remains restricted: only about 60.5% of the prior-observed candidate pool had a target-round outcome row, while about 94.9% of target player rows were present in the candidate pool on average. Missing target rows are treated as zero within the proxy.
+
+**Decision:** no change to production's 5-point transfer coefficient. The apparent 2.5-point coefficient advantage over 5 is tiny and statistically inconclusive; roster carry-forward is simulated rather than actual, and complete market/coach-price data are unavailable. Treat 2.5 as a candidate for further validation, not as a replacement. The initial sequential V1 artifact is retained for reproducibility but superseded for penalty comparisons by V2, which applies the same official 5-point scoring malus to every scenario.
+
+Artifacts:
+- `scripts/backtest_dunkest_historical_lineups_sequential_transfer_v2.py`
+- `reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v2.md`
+- `scripts/audit_dunkest_historical_lineups_sequential_transfer_paired_bootstrap_v1.py`
+- `reports/audit/dunkest_historical_lineups_sequential_transfer_paired_bootstrap_20261013_v1.md`
+- `scripts/audit_dunkest_transfer_malus_sensitivity_sequential_lineup_proxy_v1.py` (earlier ex-post sensitivity)
+
+## 3. Coaches: use the strongest available rule-aware forecast, quantify price uncertainty
+
+The existing V3 coach Monte Carlo walk-forward audit evaluates 9,840 team-game outcomes across 2022/23–2025/26. It forecasts neutral-credit base coach score with MAE 15.184, compared with 16.073 for the direct model and 16.596 for the previous-ten baseline. On the 2025/26 holdout, its MAE is 15.051.
+
+This is the best supported alternative for forecasting the **base coach score**. Official Dunkest coefficients can then be applied deterministically, and scenario analyses can quantify how coach price differences affect results.
+
+**Decision:** retain the rule-aware Monte Carlo forecast; do not claim exact historical coach PDK. The missing historical coach CR at lock still prevents exact price-adjusted reconstruction. Scenario price differences remain sensitivity analyses, not observed historical prices.
+
+Reference: `reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v3.md` and `reports/audit/dunkest_coach_official_multiplier_sensitivity_2018-26_v3.md`.
+
+## 4. Lineups and score-model changes
+
+- Rest/schedule features improve player-level OOF MAE from 7.50275 to 7.47766, but the restricted lineup proxy does not show a robust gain (paired bootstrap interval for lineup-score delta crosses zero). Do not promote V6.
+- Official PDK-history features improve MAE by only about 0.00315 on 2021/22–2024/25; the date-cluster interval includes zero. Keep experimental.
+- H2H remains unpromoted at lineup level; role-conditioned matchup interactions remain unpromoted.
+- Rookie prior cap remains unchanged.
+- Historical lineup outputs remain restricted-universe proxies, not complete pre-lock market backtests. Their coach CR, carried roster, and transfer-state assumptions remain explicit.
+
+## 5. Infeasible lineup diagnosis: restricted candidate pool, not a production MILP defect
+
+I reproduced the 2022-12-13 failed slice (season ID 9, source round index 54) and ran controlled feasibility relaxations without modifying the production optimizer. Raising the budget to 200 credits and removing the minutes thresholds did **not** make the lineup feasible; changing the same-team cap from 3 to 4 did. This isolates the failure to the team-capacity constraint in the candidate pool, not to budget or minutes eligibility.
+
+A new audit then checked all failures in the sequential transfer proxy:
+
+- 147 failed rows in the experiment CSV collapse to **49 unique failed date slices** (each repeated across the three transfer-cost scenarios).
+- In **all 49/49**, the target-date matchup join left candidates from only **1–3 NBA teams**, while the pregame coach source had 4–26 teams for those dates (mean 13.14). Under the unchanged max-three-per-NBA-team rule, even allowing the coach to come from a different team, the upper bound was only **3–9 player slots**, below the required 10; the shortfall was 1–7 slots.
+- Example: on 2022-12-13, the proxy had 43 candidates but only GSW, LAL and UTA in its matchup-eligible pool (maximum capacity: nine players). The pregame coach source listed ten teams for that date, including opponents MIL, BOS and NOP. The feature/matchup join therefore did not expose the full slate to the optimizer.
+
+**Interpretation:** CBC is correctly reporting infeasibility for the supplied restricted pool. Do not relax the Dunkest three-per-team rule or change production MILP constraints. The historical lineup proxy's candidate universe is incomplete, and the transfer-coefficient comparison is more fragile than previously indicated: its small 2.5-vs-5 signal is exploratory only and must not be used to tune production. The production transfer coefficient remains 5.
+
+The next valid lineup experiment requires a candidate universe and role/team identity for the full pre-lock market, plus historical CR and explicit outcomes at the relevant scoring/turn granularity. Missing players cannot safely be filled in by assuming that an absent target row means zero points. Until those inputs are recovered, prioritize player-level walk-forward validation and retain lineup results as restricted sensitivity analyses.
+
+Artifacts:
+- `scripts/audit_dunkest_historical_lineup_infeasibility_v1.py`
+- `reports/audit/dunkest_historical_lineup_infeasibility_20261013_v1.md` and `_rounds.csv` / `.json`
+- `reports/audit/dunkest_historical_lineups_sequential_transfer_20261013_v2.md` remains the original experiment report; its transfer comparison should be read with this additional limitation.
+
+## 6. Historical round-to-game mapping: full boxscore signature audit
+
+To investigate the candidate-universe gap without trusting repeated PDK values alone, I added a read-only linkage audit matching historical `tot` rows to the official per-player game archive on season, canonical player identity, NBA team, PDK rounded to two decimals, and 17 boxscore fields. Only rows with `gp=1` are eligible for single-game linkage.
+
+- **93,779** rows audited; **85,477 (91.1%)** have a unique full-signature match, **410** have ambiguous signatures, and **7,892** have no exact signature match.
+- Across **779** source week-rounds, the uniquely linked rows point to one NBA date in **773** rounds and multiple dates in 6. Median unique-signature coverage per round is **89.5%**; median mapped team count is 12.
+- Example: season ID 9, week 22, round 3 (13 December 2022) has 23 source rows, 19 unique full-signature matches, and 4 unmatched rows. The source table lists GSW, LAL, MIN and UTA; the exact game-signature matches for that round/date cover only GSW and UTA. A PDK-only date join can therefore pull in a team from a row that does not match the target-date boxscore.
+
+**Decision:** the historical weekly tables can corroborate many realized player-game outcomes and approximate round dates, but they are not a complete pre-lock candidate market. The unmatched rows remain unresolved and must not be automatically dropped, imputed as zero, or relabelled. The full-signature audit improves linkage evidence but does not recover historical prices/availability or prove the official semantics of every validity flag.
+
+Artifacts:
+- `scripts/audit_dunkest_historical_round_game_mapping_v1.py`
+- `reports/audit/dunkest_historical_round_game_mapping_20261013_v1.md`
+- `reports/audit/dunkest_historical_round_game_mapping_20261013_v1_rounds.csv`
+- `reports/audit/dunkest_historical_round_game_mapping_20261013_v1_rows.csv`
+- `reports/audit/dunkest_historical_round_game_mapping_20261013_v1.json`
+
+## 7. Unmatched rows: the dominant cause is historical team-code mismatch
+
+The follow-up diagnostic tested the 7,892 rows that failed the strict season + player + team + PDK + 17-stat linkage. For this test, I deliberately removed only the source team field from the matching key while still requiring the same season, canonical player, PDK rounded to two decimals, and all 17 boxscore statistics to match an official NBA player-game row.
+
+- **7,873 / 7,892 (99.76%)** have a player + PDK + 17-stat candidate when the source team field is ignored, but not all candidates support a unique NBA-team assignment.
+- Of those candidates, **7,828** uniquely link to an NBA game whose team differs from the source team; **12** uniquely match the date/outcome but have no NBA team ID in the enriched archive; **33** have multiple team-free candidates and remain ambiguous.
+- The remaining **19** rows have no exact 17-stat signature even when team and PDK are ignored. They cluster in season ID 5, source week 43 round 2 (16 rows) and week 53 round 2 (3 rows).
+
+Examples in season ID 13, source week 10 round 1 (NBA date 2023-11-18): the source table assigns Vasilije Micic to CHA, Cameron Payne to PHI, and Seth Curry to CHA, while the exact official game signatures point to OKC, MIL, and DAL respectively. The PDK and all 17 boxscore fields match. This is strong evidence that team_code in the weekly table is not reliably the player's NBA team at the historical game date; it may reflect a later/current roster association or another Dunkest-side assignment. The exact upstream semantics are not yet proven.
+
+**Decision:** preserve source `team_code` and `team_name` unchanged. The derived dataset links **93,317 of 93,779** `gp=1` rows uniquely: 85,477 strict team-inclusive matches, 7,828 unique links with an NBA-team mismatch, and 12 unique date/outcome links without an NBA team ID. Another 462 rows remain ambiguous or unresolved (410 strict-signature ambiguities, 33 team-free ambiguities, 19 unmatched). For matchup features, use the linked NBA game team only when uniquely established; never infer a team for the 12 missing-ID rows. One linked record has `gameValidForDunkest=False`, so preserve that flag and do not treat it as a valid training target.
+
+Artifacts:
+- scripts/audit_dunkest_historical_round_game_unmatched_v3.py
+- reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.md
+- reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_rows.csv
+- reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_seasons.csv
+- reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_rounds.csv
+- reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.json
+- `scripts/build_dunkest_historical_game_linked_rows_v2.py`
+- `data/processed/dunkest_historical_game_linked_rows_20261013_v2.parquet`
+- `reports/audit/dunkest_historical_game_linked_rows_20261013_v2.md`
+- `reports/audit/dunkest_historical_game_linked_rows_20261013_v2_summary.csv`
+- `reports/audit/dunkest_historical_game_linked_rows_20261013_v2_unresolved.csv`
+- `reports/audit/dunkest_historical_game_linked_rows_20261013_v2.json`
+
+## 8. Residual 19 rows: likely row-level outcome mismatch, not just team identity
+
+A focused comparison of the 19 residual rows found that only **7** have the same player-season PDK value somewhere in the official archive; **12** do not. Even where a PDK value recurs, it belongs to another candidate date and does not establish a game link. Comparing the source boxscore against every official game for the same player in that season, the nearest official row still differs in **4–12 of the 17 statistics**.
+
+The residuals are concentrated in season ID 5, source week 43 round 2 (16 rows) and week 53 round 2 (3 rows). This is stronger evidence of a localized source/round row inconsistency than a simple team-code mismatch. Do not use these 19 rows as exact game outcomes until their upstream provenance is established; do not infer zeros, DNP, or ineligibility.
+
+Artifacts:
+- scripts/audit_dunkest_historical_round_game_residuals_v1.py
+- reports/audit/dunkest_historical_round_game_residuals_20261013_v1.md
+- reports/audit/dunkest_historical_round_game_residuals_20261013_v1.csv
+- reports/audit/dunkest_historical_round_game_residuals_20261013_v1.json
+
+## 9. Prospective holdout and leakage discipline
+
+The 2026/27 GW1 run remains frozen until **2026-10-23 12:00 UTC**. Do not inspect it for tuning before cutoff, and do not tune on the holdout after evaluation. Historical walk-forward folds remain the venue for development.
+
+## 10. Corrected team-link coverage and paired walk-forward test
+
+I compared the previous V6 matchup-linking method (season + player + source team + PDK) against the derived full-stat game-link dataset. The corrected method yields 93,316 unique official-valid player/date links versus 64,996 legacy unique links. It makes 778/779 round dates reliable under the existing threshold versus 768/779 previously; all 768 rounds accepted by both methods agree on the date, and 10 additional rounds become usable. Schedule-derived opponent coverage rises from 90,219 to 93,284 rows (+3,065 net; 3,516 rows gain coverage and 451 lose a legacy opponent association). The 451 legacy-only associations may be spurious when source team_code is not the historical NBA team, so this is not a simple count-only win.
+
+I then ran an expanding-origin V7 ablation using linked NBA game teams and past-only opponent/rest features. On the common 55,252 held-out player-rounds per model family, V7 did not improve MAE: expanded-matchup MAE 7.5178 → 7.5186 (Δ +0.0008; 95% round-cluster bootstrap CI [-0.0050, +0.0066]); rest/schedule MAE 7.4931 → 7.4990 (Δ +0.0060; 95% CI approximately [0.0000, +0.0120]). The intervals include zero or touch it within rounding. The lower pooled MAE on V7's expanded sample is not a paired improvement because the eligible sample is larger. Per-season rest/schedule MAE is slightly worse in all three held-out seasons. On the 2,710 common test rows whose source team differs from the linked NBA team, V7 also does not improve MAE: delta +0.0035 for expanded matchup and +0.0013 for rest/schedule. On 52,542 common rows with a strict team match, the deltas are +0.0007 and +0.0062 respectively. The corrected identity is better grounded, but it does not currently produce a predictive gain.
+
+**Decision:** retain the derived linkage dataset as a data-quality improvement and use it for further controlled research, but do not promote V7 feature/model changes to production. Correct game identity improves coverage and prevents obvious wrong-team joins, but current evidence does not show predictive gains on common held-out rows. This remains an outcome linkage, not a historical pre-lock market snapshot.
+
+Artifacts:
+- scripts/audit_dunkest_historical_matchup_team_link_coverage_v1.py
+- reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1.md
+- reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1_rows.csv
+- reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1_rounds.csv
+- scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v7_corrected_team_link.py
+- reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v7_corrected_team_link.md
+- scripts/audit_dunkest_historical_matchup_team_link_paired_evaluation_v1.py
+- reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1.md
+- reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1_summary.csv
+- reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1_by_season.csv
+
+## 11. Legacy-only opponent coverage: date-assisted disambiguation audit and V8 walk-forward
+
+The 451 rows that received a legacy opponent but no corrected-link opponent are not a homogeneous error group. A row-level audit compared the inferred round date against the official-valid NBA player-game archive, using Dunkest player ID, team, rounded PDK, and the 17 box-score fields.
+
+- **6 rows** have `gp>1` and are multi-game aggregates; they should not be assigned a single-game opponent.
+- Of the **445 `gp=1` rows**, **405** have a same-date official game with matching PDK and all 17 box-score fields, and the source team/opponent are confirmed.
+- **23** have exact same-date PDK+box-score matches, but the official NBA game team differs from the source Dunkest team; their legacy opponent is therefore wrong for that game.
+- **2** have same-team/date candidates but fail the full 17-stat signature; **15** have no official player-game row on the inferred date and remain unresolved.
+
+This motivated an experimental V8 fallback: only for unresolved `gp=1` rows, use a target-round date independently established by at least 10 unique links and at least 75% date agreement, and accept a row only if exactly one official-valid same-date candidate matches rounded PDK and all 17 box-score fields. The fallback does not use `source team_code` to infer NBA team and never applies to multi-game aggregates. It considered 475 unresolved single-game rows and resolved **441**, including **36** whose official NBA team differs from the source Dunkest team. Target-opponent coverage rose to **93,725** rows; this remains retrospective outcome linkage, not a pre-lock roster snapshot.
+
+### V8 paired walk-forward result
+
+V8 was compared with V7 on identical held-out player-rounds. For each main model family, **57,342 common predictions** were paired, with 10,000 season-stratified round-cluster bootstrap replicates:
+
+| Feature family | V7 MAE | V8 MAE | Δ MAE (V8−V7) | 95% round-bootstrap CI |
+|---|---:|---:|---:|---:|
+| Expanded matchup | 7.4897 | 7.4904 | +0.00065 | [−0.00349, +0.00492] |
+| Expanded matchup + rest/schedule | 7.4716 | 7.4685 | −0.00313 | [−0.00725, +0.00096] |
+
+Neither interval excludes zero. The rest/schedule point estimate is slightly favorable, but the evidence is inconclusive and season-level deltas vary. **Decision: retain date-assisted linkage as an experimental data-quality improvement, but do not promote V8 or change production.** Continue to preserve source team fields and treat rows without unique exact signatures as unresolved.
+
+Artifacts:
+- `scripts/audit_dunkest_legacy_only_opponent_rows_v1.py`
+- `reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.md` and row-level CSV/summary/JSON
+- `scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v8_date_assisted_link.py`
+- `reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v8_date_assisted_link.md` and metrics/predictions/JSON
+- `scripts/audit_dunkest_date_assisted_link_paired_evaluation_v1.py`
+- `reports/audit/dunkest_date_assisted_link_paired_eval_20261013_v1.md` and paired rows/summary/by-season CSV/JSON
+
+## 12. Persisted v3 date-assisted dataset and reproducibility verification (V9)
+
+I materialized the date-assisted game links into a separate experimental parquet instead of leaving the fallback only inside the model script. During verification, a first build revealed two rows whose stored stats differed from the original source because the v2 linkage table was not safe to join to source statistics by row position. I discarded that build and corrected the builder: **the raw player-week-round dataset is now the source of truth**, and v2 linkage metadata is joined only on `(season_id, source_week, source_round, player ID)`. The final v3 dataset has 93,785 rows, including the six multi-game aggregate rows that have no v2 link; none receives a date-assisted one-game link.
+
+The corrected v3 dataset contains **441 date-assisted unique links** among 475 eligible unresolved single-game rows. All 441 were independently checked against the original source and official-valid NBA game archive:
+
+- Zero mismatches across the rounded target PDK and all 17 box-score fields versus the original source.
+- 441/441 match an official-valid candidate at the persisted date, NBA game ID, and NBA team, with PDK and all 17 stats matching.
+- 36/441 use an NBA game team different from the source Dunkest team; the source team field remains unchanged.
+- 34 rows remain unresolved (32 without an exact candidate and 2 with date candidates whose signature does not match). No DNP/OUT status is inferred.
+
+I then ran V9, which consumes the persisted v3 dataset but deliberately reconstructs round-date consensus from original v2 links only, excluding date-assisted rows from the date-inference calculation. V9 reproduces V8 predictions across **285,304/285,304 rows**; target labels are identical and the maximum absolute prediction difference is **2.85×10⁻¹⁴** (floating-point noise). This confirms that the dataset can be versioned and reused without changing the prior V8 result.
+
+This is a reproducibility/data-quality result, not evidence of a better model. The paired V8-versus-V7 intervals still include zero; **do not promote the linkage or change production features/configuration**. Keep the v3 dataset isolated for further experiments and preserve all unresolved cases.
+
+Artifacts:
+- `scripts/build_dunkest_historical_game_linked_rows_v3_date_assisted.py`
+- `data/processed/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.parquet`
+- `reports/audit/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.md` and resolved/unresolved/round-date CSVs/JSON
+- `scripts/backtest_dunkest_historical_credits_matchup_walk_forward_v9_persisted_date_link.py`
+- `reports/audit/dunkest_lagged_credit_matchup_walk_forward_20261013_v9_persisted_date_link.md` and metrics/predictions/JSON
+- `scripts/audit_dunkest_persisted_v3_vs_v8_predictions_v1.py`
+- `reports/audit/dunkest_persisted_v3_vs_v8_prediction_parity_20261013_v1.md` and by-family CSV/JSON
+
+## Verification
+
+- Full test suite after V3/V9 integration: **276 passed**, 6,800 warnings in 6.96 seconds.
+- Python compilation passed for the v3 builder, V8/V9 walk-forward scripts, and v3/V8 parity audit; `git diff --check` passed.
+- Frozen 2026/27 GW1 run directory remains present and untouched.
+- V2 derived game-link dataset: 93,779 rows. V3 experimental dataset rebuilt from the raw source: 93,785 rows and 441 date-assisted unique exact links; source PDK and all 17 box-score fields match for all 441.
+- Link validation: source row IDs are unique; linked PDK matches source PDK to two decimals; strict links retain the same team code; team-free links are only accepted when unique; ambiguous/unresolved rows have no linked date.
+- The residual 19 rows are isolated to two late season-ID-5 source rounds for targeted review.
+- No source data, production code/config, official labels, temporal split, or frozen holdout was changed.
+- No commit or push performed; existing working-tree changes preserved.
+
+
+## 13. V9 residual segments and paired rest/schedule ablation
+
+I ran a descriptive residual audit on the persisted V9 expanding-origin OOF predictions, without refitting models or reading the frozen 2026/27 GW1 holdout. On 57,662 common player-round predictions, adding past-only rest/schedule features to the expanded-matchup model reduced MAE from **7.4754 to 7.4534** (delta **−0.0220 PDK**, round-cluster bootstrap 95% CI **[−0.0314, −0.0122]**) and RMSE from 9.7622 to 9.7240. The MAE delta was favorable in each held-out season: −0.0229 in 2022/23, −0.0306 in 2023/24, and −0.0128 in 2024/25. This tests the feature-family contrast on common V9 rows; it is distinct from the earlier V8-vs-V7 comparison, which tested the data-linkage change and remained inconclusive.
+
+The improvement is small in absolute terms. Segment analysis suggests larger gains for the second and fourth lagged-credit quartiles, but the subgroup intervals are exploratory and not adjusted for multiple comparisons. The largest absolute-error decile shows strong regression-to-the-mean behavior: mean actual PDK 31.62 versus mean prediction 20.70, with mean signed error −10.92. This is a diagnostic signal, not sufficient evidence for a tail-specific model.
+
+Artifacts: `scripts/audit_dunkest_v9_residual_segments_v1.py` and `reports/audit/dunkest_v9_residual_segments_20261013_v1.md` plus overall/by-season/market-segment/error-decile CSVs and JSON.
+
+## 14. Past-only residual calibration experiment
+
+I tested whether the V9 rest/schedule model's OOF predictions benefit from calibration fitted only on earlier OOF seasons. For each target season, an affine mapping and a mean-residual offset were fit on previous seasons and evaluated on the next season. This avoids fitting the calibrator on the same labels used to score it. Only 2023/24 and 2024/25 could be evaluated because 2022/23 served as the first calibration-training fold.
+
+Neither calibration method consistently improved MAE. The affine calibrator worsened MAE by +0.0238 in 2023/24 (95% CI [+0.0208, +0.0268]) and by +0.0057 in 2024/25 (95% CI [−0.0022, +0.0141]). Mean-bias correction worsened MAE by +0.0062 in 2023/24 and +0.0374 in 2024/25. The affine model improved RMSE in 2024/25 and reduced signed bias, but that is not enough to justify a production calibration change given MAE regressions/inconclusive evidence and only two evaluation seasons.
+
+**Decision:** no calibration or production change. Keep these outputs as diagnostics and investigate large-prediction tail errors only with a separate pre-registered, past-only experiment. The 2025/26 final holdout and frozen 2026/27 GW1 run were not read or altered.
+
+Artifacts: `scripts/audit_dunkest_v9_past_only_residual_calibration_v1.py` and `reports/audit/dunkest_v9_past_only_calibration_20261013_v1.md` plus metrics, coefficients, predictions, and JSON.
+
+## Verification after these audits
+
+- Both new audit scripts compile successfully.
+- `git diff --check` passed.
+- Full test suite: **276 passed**, 6,800 warnings in 6.71 seconds.
+- No production source/configuration, official labels, or frozen prospective holdout was modified; no commit or push was performed.

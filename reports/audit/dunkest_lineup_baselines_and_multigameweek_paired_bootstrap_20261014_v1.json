@@ -1,0 +1,116 @@
+{
+  "generated_at_utc": "2026-10-14T19:17:07.790440+00:00",
+  "method": "Paired bootstrap over identical historical round IDs; strict complete-observed outcomes only. No missing selected-player actual is imputed as zero.",
+  "replicates": 10000,
+  "seed": 20261014,
+  "coverage": {
+    "same_constraint_baselines": {
+      "rounds_optimized": 409,
+      "rounds_strict_complete_all_strategies": 2,
+      "rounds_excluded_for_incomplete_actuals": 407
+    },
+    "sequential_transfer_policy": {
+      "rounds_optimized_any_scenario": 409,
+      "rounds_complete_across_all_penalties": 11,
+      "rounds_excluded_for_incomplete_actuals": 398,
+      "scenarios": [
+        0.0,
+        2.5,
+        5.0
+      ],
+      "scoring_malus_per_transfer": 5.0
+    }
+  },
+  "comparisons": [
+    {
+      "left": "model_realized_team_score",
+      "right": "baseline_realized_team_score",
+      "n_paired_rounds": 2,
+      "mean_difference": 7.284999999999997,
+      "median_difference": 7.284999999999997,
+      "win_rate": 0.5,
+      "ci95_low": -0.4800000000000182,
+      "ci95_high": 15.050000000000011,
+      "bootstrap_replicates": 10000,
+      "seed": 20261014,
+      "experiment": "same_constraint_baselines",
+      "comparison": "model_milp_minus_previous5"
+    },
+    {
+      "left": "model_realized_team_score",
+      "right": "pdk_per_cr_realized_team_score",
+      "n_paired_rounds": 2,
+      "mean_difference": 73.65249999999999,
+      "median_difference": 73.65249999999999,
+      "win_rate": 1.0,
+      "ci95_low": 59.92499999999998,
+      "ci95_high": 87.38,
+      "bootstrap_replicates": 10000,
+      "seed": 20261015,
+      "experiment": "same_constraint_baselines",
+      "comparison": "model_milp_minus_pdk_per_cr"
+    },
+    {
+      "left": "model_realized_team_score",
+      "right": "role_rank_realized_team_score",
+      "n_paired_rounds": 2,
+      "mean_difference": 8.320000000000007,
+      "median_difference": 8.320000000000007,
+      "win_rate": 0.5,
+      "ci95_low": -6.1299999999999955,
+      "ci95_high": 22.77000000000001,
+      "bootstrap_replicates": 10000,
+      "seed": 20261016,
+      "experiment": "same_constraint_baselines",
+      "comparison": "model_milp_minus_role_rank"
+    },
+    {
+      "left": "2.5",
+      "right": "0.0",
+      "n_paired_rounds": 11,
+      "mean_difference": 10.976818181818178,
+      "median_difference": 2.75,
+      "win_rate": 0.5454545454545454,
+      "ci95_low": 2.001363636363635,
+      "ci95_high": 22.87728409090909,
+      "bootstrap_replicates": 10000,
+      "seed": 20261114,
+      "experiment": "sequential_transfer_policy",
+      "comparison": "penalty_2_5_minus_penalty_0"
+    },
+    {
+      "left": "2.5",
+      "right": "5.0",
+      "n_paired_rounds": 11,
+      "mean_difference": 0.7363636363636332,
+      "median_difference": 0.0,
+      "win_rate": 0.18181818181818182,
+      "ci95_low": -0.14272727272727728,
+      "ci95_high": 1.9597727272727083,
+      "bootstrap_replicates": 10000,
+      "seed": 20261115,
+      "experiment": "sequential_transfer_policy",
+      "comparison": "penalty_2_5_minus_penalty_5"
+    },
+    {
+      "left": "5.0",
+      "right": "0.0",
+      "n_paired_rounds": 11,
+      "mean_difference": 10.240454545454545,
+      "median_difference": 0.0,
+      "win_rate": 0.36363636363636365,
+      "ci95_low": 0.9436363636363633,
+      "ci95_high": 22.167727272727276,
+      "bootstrap_replicates": 10000,
+      "seed": 20261116,
+      "experiment": "sequential_transfer_policy",
+      "comparison": "penalty_5_minus_penalty_0"
+    }
+  ],
+  "limitations": [
+    "Historical player market and availability snapshots are incomplete; these results apply only to the reconstructed lagged candidate universe.",
+    "Coach CR is fixed to 10 and coach actuals are reconstructed neutral-credit base scores, not exact price-adjusted official coach outcomes.",
+    "Sequential transfer rosters are simulated recommendations, not the user's actual historical carried roster.",
+    "Bootstrap intervals quantify sampling uncertainty conditional on the observed strict paired rounds; they do not remove market reconstruction bias."
+  ]
+}

@@ -128,6 +128,34 @@ def test_lineups_matchup_maps_to_the_unique_nba_game_on_display_date():
     assert pd.isna(mapping.loc[0, "fantasy_eligible"])
 
 
+def test_complete_capture_with_all_sides_ineligible_rejects_stale_mapping(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    processed = tmp_path / "processed"
+    processed.mkdir()
+    schedule = pd.DataFrame([
+        {"GAME_ID": "opening", "GAME_DATE": "2026-10-20", "HOME_TEAM": "DET", "AWAY_TEAM": "BOS"},
+        {"GAME_ID": "next", "GAME_DATE": "2026-10-21", "HOME_TEAM": "NYK", "AWAY_TEAM": "PHI"},
+    ])
+    schedule.to_parquet(processed / "future_regular_schedule_2026-27.parquet", index=False)
+    old = _fixture("stale", "DET", "BOS")
+    save_fixture_mapping(settings, pd.DataFrame([old]), source="test")
+    pd.DataFrame([
+        {
+            "team_a": "BOS", "team_b": "DET", "display_day": 20, "display_month": 10,
+            "dunkest_turn": 1, "team_a_eligible": False, "team_b_eligible": False,
+            "observed_at_utc": "2026-10-10T15:00:00Z",
+        },
+        {
+            "team_a": "PHI", "team_b": "NYK", "display_day": 21, "display_month": 10,
+            "dunkest_turn": 1, "team_a_eligible": False, "team_b_eligible": False,
+            "observed_at_utc": "2026-10-10T15:00:00Z",
+        },
+    ]).to_csv(tmp_path / "lineups_fixtures.csv", index=False)
+
+    with pytest.raises(RuntimeError, match="tutti i 4 lati"):
+        ensure_gameweek1_fixture_mapping(settings)
+
+
 def test_partial_verified_mapping_is_used_without_requiring_30_active_teams(tmp_path):
     settings = Settings(data_dir=str(tmp_path), season_id="26")
     processed = tmp_path / "processed"
@@ -168,6 +196,28 @@ def test_lineups_mapping_keeps_validity_per_team_not_per_game():
     assert bool(mapping.loc[0, "fantasy_eligible"])
     assert bool(mapping.loc[0, "home_team_eligible"])
     assert not bool(mapping.loc[0, "away_team_eligible"])
+
+
+def test_lineups_mapping_resolves_one_day_display_date_shift_without_season_wide_pair_match():
+    settings = Settings()
+    schedule = pd.DataFrame([
+        {"GAME_ID": "opening", "GAME_DATE": "2026-10-20", "HOME_TEAM": "DET", "AWAY_TEAM": "BOS"},
+        {"GAME_ID": "later", "GAME_DATE": "2026-11-15", "HOME_TEAM": "BOS", "AWAY_TEAM": "DET"},
+        {"GAME_ID": "next_season", "GAME_DATE": "2027-01-10", "HOME_TEAM": "DET", "AWAY_TEAM": "BOS"},
+    ])
+    observations = pd.DataFrame([{
+        "fixture_label": "TURNO 1 21/10 BOS @ DET",
+        "team_a": "BOS", "team_b": "DET", "display_day": "21", "display_month": "10",
+        "team_a_eligible": True, "team_b_eligible": False,
+        "dunkest_turn": 1, "observed_at_utc": "2026-10-10T08:00:00Z",
+    }])
+
+    mapping = build_gameweek1_mapping_from_lineups(settings, schedule, observations)
+
+    assert mapping["nba_game_id"].tolist() == ["opening"]
+    assert mapping.loc[0, "home_team"] == "DET"
+    assert bool(mapping.loc[0, "away_team_eligible"])
+    assert not bool(mapping.loc[0, "home_team_eligible"])
 
 
 def test_prematch_feature_guard_rejects_postmatch_target_and_late_data():

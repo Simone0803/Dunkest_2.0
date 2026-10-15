@@ -1,0 +1,136 @@
+{
+  "generated_at_utc": "2026-10-13T10:10:26.052931+00:00",
+  "purpose": "Determine whether current archives can supervise player participation/DNP probability without inventing labels.",
+  "season_metrics": [
+    {
+      "season": "2018-19",
+      "status": "audited",
+      "nba_log_rows": 26101,
+      "unique_player_game_rows": 26101,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 90,
+      "zero_minute_pct": 0.3448143749281637,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 26011,
+      "official_pdk_target_rows_in_archive": 0,
+      "target_archive_rows": 0,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2019-20",
+      "status": "audited",
+      "nba_log_rows": 22393,
+      "unique_player_game_rows": 22393,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 81,
+      "zero_minute_pct": 0.3617201804135221,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 22312,
+      "official_pdk_target_rows_in_archive": 0,
+      "target_archive_rows": 0,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2020-21",
+      "status": "audited",
+      "nba_log_rows": 23054,
+      "unique_player_game_rows": 23054,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 84,
+      "zero_minute_pct": 0.36436193285330093,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 22970,
+      "official_pdk_target_rows_in_archive": 17662,
+      "target_archive_rows": 17662,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2021-22",
+      "status": "audited",
+      "nba_log_rows": 26039,
+      "unique_player_game_rows": 26039,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 84,
+      "zero_minute_pct": 0.3225930335266331,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 25955,
+      "official_pdk_target_rows_in_archive": 18422,
+      "target_archive_rows": 18422,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2022-23",
+      "status": "audited",
+      "nba_log_rows": 25894,
+      "unique_player_game_rows": 25894,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 76,
+      "zero_minute_pct": 0.29350428670734535,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 25818,
+      "official_pdk_target_rows_in_archive": 19165,
+      "target_archive_rows": 19165,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2023-24",
+      "status": "audited",
+      "nba_log_rows": 26401,
+      "unique_player_game_rows": 26401,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 118,
+      "zero_minute_pct": 0.4469527669406462,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 26283,
+      "official_pdk_target_rows_in_archive": 18927,
+      "target_archive_rows": 18927,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2024-25",
+      "status": "audited",
+      "nba_log_rows": 26306,
+      "unique_player_game_rows": 26306,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 100,
+      "zero_minute_pct": 0.3801414126054892,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 26206,
+      "official_pdk_target_rows_in_archive": 19590,
+      "target_archive_rows": 19590,
+      "candidate_universe_snapshot_available": false
+    },
+    {
+      "season": "2025-26",
+      "status": "audited",
+      "nba_log_rows": 24424,
+      "unique_player_game_rows": 24424,
+      "duplicate_player_game_rows": 0,
+      "zero_minute_rows": 1,
+      "zero_minute_pct": 0.004094333442515558,
+      "missing_minute_rows": 0,
+      "positive_minute_rows": 24423,
+      "official_pdk_target_rows_in_archive": 18412,
+      "target_archive_rows": 18412,
+      "candidate_universe_snapshot_available": false
+    }
+  ],
+  "decision": "Do not train or calibrate a participation probability model from these NBA game logs alone. The logs contain observed player-game rows, not a complete pre-lock roster universe with explicit played/DNP/OUT labels.",
+  "evidence": {
+    "zero_minute_rows_are_rare": true,
+    "missing_candidate_rows_are_not_represented": true,
+    "official_pdk_rows_are_outcome_archive_rows_not_complete_market_roster_snapshots": true
+  },
+  "required_future_inputs": [
+    "Timestamped pre-lock full player roster/market snapshot with stable player IDs",
+    "Fixture-linked injury/availability status captured before lock",
+    "Post-game played/DNP/zero-minute result for every candidate, including candidates with no NBA player-game log row",
+    "Immutable snapshot timestamp and source hash"
+  ],
+  "production_changed": false,
+  "outputs": {
+    "csv": "reports/audit/dunkest_participation_label_readiness_20261013_v1.csv",
+    "json": "reports/audit/dunkest_participation_label_readiness_20261013_v1.json",
+    "report": "reports/audit/dunkest_participation_label_readiness_20261013_v1.md"
+  }
+}

@@ -7,9 +7,11 @@ bridge may mark a game fantasy eligible.
 from __future__ import annotations
 
 import hashlib
+import json
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 from dunkest.config import Settings
 
@@ -313,19 +315,23 @@ def build_gameweek1_mapping_from_nba_schedule(
     return validate_fixture_mapping(frame)
 
 
-def build_gameweek1_mapping_from_lineups(
+def build_gameweek_mapping_from_lineups(
     settings: Settings,
     nba_schedule: pd.DataFrame,
     observations: pd.DataFrame,
     *,
-    mapping_version: str = "lineups_browser_gw1_team_status_v2",
+    gameweek: int = 1,
+    mapping_version: str | None = None,
 ) -> pd.DataFrame:
-    """Join every fixture shown by Dunkest Lineups to its NBA game identity.
+    """Join the currently observed Dunkest fixtures to NBA game identities.
 
-    Browser capture is authoritative for dates, Turni, and each team's
-    black/gray validity state. The NBA schedule supplies only fixture identity
-    and actual home/away orientation.
+    The caller supplies the Dunkest gameweek currently displayed in Lineups.
+    Browser capture is authoritative for dates, turns, and team eligibility;
+    the NBA schedule supplies only game identity and home/away orientation.
     """
+    if int(gameweek) < 1:
+        raise ValueError("Dunkest gameweek must be a positive integer.")
+    mapping_version = mapping_version or f"lineups_browser_gw{int(gameweek)}_team_status_v2"
     required = {"team_a", "team_b", "display_day", "display_month", "dunkest_turn"}
     if observations.empty or not required.issubset(observations.columns):
         return pd.DataFrame(columns=FIXTURE_COLUMNS)
@@ -351,10 +357,22 @@ def build_gameweek1_mapping_from_lineups(
         date_match = schedule["_date"].dt.day.eq(day) & schedule["_date"].dt.month.eq(month)
         candidates = schedule.loc[pair & date_match]
         if candidates.empty:
-            # Some Dunkest pages display the local tip-off date while the NBA
-            # endpoint labels games by UTC date; use the unique team pairing
-            # only when it is unambiguous in the season schedule.
-            candidates = schedule.loc[pair]
+            # Dunkest displays tip-off dates in its own calendar timezone, which
+            # can differ by one calendar day from the NBA schedule's game date.
+            # Never fall back to the pair across the whole season (teams meet
+            # several times): accept only a unique same-pair game within +/-1 day
+            # of the displayed date, considering both calendar years of the season.
+            schedule_years = sorted(schedule["_date"].dt.year.dropna().astype(int).unique())
+            nearby_dates: set[pd.Timestamp] = set()
+            for year in schedule_years:
+                try:
+                    display_date = pd.Timestamp(year=year, month=month, day=day, tz="UTC")
+                except ValueError:
+                    continue
+                nearby_dates.add(display_date.normalize() - pd.Timedelta(days=1))
+                nearby_dates.add(display_date.normalize() + pd.Timedelta(days=1))
+            normalized_dates = schedule["_date"].dt.normalize()
+            candidates = schedule.loc[pair & normalized_dates.isin(nearby_dates)]
         if len(candidates) != 1:
             continue
         game = candidates.iloc[0]
@@ -380,7 +398,7 @@ def build_gameweek1_mapping_from_lineups(
             "away_team": str(game["AWAY_TEAM"]),
             "home_team_eligible": home_eligible,
             "away_team_eligible": away_eligible,
-            "dunkest_gameweek": 1,
+            "dunkest_gameweek": int(gameweek),
             "dunkest_turn": turn,
             "fantasy_eligible": any_eligible,
             "mapping_verified": True,
@@ -390,7 +408,7 @@ def build_gameweek1_mapping_from_lineups(
                 else "official_lineups_status_unknown_fail_closed"
             ),
             "source": "dunkest_lineups_browser",
-            "source_url_or_endpoint": "https://fantasy.dunkest.com/1/lineups",
+            "source_url_or_endpoint": "https://fantasy.dunkest.com/1/lineups (current gameweek capture)",
             "source_retrieved_at_utc": retrieved,
             "mapping_version": mapping_version,
             "raw_payload_sha256": "",
@@ -406,6 +424,19 @@ def build_gameweek1_mapping_from_lineups(
     ).hexdigest()
     frame["raw_payload_sha256"] = digest
     return validate_fixture_mapping(frame)
+
+
+def build_gameweek1_mapping_from_lineups(
+    settings: Settings,
+    nba_schedule: pd.DataFrame,
+    observations: pd.DataFrame,
+    *,
+    mapping_version: str = "lineups_browser_gw1_team_status_v2",
+) -> pd.DataFrame:
+    """Backward-compatible Giornata-1 wrapper."""
+    return build_gameweek_mapping_from_lineups(
+        settings, nba_schedule, observations, gameweek=1, mapping_version=mapping_version
+    )
 
 
 build_gameweek1_mapping_from_lineups_observations = build_gameweek1_mapping_from_lineups
@@ -474,6 +505,19 @@ def ensure_gameweek1_fixture_mapping(settings: Settings) -> pd.DataFrame:
             for column in ("home_team_eligible", "away_team_eligible")
             if column in observed_mapping
         )
+        observed_sides = 2 * len(observed_mapping)
+        # A complete capture in which every single team side is explicitly
+        # marked ineligible is not a usable Giornata-1 calendar. Do not silently
+        # fall back to an older partial mapping, which could mislead the coach
+        # model. This also surfaces broken black/gray status extraction early.
+        if observed_mapping.shape[0] and observed_statuses == observed_sides and not observed_teams:
+            raise RuntimeError(
+                "Calendario Lineups incoerente: sono state associate "
+                f"{len(observed_mapping)} partite NBA, ma tutti i {observed_sides} lati "
+                "risultano non eleggibili e nessuna squadra ha un matchup valido. "
+                "Non riutilizzo la vecchia mappatura. Riesegui lo scraping Lineups e "
+                "verifica che gli stati nero/grigio delle squadre siano letti correttamente."
+            )
         existing_statuses = sum(
             int(existing[column].notna().sum())
             for column in ("home_team_eligible", "away_team_eligible")
@@ -505,6 +549,120 @@ def ensure_gameweek1_fixture_mapping(settings: Settings) -> pd.DataFrame:
     return pd.DataFrame(columns=FIXTURE_COLUMNS)
 
 
+def save_current_capture_fixture_mapping(
+    settings: Settings, dunkest_gameweek: int
+) -> pd.DataFrame:
+    """Build and persist a verified mapping for the freshly scraped gameweek.
+
+    The observations must come from the current Lineups capture. Existing
+    gameweeks are retained in the same active mapping so a refresh for GW2 does
+    not erase GW1 fixture identities needed by archived runs.
+    """
+    gw = int(dunkest_gameweek)
+    if gw < 1:
+        raise ValueError("Dunkest gameweek must be a positive integer.")
+    observations_path = settings.data_path / "lineups_fixtures.csv"
+    if not observations_path.is_file():
+        raise RuntimeError("Manca la cattura fixture Lineups; aggiorna il mercato prima di ottimizzare.")
+    observations = pd.read_csv(observations_path)
+    if "observed_at_utc" not in observations or observations.empty:
+        raise RuntimeError("La cattura fixture Lineups è vuota o senza timestamp di acquisizione.")
+    observed_at = pd.to_datetime(observations["observed_at_utc"], errors="coerce", utc=True).dropna()
+    if observed_at.empty:
+        raise RuntimeError("La cattura fixture Lineups non contiene timestamp validi.")
+    age_hours = (pd.Timestamp.now(tz="UTC") - observed_at.max()).total_seconds() / 3600.0
+    if age_hours < -0.01 or age_hours > 36.0:
+        raise RuntimeError(
+            f"La cattura fixture Lineups non è aggiornata ({age_hours:.1f}h); "
+            "ripeti lo scraping della giornata target."
+        )
+
+    schedule = pd.DataFrame()
+    schedule_candidates = [
+        settings.data_path / "processed" / f"future_regular_schedule_{settings.season}_v2.parquet",
+        settings.data_path / "processed" / f"future_regular_schedule_{settings.season}.parquet",
+        settings.data_path / "processed" / f"future_schedule_{settings.season}.parquet",
+    ]
+    for schedule_path in schedule_candidates:
+        if not schedule_path.is_file() or schedule_path.stat().st_size == 0:
+            continue
+        try:
+            schedule = pd.read_parquet(schedule_path)
+        except Exception:
+            continue
+        if not schedule.empty:
+            break
+    if schedule.empty:
+        from dunkest.data.nba import collector as nba
+        schedule = nba.fetch_future_schedule(settings)
+    if schedule.empty:
+        raise RuntimeError("Calendario NBA futuro non disponibile; non assegno matchup per supposizione.")
+
+    version = f"lineups_browser_gw{gw}_team_status_v2"
+    observed_mapping = build_gameweek_mapping_from_lineups(
+        settings, schedule, observations, gameweek=gw, mapping_version=version
+    )
+    if observed_mapping.empty:
+        raise RuntimeError(
+            f"Nessuna fixture della Giornata {gw} è stata associata in modo univoco al calendario NBA. "
+            "Verifica che Lineups mostri la giornata target e ripeti lo scraping."
+        )
+    known_statuses = sum(
+        int(observed_mapping[column].notna().sum())
+        for column in ("home_team_eligible", "away_team_eligible")
+    )
+    total_sides = 2 * len(observed_mapping)
+    eligible_teams = _eligible_teams(observed_mapping)
+    if known_statuses == total_sides and not eligible_teams:
+        raise RuntimeError(
+            f"La cattura Lineups della Giornata {gw} marca tutte le squadre come non eleggibili; "
+            "non sostituisco la mappatura precedente."
+        )
+    if not eligible_teams:
+        raise RuntimeError(
+            f"La cattura Lineups della Giornata {gw} non contiene alcun matchup eleggibile verificato."
+        )
+
+    mapping_paths = sorted(
+        (settings.data_path / "processed").glob(f"dunkest_fixture_mapping_{settings.season_id}_*.parquet")
+    )
+    legacy_path = settings.data_path / "processed" / f"dunkest_fixture_mapping_{settings.season_id}.parquet"
+    if legacy_path.is_file():
+        mapping_paths.append(legacy_path)
+    if len(mapping_paths) > 1:
+        raise RuntimeError(
+            "Sono presenti più revisioni della mappatura fixture; risolvi le revisioni prima di aggiornare il calendario."
+        )
+    prior_all = pd.read_parquet(mapping_paths[0]) if mapping_paths else pd.DataFrame(columns=FIXTURE_COLUMNS)
+    if not prior_all.empty:
+        prior_all = validate_fixture_mapping(prior_all)
+        other_weeks = prior_all.loc[~prior_all["dunkest_gameweek"].eq(gw)].copy()
+        repeated_ids = set(observed_mapping["nba_game_id"].astype(str)) & set(
+            other_weeks["nba_game_id"].astype(str)
+        )
+        if repeated_ids:
+            raise RuntimeError(
+                f"La cattura dichiarata Giornata {gw} riutilizza partite già assegnate a un'altra giornata "
+                f"({', '.join(sorted(repeated_ids)[:5])}); Lineups potrebbe mostrare ancora la giornata precedente."
+            )
+        # Dunkest gameweeks can overlap on the calendar because different NBA
+        # teams reach their next eligible game on different dates. Identity
+        # duplication, not global kickoff ordering, is the safe stale-page guard.
+        prior = other_weeks
+    else:
+        prior = pd.DataFrame(columns=FIXTURE_COLUMNS)
+    combined = pd.concat([prior, observed_mapping], ignore_index=True, sort=False)
+    combined = combined.drop_duplicates(["season_id", "nba_game_id"], keep="last")
+    # One active season file may contain multiple gameweeks; all rows therefore
+    # share a version while each row retains its original source timestamp/hash.
+    combined["mapping_version"] = "lineups_browser_season_multigw_v1"
+    combined = validate_fixture_mapping(combined)
+    save_fixture_mapping(
+        settings, combined, source="dunkest_lineups_browser_current_gameweek", replace_existing=True
+    )
+    return get_fixture_mapping(settings, gw)
+
+
 def _parse_fixture_bool(value: object) -> bool | None:
     if pd.isna(value):
         return None
@@ -533,6 +691,163 @@ def _eligible_teams(mapping: pd.DataFrame) -> set[str]:
     return result
 
 
+MAX_PREMATCH_SNAPSHOT_AGE_HOURS = 36.0
+
+
+def _snapshot_freshness(path: Path, *, max_age_hours: float = MAX_PREMATCH_SNAPSHOT_AGE_HOURS) -> tuple[bool, str]:
+    """Require timestamped acquisition metadata; file mtime is not source freshness."""
+    if not path.is_file():
+        return False, "missing"
+    sidecar = path.with_name(path.name + ".meta.json")
+    if not sidecar.is_file():
+        return False, "missing freshness metadata"
+    try:
+        meta = json.loads(sidecar.read_text(encoding="utf-8"))
+        fetched = pd.to_datetime(meta.get("fetched_at"), utc=True, errors="coerce")
+    except (OSError, ValueError, json.JSONDecodeError):
+        return False, "invalid freshness metadata"
+    if pd.isna(fetched):
+        return False, "missing or invalid fetched_at"
+    age_hours = (pd.Timestamp.now(tz="UTC") - fetched).total_seconds() / 3600.0
+    if age_hours < -0.01:
+        return False, "snapshot timestamp is in the future"
+    if age_hours > max_age_hours:
+        return False, f"stale ({age_hours:.1f}h > {max_age_hours:.1f}h)"
+    return True, f"fresh ({age_hours:.1f}h)"
+
+
+def _snapshot_freshness_as_of(
+    path: Path,
+    cutoff: pd.Timestamp,
+    *,
+    max_age_hours: float = MAX_PREMATCH_SNAPSHOT_AGE_HOURS,
+) -> tuple[bool, str]:
+    """Check when a frozen snapshot was acquired relative to its historical lock."""
+    if not path.is_file():
+        return False, "missing"
+    meta_path = path.with_suffix(path.suffix + ".meta.json")
+    if not meta_path.is_file():
+        return False, "missing freshness metadata"
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        fetched = pd.to_datetime(meta.get("fetched_at"), utc=True, errors="coerce")
+        lock = pd.to_datetime(cutoff, utc=True, errors="coerce")
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return False, "invalid freshness metadata"
+    if pd.isna(fetched) or pd.isna(lock):
+        return False, "missing or invalid fetched_at/lock timestamp"
+    age_hours = (lock - fetched).total_seconds() / 3600.0
+    if age_hours < -0.01:
+        return False, "snapshot was acquired after the historical lock"
+    if age_hours > max_age_hours:
+        return False, f"stale at historical lock ({age_hours:.1f}h > {max_age_hours}h)"
+    return True, f"available {max(0.0, age_hours):.1f}h before historical lock"
+
+
+def _fixture_mapping_temporal_validity(
+    mapping: pd.DataFrame,
+    *,
+    max_age_hours: float = MAX_PREMATCH_SNAPSHOT_AGE_HOURS,
+) -> tuple[bool, str]:
+    """Require each mapping observation to precede its fixture and be timely."""
+    if mapping.empty or not {"game_datetime_utc", "source_retrieved_at_utc"}.issubset(mapping.columns):
+        return False, "fixture mapping or source timestamps missing"
+    kickoff = pd.to_datetime(mapping["game_datetime_utc"], errors="coerce", utc=True)
+    retrieved = pd.to_datetime(mapping["source_retrieved_at_utc"], errors="coerce", utc=True)
+    age_hours = (kickoff - retrieved).dt.total_seconds() / 3600.0
+    if kickoff.isna().any() or retrieved.isna().any():
+        return False, "fixture mapping source timestamp missing or invalid"
+    if age_hours.lt(-0.01).any():
+        return False, "fixture mapping was captured after a fixture lock"
+    if age_hours.gt(max_age_hours).any():
+        oldest = float(age_hours.max())
+        return False, f"fixture mapping stale at fixture lock ({oldest:.1f}h > {max_age_hours}h)"
+    return True, "fixture mapping captured before each fixture lock"
+
+
+def load_post_match_results_archive(
+    settings: Settings, dunkest_gameweek: int, *, season_id: str | None = None
+) -> dict | None:
+    """Load a hash-verified immutable archive with explicit usable outcomes."""
+    sid = str(season_id or settings.season_id)
+    root = (
+        settings.data_path / "archive" / sid
+        / f"gw{int(dunkest_gameweek)}"
+    )
+    if not root.is_dir():
+        return None
+    valid: list[tuple[float, float, pd.Timestamp, Path, pd.DataFrame, pd.DataFrame, dict]] = []
+    for archive in root.glob("post_match_*"):
+        manifest_path = archive / "manifest.json"
+        player_path = archive / "player_results.parquet"
+        coach_path = archive / "coach_results.parquet"
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if (
+                str(manifest.get("season_id")) != sid
+                or int(manifest.get("dunkest_gameweek", -1)) != int(dunkest_gameweek)
+                or int(manifest.get("schema_version", -1)) != 1
+                or not str(manifest.get("source", "")).strip()
+            ):
+                continue
+            hashes = manifest.get("sha256", {})
+            for name, path in (
+                ("player_results.parquet", player_path),
+                ("coach_results.parquet", coach_path),
+            ):
+                if not path.is_file() or hashes.get(name) != hashlib.sha256(path.read_bytes()).hexdigest():
+                    raise ValueError(f"{name} missing or hash mismatch")
+            coverage = manifest.get("coverage_audit", {})
+            player_coverage = float(coverage.get("player", {}).get("prediction_coverage", 0.0))
+            coach_coverage = float(coverage.get("coach", {}).get("coverage", 0.0))
+            if (
+                not coverage.get("timing_check_passed", False)
+                or not np.isfinite(player_coverage) or not 0.0 < player_coverage <= 1.0
+                or not np.isfinite(coach_coverage) or not 0.0 < coach_coverage <= 1.0
+            ):
+                continue
+            players = pd.read_parquet(player_path)
+            coaches = pd.read_parquet(coach_path)
+            if not {"player_name", "nba_game_id", "actual_pdk"}.issubset(players.columns):
+                continue
+            if not {"coach", "nba_game_id", "actual_coach_pdk"}.issubset(coaches.columns):
+                continue
+            player_scores = pd.to_numeric(players["actual_pdk"], errors="coerce")
+            coach_scores = pd.to_numeric(coaches["actual_coach_pdk"], errors="coerce")
+            if (
+                players.empty or coaches.empty
+                or not np.isfinite(player_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+                or not np.isfinite(coach_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+                or players["nba_game_id"].isna().any()
+                or coaches["nba_game_id"].isna().any()
+            ):
+                continue
+            retrieved_at = pd.to_datetime(manifest.get("retrieved_at_utc"), errors="coerce", utc=True)
+            if pd.isna(retrieved_at):
+                continue
+            valid.append((
+                min(player_coverage, coach_coverage),
+                player_coverage + coach_coverage,
+                retrieved_at, archive, players, coaches, manifest,
+            ))
+        except Exception:
+            # Invalid/partially written archives are evidence failures, not a
+            # reason to fall back to current aggregate result tables.
+            continue
+    if not valid:
+        return None
+    _, _, retrieved_at, path, players, coaches, manifest = max(
+        valid, key=lambda item: (item[0], item[1], item[2], item[3].name)
+    )
+    return {
+        "path": path,
+        "players": players,
+        "coaches": coaches,
+        "manifest": manifest,
+        "retrieved_at_utc": retrieved_at,
+    }
+
+
 def check_backtest_readiness(
     settings: Settings,
     dunkest_gameweek: int,
@@ -546,82 +861,119 @@ def check_backtest_readiness(
 
     mapping_path = settings.data_path / "processed" / f"dunkest_fixture_mapping_{sid}_*.parquet"
     mapping = get_fixture_mapping(settings, dunkest_gameweek, season_id=sid)
-    mapping_temporally_available = bool(
-        not mapping.empty
-        and mapping["source_retrieved_at_utc"].le(mapping["game_datetime_utc"]).all()
-    )
+    mapping_fresh, mapping_fresh_reason = _fixture_mapping_temporal_validity(mapping)
     mapping_ok = bool(
         not mapping.empty
         and mapping["fantasy_eligible"].notna().all()
         and mapping["mapping_verified"].fillna(False).all()
         and mapping["dunkest_gameweek"].notna().all()
         and mapping["dunkest_turn"].notna().all()
-        and mapping_temporally_available
+        and mapping_fresh
         and mapping["source"].astype(str).str.strip().ne("").all()
         and mapping["raw_payload_sha256"].astype(str).str.strip().ne("").all()
     )
-    checks["FIXTURE_MAPPING"] = {
-        "pass": bool(mapping_ok),
-        "reason": "provenance-bearing bridge known before tipoff" if mapping_ok else (
-            f"missing/unknown/late/unproven mapping: {mapping_path}"
-        ),
-    }
+    if mapping_ok:
+        mapping_reason = "provenance-bearing bridge verified before tipoff and fresh within 36h"
+    elif not mapping_fresh:
+        mapping_reason = f"{mapping_fresh_reason}: {mapping_path}"
+    else:
+        mapping_reason = f"missing/unknown/late/unproven mapping: {mapping_path}"
+    checks["FIXTURE_MAPPING"] = {"pass": bool(mapping_ok), "reason": mapping_reason}
 
     price_path = processed / f"player_credits_{sid}_gw{dunkest_gameweek}.parquet"
     roster_ok = False
     price_ok = False
+    lock_time = (
+        pd.to_datetime(mapping["game_datetime_utc"], errors="coerce", utc=True).min()
+        if not mapping.empty else pd.NaT
+    )
+    market_fresh, market_fresh_reason = _snapshot_freshness_as_of(price_path, lock_time)
     if price_path.is_file():
         market = pd.read_parquet(price_path)
-        roster_ok = {"player_name", "team_code", "role", "gameweek"}.issubset(market.columns) and not market.empty
+        roster_ok = {"player_name", "team_code", "role", "gameweek"}.issubset(market.columns) and not market.empty and market_fresh
         price_ok = roster_ok and "cr" in market and pd.to_numeric(market["cr"], errors="coerce").notna().all()
-    checks["ROSTER_SNAPSHOT"] = {"pass": bool(roster_ok), "reason": str(price_path) if roster_ok else "missing or invalid player roster snapshot"}
-    checks["PRICE_SNAPSHOT"] = {"pass": bool(price_ok), "reason": str(price_path) if price_ok else "missing or invalid CR snapshot"}
+    checks["ROSTER_SNAPSHOT"] = {
+        "pass": bool(roster_ok),
+        "reason": str(price_path) if roster_ok else f"missing, invalid, or stale player roster snapshot ({market_fresh_reason})",
+    }
+    checks["PRICE_SNAPSHOT"] = {
+        "pass": bool(price_ok),
+        "reason": str(price_path) if price_ok else f"missing, invalid, or stale CR snapshot ({market_fresh_reason})",
+    }
 
     injury_path = processed / f"injuries_{sid}_gw{dunkest_gameweek}.parquet"
     injury_ok = False
+    injury_fresh, injury_fresh_reason = _snapshot_freshness_as_of(injury_path, lock_time)
     if injury_path.is_file():
         injuries = pd.read_parquet(injury_path)
-        injury_ok = {"player_name", "team", "status", "gameweek"}.issubset(injuries.columns)
-    checks["INJURY_SNAPSHOT"] = {"pass": bool(injury_ok), "reason": str(injury_path) if injury_ok else "missing or invalid timestamped injury snapshot"}
+        injury_ok = {"player_name", "team", "status", "gameweek"}.issubset(injuries.columns) and injury_fresh
+    checks["INJURY_SNAPSHOT"] = {
+        "pass": bool(injury_ok),
+        "reason": str(injury_path) if injury_ok else f"missing, invalid, or stale timestamped injury snapshot ({injury_fresh_reason})",
+    }
 
     coach_path = processed / f"coach_market_{sid}_gw{dunkest_gameweek}.parquet"
     coach_ok = False
+    coach_fresh, coach_fresh_reason = _snapshot_freshness_as_of(coach_path, lock_time)
     if coach_path.is_file():
         coaches = pd.read_parquet(coach_path)
-        coach_ok = {"coach", "team", "coach_cr", "opponent", "date"}.issubset(coaches.columns) and not coaches.empty
+        coach_ok = {"coach", "team", "coach_cr", "opponent", "date"}.issubset(coaches.columns) and not coaches.empty and coach_fresh
         # Legacy generated coach rows are not proof of a Dunkest fixture.
         coach_ok = coach_ok and {"nba_game_id", "fixture_source"}.issubset(coaches.columns)
-    checks["COACH_SNAPSHOT"] = {"pass": bool(coach_ok), "reason": str(coach_path) if coach_ok else "missing fixture-linked coach snapshot"}
+    checks["COACH_SNAPSHOT"] = {
+        "pass": bool(coach_ok),
+        "reason": str(coach_path) if coach_ok else f"missing, invalid, or stale fixture-linked coach snapshot ({coach_fresh_reason})",
+    }
 
+    live_market_path = settings.data_path / "current_lineups_market.csv"
+    live_market_ok, live_market_reason = _snapshot_freshness(live_market_path)
+    availability_path = settings.data_path / "lineups_availability.csv"
+    availability_ok, availability_reason = _snapshot_freshness(availability_path)
+    checks["LINEUPS_MARKET_SNAPSHOT"] = {"pass": bool(live_market_ok), "reason": live_market_reason}
+    checks["LINEUPS_AVAILABILITY_SNAPSHOT"] = {"pass": bool(availability_ok), "reason": availability_reason}
+
+    # Current live captures are reported for diagnostics only. A replay of an
+    # old gameweek must be reproducible from its frozen historical snapshots.
     prematch_ok = bool(mapping_ok and roster_ok and price_ok and injury_ok and coach_ok)
     checks["PRE_MATCH_DATA"] = {"pass": prematch_ok, "reason": "all required pre-match snapshots present" if prematch_ok else "one or more required inputs missing, stale, or not fixture-linked"}
 
-    result_path = processed / f"dunkest_players_{sid}_gw{dunkest_gameweek}.parquet"
+    archived_results = load_post_match_results_archive(
+        settings, dunkest_gameweek, season_id=sid
+    )
     actual_ok = False
-    if result_path.is_file():
-        actuals = pd.read_parquet(result_path)
-        actual_ok = (
-            {"player_name", "actual_pdk", "gameweek_stats_available", "nba_game_id"}.issubset(actuals.columns)
-            and actuals["gameweek_stats_available"].fillna(False).astype(bool).any()
-            and pd.to_numeric(actuals["actual_pdk"], errors="coerce").notna().any()
-            and actuals["nba_game_id"].astype(str).isin(set(mapping["nba_game_id"].astype(str))).all()
-        )
-    actual_coach_path = processed / f"dunkest_coach_results_{sid}_gw{dunkest_gameweek}.parquet"
     actual_coach_ok = False
-    if actual_coach_path.is_file():
-        actual_coaches = pd.read_parquet(actual_coach_path)
-        actual_coach_ok = {"team", "nba_game_id", "actual_coach_pdk"}.issubset(actual_coaches.columns)
-        if actual_coach_ok:
-            actual_coach_ok = actual_coaches["nba_game_id"].astype(str).isin(
-                set(mapping["nba_game_id"].astype(str))
-            ).all()
+    if archived_results is not None:
+        actuals = archived_results["players"]
+        actual_coaches = archived_results["coaches"]
+        fixture_ids = set(mapping["nba_game_id"].astype(str))
+        player_scores = pd.to_numeric(actuals["actual_pdk"], errors="coerce")
+        actual_ok = (
+            np.isfinite(player_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+            and actuals["nba_game_id"].astype(str).isin(fixture_ids).all()
+        )
+        coach_scores = pd.to_numeric(actual_coaches["actual_coach_pdk"], errors="coerce")
+        actual_coach_ok = (
+            np.isfinite(coach_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+            and actual_coaches["nba_game_id"].astype(str).isin(fixture_ids).all()
+        )
     checks["ACTUAL_RESULTS"] = {
         "pass": bool(actual_ok and actual_coach_ok),
-        "reason": "player and coach outcomes linked to verified NBA game IDs" if actual_ok and actual_coach_ok else "player and/or coach actual results missing or not linked to fixture identity",
+        "reason": (
+            str(archived_results["path"])
+            if actual_ok and actual_coach_ok and archived_results is not None
+            else "hash-verified post-match archive with finite fixture-linked player and coach outcomes missing or invalid"
+        ),
     }
     return {
         "season_id": sid,
         "dunkest_gameweek": int(dunkest_gameweek),
         "checks": checks,
-        "backtest_ready": all(bool(item["pass"]) for item in checks.values()),
+        "backtest_ready": all(
+            bool(checks[name]["pass"])
+            for name in (
+                "FIXTURE_MAPPING", "ROSTER_SNAPSHOT", "PRICE_SNAPSHOT",
+                "INJURY_SNAPSHOT", "COACH_SNAPSHOT", "PRE_MATCH_DATA",
+                "ACTUAL_RESULTS",
+            )
+        ),
     }

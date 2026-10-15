@@ -1,0 +1,78 @@
+table_season_id,source_file,player_name,team_code,pdk,pts,min,plus_minus,expected_nba_season,candidate_nba_season,candidate_game_id,candidate_game_date,candidate_matchup
+13,season_13_week_11_round_1_avg.parquet,Admiral Schofield,ORL,0.0,0.0,1.6,2.0,2023-24,2021-22,0022100685,2022-01-21,ORL vs. LAL
+13,season_13_week_12_round_1_avg.parquet,Lamar Stevens,MEM,0.0,0.0,0.5,-2.0,2023-24,2024-25,0022401180,2025-04-11,MEM @ DEN
+13,season_13_week_14_round_1_avg.parquet,Amir Coffey,LAC,0.0,0.0,0.6,2.0,2023-24,2020-21,0022000736,2021-04-01,LAC vs. DEN
+13,season_13_week_22_round_1_avg.parquet,Adama Sanogo,CHI,0.0,0.0,0.5,0.0,2023-24,2024-25,0022400136,2024-11-01,CHI @ BKN
+13,season_13_week_26_round_1_avg.parquet,Garrison Mathews,ATL,0.0,0.0,1.6,-1.0,2023-24,2024-25,0022400030,2024-11-22,ATL @ CHI
+13,season_13_week_34_round_1_avg.parquet,Kobe Brown,LAC,0.0,0.0,0.5,-2.0,2023-24,2024-25,0022400697,2025-02-02,LAC @ TOR
+13,season_13_week_35_round_1_avg.parquet,Yuta Watanabe,MEM,0.0,0.0,1.3,0.0,2023-24,2019-20,,,
+13,season_13_week_42_round_2_avg.parquet,Moses Moody,GSW,-1.0,0.0,1.8,-2.0,2023-24,2021-22,0022100051,2021-10-26,GSW @ OKC
+13,season_13_week_49_round_2_avg.parquet,Admiral Schofield,ORL,0.0,0.0,1.8,-2.0,2023-24,2021-22,0022100898,2022-02-25,ORL vs. HOU
+13,season_13_week_4_round_3_avg.parquet,Josh Minott,MIN,4.7,4.0,3.6,5.0,2023-24,2022-23,0022200423,2022-12-14,MIN @ LAC
+13,season_13_week_57_round_1_avg.parquet,Kobe Brown,LAC,0.0,0.0,1.7,2.0,2023-24,2024-25,0022401056,2025-03-26,LAC @ NYK
+13,season_13_week_60_round_1_avg.parquet,Hunter Tyson,DEN,-1.0,0.0,1.9,-2.0,2023-24,2024-25,0022400920,2025-03-09,DEN @ OKC
+13,season_13_week_8_round_1_avg.parquet,Jericho Sims,NYK,0.0,0.0,0.9,0.0,2023-24,2024-25,,,
+13,season_13_week_9_round_1_avg.parquet,Miles McBride,NYK,0.0,0.0,0.7,-2.0,2023-24,2022-23,0022201084,2023-03-22,NYK @ MIA
+13,season_13_week_9_round_1_avg.parquet,Ish Wainright,PHX,0.0,0.0,2.5,0.0,2023-24,2022-23,0022200950,2023-03-03,PHX @ CHI
+19,season_19_week_1_round_3_avg.parquet,Vlatko Cancar,DEN,1.0,0.0,1.6,0.0,2024-25,2022-23,0022201042,2023-03-16,DEN @ DET
+19,season_19_week_23_round_1_avg.parquet,Olivier-Maxence Prosper,DAL,0.0,0.0,0.6,0.0,2024-25,2023-24,,,
+19,season_19_week_32_round_2_avg.parquet,Chris Livingston,MIL,1.3,0.0,2.5,-6.0,2024-25,2023-24,0022300767,2024-02-12,MIL vs. DEN
+19,season_19_week_35_round_1_avg.parquet,Anthony Gill,WAS,0.0,0.0,1.6,-4.0,2024-25,2022-23,0022200185,2022-11-12,WAS vs. UTA
+19,season_19_week_47_round_2_avg.parquet,Olivier-Maxence Prosper,DAL,-0.5,0.0,3.8,-1.0,2024-25,2023-24,0022300715,2024-02-05,DAL @ PHI
+19,season_19_week_4_round_2_avg.parquet,Jabari Walker,POR,1.1,0.0,5.7,0.0,2024-25,2022-23,0022200787,2023-02-03,POR @ WAS
+19,season_19_week_4_round_3_avg.parquet,AJ Green,MIL,-1.0,0.0,4.7,-1.0,2024-25,2023-24,0022301229,2023-12-07,MIL vs. IND
+19,season_19_week_56_round_1_avg.parquet,Kobe Brown,LAC,0.0,0.0,0.8,0.0,2024-25,2023-24,0022300917,2024-03-09,LAC vs. CHI
+19,season_19_week_6_round_1_avg.parquet,Anthony Gill,WAS,0.0,0.0,2.9,-6.0,2024-25,2021-22,0022100699,2022-01-23,WAS vs. BOS
+5,season_5_week_16_round_1_avg.parquet,Justin James,SAC,3.0,0.0,0.7,0.0,2020-21,2019-20,,,
+5,season_5_week_17_round_1_avg.parquet,Keita Bates-Diop,SAS,3.0,0.0,0.6,-2.0,2020-21,2022-23,0022200050,2022-10-24,SAS @ MIN
+5,season_5_week_19_round_1_avg.parquet,Amir Coffey,LAC,3.0,0.0,3.9,0.0,2020-21,2021-22,0022101177,2022-04-03,LAC vs. NOP
+5,season_5_week_20_round_1_avg.parquet,Luke Kornet,BOS,3.0,0.0,1.5,0.0,2020-21,2021-22,0022100981,2022-03-09,BOS @ CHA
+5,season_5_week_23_round_1_avg.parquet,Damian Jones,SAC,4.3,0.0,2.2,1.0,2020-21,2021-22,0022100132,2021-11-05,SAC vs. CHA
+5,season_5_week_31_round_2_avg.parquet,Justin James,SAC,5.0,2.0,1.6,0.0,2020-21,2019-20,0021900785,2020-02-08,SAC vs. SAS
+5,season_5_week_41_round_1_avg.parquet,Keljin Blevins,POR,-6.0,0.0,3.7,-1.0,2020-21,2021-22,0022101209,2022-04-08,POR @ DAL
+5,season_5_week_41_round_2_avg.parquet,Anthony Gill,WAS,-4.0,0.0,2.6,-4.0,2020-21,2024-25,0022400610,2025-01-21,WAS @ LAL
+5,season_5_week_43_round_2_avg.parquet,Isaiah Joe,PHI,0.5,0.0,6.3,1.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Danny Green,PHI,17.0,11.0,22.0,11.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Seth Curry,PHI,10.0,14.0,46.2,-5.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Malik Beasley,MIN,4.8,5.0,24.0,-4.0,2020-21,2021-22,0022100292,2021-11-27,MIN @ PHI
+5,season_5_week_43_round_2_avg.parquet,Matisse Thybulle,PHI,11.3,6.0,29.4,-12.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Tobias Harris,PHI,20.8,17.0,45.3,0.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Jarred Vanderbilt,MIN,18.0,5.0,36.5,5.0,2020-21,2021-22,0022100292,2021-11-27,MIN @ PHI
+5,season_5_week_43_round_2_avg.parquet,Joel Embiid,PHI,45.5,42.0,45.4,11.0,2020-21,2021-22,0022100292,2021-11-27,PHI vs. MIN
+5,season_5_week_43_round_2_avg.parquet,Karl-Anthony Towns,MIN,34.5,28.0,37.4,-2.0,2020-21,2021-22,0022100292,2021-11-27,MIN @ PHI
+5,season_5_week_43_round_3_avg.parquet,Isaiah Joe,PHI,-3.0,0.0,0.5,2.0,2020-21,2021-22,0022100840,2022-02-11,PHI vs. OKC
+5,season_5_week_44_round_2_avg.parquet,Vlatko Cancar,DEN,-4.0,0.0,1.6,-3.0,2020-21,2019-20,0021900913,2020-03-03,DEN vs. GSW
+5,season_5_week_51_round_1_avg.parquet,Kevin Knox II,NYK,4.0,0.0,1.0,-1.0,2020-21,2021-22,0022100622,2022-01-12,NYK vs. DAL
+5,season_5_week_52_round_1_avg.parquet,Pat Connaughton,MIL,14.8,6.0,26.6,5.0,2020-21,2022-23,0022200755,2023-01-29,MIL vs. NOP
+5,season_5_week_5_round_1_avg.parquet,R.J. Hampton,ORL,-3.0,0.0,1.6,-1.0,2020-21,2022-23,0022200683,2023-01-20,ORL vs. NOP
+5,season_5_week_8_round_1_avg.parquet,Terance Mann,LAC,-1.0,2.0,0.7,2.0,2020-21,2019-20,0021900157,2019-11-13,LAC @ HOU
+7,season_7_week_37_round_2_avg.parquet,Tre Jones,SAS,-3.0,0.0,1.7,-3.0,2021-22,2020-21,,,
+7,season_7_week_3_round_1_avg.parquet,Nick Richards,CHA,3.0,0.0,0.8,0.0,2021-22,2020-21,0022000299,2021-01-30,CHA vs. MIL
+7,season_7_week_42_round_1_avg.parquet,Admiral Schofield,ORL,3.0,0.0,1.7,0.0,2021-22,2023-24,0022300885,2024-03-05,ORL @ CHA
+7,season_7_week_48_round_1_avg.parquet,Lamar Stevens,CLE,-3.0,0.0,6.7,3.0,2021-22,2020-21,0022000597,2021-03-14,CLE @ ATL
+7,season_7_week_48_round_2_avg.parquet,Paul Reed,PHI,3.0,0.0,2.6,1.0,2021-22,2022-23,0022200399,2022-12-11,PHI vs. CHA
+7,season_7_week_49_round_1_avg.parquet,Luke Kornet,BOS,-3.0,0.0,2.9,-3.0,2021-22,2022-23,0022200869,2023-02-14,BOS @ MIL
+7,season_7_week_49_round_3_avg.parquet,Kessler Edwards,BKN,-4.0,0.0,1.8,1.0,2021-22,2022-23,,,
+7,season_7_week_4_round_1_avg.parquet,Cam Thomas,BKN,-3.0,0.0,1.6,2.0,2021-22,2022-23,0022200103,2022-11-01,BKN vs. CHI
+7,season_7_week_50_round_1_avg.parquet,Kai Jones,CHA,3.0,0.0,2.7,0.0,2021-22,2022-23,0022200642,2023-01-14,CHA vs. BOS
+7,season_7_week_56_round_3_avg.parquet,Jake Layman,MIN,3.0,0.0,3.6,-2.0,2021-22,2020-21,0022000726,2021-03-31,MIN vs. NYK
+7,season_7_week_59_round_3_avg.parquet,Luke Kornet,BOS,2.0,0.0,3.8,-1.0,2021-22,2022-23,0022200921,2023-02-27,BOS @ NYK
+7,season_7_week_62_round_1_avg.parquet,Amir Coffey,LAC,3.5,0.0,2.5,0.0,2021-22,2020-21,0022000308,2021-01-31,LAC @ NYK
+7,season_7_week_6_round_3_avg.parquet,Udonis Haslem,MIA,3.0,0.0,1.7,0.0,2021-22,2018-19,0021800824,2019-02-08,MIA @ SAC
+9,season_9_week_10_round_2_avg.parquet,Kessler Edwards,SAC,-1.0,0.0,1.9,2.0,2022-23,2023-24,0022301170,2024-04-11,SAC vs. NOP
+9,season_9_week_15_round_1_avg.parquet,Kessler Edwards,SAC,-1.0,0.0,1.0,1.0,2022-23,2023-24,0022300827,2024-02-25,SAC @ LAC
+9,season_9_week_20_round_2_avg.parquet,Sandro Mamukelashvili,SAS,-1.0,0.0,1.3,-2.0,2022-23,2023-24,0022300427,2023-12-28,SAS @ POR
+9,season_9_week_22_round_1_avg.parquet,Paul Reed,PHI,0.0,0.0,1.7,1.0,2022-23,2021-22,0022100619,2022-01-12,PHI vs. CHA
+9,season_9_week_34_round_2_avg.parquet,Kai Jones,CHA,0.0,0.0,1.7,0.0,2022-23,2021-22,,,
+9,season_9_week_38_round_1_avg.parquet,Ish Wainright,PHX,0.0,0.0,2.9,1.0,2022-23,2021-22,0022100953,2022-03-04,PHX vs. NYK
+9,season_9_week_44_round_2_avg.parquet,Nathan Knight,MIN,0.0,0.0,1.7,0.0,2022-23,2021-22,0022100227,2021-11-18,MIN vs. SAS
+9,season_9_week_4_round_1_avg.parquet,Kessler Edwards,SAC,0.0,0.0,1.0,1.0,2022-23,2023-24,0022300827,2024-02-25,SAC @ LAC
+9,season_9_week_55_round_1_avg.parquet,Furkan Korkmaz,PHI,0.0,0.0,1.6,0.0,2022-23,2021-22,0022101046,2022-03-18,PHI vs. DAL
+9,season_9_week_56_round_1_avg.parquet,Bruno Fernando,ATL,-1.0,0.0,2.9,-5.0,2022-23,2020-21,0022000692,2021-03-26,ATL @ GSW
+9,season_9_week_62_round_1_avg.parquet,Thanasis Antetokounmpo,MIL,0.0,0.0,0.7,-3.0,2022-23,2023-24,0022300346,2023-12-17,MIL vs. HOU
+9,season_9_week_62_round_2_avg.parquet,Olivier Sarr,OKC,0.0,0.0,1.6,-2.0,2022-23,2021-22,0022100893,2022-02-24,OKC vs. PHX
+9,season_9_week_63_round_1_avg.parquet,Max Christie,LAL,0.0,0.0,0.9,-2.0,2022-23,2023-24,0022300848,2024-02-28,LAL @ LAC
+9,season_9_week_63_round_2_avg.parquet,Amir Coffey,LAC,0.0,0.0,1.7,-2.0,2022-23,2020-21,0022000002,2020-12-22,LAC @ LAL
+9,season_9_week_7_round_2_avg.parquet,Thanasis Antetokounmpo,MIL,0.0,0.0,0.5,-1.0,2022-23,2020-21,0022000985,2021-05-04,MIL vs. BKN
+9,season_9_week_8_round_2_avg.parquet,Miles McBride,NYK,0.0,0.0,0.9,-3.0,2022-23,2021-22,0022100128,2021-11-05,NYK @ MIL
+9,season_9_week_9_round_1_avg.parquet,Amir Coffey,LAC,0.0,0.0,0.7,2.0,2022-23,2020-21,0022000736,2021-04-01,LAC vs. DEN

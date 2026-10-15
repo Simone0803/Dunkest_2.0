@@ -1,0 +1,19 @@
+{
+  "generated_at_utc": "2026-10-14T13:22:20.262234+00:00",
+  "selected_player_rows": 9160,
+  "recovery_status_counts": {
+    "weekly_round_score_observed": 5872,
+    "no_weekly_or_gamelevel_record": 2053,
+    "explicit_nonvalid_game_row_zero_candidate": 1235
+  },
+  "lineups_with_all_scores_recovered_or_observed": 173,
+  "lineup_rows": 916,
+  "strict_zero_candidates": 1235,
+  "gamelevel_recovered": 0,
+  "weekly_observed": 5872,
+  "limitations": [
+    "Game-level records are matched by season, target date, and Dunkest player ID; this is not a complete historical pre-lock market snapshot.",
+    "An explicit gameValidForDunkest=False row is a candidate for zero actual score but may indicate market/identity mismatch; it is reported separately and not silently promoted into certified scoring.",
+    "No row in either source remains unknown, not zero."
+  ]
+}

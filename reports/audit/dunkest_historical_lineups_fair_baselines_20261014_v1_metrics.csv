@@ -1,0 +1,4 @@
+season_id,season,rounds_evaluated,mean_model_realized_team_score,mean_previous5_baseline_realized_team_score,mean_pdk_per_cr_baseline_realized_team_score,mean_role_rank_baseline_realized_team_score,mean_delta_model_minus_previous5,median_delta_model_minus_previous5,model_win_rate_vs_previous5,mean_delta_model_minus_pdk_per_cr,model_win_rate_vs_pdk_per_cr,mean_delta_model_minus_role_rank,model_win_rate_vs_role_rank,mean_candidate_count,mean_candidate_target_row_coverage
+9,2022-23,1,216.53,201.48,129.15,222.66,15.050000000000011,15.050000000000011,1.0,87.38,1.0,-6.1299999999999955,0.0,233.0,0.8369098712446352
+19,2024-25,1,194.665,195.145,134.74,171.89499999999998,-0.4800000000000182,-0.4800000000000182,0.0,59.92499999999998,1.0,22.77000000000001,1.0,230.0,0.8521739130434782
+POOLED_STRICT,2022-23–2024-25,2,205.5975,198.3125,131.945,197.27749999999997,7.284999999999997,7.284999999999997,0.5,73.65249999999999,1.0,8.320000000000007,0.5,231.5,0.8445418921440567

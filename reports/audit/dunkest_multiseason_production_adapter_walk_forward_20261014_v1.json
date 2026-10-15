@@ -1,0 +1,227 @@
+{
+  "created_at_utc": "2026-10-14T10:31:20.640334+00:00",
+  "dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "supervised_target_seasons": [
+    "2020-21",
+    "2021-22",
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "test_folds": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "learner": "Ridge with alpha chosen only inside each train window; identical feature adapter/model across comparisons",
+  "feature_source": "precomputed lagged V3 features, production FEATURE_COLS adapter, no same-game target/outcome columns",
+  "primary_metrics": [
+    {
+      "test_season": "2022-23",
+      "method": "previous_season_only",
+      "train_rows": 18422,
+      "train_seasons": "2021-22",
+      "n": 19165,
+      "mae": 7.584610045451606,
+      "rmse": 9.87717859898828,
+      "bias": -0.37429637673628985,
+      "selected_ridge_alpha": 30.0
+    },
+    {
+      "test_season": "2022-23",
+      "method": "all_prior_certified_seasons",
+      "train_rows": 36084,
+      "train_seasons": "2020-21;2021-22",
+      "n": 19165,
+      "mae": 7.57536645796076,
+      "rmse": 9.886167715919198,
+      "bias": -0.5577652695963452,
+      "selected_ridge_alpha": 30.0
+    },
+    {
+      "test_season": "2023-24",
+      "method": "previous_season_only",
+      "train_rows": 19165,
+      "train_seasons": "2022-23",
+      "n": 18927,
+      "mae": 7.595127290558902,
+      "rmse": 9.858477369584513,
+      "bias": -0.05843473782714359,
+      "selected_ridge_alpha": 30.0
+    },
+    {
+      "test_season": "2023-24",
+      "method": "all_prior_certified_seasons",
+      "train_rows": 55249,
+      "train_seasons": "2020-21;2021-22;2022-23",
+      "n": 18927,
+      "mae": 7.576313601465648,
+      "rmse": 9.872524568282447,
+      "bias": -0.41108024897308676,
+      "selected_ridge_alpha": 30.0
+    },
+    {
+      "test_season": "2024-25",
+      "method": "previous_season_only",
+      "train_rows": 18927,
+      "train_seasons": "2023-24",
+      "n": 19590,
+      "mae": 7.651390317165741,
+      "rmse": 9.946439111173627,
+      "bias": -0.02548714994661025,
+      "selected_ridge_alpha": 30.0
+    },
+    {
+      "test_season": "2024-25",
+      "method": "all_prior_certified_seasons",
+      "train_rows": 74176,
+      "train_seasons": "2020-21;2021-22;2022-23;2023-24",
+      "n": 19590,
+      "mae": 7.633371639747267,
+      "rmse": 9.946898943250984,
+      "bias": -0.3434840778382875,
+      "selected_ridge_alpha": 30.0
+    }
+  ],
+  "paired_date_cluster_bootstrap": [
+    {
+      "test_season": "2022-23",
+      "paired_rows": 19165,
+      "mae_delta_multi_minus_single": -0.00924358749084566,
+      "ci95_low": -0.013839735894825764,
+      "ci95_high": -0.004849640983486157
+    },
+    {
+      "test_season": "2023-24",
+      "paired_rows": 18927,
+      "mae_delta_multi_minus_single": -0.01881368909325257,
+      "ci95_low": -0.026061801178796036,
+      "ci95_high": -0.011053637981929291
+    },
+    {
+      "test_season": "2024-25",
+      "paired_rows": 19590,
+      "mae_delta_multi_minus_single": -0.018018677418473662,
+      "ci95_low": -0.025679316725122255,
+      "ci95_high": -0.010427081514851352
+    }
+  ],
+  "low_history_cohort": [
+    {
+      "test_season": "2022-23",
+      "method": "all_prior_certified_seasons",
+      "cohort": "history_gt_5",
+      "n": 18709,
+      "mae": 7.611862707947608,
+      "rmse": 9.927127279936487,
+      "bias": -0.5907785058174551
+    },
+    {
+      "test_season": "2022-23",
+      "method": "all_prior_certified_seasons",
+      "cohort": "low_history_le_5",
+      "n": 456,
+      "mae": 6.077979745232753,
+      "rmse": 8.027445114779455,
+      "bias": 0.7967185822912534
+    },
+    {
+      "test_season": "2022-23",
+      "method": "previous_season_only",
+      "cohort": "history_gt_5",
+      "n": 18709,
+      "mae": 7.620503089188757,
+      "rmse": 9.917375383933662,
+      "bias": -0.40651207547254997
+    },
+    {
+      "test_season": "2022-23",
+      "method": "previous_season_only",
+      "cohort": "low_history_le_5",
+      "n": 456,
+      "mae": 6.111971985630554,
+      "rmse": 8.056872760491572,
+      "bias": 0.9474657014582047
+    },
+    {
+      "test_season": "2023-24",
+      "method": "all_prior_certified_seasons",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "mae": 7.617932465182683,
+      "rmse": 9.91798738827728,
+      "bias": -0.4475895424046876
+    },
+    {
+      "test_season": "2023-24",
+      "method": "all_prior_certified_seasons",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "mae": 6.097237033575924,
+      "rmse": 8.09268184905773,
+      "bias": 0.8864092930777628
+    },
+    {
+      "test_season": "2023-24",
+      "method": "previous_season_only",
+      "cohort": "history_gt_5",
+      "n": 18409,
+      "mae": 7.633632593322314,
+      "rmse": 9.899595222525592,
+      "bias": -0.09332153439695888
+    },
+    {
+      "test_season": "2023-24",
+      "method": "previous_season_only",
+      "cohort": "low_history_le_5",
+      "n": 518,
+      "mae": 6.226702351231353,
+      "rmse": 8.265450429860119,
+      "bias": 1.1813935209638406
+    },
+    {
+      "test_season": "2024-25",
+      "method": "all_prior_certified_seasons",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "mae": 7.67793874374413,
+      "rmse": 9.994164455514044,
+      "bias": -0.3827803766104412
+    },
+    {
+      "test_season": "2024-25",
+      "method": "all_prior_certified_seasons",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "mae": 5.859043811872131,
+      "rmse": 7.836870477483468,
+      "bias": 1.2209998170280794
+    },
+    {
+      "test_season": "2024-25",
+      "method": "previous_season_only",
+      "cohort": "history_gt_5",
+      "n": 19110,
+      "mae": 7.694794785422879,
+      "rmse": 9.990838960229562,
+      "bias": -0.05740106248201368
+    },
+    {
+      "test_season": "2024-25",
+      "method": "previous_season_only",
+      "cohort": "low_history_le_5",
+      "n": 480,
+      "mae": 5.92334992467842,
+      "rmse": 7.980547775040493,
+      "bias": 1.2450854928691384
+    }
+  ],
+  "holdout_caveat": "2025/26 has already been examined in prior project experiments; this is not a globally untouched final holdout.",
+  "rookie_caveat": "The low-history cohort (<=5 prior Dunkest rows) is a rookie-adjacent proxy, not a verified NBA draft-rookie label.",
+  "production_model_changed": false,
+  "artifacts": {
+    "metrics": "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v1_metrics.csv",
+    "predictions": "reports/audit/dunkest_multiseason_production_adapter_walk_forward_20261014_v1_predictions.csv"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "generated_at_utc": "2026-10-13T11:44:58.226230+00:00",
+  "coverage": {
+    "v6_prediction_rows": 274979,
+    "v7_prediction_rows": 283736,
+    "common_prediction_rows": 273446,
+    "v6_only_rows": 1533,
+    "v7_only_rows": 10290,
+    "paired_rows_by_family": {
+      "baseline_last_round": 53845,
+      "baseline_previous5_mean": 53845,
+      "baseline_train_median": 55252,
+      "historical_form_plus_lagged_credit_and_expanded_matchup_v2": 55252,
+      "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6": 55252
+    }
+  },
+  "summary": [
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "paired_rows": 55252,
+      "v6_mae": 7.517812522495917,
+      "v7_mae": 7.518615654508212,
+      "delta_mae_v7_minus_v6": 0.0008031320122947605,
+      "v6_rmse": 9.816180857527838,
+      "v7_rmse": 9.817493029542774,
+      "delta_rmse_v7_minus_v6": 0.0013121720149360527,
+      "v6_bias": -0.6534227582961284,
+      "v7_bias": -0.6522076527582182,
+      "delta_bias_v7_minus_v6": 0.001215105537910155,
+      "round_clusters": 467,
+      "delta_mae_ci95": [
+        -0.004974144447571562,
+        0.006598768228604948
+      ],
+      "delta_rmse_ci95": [
+        -0.004756497357188217,
+        0.0074275215985904345
+      ],
+      "delta_bias_ci95": [
+        -0.005710268403769922,
+        0.008085816530772588
+      ],
+      "bootstrap_replicates": 10000,
+      "cluster_unit": "source week/round, resampled within held-out season",
+      "seed": 20261013
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+      "paired_rows": 55252,
+      "v6_mae": 7.493072338169742,
+      "v7_mae": 7.49904407310712,
+      "delta_mae_v7_minus_v6": 0.005971734937378237,
+      "v6_rmse": 9.774099051670097,
+      "v7_rmse": 9.778262746975061,
+      "delta_rmse_v7_minus_v6": 0.004163695304963966,
+      "v6_bias": -0.5934745729210115,
+      "v7_bias": -0.5966844418319636,
+      "delta_bias_v7_minus_v6": -0.003209868910952096,
+      "round_clusters": 467,
+      "delta_mae_ci95": [
+        -9.641397408632674e-07,
+        0.012040539958771017
+      ],
+      "delta_rmse_ci95": [
+        -0.0021116462670311533,
+        0.01064322225593255
+      ],
+      "delta_bias_ci95": [
+        -0.011535902053288636,
+        0.004524765159537895
+      ],
+      "bootstrap_replicates": 10000,
+      "cluster_unit": "source week/round, resampled within held-out season",
+      "seed": 20261013
+    }
+  ],
+  "by_season": [
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "season_id": "13",
+      "paired_rows": 18137,
+      "v6_mae": 7.540779499792315,
+      "v7_mae": 7.546132763079943,
+      "delta_mae_v7_minus_v6": 0.005353263287628529,
+      "v6_rmse": 9.856303740065352,
+      "v7_rmse": 9.861319574782183,
+      "delta_rmse_v7_minus_v6": 0.00501583471683098
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "season_id": "19",
+      "paired_rows": 18783,
+      "v6_mae": 7.519446215613655,
+      "v7_mae": 7.514865016122176,
+      "delta_mae_v7_minus_v6": -0.004581199491479282,
+      "v6_rmse": 9.840706902328863,
+      "v7_rmse": 9.833866996385407,
+      "delta_rmse_v7_minus_v6": -0.006839905943456515
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_and_expanded_matchup_v2",
+      "season_id": "9",
+      "paired_rows": 18332,
+      "v6_mae": 7.493415963197683,
+      "v7_mae": 7.495234159998029,
+      "delta_mae_v7_minus_v6": 0.0018181968003458948,
+      "v6_rmse": 9.75102658888157,
+      "v7_rmse": 9.757059096209534,
+      "delta_rmse_v7_minus_v6": 0.0060325073279638985
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+      "season_id": "13",
+      "paired_rows": 18137,
+      "v6_mae": 7.5133261714221815,
+      "v7_mae": 7.520404565912666,
+      "delta_mae_v7_minus_v6": 0.007078394490484641,
+      "v6_rmse": 9.817369142141375,
+      "v7_rmse": 9.820493698983002,
+      "delta_rmse_v7_minus_v6": 0.0031245568416267133
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+      "season_id": "19",
+      "paired_rows": 18783,
+      "v6_mae": 7.498383355833436,
+      "v7_mae": 7.501398165421213,
+      "delta_mae_v7_minus_v6": 0.003014809587776668,
+      "v6_rmse": 9.795790301457064,
+      "v7_rmse": 9.796603022859747,
+      "delta_rmse_v7_minus_v6": 0.0008127214026831808
+    },
+    {
+      "feature_family": "historical_form_plus_lagged_credit_expanded_matchup_rest_schedule_v6",
+      "season_id": "9",
+      "paired_rows": 18332,
+      "v6_mae": 7.4675922695205665,
+      "v7_mae": 7.475498787598185,
+      "delta_mae_v7_minus_v6": 0.00790651807761833,
+      "v6_rmse": 9.708726298026217,
+      "v7_rmse": 9.717392222241969,
+      "delta_rmse_v7_minus_v6": 0.00866592421575163
+    }
+  ],
+  "interpretation_rule": "Negative delta_mae_v7_minus_v6 favors corrected-link V7 on the exact same held-out player-round rows. The 95% interval resamples whole week-round clusters within each test season. V6/V7 training sets differ because corrected linkage expands matchup-ready historical rows, so this is a paired predictive comparison, not a single-factor causal estimate.",
+  "guardrails": [
+    "No production model/config changed.",
+    "V7 is experimental and not promoted automatically.",
+    "The frozen 2026/27 GW1 holdout remains untouched until 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "paired_rows": "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1_paired_rows.csv",
+    "summary": "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1_summary.csv",
+    "by_season": "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1_by_season.csv",
+    "json": "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1.json",
+    "markdown": "reports/audit/dunkest_historical_matchup_team_link_paired_eval_20261013_v1.md"
+  }
+}

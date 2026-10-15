@@ -1,0 +1,232 @@
+{
+  "generated_at_utc": "2026-10-14T12:42:17.468195+00:00",
+  "supersedes_diagnostic_versions": {
+    "v1": "identity-key mismatch made outcome join coverage invalid",
+    "v2": "candidate pool restricted to immediately previous round and missed most target participants",
+    "v4": "deterministic every-third-round sample; V5 evaluates all high-confidence rounds",
+    "gamelevel_actuals_v1": "unioning all linked game IDs allowed cross-date exact-signature collisions; v2 uses high-confidence round-date consensus",
+    "gamelevel_actuals_v2": "training used same-round rows whose lag1_pdk/minutes fields included the target label; v3 constructs each training row from the latest strictly pre-target candidate observation"
+  },
+  "input": "data/processed/dunkest_historical_player_week_round_2020-25_v2.parquet",
+  "coach_prediction_source": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_predictions.csv",
+  "realized_player_score_source": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "game_level_actual_reconstruction": {
+    "date_link_source": "data/processed/dunkest_historical_game_linked_rows_20261013_v3_date_assisted.parquet",
+    "rounds_with_confident_date_mapping": 778,
+    "date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links": 10,
+    "weekly_rows_reconstructed": 93734,
+    "rows_with_absolute_difference_below_0_02": 93728,
+    "share_with_absolute_difference_below_0_02": 0.9999359890754689,
+    "mean_absolute_difference": 0.0014935882390594661,
+    "scoring_rule": "Establish the round date from the mode of linked player-game dates, requiring at least 75% date agreement and 10 unique player links. Sum official Dunkest PDK for all gameValidForDunkest=True player-game rows on that season/date. This avoids including unrelated games when an exact box-score signature recurs on another date."
+  },
+  "candidate_policy": "For each target round, candidates are prior-observed players only; their latest CR and role are carried forward and team identity uses the latest linked NBA team from a strictly earlier archived row when available. Target eligibility is restricted to teams on the NBA schedule for the reconstructed target date. No same-round player outcome or target-team linkage is used to select candidates.",
+  "target_date_mapping": {
+    "rounds_total": 779,
+    "rounds_with_confident_date": 768,
+    "rounds_date_confidence_threshold": 0.75,
+    "minimum_unique_player_date_links_per_round": 10,
+    "rows_with_target_opponent": 90219,
+    "rows_with_all_three_opponent_defense_features": 90219,
+    "date_mapping_by_season": [
+      {
+        "season_id": "13",
+        "rounds": 154,
+        "confident_rounds": 150,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "19",
+        "rounds": 158,
+        "confident_rounds": 155,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "5",
+        "rounds": 140,
+        "confident_rounds": 140,
+        "median_confidence": 0.9916787016023657
+      },
+      {
+        "season_id": "7",
+        "rounds": 165,
+        "confident_rounds": 161,
+        "median_confidence": 1.0
+      },
+      {
+        "season_id": "9",
+        "rounds": 162,
+        "confident_rounds": 162,
+        "median_confidence": 1.0
+      }
+    ],
+    "mapping_method": "Official-valid Dunkest PDK and player/team identity are used only to link historical outcome rows to candidate NBA dates. A round date is accepted only if >=75% of unique player-date links agree and >=10 unique links exist. Matchup features use NBA schedule and opponent defensive stats strictly before that date."
+  },
+  "coach_policy": "Historical coach CR is missing; use fixed coach_cr=10 for every team, and reconstruct neutral-credit base score from final NBA results. Coach budget and price-difference multipliers are therefore proxies, not historical market truth.",
+  "optimizer": {
+    "budget": 95.0,
+    "fixed_coach_cr": 10.0,
+    "player_budget_after_coach": 85.0,
+    "formation": "4G/4F/2C roster; 5 starters, sixth man, 4 bench; one captain; max 3 per NBA team including coach",
+    "transfer_malus": 0.0,
+    "reason": "Historical carry-over roster and exact transfer/coach prices are not archived; this evaluates fresh independent round lineups."
+  },
+  "training_feature_policy": "For every training target round, all player predictors come from the latest archived row strictly before that target round. Target-round PDK is joined only as the label after prior features are selected; target matchup and opponent-defense context are joined from the target schedule by lagged team. No same-round PDK, minutes, box-score stats, or target-market role/CR are used as predictors.",
+  "training_rows_by_test_season": {
+    "9": 33723,
+    "13": 51674,
+    "19": 69461
+  },
+  "fold_policy": "Train player score model on leakage-safe rows from earlier valid seasons only; test seasons 2022-23, 2023-24 and 2024-25. No test-season labels are used to fit its model. All high-confidence mapped rounds with a prior historical candidate pool are evaluated; CBC uses a 1-second time limit and 5% relative gap.",
+  "metrics_strict_observed_only": [
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "rounds_evaluated": 3,
+      "mean_model_realized_team_score": 241.9416666666667,
+      "mean_baseline_realized_team_score": 215.25,
+      "mean_delta_model_minus_baseline": 26.691666666666652,
+      "median_delta_model_minus_baseline": 26.22999999999999,
+      "model_win_rate_vs_baseline": 1.0,
+      "mean_candidate_count": 243.0,
+      "mean_candidate_target_row_coverage": 0.7961508775462264,
+      "mean_target_players_covered": 0.9434509875464189
+    },
+    {
+      "season_id": "19",
+      "season": "2024-25",
+      "rounds_evaluated": 1,
+      "mean_model_realized_team_score": 212.71,
+      "mean_baseline_realized_team_score": 195.68499999999997,
+      "mean_delta_model_minus_baseline": 17.025000000000034,
+      "median_delta_model_minus_baseline": 17.025000000000034,
+      "model_win_rate_vs_baseline": 1.0,
+      "mean_candidate_count": 229.0,
+      "mean_candidate_target_row_coverage": 0.9082969432314411,
+      "mean_target_players_covered": 0.9244444444444444
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "rounds_evaluated": 4,
+      "mean_model_realized_team_score": 196.72875,
+      "mean_baseline_realized_team_score": 159.59125,
+      "mean_delta_model_minus_baseline": 37.1375,
+      "median_delta_model_minus_baseline": 39.3875,
+      "model_win_rate_vs_baseline": 1.0,
+      "mean_candidate_count": 175.25,
+      "mean_candidate_target_row_coverage": 0.7511110923838218,
+      "mean_target_players_covered": 0.9864864864864865
+    },
+    {
+      "season_id": "POOLED",
+      "season": "2022-23–2024-25",
+      "rounds_evaluated": 8,
+      "mean_model_realized_team_score": 215.68125,
+      "mean_baseline_realized_team_score": 184.975,
+      "mean_delta_model_minus_baseline": 30.706249999999997,
+      "median_delta_model_minus_baseline": 21.627500000000012,
+      "model_win_rate_vs_baseline": 1.0,
+      "mean_candidate_count": 207.375,
+      "mean_candidate_target_row_coverage": 0.7876492431756759,
+      "mean_target_players_covered": 0.9625929191287059
+    }
+  ],
+  "metrics_proxy_zero_missing": [
+    {
+      "season_id": "13",
+      "season": "2023-24",
+      "rounds_evaluated_proxy": 147,
+      "mean_model_realized_team_score_proxy": 140.5067006802721,
+      "mean_baseline_realized_team_score_proxy": 121.53605442176872,
+      "mean_delta_model_minus_baseline_proxy": 18.9706462585034,
+      "median_delta_model_minus_baseline_proxy": 12.409999999999997,
+      "model_win_rate_vs_baseline_proxy": 0.6190476190476191,
+      "mean_candidate_count": 245.96598639455783
+    },
+    {
+      "season_id": "19",
+      "season": "2024-25",
+      "rounds_evaluated_proxy": 152,
+      "mean_model_realized_team_score_proxy": 144.23661184210528,
+      "mean_baseline_realized_team_score_proxy": 125.27092105263158,
+      "mean_delta_model_minus_baseline_proxy": 18.965690789473687,
+      "median_delta_model_minus_baseline_proxy": 15.487499999999997,
+      "model_win_rate_vs_baseline_proxy": 0.625,
+      "mean_candidate_count": 245.08552631578948
+    },
+    {
+      "season_id": "9",
+      "season": "2022-23",
+      "rounds_evaluated_proxy": 159,
+      "mean_model_realized_team_score_proxy": 124.2296855345912,
+      "mean_baseline_realized_team_score_proxy": 115.35544025157232,
+      "mean_delta_model_minus_baseline_proxy": 8.874245283018869,
+      "median_delta_model_minus_baseline_proxy": 9.715000000000032,
+      "model_win_rate_vs_baseline_proxy": 0.5660377358490566,
+      "mean_candidate_count": 226.36477987421384
+    },
+    {
+      "season_id": "POOLED",
+      "season": "2022-23–2024-25",
+      "rounds_evaluated_proxy": 458,
+      "mean_model_realized_team_score_proxy": 136.09382096069868,
+      "mean_baseline_realized_team_score_proxy": 120.6299017467249,
+      "mean_delta_model_minus_baseline_proxy": 15.4639192139738,
+      "median_delta_model_minus_baseline_proxy": 12.545000000000002,
+      "model_win_rate_vs_baseline_proxy": 0.6026200873362445,
+      "mean_candidate_count": 238.86899563318778
+    }
+  ],
+  "proxy_zero_missing_policy": "Only for the proxy scenario, missing valid player-game PDK rows for previously observed candidates assigned to a scheduled team are set to zero. This is an explicit no-appearance assumption, not observed Dunkest actuals; strict observed-only results remain separate.",
+  "selection_conditioned_score_calibration": {
+    "model": {
+      "lineup_rows": 458,
+      "strict_complete_lineup_rows": 24,
+      "mean_expected_team_pdk": 209.53450389986926,
+      "mean_realized_team_score": 217.51291666666668,
+      "mean_optimism_gap": -7.978412766797419,
+      "proxy_mean_expected_team_pdk": 209.37164452638098,
+      "proxy_mean_realized_team_score": 136.09382096069868,
+      "proxy_mean_optimism_gap": 73.2778235656823
+    },
+    "previous5_baseline": {
+      "lineup_rows": 458,
+      "strict_complete_lineup_rows": 13,
+      "mean_expected_team_pdk": 286.4685421663513,
+      "mean_realized_team_score": 190.54346153846151,
+      "mean_optimism_gap": 95.9250806278898,
+      "proxy_mean_expected_team_pdk": 275.3861853384251,
+      "proxy_mean_realized_team_score": 120.6299017467249,
+      "proxy_mean_optimism_gap": 154.7562835917002
+    }
+  },
+  "round_status_counts": {
+    "selected_actuals_incomplete": 450,
+    "evaluated": 8,
+    "candidate_pool_too_small": 3,
+    "optimization_failed": 3
+  },
+  "lineup_rows": 916,
+  "production_changed": false,
+  "limitations": [
+    "Historical outcome archives are not complete timestamped pre-lock market snapshots. Prices and roles are lagged proxies, and late additions or unobserved players may be missing.",
+    "Candidate NBA team is the latest prior linked team; a trade or release after the last observed appearance can leave stale team identity.",
+    "Historical availability is unobserved; p_play=1 is an eligibility proxy, not a verified status.",
+    "Strict observed-only lineup comparison includes only 8 paired rounds with complete player and coach outcomes, insufficient to establish superiority.",
+    "Proxy comparison explicitly sets missing valid player-game PDK rows to zero. This can mis-score inactive, traded, or incompletely archived candidates and is exploratory only.",
+    "Coach prices and historical transfer malus are unavailable; coach price is fixed at 10 CR, neutral-credit coach score is used, and transfer malus is zero. The experiment compares fresh independent round lineups, not sequential rosters.",
+    "The 2025/26 season is excluded from lineup comparison; test seasons are 2022/23 through 2024/25."
+  ],
+  "superseded_by": "No later version yet; V5 contains strict observed-only and proxy-zero-missing metrics.",
+  "full_slate_reconstruction": {
+    "candidate_pool_mean_on_successful_rounds": 238.86899563318778,
+    "successful_optimization_rounds": 458,
+    "strict_complete_paired_rounds": 8,
+    "strict_incomplete_paired_rounds": 450,
+    "candidate_pool_too_small": 3,
+    "optimization_failed": 3,
+    "strict_pair_bootstrap": "Not meaningful with only 8 complete paired rounds; no strict superiority claim made."
+  }
+}

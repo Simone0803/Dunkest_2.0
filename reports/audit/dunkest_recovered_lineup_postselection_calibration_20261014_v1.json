@@ -1,0 +1,48 @@
+{
+  "generated_at_utc": "2026-10-14T13:42:40.346766+00:00",
+  "input": "reports/audit/dunkest_lineups_recovered_actuals_20261014_v2_rounds.csv",
+  "method": "For each strategy, fit actual recovered proxy score = intercept + slope * expected lineup score on earlier fully scored rounds only. Calibration begins after 20 previous rounds, slope clipped to [0,2], and is used only to forecast the next round score; lineups are unchanged.",
+  "metrics": [
+    {
+      "strategy": "model",
+      "variant": "raw",
+      "n": 428,
+      "mae": 44.061899353110555,
+      "rmse": 57.98750519449618,
+      "bias_expected_minus_actual": 7.379681494664113,
+      "mean_zero_candidate_share": 0.22172897196261684
+    },
+    {
+      "strategy": "model",
+      "variant": "past_only_calibrated",
+      "n": 408,
+      "mae": 44.70265854316609,
+      "rmse": 57.56641458594554,
+      "bias_expected_minus_actual": -0.44109942055193335,
+      "mean_zero_candidate_share": 0.22181372549019607
+    },
+    {
+      "strategy": "previous5_baseline",
+      "variant": "raw",
+      "n": 378,
+      "mae": 111.87193587793664,
+      "rmse": 128.2110466781604,
+      "bias_expected_minus_actual": 110.65980325644988,
+      "mean_zero_candidate_share": 0.4833333333333334
+    },
+    {
+      "strategy": "previous5_baseline",
+      "variant": "past_only_calibrated",
+      "n": 358,
+      "mae": 52.637430986261194,
+      "rmse": 63.91797998162534,
+      "bias_expected_minus_actual": 10.101494206669935,
+      "mean_zero_candidate_share": 0.49217877094972073
+    }
+  ],
+  "limitations": [
+    "Outcome scores include explicit zero candidates and are not certified official actuals.",
+    "Historical coach credit multipliers and transfer malus are still proxies.",
+    "This calibrates expected score after selection; it does not correct which players the optimizer selected."
+  ]
+}

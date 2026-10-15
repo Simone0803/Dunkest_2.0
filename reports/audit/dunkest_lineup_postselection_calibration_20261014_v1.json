@@ -1,0 +1,48 @@
+{
+  "generated_at_utc": "2026-10-14T13:16:43.283489+00:00",
+  "input": "reports/audit/dunkest_historical_lineups_gamelevel_actuals_20261014_v7_lineups.csv",
+  "method": "For each strategy, fit actual_proxy = intercept + slope * expected_team_pdk on prior rounds only, across prior test seasons and prior rounds of the current season. Calibration starts after 20 prior evaluated rounds. Slope is constrained to [0,2]. This adjusts the forecast score after lineup selection; it does not change selected lineups.",
+  "metrics": [
+    {
+      "strategy": "model",
+      "raw": {
+        "n": 458,
+        "mae": 43.832770887776384,
+        "rmse": 57.70755982424799,
+        "bias_pred_minus_actual": 7.2499581003383975
+      },
+      "postselection_calibrated": {
+        "n": 438,
+        "mae": 43.371751944897845,
+        "rmse": 57.075258621144215,
+        "bias_pred_minus_actual": 6.800741780691417
+      },
+      "calibrated_rounds": 438,
+      "mean_slope": 1.0285386697284096,
+      "mean_intercept": -5.376148688285627
+    },
+    {
+      "strategy": "previous5_baseline",
+      "raw": {
+        "n": 458,
+        "mae": 111.64173185477875,
+        "rmse": 127.83477566259737,
+        "bias_pred_minus_actual": 110.51586837704528
+      },
+      "postselection_calibrated": {
+        "n": 438,
+        "mae": 52.662396813123415,
+        "rmse": 63.584234768583336,
+        "bias_pred_minus_actual": 3.6549986252909146
+      },
+      "calibrated_rounds": 438,
+      "mean_slope": 0.5228175264958398,
+      "mean_intercept": 1.6888411644343897
+    }
+  ],
+  "limitations": [
+    "Realized outcomes use the explicit zero-for-missing proxy from V7, not fully observed official scores.",
+    "Historical market/availability/coach credits and transfer malus remain incomplete.",
+    "Post-selection calibration adjusts score forecasts only and does not change lineup selection."
+  ]
+}

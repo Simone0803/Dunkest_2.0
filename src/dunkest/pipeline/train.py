@@ -9,8 +9,10 @@ from dunkest.config import Settings
 from dunkest.data.cache import cache_has_complete_collection
 from dunkest.data.access import get_injuries, get_player_data, get_team_data
 from dunkest.data.dunkest.fixtures import get_fixture_mapping
+from dunkest.data.dunkest.official_pdk import attach_official_pdk_labels
 from dunkest.features.builder import build_feature_matrix
 from dunkest.models.predictor import train_models
+from dunkest.models.multiseason_training import train_multiseason_models
 from dunkest.data.nba.collector import require_complete_collection
 
 
@@ -45,9 +47,14 @@ def run_train(settings: Settings) -> tuple[dict, pd.DataFrame]:
                 f"No game logs found for opening-round training. Add or collect "
                 f"the prior-season cache: {prior_player_path}"
             )
+        log_season = settings.feature_season
     else:
         player_logs = get_player_data(settings)
         team_logs = get_team_data(settings)
+        log_season = settings.season
+    player_logs = attach_official_pdk_labels(
+        player_logs, settings.data_path, log_season
+    )
     injuries = get_injuries(settings) if settings.use_injuries else pd.DataFrame()
     try:
         schedule = get_fixture_mapping(settings, settings.target_gameweek) if settings.use_schedule else pd.DataFrame()
@@ -68,5 +75,13 @@ def run_train(settings: Settings) -> tuple[dict, pd.DataFrame]:
         team_overrides=team_overrides,
         target_gameweek=settings.target_gameweek,
     )
-    models, _ = train_models(settings, features)
+    if settings.opening_multiseason_training:
+        # Keep the same certified, absolute-PDK trainer throughout the season.
+        # After GW1, append only completed current-season rows with verified
+        # official Dunkest PDK labels; proxy targets and inference rows are excluded.
+        models, _training_features = train_multiseason_models(
+            settings, current_features=None if settings.target_gameweek == 1 else features
+        )
+    else:
+        models, _ = train_models(settings, features)
     return models, features

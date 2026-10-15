@@ -87,8 +87,19 @@ def coach_points_from_outcomes(
     overtime: bool | np.ndarray = False,
 ) -> float | np.ndarray:
     """Vectorized official Dunkest coach score for one or many game outcomes."""
+    coach_credit = float(coach_cr)
+    opponent_credit = float(opponent_coach_cr)
+    if not math.isfinite(coach_credit) or not math.isfinite(opponent_credit):
+        raise ValueError("Coach credits must be finite to calculate coach points.")
     team = np.asarray(team_pts, dtype=float)
     opponent = np.asarray(opp_pts, dtype=float)
+    valid_outcome = (
+        np.isfinite(team)
+        & np.isfinite(opponent)
+        & (team >= 0.0)
+        & (opponent >= 0.0)
+        & (team != opponent)
+    )
     margin = np.trunc(team - opponent)
     absolute_margin = np.abs(margin)
     won = margin > 0
@@ -112,9 +123,10 @@ def coach_points_from_outcomes(
     base -= np.where(team <= 95, 3.0, 0.0)
     base -= np.where(opponent >= 120, 3.0, 0.0)
 
-    difference = float(coach_cr) - float(opponent_coach_cr)
+    difference = coach_credit - opponent_credit
     higher = difference >= 0.0
     positive = coach_coefficient(abs(difference), higher, True)
     negative = coach_coefficient(abs(difference), higher, False)
     result = base * np.where(base >= 0.0, positive, negative)
+    result = np.where(valid_outcome, result, np.nan)
     return float(result) if result.ndim == 0 else result

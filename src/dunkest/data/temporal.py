@@ -11,10 +11,11 @@ class DataTiming:
 
 
 POST_MATCH_COLUMNS = {
-    "target_pdk", "target_min", "actual_pdk", "pdk", "plus",
+    "target_pdk", "target_pdk_official", "target_min", "actual_pdk", "pdk", "plus",
     "official_plusvalenza", "minutes", "min", "pts", "reb", "ast",
     "stl", "blk", "tov", "fgm", "fga", "ftm", "fta", "fg3m",
     "game_status_final", "final_score", "home_score", "away_score",
+    "pdk_official_raw", "pdk_official_valid", "gamevalidfordunkest",
 }
 
 

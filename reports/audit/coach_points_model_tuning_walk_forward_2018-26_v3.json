@@ -1,0 +1,168 @@
+{
+  "scope": "NBA regular season 2018-19 through 2025-26; strict chronological walk-forward",
+  "input": "data/processed/team_game_logs_2018-26_v1.parquet",
+  "model": "recency-weighted and league-shrunk team points for/against; win probability from normal approximation of point margin",
+  "fixed_prior_games": 8.0,
+  "candidate_half_lives_games": [
+    8.0,
+    15.0,
+    30.0
+  ],
+  "selection_rule": "minimum 2024-25 validation Brier score, log loss as tie-break; 2025-26 excluded from selection",
+  "validation_seasons": [
+    "2024-25"
+  ],
+  "final_holdout_seasons": [
+    "2025-26"
+  ],
+  "selected_half_life_games": 15.0,
+  "candidate_results": [
+    {
+      "half_life_games": 8.0,
+      "validation": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.21056849567847405,
+        "log_loss": 0.6091004794834829,
+        "accuracy": 0.6609756097560976,
+        "mean_predicted_home_win_probability": 0.5459889666529469,
+        "actual_home_win_rate": 0.5439024390243903,
+        "home_points_mae": 9.338125820223024,
+        "away_points_mae": 9.37847542425843,
+        "margin_mae": 11.218718820151814,
+        "mean_margin_bias": 0.2882170502836768
+      },
+      "final_holdout": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.20695061010926372,
+        "log_loss": 0.6020514889151825,
+        "accuracy": 0.6739837398373983,
+        "mean_predicted_home_win_probability": 0.5441968067501638,
+        "actual_home_win_rate": 0.5536585365853659,
+        "home_points_mae": 10.144901890358543,
+        "away_points_mae": 9.51081403282841,
+        "margin_mae": 11.573450071143428,
+        "mean_margin_bias": 0.2544084785021875
+      }
+    },
+    {
+      "half_life_games": 15.0,
+      "validation": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.20978332474752792,
+        "log_loss": 0.6066407721207492,
+        "accuracy": 0.6626016260162602,
+        "mean_predicted_home_win_probability": 0.5472124212563994,
+        "actual_home_win_rate": 0.5439024390243903,
+        "home_points_mae": 9.206788625084348,
+        "away_points_mae": 9.293337516697536,
+        "margin_mae": 11.10380238825148,
+        "mean_margin_bias": 0.2880277064673562
+      },
+      "final_holdout": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.20658207972394704,
+        "log_loss": 0.6013936562527806,
+        "accuracy": 0.6869918699186992,
+        "mean_predicted_home_win_probability": 0.5451044440337789,
+        "actual_home_win_rate": 0.5536585365853659,
+        "home_points_mae": 10.009055466388753,
+        "away_points_mae": 9.442757776644886,
+        "margin_mae": 11.44582970446835,
+        "mean_margin_bias": 0.2240080005005753
+      }
+    },
+    {
+      "half_life_games": 30.0,
+      "validation": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.21269487862205314,
+        "log_loss": 0.6134341618841951,
+        "accuracy": 0.6626016260162602,
+        "mean_predicted_home_win_probability": 0.5488350400288032,
+        "actual_home_win_rate": 0.5439024390243903,
+        "home_points_mae": 9.276043520713426,
+        "away_points_mae": 9.340769682496445,
+        "margin_mae": 11.139615432149427,
+        "mean_margin_bias": 0.30604017878358236
+      },
+      "final_holdout": {
+        "games": 1230,
+        "n": 1230,
+        "brier": 0.21038598139023193,
+        "log_loss": 0.6100349659120694,
+        "accuracy": 0.6821138211382114,
+        "mean_predicted_home_win_probability": 0.5469048502906904,
+        "actual_home_win_rate": 0.5536585365853659,
+        "home_points_mae": 9.955085764450368,
+        "away_points_mae": 9.471464691346958,
+        "margin_mae": 11.53395936531774,
+        "mean_margin_bias": 0.24570051951781646
+      }
+    }
+  ],
+  "selected_model_validation": {
+    "games": 1230,
+    "n": 1230,
+    "brier": 0.20978332474752792,
+    "log_loss": 0.6066407721207492,
+    "accuracy": 0.6626016260162602,
+    "mean_predicted_home_win_probability": 0.5472124212563994,
+    "actual_home_win_rate": 0.5439024390243903,
+    "home_points_mae": 9.206788625084348,
+    "away_points_mae": 9.293337516697536,
+    "margin_mae": 11.10380238825148,
+    "mean_margin_bias": 0.2880277064673562
+  },
+  "selected_model_final_holdout": {
+    "games": 1230,
+    "n": 1230,
+    "brier": 0.20658207972394704,
+    "log_loss": 0.6013936562527806,
+    "accuracy": 0.6869918699186992,
+    "mean_predicted_home_win_probability": 0.5451044440337789,
+    "actual_home_win_rate": 0.5536585365853659,
+    "home_points_mae": 10.009055466388753,
+    "away_points_mae": 9.442757776644886,
+    "margin_mae": 11.44582970446835,
+    "mean_margin_bias": 0.2240080005005753
+  },
+  "current_setting_half_life_15_validation": {
+    "games": 1230,
+    "n": 1230,
+    "brier": 0.20978332474752792,
+    "log_loss": 0.6066407721207492,
+    "accuracy": 0.6626016260162602,
+    "mean_predicted_home_win_probability": 0.5472124212563994,
+    "actual_home_win_rate": 0.5439024390243903,
+    "home_points_mae": 9.206788625084348,
+    "away_points_mae": 9.293337516697536,
+    "margin_mae": 11.10380238825148,
+    "mean_margin_bias": 0.2880277064673562
+  },
+  "current_setting_half_life_15_final_holdout": {
+    "games": 1230,
+    "n": 1230,
+    "brier": 0.20658207972394704,
+    "log_loss": 0.6013936562527806,
+    "accuracy": 0.6869918699186992,
+    "mean_predicted_home_win_probability": 0.5451044440337789,
+    "actual_home_win_rate": 0.5536585365853659,
+    "home_points_mae": 10.009055466388753,
+    "away_points_mae": 9.442757776644886,
+    "margin_mae": 11.44582970446835,
+    "mean_margin_bias": 0.2240080005005753
+  },
+  "selected_vs_current_validation_brier_delta": 0.0,
+  "selected_vs_current_holdout_brier_delta": 0.0,
+  "production_changed": false,
+  "limitations": [
+    "This audit evaluates the team score/base probability component, not current roster adjustments or injuries.",
+    "Only the recency half-life is tuned; the shrinkage prior remains fixed at 8 games.",
+    "The 2025-26 holdout is reported only after selecting the setting on 2024-25 validation."
+  ]
+}

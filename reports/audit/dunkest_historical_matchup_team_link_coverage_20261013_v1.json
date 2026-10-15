@@ -1,0 +1,89 @@
+{
+  "generated_at_utc": "2026-10-13T11:40:47.318118+00:00",
+  "source_rows": 93785,
+  "legacy_unique_player_date_links": 64996,
+  "corrected_unique_valid_game_date_links": 93316,
+  "round_groups": 779,
+  "round_readiness_comparison": {
+    "ready_both": 768,
+    "corrected_only": 10,
+    "ready_neither": 1
+  },
+  "legacy_ready_rounds": 768,
+  "corrected_ready_rounds": 778,
+  "both_ready_date_agreement": 768,
+  "both_ready_date_disagreement": 0,
+  "legacy_rows_with_opponent": 90219,
+  "corrected_rows_with_opponent": 93284,
+  "opponent_row_gain_distribution": {
+    "0": 89818,
+    "1": 3516,
+    "-1": 451
+  },
+  "per_season": [
+    {
+      "season_id": "13",
+      "legacy_ready_rounds": 150,
+      "corrected_ready_rounds": 153,
+      "corrected_only_rounds": 3,
+      "rows": 18927,
+      "legacy_opponent_rows": 18279,
+      "corrected_opponent_rows": 18774,
+      "rows_team_mismatch_link": 1439
+    },
+    {
+      "season_id": "19",
+      "legacy_ready_rounds": 155,
+      "corrected_ready_rounds": 158,
+      "corrected_only_rounds": 3,
+      "rows": 19590,
+      "legacy_opponent_rows": 18882,
+      "corrected_opponent_rows": 19486,
+      "rows_team_mismatch_link": 1548
+    },
+    {
+      "season_id": "5",
+      "legacy_ready_rounds": 140,
+      "corrected_ready_rounds": 140,
+      "corrected_only_rounds": 0,
+      "rows": 17681,
+      "legacy_opponent_rows": 17035,
+      "corrected_opponent_rows": 17589,
+      "rows_team_mismatch_link": 1396
+    },
+    {
+      "season_id": "7",
+      "legacy_ready_rounds": 161,
+      "corrected_ready_rounds": 165,
+      "corrected_only_rounds": 4,
+      "rows": 18422,
+      "legacy_opponent_rows": 17619,
+      "corrected_opponent_rows": 18353,
+      "rows_team_mismatch_link": 1691
+    },
+    {
+      "season_id": "9",
+      "legacy_ready_rounds": 162,
+      "corrected_ready_rounds": 162,
+      "corrected_only_rounds": 0,
+      "rows": 19165,
+      "legacy_opponent_rows": 18404,
+      "corrected_opponent_rows": 19082,
+      "rows_team_mismatch_link": 1754
+    }
+  ],
+  "method": "Legacy date inference uses season+canonical player+source team+rounded target PDK against official-valid Dunkest per-game records, as in the v6 feature builder. Corrected date inference uses the versioned full-stat link dataset, restricted to observed gameValidForDunkest=True unique links. Both use the same >=10 links and >=75% dominant-date threshold. Opponent is looked up from team_game_logs using the round target date and (legacy source team or corrected linked NBA team).",
+  "guardrails": [
+    "This is a coverage audit, not model tuning or a claim that weekly rows are pre-lock snapshots.",
+    "The linked dataset does not infer missing NBA teams; those rows cannot contribute team-specific opponent features.",
+    "No production code/config, source labels, temporal splits, or frozen holdout changed.",
+    "Frozen 2026/27 GW1 holdout remains untouched until 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "rows_csv": "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1_rows.csv",
+    "rounds_csv": "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1_rounds.csv",
+    "json": "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1.json",
+    "markdown": "reports/audit/dunkest_historical_matchup_team_link_coverage_20261013_v1.md"
+  },
+  "production_changed": false
+}

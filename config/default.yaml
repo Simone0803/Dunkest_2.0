@@ -7,6 +7,10 @@ max_cr: 35.0
 transfer_penalty: 5.0
 max_from_same_nba_team: 3
 model_type: ensemble
+training_target: target_pdk_official
+opening_multiseason_training: true
+# Blend weight for the separately validated historical game-level PDK model (0 disables).
+historical_pdk_blend_weight: 0.20
 rolling_windows: [3, 5, 10, 15]
 use_betting_lines: false
 use_injuries: true

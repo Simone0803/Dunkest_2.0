@@ -1,0 +1,3 @@
+# V7 supersession note
+
+V7 established a zero-inclusive, past-only calibrated lineup challenger. V8 preserves that strategy but adds a separate expanded scoring sensitivity: official weekly-round score first, valid game-level score fallback, and zero only when an explicit `gameValidForDunkest=False` row exists. Players with no weekly or game-level record remain unknown. The expanded sensitivity yields 13 paired rounds and a season-stratified bootstrap 95% CI of [-4.46, +18.45] PDK, which crosses zero. Use V8 and the consolidated V2 report for the latest scoring audit; do not treat the broader zero-for-missing proxy as certified strategy superiority.

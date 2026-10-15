@@ -1,11 +1,12 @@
 import hashlib
 import json
-import json
 
 import pandas as pd
+import pytest
 
 from dunkest.config import Settings
-from dunkest.report.artifacts import save_run_artifacts
+from dunkest.pipeline.season_opener import _model_artifact_metadata
+from dunkest.report.artifacts import save_post_match_snapshot, save_run_artifacts
 
 
 def test_run_manifest_captures_reproducibility_metadata(tmp_path):
@@ -25,10 +26,37 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     )
     market_file = tmp_path / "current_lineups_market.csv"
     market_file.write_text("player_name,cr\nPlayer One,8.0\n", encoding="utf-8")
+    market_meta = {"fetched_at": "2026-10-12T20:47:03+00:00", "source": "official-lineups-api"}
+    market_file.with_name(market_file.name + ".meta.json").write_text(
+        json.dumps(market_meta), encoding="utf-8"
+    )
+    availability_file = tmp_path / "lineups_availability.csv"
+    availability_file.write_text(
+        "player_name,team,status,dunkest_turn,observed_at_utc\n"
+        "Player One,BOS,OUT,1,2026-10-12T20:40:00+00:00\n",
+        encoding="utf-8",
+    )
+    availability_meta = {
+        "fetched_at": "2026-10-12T20:47:04+00:00",
+        "source": "dunkest_lineups_browser_availability",
+        "dunkest_turn": 1,
+        "rows": 1,
+        "rows_observed_at_utc": 1,
+    }
+    availability_file.with_name(availability_file.name + ".meta.json").write_text(
+        json.dumps(availability_meta), encoding="utf-8"
+    )
     models = {
         "ridge": object(),
         "rf": object(),
         "_feature_cols": ["pdk_mean_5", "rest_days"],
+        "_training_target": "target_pdk_official",
+        "_training_target_source": "official_dunkest_pdk",
+        "_training_rows": 1800,
+        "_training_rows_before_target_filter": 2200,
+        "_official_labels_available_before_filter": 1800,
+        "_training_date_min_utc": "2025-10-01T00:00:00+00:00",
+        "_training_date_max_utc": "2026-04-12T00:00:00+00:00",
         "_weights": {"ridge": 0.75, "rf": 0.25},
         "_projection_weights": {"minutes": 0.6, "ensemble": 0.4, "prior": 0.0},
         "_calibration_samples": 120,
@@ -38,9 +66,17 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
         "_interval_diagnostic_scope": "cross-fitted cohort diagnostic",
     }
 
-    output = save_run_artifacts(settings, pd.DataFrame(), [], models)
+    run_metadata = {
+        "credit_proxy_reference_rows": 42,
+        "credit_proxy_reference_source": "prior_season_game_logs_official_pdk_mean_with_proxy_fallback",
+        "plusvalenza_reference_incomplete_seasons": ["16", "22", "25"],
+    }
+    output = save_run_artifacts(
+        settings, pd.DataFrame(), [], models, run_metadata=run_metadata
+    )
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
 
+    assert manifest["run_metadata"] == run_metadata
     assert manifest["configuration"]["random_state"] == 19
     assert manifest["random_seed"] == 19
     assert len(manifest["config_sha256"]) == 64
@@ -55,6 +91,13 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert manifest["configuration"]["rolling_windows"] == [3, 7]
     assert manifest["model_details"]["effective_models"] == ["rf", "ridge"]
     assert manifest["model_details"]["feature_columns"] == ["pdk_mean_5", "rest_days"]
+    assert manifest["model_details"]["training_target"] == "target_pdk_official"
+    assert manifest["model_details"]["training_target_source"] == "official_dunkest_pdk"
+    assert manifest["model_details"]["training_rows"] == 1800
+    assert manifest["model_details"]["training_rows_before_target_filter"] == 2200
+    assert manifest["model_details"]["official_labels_available_before_filter"] == 1800
+    assert manifest["model_details"]["training_date_min_utc"] == "2025-10-01T00:00:00+00:00"
+    assert manifest["model_details"]["training_date_max_utc"] == "2026-04-12T00:00:00+00:00"
     assert manifest["model_details"]["model_weights"] == {"ridge": 0.75, "rf": 0.25}
     assert manifest["model_details"]["calibration_samples"] == 120
     assert manifest["model_details"]["interval_diagnostics"] == [
@@ -78,3 +121,111 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert input_hashes["current_lineups_market.csv"] == hashlib.sha256(
         b"player_name,cr\nPlayer One,8.0\n"
     ).hexdigest()
+    snapshot_entries = {
+        entry["path"]: entry for entry in manifest["pre_match_snapshot"]["files"]
+    }
+    meta_name = "current_lineups_market.csv.meta.json"
+    assert meta_name in snapshot_entries
+    archived_meta = output / "pre_match_snapshot" / meta_name
+    assert json.loads(archived_meta.read_text(encoding="utf-8"))["fetched_at"] == (
+        "2026-10-12T20:47:03+00:00"
+    )
+    assert snapshot_entries[meta_name]["sha256"] == hashlib.sha256(
+        archived_meta.read_bytes()
+    ).hexdigest()
+    availability_meta_name = "lineups_availability.csv.meta.json"
+    assert availability_meta_name in snapshot_entries
+    archived_availability_meta = output / "pre_match_snapshot" / availability_meta_name
+    assert json.loads(archived_availability_meta.read_text(encoding="utf-8"))["source"] == (
+        "dunkest_lineups_browser_availability"
+    )
+    assert snapshot_entries[availability_meta_name]["sha256"] == hashlib.sha256(
+        archived_availability_meta.read_bytes()
+    ).hexdigest()
+
+
+def test_season_opener_manifest_keeps_training_provenance(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), target_gameweek=1)
+    models = {
+        "ridge": object(),
+        "rf": object(),
+        "_feature_cols": ["pdk_mean_5", "rest_days"],
+        "_training_target": "target_pdk_official",
+        "_training_target_source": "official_dunkest_pdk",
+        "_training_rows": 18141,
+        "_training_rows_before_target_filter": 24100,
+        "_official_labels_available_before_filter": 24052,
+        "_training_date_min_utc": "2025-10-01T00:00:00+00:00",
+        "_training_date_max_utc": "2026-04-12T00:00:00+00:00",
+        "_weights": {"ridge": 0.6, "rf": 0.4},
+        "_projection_weights": {"minutes": 0.5, "ensemble": 0.4, "prior": 0.1},
+        "_calibration_samples": 300,
+        "_interval_diagnostics": [],
+        "_interval_diagnostic_scope": "cross-fitted diagnostic",
+    }
+    artifact_models = _model_artifact_metadata(models)
+    output = save_run_artifacts(settings, pd.DataFrame(), [], artifact_models)
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    details = manifest["model_details"]
+
+    assert details["effective_models"] == ["rf", "ridge"]
+    assert details["training_target"] == "target_pdk_official"
+    assert details["training_target_source"] == "official_dunkest_pdk"
+    assert details["training_rows"] == 18141
+    assert details["training_rows_before_target_filter"] == 24100
+    assert details["official_labels_available_before_filter"] == 24052
+    assert details["feature_columns"] == ["pdk_mean_5", "rest_days"]
+    assert details["model_weights"] == {"ridge": 0.6, "rf": 0.4}
+    assert details["projection_weights"] == {"minutes": 0.5, "ensemble": 0.4, "prior": 0.1}
+    assert details["calibration_samples"] == 300
+
+
+def test_post_match_snapshot_archives_hashes_and_evaluation_provenance(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season="2026-27", season_id="26")
+    player_results = pd.DataFrame([{
+        "player_name": "Player One", "nba_game_id": "game-1", "actual_pdk": 12.5,
+    }])
+    coach_results = pd.DataFrame([{
+        "coach": "Coach One", "nba_game_id": "game-1", "actual_coach_pdk": 18.0,
+    }])
+
+    archive = save_post_match_snapshot(
+        settings,
+        1,
+        player_results,
+        coach_results,
+        source="official player results + verified coach scoring formula",
+        metadata={
+            "run_id": "run-1",
+            "source_files": {"players": "official_results.parquet"},
+            "coverage_audit": {"player": 1.0, "coach": 1.0},
+        },
+    )
+
+    manifest = json.loads((archive / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["run_id"] == "run-1"
+    assert manifest["source_files"]["players"] == "official_results.parquet"
+    assert manifest["coverage_audit"] == {"player": 1.0, "coach": 1.0}
+    assert manifest["sha256"]["player_results.parquet"] == hashlib.sha256(
+        (archive / "player_results.parquet").read_bytes()
+    ).hexdigest()
+    assert manifest["sha256"]["coach_results.parquet"] == hashlib.sha256(
+        (archive / "coach_results.parquet").read_bytes()
+    ).hexdigest()
+    pd.testing.assert_frame_equal(
+        pd.read_parquet(archive / "player_results.parquet"), player_results
+    )
+
+
+def test_post_match_snapshot_rejects_reserved_metadata_before_creating_archive(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    with pytest.raises(ValueError, match="cannot override reserved fields"):
+        save_post_match_snapshot(
+            settings,
+            1,
+            pd.DataFrame(),
+            pd.DataFrame(),
+            source="official results",
+            metadata={"sha256": {"fake": "hash"}},
+        )
+    assert not (tmp_path / "archive").exists()

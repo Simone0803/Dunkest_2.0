@@ -1,0 +1,122 @@
+{
+  "scope": "2025-26 season; strict date-level walk-forward; all games on a date forecast before any results from that date are added",
+  "input": "data/processed/team_game_logs_2025-26.parquet",
+  "total_forecast_games": 1228,
+  "chronological_calibration_holdout": {
+    "train_period_end_exclusive": "2026-02-22",
+    "holdout_start_inclusive": "2026-02-22",
+    "train_games": 842,
+    "holdout_games": 386,
+    "raw_holdout": {
+      "n": 386,
+      "brier": 0.17913471420896412,
+      "log_loss": 0.5397496488460499,
+      "accuracy": 0.7590673575129534,
+      "mean_predicted_probability": 0.5356360306876261,
+      "actual_win_rate": 0.572538860103627,
+      "mean_absolute_probability_error": 0.39239564142340605
+    },
+    "platt_calibrated_holdout": {
+      "n": 386,
+      "brier": 0.17810262461713997,
+      "log_loss": 0.5371441435794241,
+      "accuracy": 0.7616580310880829,
+      "mean_predicted_probability": 0.5386806813446557,
+      "actual_win_rate": 0.572538860103627,
+      "mean_absolute_probability_error": 0.38952643296872946
+    },
+    "platt_parameters": {
+      "slope": 1.030478913236039,
+      "intercept": 0.010713479995772521
+    },
+    "deployment_decision": "diagnostic only; do not deploy from a single-season split"
+  },
+  "forecast_date_range": [
+    "2025-10-22",
+    "2026-04-12"
+  ],
+  "first_10_calendar_days_excluded_from_primary": "No; primary metrics include all games, with a separate >=5 prior games/team cohort",
+  "all_games": {
+    "n": 1228,
+    "brier": 0.20780395249039535,
+    "log_loss": 0.603941669936103,
+    "accuracy": 0.6848534201954397,
+    "mean_predicted_probability": 0.540626068427969,
+    "actual_win_rate": 0.5545602605863192,
+    "mean_absolute_probability_error": 0.42792633092678106
+  },
+  "teams_with_at_least_5_prior_games": {
+    "n": 1151,
+    "brier": 0.20623931734764867,
+    "log_loss": 0.600583661778678,
+    "accuracy": 0.6889661164205039,
+    "mean_predicted_probability": 0.5411301220918282,
+    "actual_win_rate": 0.5516941789748045,
+    "mean_absolute_probability_error": 0.4248188197034252
+  },
+  "constant_50_percent_baseline_brier": 0.25,
+  "constant_50_percent_baseline_log_loss": 0.6931471805599453,
+  "margin_mae": 11.436926677018413,
+  "margin_rmse": 14.56201652852539,
+  "calibration_bins": [
+    {
+      "bin": "(0.1, 0.2]",
+      "n": 26,
+      "mean_predicted": 0.1670754706101924,
+      "actual_win_rate": 0.07692307692307693
+    },
+    {
+      "bin": "(0.2, 0.3]",
+      "n": 82,
+      "mean_predicted": 0.2590742287993288,
+      "actual_win_rate": 0.25609756097560976
+    },
+    {
+      "bin": "(0.3, 0.4]",
+      "n": 154,
+      "mean_predicted": 0.3567017769069354,
+      "actual_win_rate": 0.3051948051948052
+    },
+    {
+      "bin": "(0.4, 0.5]",
+      "n": 240,
+      "mean_predicted": 0.4570127880670431,
+      "actual_win_rate": 0.42916666666666664
+    },
+    {
+      "bin": "(0.5, 0.6]",
+      "n": 285,
+      "mean_predicted": 0.549070444473423,
+      "actual_win_rate": 0.6035087719298246
+    },
+    {
+      "bin": "(0.6, 0.7]",
+      "n": 203,
+      "mean_predicted": 0.6476708319642546,
+      "actual_win_rate": 0.6995073891625616
+    },
+    {
+      "bin": "(0.7, 0.8]",
+      "n": 150,
+      "mean_predicted": 0.7424844577691156,
+      "actual_win_rate": 0.8066666666666666
+    },
+    {
+      "bin": "(0.8, 0.9]",
+      "n": 81,
+      "mean_predicted": 0.8391536164843326,
+      "actual_win_rate": 0.8395061728395061
+    },
+    {
+      "bin": "(0.9, 1.0]",
+      "n": 7,
+      "mean_predicted": 0.9113218697300012,
+      "actual_win_rate": 0.7142857142857143
+    }
+  ],
+  "limitations": [
+    "Single-season diagnostic, not sufficient to tune or deploy a probability calibration.",
+    "The walk-forward forecast models points scored/allowed; it does not include the current roster adjustment or archived pre-match injury reports.",
+    "Probabilities use a normal approximation to score-margin uncertainty, not the exact production Monte Carlo."
+  ]
+}

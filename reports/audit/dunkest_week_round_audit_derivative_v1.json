@@ -1,0 +1,54 @@
+{
+  "generated_utc": "2026-10-12T15:04:32.988791+00:00",
+  "artifact_type": "audit-only derivative; not a certified clean dataset",
+  "source_directory": "data/raw/dunkest_history_v2",
+  "derivative_path": "data/processed/dunkest_week_round_audit_derivative_v1.parquet",
+  "file_manifest_csv": "reports/audit/dunkest_week_round_audit_derivative_v1_files.csv",
+  "source_files_found": 1558,
+  "source_files_included": 1556,
+  "source_files_excluded_confirmed_quarantine": 2,
+  "source_rows_excluded": 236,
+  "derivative_rows": 187334,
+  "source_bytes_read": 60068585,
+  "derivative_bytes": 4987883,
+  "source_status_counts": {
+    "not_flagged_by_current_scan_not_certified": 1496,
+    "isolated_signature_candidate_review_only": 60,
+    "confirmed_cross_season_contamination_quarantine": 2
+  },
+  "exact_isolated_signature_candidates": 4,
+  "exact_candidate_rows_flagged_in_derivative": 8,
+  "confirmed_quarantine_files": [
+    "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+    "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet"
+  ],
+  "excluded_source_scopes": [
+    {
+      "source_file": "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+      "source_rows": 118,
+      "status": "confirmed_cross_season_contamination_quarantine",
+      "reason": "15-player PHI-MIN cluster from NBA season 2021-22 found in a source scope labelled season ID 5 / expected 2020-21"
+    },
+    {
+      "source_file": "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet",
+      "source_rows": 118,
+      "status": "confirmed_cross_season_contamination_quarantine",
+      "reason": "15-player PHI-MIN cluster from NBA season 2021-22 found in a source scope labelled season ID 5 / expected 2020-21"
+    }
+  ],
+  "rules": [
+    "No raw file was changed.",
+    "Only the two confirmed season-5/week-43/round-2 avg/tot files are excluded.",
+    "All other files are retained with source path and audit status.",
+    "Four isolated exact-signature candidates are row-flagged in both avg/tot where present; their files are not excluded.",
+    "Every row is explicitly marked audit_only_not_certified=True and eligible_for_training_from_this_derivative=False.",
+    "Absence from current candidate scans is not evidence of clean season scope."
+  ],
+  "not_for": [
+    "training",
+    "official target construction",
+    "backtest labels",
+    "production use"
+  ],
+  "source_manifest": "reports/audit/dunkest_week_round_quarantine_manifest_v2.json"
+}

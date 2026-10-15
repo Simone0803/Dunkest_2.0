@@ -1,0 +1,53 @@
+{
+  "title": "Official PDK production target-selection review",
+  "date": "2026-10-12",
+  "scope": "Read-only inspection of the current training target selector and 2025/26 official PDK overlay.",
+  "resolved_default_settings": {
+    "season": "2026-27",
+    "season_id": "26",
+    "feature_season": "2025-26",
+    "training_target": "auto"
+  },
+  "overlay_path": "data/processed/player_game_logs_2025-26_official_pdk_overlay_v4.parquet",
+  "overlay_counts": {
+    "overlay_rows": 24424,
+    "official_finite_labels": 18412,
+    "valid_flag_true_rows": 18412,
+    "valid_true_without_official_label": 0,
+    "duplicate_identity_keys": 0,
+    "wider_raw_official_valid_true_rows": 21889,
+    "verified_matched_valid_true_rows": 18412,
+    "valid_true_rows_not_in_verified_match": 3477
+  },
+  "code_path": [
+    {
+      "file": "src/dunkest/pipeline/train.py",
+      "finding": "Attaches official PDK labels before feature generation."
+    },
+    {
+      "file": "src/dunkest/models/predictor.py",
+      "finding": "training_target=auto selects target_pdk_official when at least 1,000 finite official labels exist; otherwise it falls back to target_pdk."
+    },
+    {
+      "file": "src/dunkest/features/builder.py",
+      "finding": "target_pdk_official is carried as an outcome column, not included in the model feature whitelist; rolling PDK features are still computed from the PDK proxy column."
+    },
+    {
+      "file": "scripts/build_dunkest_pdk_training_dataset_v3.py",
+      "finding": "The isolated historical experiment instead rebuilds PDK lags chronologically from prior official target_pdk rows."
+    }
+  ],
+  "test_result": {
+    "command": "PYTHONPATH=\"$PWD/src\" .venv/bin/python -m pytest -q tests/test_official_pdk_labels.py tests/test_temporal_validation.py tests/test_reliability_regressions.py",
+    "passed": 16,
+    "failed": 0
+  },
+  "interpretation": [
+    "The current default is auto, not proxy-only. With 18,412 finite official labels in the verified NBA-matched overlay, the production training selector is eligible to choose official labels by default when those labels are attached.",
+    "The wider raw official Dunkest feed contains 21,889 gameValidForDunkest=True rows. The strict matched source contains 18,412 valid rows; 3,477 valid official-source rows did not enter the verified NBA player/date/opponent match and are excluded from the experimental training set rather than force-matched.",
+    "In the local 2025/26 overlay, 18,412 rows are marked gameValidForDunkest=True and all 18,412 have finite PDK_OFFICIAL_VALID; the 5,369 false rows and 643 unmatched rows have no finite official target.",
+    "The official label is not included in FEATURE_COLS, so it is not itself a predictor. However, the production builder still creates historical PDK rolling features from the proxy PDK column; this differs from the isolated V3 experiment, which rebuilds lags from prior official PDK targets.",
+    "Prior project direction was to keep the proxy as the default and leave production behavior unchanged while official schedule/target semantics are still being verified. I did not change config/default.yaml or production code; this remains a configuration decision to resolve before enabling official targets in production."
+  ],
+  "safety": "Read-only audit; no code, source parquet, official labels, model artefacts, temporal splits, or backtests were changed."
+}

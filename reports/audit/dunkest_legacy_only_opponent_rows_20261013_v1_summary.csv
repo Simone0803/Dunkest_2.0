@@ -1,0 +1,15 @@
+season_id,row_class,rows
+13,NBA_team_differs_from_source_team,5
+13,exact_boxscore_pdk_team_and_opponent_confirmed,137
+19,NBA_team_differs_from_source_team,7
+19,exact_boxscore_pdk_team_and_opponent_confirmed,92
+5,NBA_team_differs_from_source_team,2
+5,exact_boxscore_pdk_team_and_opponent_confirmed,54
+5,multi_game_aggregate_not_single_game,6
+5,no_player_game_record_on_date,10
+5,team_and_opponent_confirmed_but_signature_differs,2
+7,NBA_team_differs_from_source_team,2
+7,exact_boxscore_pdk_team_and_opponent_confirmed,57
+7,no_player_game_record_on_date,5
+9,NBA_team_differs_from_source_team,7
+9,exact_boxscore_pdk_team_and_opponent_confirmed,65

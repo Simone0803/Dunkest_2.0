@@ -77,3 +77,22 @@ def test_vectorized_coach_score_matches_rule_thresholds_and_overtime():
     assert values.tolist() == pytest.approx([
         38.0 * 0.87, -26.0 / 0.87, 18.0 * 0.87, -10.0 / 0.87
     ])
+
+
+def test_coach_scoring_preserves_invalid_or_unfinished_outcomes_as_missing():
+    values = coach_points_from_outcomes(
+        [110.0, float("nan"), 100.0, -1.0],
+        [100.0, 100.0, 100.0, 90.0],
+        8.0,
+        8.0,
+    )
+
+    assert values[0] == 18.0
+    assert pd.isna(values[1])
+    assert pd.isna(values[2])  # A tied NBA score is not a final outcome.
+    assert pd.isna(values[3])
+
+
+def test_coach_scoring_rejects_missing_pregame_credits():
+    with pytest.raises(ValueError, match="Coach credits must be finite"):
+        coach_points_from_game(110.0, 100.0, float("nan"), 8.0)

@@ -1,0 +1,163 @@
+{
+  "generated_utc": "2026-10-12T15:05:27.838803+00:00",
+  "status": "read-only source-scope audit; no production changes",
+  "latest_test_result": {
+    "tests_passed": 213,
+    "tests_failed": 0,
+    "warnings": 6800,
+    "command": "PYTHONPATH=src .venv/bin/pytest -q",
+    "exit_code": 0
+  },
+  "confirmed_contamination": {
+    "source_season_id": "5",
+    "expected_season": "2020-21",
+    "actual_nba_season": "2021-22",
+    "week": 43,
+    "round": "2",
+    "game_id": "0022100292",
+    "date": "2021-11-27",
+    "matchup": "PHI-MIN",
+    "unique_players": 15,
+    "source_files": [
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet"
+    ],
+    "live_api_reproduced": true,
+    "pdk_match_count": 15
+  },
+  "endpoint_scope_test": {
+    "scopes_queried": 14,
+    "errors": 0,
+    "season5_week43_round2_avg_rows": 118,
+    "season5_week43_round2_tot_rows": 118,
+    "season7_week43_round2_avg_rows": 143,
+    "season7_week43_round2_tot_rows": 143,
+    "minimal_vs_full_avg_hash_equal": true,
+    "minimal_vs_full_tot_hash_equal": true,
+    "root_cause": "unresolved; server-side source/query behavior is suspected, but cache/join/backend implementation cannot be distinguished from public response alone"
+  },
+  "isolated_exact_signature_candidates": [
+    {
+      "source_file_avg": "data/raw/dunkest_history_v2/season_13_week_20_round_1_avg.parquet",
+      "source_file_tot": "data/raw/dunkest_history_v2/season_13_week_20_round_1_tot.parquet",
+      "table_season_id": "13",
+      "expected_season": "2023-24",
+      "actual_nba_season": "2024-25",
+      "nba_game_date": "2025-01-10",
+      "nba_game_id": "0022400528",
+      "nba_matchup": "BOS vs. SAC",
+      "player_name": "Jaden Springer",
+      "team_code": "BOS",
+      "table_pdk": 0.0,
+      "official_history_pdk_values": "0.0",
+      "pdk_matches_at_one_decimal_half_up": true,
+      "status": "isolated_exact_signature_candidate_review_only",
+      "action": "Manual review only; do not exclude file or row automatically."
+    },
+    {
+      "source_file_avg": "data/raw/dunkest_history_v2/season_5_week_40_round_3_avg.parquet",
+      "source_file_tot": "data/raw/dunkest_history_v2/season_5_week_40_round_3_tot.parquet",
+      "table_season_id": "5",
+      "expected_season": "2020-21",
+      "actual_nba_season": "2021-22",
+      "nba_game_date": "2022-03-14",
+      "nba_game_id": "0022101025",
+      "nba_matchup": "GSW vs. WAS",
+      "player_name": "Juan Toscano-Anderson",
+      "team_code": "GSW",
+      "table_pdk": -3.0,
+      "official_history_pdk_values": "3.0",
+      "pdk_matches_at_one_decimal_half_up": false,
+      "status": "isolated_exact_signature_candidate_review_only",
+      "action": "Manual review only; do not exclude file or row automatically."
+    },
+    {
+      "source_file_avg": "data/raw/dunkest_history_v2/season_5_week_53_round_2_avg.parquet",
+      "source_file_tot": "data/raw/dunkest_history_v2/season_5_week_53_round_2_tot.parquet",
+      "table_season_id": "5",
+      "expected_season": "2020-21",
+      "actual_nba_season": "2021-22",
+      "nba_game_date": "2022-02-04",
+      "nba_game_id": "0022100794",
+      "nba_matchup": "NOP @ DEN",
+      "player_name": "Nickeil Alexander-Walker",
+      "team_code": "NOP",
+      "table_pdk": 13.0,
+      "official_history_pdk_values": "13.0",
+      "pdk_matches_at_one_decimal_half_up": true,
+      "status": "isolated_exact_signature_candidate_review_only",
+      "action": "Manual review only; do not exclude file or row automatically."
+    },
+    {
+      "source_file_avg": "data/raw/dunkest_history_v2/season_9_week_40_round_2_avg.parquet",
+      "source_file_tot": "data/raw/dunkest_history_v2/season_9_week_40_round_2_tot.parquet",
+      "table_season_id": "9",
+      "expected_season": "2022-23",
+      "actual_nba_season": "2023-24",
+      "nba_game_date": "2024-02-10",
+      "nba_game_id": "0022300750",
+      "nba_matchup": "SAS @ BKN",
+      "player_name": "Sandro Mamukelashvili",
+      "team_code": "SAS",
+      "table_pdk": 2.1,
+      "official_history_pdk_values": "2.0",
+      "pdk_matches_at_one_decimal_half_up": false,
+      "status": "isolated_exact_signature_candidate_review_only",
+      "action": "Manual review only; do not exclude file or row automatically."
+    }
+  ],
+  "other_candidate_note": "45 broad cross-season candidates were screened; only four isolated rows passed the strict full 15-field exact signature check. The confirmed 15-player cluster is reported separately. A further Sandro Mamukelashvili candidate at season 9/week 20/round 2 differs on 3PA and remains review-only.",
+  "actions_taken": [
+    "Added a read-only public endpoint scope audit script and reports.",
+    "Added a v2 quarantine/review manifest with explicit details for four isolated exact-signature candidates.",
+    "Kept the confirmed PHI-MIN scope as the only quarantine decision.",
+    "Built a separate 187,334-row audit-only derivative with source provenance and explicit review/training safety flags.",
+    "Re-ran the full project test suite after creating the derivative: 213 passed, 0 failed."
+  ],
+  "not_changed": [
+    "Original source Parquets",
+    "Existing manifest v1",
+    "PDK targets and validity flags",
+    "Training features/models/config",
+    "Temporal splits and backtests",
+    "Original weekly-round Parquet files (all preserved)"
+  ],
+  "next_step": "If building a clean derivative, exclude only the two confirmed season-5/week-43/round-2 source files pending reconciliation, preserve provenance, and keep all isolated candidates in a review table. Do not use the weekly-round archive as a verified season-specific per-game target source until endpoint behavior is resolved.",
+  "version": "v6",
+  "audit_only_derivative": {
+    "artifact_type": "audit-only derivative; not a certified clean dataset",
+    "derivative_path": "data/processed/dunkest_week_round_audit_derivative_v1.parquet",
+    "file_manifest_csv": "reports/audit/dunkest_week_round_audit_derivative_v1_files.csv",
+    "source_files_found": 1558,
+    "source_files_included": 1556,
+    "source_files_excluded_confirmed_quarantine": 2,
+    "source_rows_excluded": 236,
+    "derivative_rows": 187334,
+    "derivative_bytes": 4987883,
+    "source_status_counts": {
+      "not_flagged_by_current_scan_not_certified": 1496,
+      "isolated_signature_candidate_review_only": 60,
+      "confirmed_cross_season_contamination_quarantine": 2
+    },
+    "exact_isolated_signature_candidates": 4,
+    "exact_candidate_rows_flagged_in_derivative": 8,
+    "confirmed_quarantine_files": [
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_avg.parquet",
+      "data/raw/dunkest_history_v2/season_5_week_43_round_2_tot.parquet"
+    ],
+    "rules": [
+      "No raw file was changed.",
+      "Only the two confirmed season-5/week-43/round-2 avg/tot files are excluded.",
+      "All other files are retained with source path and audit status.",
+      "Four isolated exact-signature candidates are row-flagged in both avg/tot where present; their files are not excluded.",
+      "Every row is explicitly marked audit_only_not_certified=True and eligible_for_training_from_this_derivative=False.",
+      "Absence from current candidate scans is not evidence of clean season scope."
+    ],
+    "not_for": [
+      "training",
+      "official target construction",
+      "backtest labels",
+      "production use"
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "generated_at_utc": "2026-10-13T10:07:21.127376+00:00",
+  "data": "data/processed/player_game_logs_2025-26.parquet",
+  "official_overlay_rows": 18412,
+  "label_policy": "Explicit verified official PDK target; no proxy-target fallback. PDK history challenger uses official PDK where present and the original proxy only for unmatched rows.",
+  "feature_policy": "Production build_feature_matrix and train_models reused unchanged. Each variant receives the same official supervised targets; only the PDK values available to rolling history/baseline feature generation differ.",
+  "feature_audits": {
+    "proxy_history": {
+      "feature_rows": 24905,
+      "finite_official_targets": 18412,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_mean_15",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "pdk_per_min_season",
+        "player_opp_pdk_per_min",
+        "expected_pdk_minutes_model"
+      ],
+      "target_date_max": "2026-04-13 00:00:00"
+    },
+    "official_history_with_proxy_fallback": {
+      "feature_rows": 24905,
+      "finite_official_targets": 18412,
+      "feature_columns": [
+        "pdk_mean_3",
+        "pdk_mean_5",
+        "pdk_mean_10",
+        "pdk_mean_15",
+        "pdk_std_5",
+        "pdk_median_5",
+        "pdk_season_mean",
+        "pdk_per_min_season",
+        "player_opp_pdk_per_min",
+        "expected_pdk_minutes_model"
+      ],
+      "target_date_max": "2026-04-13 00:00:00"
+    }
+  },
+  "metrics": [
+    {
+      "mode": "proxy_history",
+      "n_oof": 7407,
+      "mae": 7.552929505258768,
+      "rmse": 9.838438159350869,
+      "bias_pred_minus_actual": -0.18516678442211068,
+      "actual_mean": 16.073944916970433,
+      "predicted_mean": 15.888778132548321,
+      "within_3_pdk_pct": 25.826920480626438,
+      "within_5_pdk_pct": 42.25732415282841,
+      "selected_model_weights": "{\"gbr\": 0.3331292739151731, \"rf\": 0.33315720410494887, \"ridge\": 0.333713521979878}",
+      "projection_weights": "{\"ensemble\": 0.8681170814706702, \"minutes\": 0.0, \"prior\": 0.13188291852932976}",
+      "official_target_rows_in_matrix": 18412
+    },
+    {
+      "mode": "official_history_with_proxy_fallback",
+      "n_oof": 7407,
+      "mae": 7.546926969241987,
+      "rmse": 9.83104807895938,
+      "bias_pred_minus_actual": -0.20148978182589794,
+      "actual_mean": 16.073944916970433,
+      "predicted_mean": 15.872455135144534,
+      "within_3_pdk_pct": 25.853921965708114,
+      "within_5_pdk_pct": 42.54083974618604,
+      "selected_model_weights": "{\"gbr\": 0.33351455913377437, \"rf\": 0.3331197342545641, \"ridge\": 0.33336570661166154}",
+      "projection_weights": "{\"ensemble\": 0.8629595492937259, \"minutes\": 1.4408721704215776e-18, \"prior\": 0.13704045070627408}",
+      "official_target_rows_in_matrix": 18412
+    }
+  ],
+  "paired_bootstrap": {
+    "paired_rows": 7407,
+    "date_clusters": 64,
+    "delta_mae_official_minus_proxy": -0.006002536016781694,
+    "delta_mae_ci95": [
+      -0.01395365971359842,
+      0.001884039618513694
+    ],
+    "bootstrap_fraction_official_better": 0.9314,
+    "bootstrap_replicates": 5000,
+    "resampling_unit": "whole game date"
+  },
+  "production_changed": false,
+  "limitations": [
+    "This is a temporal OOF ablation within 2025/26, not a new untouched season holdout; that season has already been inspected by other experiments.",
+    "The OOF output follows the current production trainer's expanding date folds and fold-local ensemble weighting. It does not validate full lineup scores.",
+    "Official PDK overlays may be incomplete; proxy values are used only as history fallback when an official label is absent."
+  ],
+  "outputs": {
+    "metrics": "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1_metrics.csv",
+    "predictions": "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1_predictions.csv",
+    "audit": "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1.json",
+    "report": "reports/audit/dunkest_production_pdk_history_source_ablation_20261013_v1.md"
+  }
+}

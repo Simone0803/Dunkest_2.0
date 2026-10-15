@@ -122,14 +122,34 @@ def test_matchday_report_uses_readable_rich_sections():
     assert "DUNKEST" in rendered
     assert "ROSA 1" in rendered
     assert "ROSA 2" in rendered
+    assert "Slot" in rendered
+    assert "Turno" not in rendered
+    assert "Depth" not in rendered
+    assert "Titolare · C" in rendered
+    assert "Panchina" in rendered
     assert "Coach · matchup" in rendered
     assert "Vittoria" in rendered
-    assert "Δ punti" in rendered
     assert "Migliori plusvalenze" in rendered
     assert "Miglior rapporto PDK / CR" not in rendered
     assert "Giocatori | PDK attesi" not in rendered
     assert "P10-P90" not in rendered
     assert "120.0" in rendered
+
+
+
+def test_lineup_report_shows_one_fixed_roster_with_5_1_4_slots():
+    console, output = _console_output()
+    solution = _solution()
+    solution.meta["dynamic_turn_mode"] = True
+    solution.players.loc[0, "slot"] = "Captain"
+    solution.players.loc[1:4, "slot"] = "Starter"
+    solution.players.loc[5, "slot"] = "Sixth Man"
+    solution.players.loc[6:9, "slot"] = "Bench"
+    print_matchday_report(Settings(), _predictions(), pd.DataFrame(), [solution], console=console)
+    rendered = output.getvalue()
+    assert "Formazione unica giornata" in rendered
+    assert "5 titolari · 1 sesto uomo · 4 panchinari" in rendered
+    assert "formazioni per turno" not in rendered
 
 
 def test_season_opener_report_uses_readable_rich_sections():
@@ -154,7 +174,7 @@ def test_season_opener_report_uses_readable_rich_sections():
 
     assert "G1 2026-27" in rendered
     assert "Coach · matchup" in rendered
-    assert "Migliori plusvalenze" in rendered
+    assert "Migliori plusvalenze" not in rendered
     assert "ROSA 1" in rendered
     assert rendered.count("ROSA 1") == 1
     assert "Copertura listino" not in rendered
@@ -188,3 +208,21 @@ def test_coach_report_does_not_rank_historical_prior_as_a_matchup_pick():
     rendered = output.getvalue()
     assert "nessun consiglio coach" in rendered
     assert "Strong prior only" not in rendered
+
+
+def test_coach_report_exposes_opponent_credit_gap_and_value_per_credit():
+    console, output = _console_output()
+    from dunkest.report.terminal import print_best_coaches
+
+    print_best_coaches(console, pd.DataFrame([{
+        "coach": "Value Coach", "team": "BOS", "opponent": "NYK",
+        "coach_cr": 8.0, "opponent_coach_cr": 7.0,
+        "expected_coach_pdk": 12.0, "expected_margin": 7.0,
+        "win_probability": 0.62, "matchup_projection_available": True,
+        "coach_projection_source": "verified_matchup",
+    }]))
+
+    rendered = output.getvalue()
+    assert "PDK" in rendered
+    assert "CR avv." not in rendered
+    assert "Value Coach" in rendered

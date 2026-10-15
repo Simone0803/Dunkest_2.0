@@ -1,0 +1,26 @@
+{
+  "status": "not_ready",
+  "season_id": "26",
+  "gameweek": 1,
+  "run": {
+    "run_id": "20261012T171217Z_2f98f42b",
+    "run_timestamp_utc": "2026-10-12T17:12:17.430088+00:00",
+    "season_id": "26",
+    "gameweek": 1,
+    "mapped_fixtures": 16,
+    "earliest_kickoff_utc": "2026-10-20T00:00:00+00:00",
+    "latest_kickoff_utc": "2026-10-22T00:00:00+00:00",
+    "snapshot_files_hash_verified": 6
+  },
+  "checks": [
+    {
+      "check": "post_match_results",
+      "passed": false,
+      "detail": "No archived post-match result bundle exists yet."
+    }
+  ],
+  "metrics": {},
+  "limitations": [
+    "Metrics are withheld until player and coach actual scores are archived with NBA fixture IDs."
+  ]
+}

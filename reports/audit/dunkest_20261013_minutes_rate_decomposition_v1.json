@@ -1,0 +1,293 @@
+{
+  "created_utc": "2026-10-13T13:59:17.758983+00:00",
+  "training_dataset": "data/processed/dunkest_pdk_game_training_2020-25_v2.parquet",
+  "target_label_source": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+  "seasons_loaded": {
+    "5": "2020-21",
+    "7": "2021-22",
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "validation_folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "2025_26_loaded": false,
+  "prospective_snapshot_loaded": false,
+  "training_rows_after_target_minutes_link": 93753,
+  "target_minutes_nonnull_rate": 1.0,
+  "target_minutes_zero_rate": 0.0031892312779324395,
+  "label_join_duplicate_keys": 0,
+  "label_join_duplicate_conflicts": 0,
+  "lag1_pdk_mismatches": 0,
+  "candidates": [
+    {
+      "candidate": "minutes_hgb_x_rate_et12",
+      "weighted_mae": 7.555586252013968,
+      "weighted_rmse": 9.865789390812935,
+      "weighted_bias": -0.5519318553877784,
+      "folds": 3.0
+    },
+    {
+      "candidate": "minutes_et12_x_rate_et12",
+      "weighted_mae": 7.561968229239126,
+      "weighted_rmse": 9.882484478818307,
+      "weighted_bias": -0.6109457217355758,
+      "folds": 3.0
+    },
+    {
+      "candidate": "direct_et12",
+      "weighted_mae": 7.565764117768566,
+      "weighted_rmse": 9.839017628454702,
+      "weighted_bias": -0.19890341855191637,
+      "folds": 3.0
+    },
+    {
+      "candidate": "minutes_hgb_x_rate_hgb",
+      "weighted_mae": 7.56732890963967,
+      "weighted_rmse": 9.87640850992577,
+      "weighted_bias": -0.5037801789756978,
+      "folds": 3.0
+    },
+    {
+      "candidate": "minutes_et12_x_rate_hgb",
+      "weighted_mae": 7.572086260120734,
+      "weighted_rmse": 9.890847809529971,
+      "weighted_bias": -0.5650824709991543,
+      "folds": 3.0
+    },
+    {
+      "candidate": "direct_hgb",
+      "weighted_mae": 7.572267697708284,
+      "weighted_rmse": 9.830610091416178,
+      "weighted_bias": 0.022123445754141297,
+      "folds": 3.0
+    },
+    {
+      "candidate": "baseline_prev5",
+      "weighted_mae": 7.982306204708575,
+      "weighted_rmse": 10.43835712481128,
+      "weighted_bias": -0.0057051333171526525,
+      "folds": 3.0
+    }
+  ],
+  "pooled_subgroups": [
+    {
+      "candidate": "minutes_hgb_x_rate_et12",
+      "n": 57682,
+      "mae": 7.555586252013967,
+      "rmse": 9.865789390812933,
+      "bias_pred_minus_actual": -0.5519318553877786,
+      "mae_actual_ge25": 12.522213343261544,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.531964538081327,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.261043146044729,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "minutes_et12_x_rate_et12",
+      "n": 57682,
+      "mae": 7.561968229239126,
+      "rmse": 9.882484478818306,
+      "bias_pred_minus_actual": -0.6109457217355759,
+      "mae_actual_ge25": 12.578584462521484,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.587038744487257,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.301216704952445,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "direct_et12",
+      "n": 57682,
+      "mae": 7.565764117768566,
+      "rmse": 9.839017628454702,
+      "bias_pred_minus_actual": -0.1989034185519164,
+      "mae_actual_ge25": 12.291717903374346,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.311637146732842,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.183282811834582,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "minutes_hgb_x_rate_hgb",
+      "n": 57682,
+      "mae": 7.56732890963967,
+      "rmse": 9.87640850992577,
+      "bias_pred_minus_actual": -0.5037801789756978,
+      "mae_actual_ge25": 12.480743719702014,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.453679013723765,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.260054342039358,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "minutes_et12_x_rate_hgb",
+      "n": 57682,
+      "mae": 7.572086260120734,
+      "rmse": 9.890847809529971,
+      "bias_pred_minus_actual": -0.5650824709991543,
+      "mae_actual_ge25": 12.535917690661668,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 14.508087308421887,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.2992920987465375,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "direct_hgb",
+      "n": 57682,
+      "mae": 7.572267697708284,
+      "rmse": 9.83061009141618,
+      "bias_pred_minus_actual": 0.022123445754141265,
+      "mae_actual_ge25": 12.027392742457794,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 13.909334613175963,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 5.255044007560065,
+      "n_low_history_lt5": 1222
+    },
+    {
+      "candidate": "baseline_prev5",
+      "n": 57682,
+      "mae": 7.982306204708574,
+      "rmse": 10.43835712481128,
+      "bias_pred_minus_actual": -0.005705133317152664,
+      "mae_actual_ge25": 12.17217163970289,
+      "n_actual_ge25": 13104,
+      "mae_actual_ge30": 13.823078348874233,
+      "n_actual_ge30": 8794,
+      "mae_low_history_lt5": 6.348308101472996,
+      "n_low_history_lt5": 1222
+    }
+  ],
+  "best_direct": "direct_et12",
+  "best_decomposition": "minutes_hgb_x_rate_et12",
+  "paired_date_cluster_bootstrap_delta_mae_decomposition_minus_direct": {
+    "2022-23": {
+      "clusters": 163,
+      "delta_mae_b_minus_a": 0.034476479963195625,
+      "ci95": [
+        0.011719054592768731,
+        0.05837726929402562
+      ]
+    },
+    "2023-24": {
+      "clusters": 154,
+      "delta_mae_b_minus_a": -0.017360050606212363,
+      "ci95": [
+        -0.040647963519990477,
+        0.003417031493956294
+      ]
+    },
+    "2024-25": {
+      "clusters": 158,
+      "delta_mae_b_minus_a": -0.04692433451391677,
+      "ci95": [
+        -0.06670236749336597,
+        -0.02808095800235133
+      ]
+    }
+  },
+  "component_minute_metrics": [
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "target": "minutes",
+      "candidate": "et12",
+      "n": 19165,
+      "mae": 5.112618016102684,
+      "rmse": 6.652434911301836,
+      "bias_pred_minus_actual": 0.16005918651693785
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "target": "minutes",
+      "candidate": "hgb",
+      "n": 19165,
+      "mae": 5.09147765848771,
+      "rmse": 6.6027586807482015,
+      "bias_pred_minus_actual": 0.3038318458193107
+    },
+    {
+      "fold_season_id": "9",
+      "fold_season": "2022-23",
+      "target": "rate_pdk_per_min",
+      "candidate": "historical_train_rate_mean",
+      "n": 35950,
+      "mae": 0.4196099662173188,
+      "rmse": 0.6453460586175707,
+      "bias_pred_minus_actual": 0.0
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "target": "minutes",
+      "candidate": "et12",
+      "n": 18927,
+      "mae": 5.026823053767982,
+      "rmse": 6.457589276538085,
+      "bias_pred_minus_actual": 0.20061104634065693
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "target": "minutes",
+      "candidate": "hgb",
+      "n": 18927,
+      "mae": 5.00869349211197,
+      "rmse": 6.4207585971668495,
+      "bias_pred_minus_actual": 0.40044641034747863
+    },
+    {
+      "fold_season_id": "13",
+      "fold_season": "2023-24",
+      "target": "rate_pdk_per_min",
+      "candidate": "historical_train_rate_mean",
+      "n": 55067,
+      "mae": 0.39001145896279676,
+      "rmse": 0.5839061197639664,
+      "bias_pred_minus_actual": 0.0
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "target": "minutes",
+      "candidate": "et12",
+      "n": 19590,
+      "mae": 4.899341914156513,
+      "rmse": 6.38949751737083,
+      "bias_pred_minus_actual": 0.18801050015006618
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "target": "minutes",
+      "candidate": "hgb",
+      "n": 19590,
+      "mae": 4.852231492755439,
+      "rmse": 6.3294693638666875,
+      "bias_pred_minus_actual": 0.1632954470172654
+    },
+    {
+      "fold_season_id": "19",
+      "fold_season": "2024-25",
+      "target": "rate_pdk_per_min",
+      "candidate": "historical_train_rate_mean",
+      "n": 73923,
+      "mae": 0.37957620294255767,
+      "rmse": 0.555927853038654,
+      "bias_pred_minus_actual": 0.0
+    }
+  ],
+  "feature_policy": "Only past-game PDK and box-score lags/rolling summaries plus opponent/home-away. Current-game minutes and box-score columns are labels only.",
+  "rookie_policy": "No fabricated zero/negative labels from absent target rows; low-history is analyzed as a subgroup, not a learned NBA appearance probability.",
+  "production_changed": false,
+  "holdout_note": "Only 2020/21–2024/25 training source and 2020–2025 crosswalk were opened. 2025/26 holdout and frozen 2026/27 GW1 snapshot were not loaded."
+}

@@ -10,7 +10,6 @@ from dunkest.report.terminal import (
     CONSOLE,
     REPORT_VERSION,
     print_best_coaches,
-    print_best_plusvalenze,
 )
 
 
@@ -30,6 +29,9 @@ def print_season_opener_report(
         f"forma {feature_season}  ·  budget {settings.budget:.0f} CR"
         f"  ·  [dim]{REPORT_VERSION}[/dim]"
     )
+    console.print(
+        "[dim]Una sola rosa per G1: gli slot sono ottimizzati al turno di ciascun giocatore; "
+        "il roster non viene separato in squadre diverse per turno.[/dim]"
+    )
     print_top_lineups(settings, solutions, console=console)
-    print_best_coaches(console, coach_df)
-    print_best_plusvalenze(console, predictions)
+    print_best_coaches(console, coach_df, max_rows=6)

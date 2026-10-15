@@ -1,0 +1,66 @@
+{
+  "generated_at_utc": "2026-10-13T12:00:44.155382+00:00",
+  "audited_rows": 451,
+  "single_game_rows_gp1": 445,
+  "multi_game_aggregate_rows_gp_gt1": 6,
+  "official_player_game_found_on_inferred_date_gp1": 430,
+  "no_official_player_game_record_on_inferred_date_gp1": 15,
+  "source_team_matches_official_team_gp1": 407,
+  "source_team_differs_from_official_team_gp1": 23,
+  "legacy_opponent_matches_official_opponent_gp1": 407,
+  "pdk_match_count_gp1": 430,
+  "all_17_boxscore_fields_match_count_gp1": 428,
+  "exact_date_assisted_link_candidates_gp1": 428,
+  "row_class_counts": {
+    "exact_boxscore_pdk_team_and_opponent_confirmed": 405,
+    "NBA_team_differs_from_source_team": 23,
+    "no_player_game_record_on_date": 15,
+    "multi_game_aggregate_not_single_game": 6,
+    "team_and_opponent_confirmed_but_signature_differs": 2
+  },
+  "link_status_counts": {
+    "ambiguous_exact_team_signature": 410,
+    "ambiguous_boxscore_pdk_match_without_team": 21,
+    "unique_boxscore_pdk_match_nba_team_unknown": 11,
+    "<no link row>": 6,
+    "unresolved_no_exact_signature": 3
+  },
+  "season_counts": {
+    "13": 142,
+    "19": 99,
+    "5": 74,
+    "7": 64,
+    "9": 72
+  },
+  "stat_mismatch_frequency": {
+    "pts": 8,
+    "reb": 8,
+    "ast": 8,
+    "stl": 8,
+    "blk": 8,
+    "blka": 8,
+    "fgm": 8,
+    "fga": 8,
+    "tpm": 8,
+    "tpa": 8,
+    "ftm": 8,
+    "fta": 8,
+    "oreb": 8,
+    "dreb": 8,
+    "tov": 8,
+    "pf": 8,
+    "plus_minus": 8
+  },
+  "artifacts": {
+    "row_csv": "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.csv",
+    "summary_csv": "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1_summary.csv",
+    "json": "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.json",
+    "markdown": "reports/audit/dunkest_legacy_only_opponent_rows_20261013_v1.md"
+  },
+  "guardrails": [
+    "Audit-only; no production code, model, labels, temporal splits, or coefficients changed.",
+    "No claim that missing player-game rows mean DNP or OUT; source coverage may be incomplete.",
+    "Historical weekly rows are not treated as pre-lock roster snapshots.",
+    "Frozen 2026/27 GW1 holdout remains untouched until 2026-10-23T12:00:00Z."
+  ]
+}

@@ -3,7 +3,7 @@ import pytest
 
 from dunkest.backtest.walk_forward import (
     MIN_HISTORICAL_MARKET_PLAYERS,
-    _apply_historical_market_snapshot,
+    _historical_candidate_pool,
     _load_historical_market_snapshot,
 )
 
@@ -46,38 +46,30 @@ def test_backtest_rejects_incomplete_or_wrong_gameweek_market(
         _load_historical_market_snapshot(path, gameweek=3)
 
 
-def test_backtest_uses_only_archived_market_names_and_metadata(tmp_path):
+def test_backtest_candidate_pool_preserves_archived_market_even_when_results_are_sparse(tmp_path):
     path = tmp_path / "player_credits_gw3.parquet"
     archived = _market_snapshot()
+    # Outcome payloads are not trusted as the candidate universe; the frozen
+    # market can include eligible players absent from the season-stat table.
+    archived["actual_pdk"] = float("nan")
+    archived["pdk"] = 99.0
     archived.to_parquet(path, index=False)
     snapshot = _load_historical_market_snapshot(path, gameweek=3)
 
-    current = archived[["player_name"]].copy()
-    current["team_code"] = "CURRENT"
-    current["role"] = "C"
-    current["position"] = "C"
-    current["cr"] = 30.0
-    current["lineup_group"] = "INDISPONIBILI"
-    current["status"] = "OUT"
-    current.loc[len(current)] = ["Not archived", "CURRENT", "C", "C", 30.0, "INDISPONIBILI", "OUT"]
-
-    result = _apply_historical_market_snapshot(current, snapshot)
+    result = _historical_candidate_pool(snapshot)
 
     assert len(result) == MIN_HISTORICAL_MARKET_PLAYERS
-    assert "Not archived" not in set(result["player_name"])
+    assert result["player_name"].tolist() == archived["player_name"].tolist()
     assert result["team_code"].tolist() == archived["team_code"].tolist()
     assert result["role"].tolist() == archived["role"].tolist()
     assert result["position"].tolist() == archived["role"].tolist()
     assert result["cr"].eq(8.0).all()
     assert result["lineup_group"].eq("PANCHINA").all()
     assert result["status"].eq("AVAILABLE").all()
+    assert "actual_pdk" not in result
+    assert "pdk" not in result
 
 
-def test_backtest_rejects_market_snapshot_with_insufficient_api_overlap(tmp_path):
-    path = tmp_path / "player_credits_gw3.parquet"
-    _market_snapshot().to_parquet(path, index=False)
-    snapshot = _load_historical_market_snapshot(path, gameweek=3)
-    current = pd.DataFrame({"player_name": ["Not archived"]})
-
-    with pytest.raises(ValueError, match="si allinea a meno di"):
-        _apply_historical_market_snapshot(current, snapshot)
+def test_backtest_candidate_pool_requires_frozen_market_identity_columns():
+    with pytest.raises(ValueError, match="snapshot mercato senza colonne"):
+        _historical_candidate_pool(pd.DataFrame({"player_name": ["Player"]}))

@@ -1,0 +1,62 @@
+{
+  "generated_at_utc": "2026-10-14T13:38:48.946777+00:00",
+  "selected_lineup_strategy_rows": 916,
+  "fully_scored_recovered_proxy_rows": 124,
+  "rows_with_unknown_or_mismatched_player": 792,
+  "player_score_status_counts": {
+    "weekly_round_score_observed": 5872,
+    "team_played_player_row_absent_zero_candidate": 1930,
+    "explicit_nonvalid_game_row_zero_candidate": 1235,
+    "team_did_not_play_identity_or_candidate_mismatch": 123
+  },
+  "paired_strategy_comparison": {
+    "n_paired_rounds": 8,
+    "mean_delta_model_minus_baseline": -12.75375,
+    "median_delta": -15.504999999999995,
+    "model_win_rate": 0.25,
+    "bootstrap_95_ci": [
+      -22.973749999999995,
+      -3.4037500000000094
+    ],
+    "by_season": [
+      {
+        "season_id": "13",
+        "n": 2,
+        "mean_delta": 19.02499999999999,
+        "model_win_rate": 1.0
+      },
+      {
+        "season_id": "9",
+        "n": 6,
+        "mean_delta": -23.346666666666664,
+        "model_win_rate": 0.0
+      }
+    ]
+  },
+  "forecast_score_calibration_diagnostics": {
+    "model": {
+      "n": 113,
+      "mean_expected": 172.7198874491208,
+      "mean_recovered_actual": 198.3525663716814,
+      "mae_expected_score": 34.80408303533796,
+      "rmse_expected_score": 44.73420541178204,
+      "bias_expected_minus_actual": -25.632678922560654,
+      "mean_zero_candidate_share": 0.0
+    },
+    "previous5_baseline": {
+      "n": 11,
+      "mean_expected": 254.56698305489178,
+      "mean_recovered_actual": 202.37818181818184,
+      "mae_expected_score": 55.05847904758094,
+      "rmse_expected_score": 72.74604059694433,
+      "bias_expected_minus_actual": 52.18880123670994,
+      "mean_zero_candidate_share": 0.0
+    }
+  },
+  "score_policy": "Player points use official weekly outcomes when present. Missing outcomes are assigned 0 only when an explicit gameValidForDunkest=False row exists or the lagged team has a fixture but no player row. These zero candidates are a reconstructed proxy, not certified official actuals. Any selected player with a team fixture mismatch or unresolved identity excludes that lineup. Coach score is the existing NBA-result-derived neutral-price coach proxy.",
+  "limitations": [
+    "This is not a certified historical Dunkest backtest: zero candidates and coach scores remain proxy-derived.",
+    "Lagged team codes may be stale after trades; no-fixture mismatches are excluded.",
+    "Lineups are independently optimized per round, not a sequential roster with transfer malus."
+  ]
+}

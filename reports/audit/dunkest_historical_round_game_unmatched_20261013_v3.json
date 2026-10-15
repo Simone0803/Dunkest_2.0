@@ -1,0 +1,67 @@
+{
+  "generated_at_utc": "2026-10-13T11:23:49.227513+00:00",
+  "unmatched_rows_v1": 7892,
+  "diagnosis_counts": {
+    "exact_player_pdk_boxscore_match_but_team_code_differs": 7873,
+    "no_exact_boxscore_signature_even_without_team_or_pdk": 19
+  },
+  "exact_player_pdk_17_stats_match_ignoring_team": 7873,
+  "of_exact_matches_source_team_differs": 7873,
+  "of_exact_matches_source_team_same": 0,
+  "fraction_unmatched_explained_by_team_code_mismatch": 0.997592498732894,
+  "stats_match_pdk_differs": 0,
+  "no_exact_stats_signature_even_without_team_or_pdk": 19,
+  "seasons": [
+    {
+      "season_id": 5,
+      "unmatched_rows": 1426,
+      "diagnosis_counts": "{\"exact_player_pdk_boxscore_match_but_team_code_differs\": 1407, \"no_exact_boxscore_signature_even_without_team_or_pdk\": 19}",
+      "team_mismatch_exact": 1407,
+      "stats_match_pdk_diff": 0
+    },
+    {
+      "season_id": 7,
+      "unmatched_rows": 1702,
+      "diagnosis_counts": "{\"exact_player_pdk_boxscore_match_but_team_code_differs\": 1702}",
+      "team_mismatch_exact": 1702,
+      "stats_match_pdk_diff": 0
+    },
+    {
+      "season_id": 9,
+      "unmatched_rows": 1762,
+      "diagnosis_counts": "{\"exact_player_pdk_boxscore_match_but_team_code_differs\": 1762}",
+      "team_mismatch_exact": 1762,
+      "stats_match_pdk_diff": 0
+    },
+    {
+      "season_id": 13,
+      "unmatched_rows": 1443,
+      "diagnosis_counts": "{\"exact_player_pdk_boxscore_match_but_team_code_differs\": 1443}",
+      "team_mismatch_exact": 1443,
+      "stats_match_pdk_diff": 0
+    },
+    {
+      "season_id": 19,
+      "unmatched_rows": 1559,
+      "diagnosis_counts": "{\"exact_player_pdk_boxscore_match_but_team_code_differs\": 1559}",
+      "team_mismatch_exact": 1559,
+      "stats_match_pdk_diff": 0
+    }
+  ],
+  "round_groups": 555,
+  "method": "For each v1-unmatched row, match season, canonical player, PDK rounded to two decimals and all 17 boxscore statistics while excluding source team_code. A second join ignores both team and PDK to identify residual score-key discrepancies.",
+  "guardrails": [
+    "Team mismatch is an observed identity discrepancy, not an automatic instruction to rewrite team history.",
+    "No source row, training label, official PDK, production code/config, or frozen holdout was changed.",
+    "No unmatched row is inferred to be a DNP or zero.",
+    "Frozen 2026/27 GW1 holdout remains untouched until cutoff 2026-10-23T12:00:00Z."
+  ],
+  "artifacts": {
+    "rows_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_rows.csv",
+    "seasons_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_seasons.csv",
+    "rounds_csv": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3_rounds.csv",
+    "json": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.json",
+    "markdown": "reports/audit/dunkest_historical_round_game_unmatched_20261013_v3.md"
+  },
+  "production_changed": false
+}

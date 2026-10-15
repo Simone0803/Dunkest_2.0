@@ -1,0 +1,202 @@
+{
+  "created_utc": "2026-10-15T07:22:56.479756+00:00",
+  "source_predictions": "reports/audit/dunkest_coach_score_forecast_monte_carlo_walk_forward_2018-26_v4_predictions.csv",
+  "train_seasons": [
+    "2022-23",
+    "2023-24"
+  ],
+  "validation_season": "2024-25",
+  "later_audit_season": "2025-26",
+  "training_rows": 4920,
+  "global_bias_correction_actual_minus_predicted": -0.16073677869347053,
+  "affine_intercept": 0.22612013086786842,
+  "affine_slope": 0.9193358995084739,
+  "score_band_corrections": {
+    "(-19.151, -2.017]": 0.2436718331690518,
+    "(-2.017, 2.868]": 0.585843570507204,
+    "(2.868, 6.758]": -0.06919580382350078,
+    "(6.758, 11.612]": -0.959136962890625,
+    "(11.612, 28.538]": -0.41708991980626947
+  },
+  "point_metrics": [
+    {
+      "season": "2024-25",
+      "method": "raw",
+      "n": 2460,
+      "mae": 15.058382558434959,
+      "rmse": 17.386330708545902,
+      "bias_pred_minus_actual": 0.08135509956173781
+    },
+    {
+      "season": "2024-25",
+      "method": "global_bias",
+      "n": 2460,
+      "mae": 15.057301637315568,
+      "rmse": 17.386321586398985,
+      "bias_pred_minus_actual": -0.07938167913173162
+    },
+    {
+      "season": "2024-25",
+      "method": "affine",
+      "n": 2460,
+      "mae": 15.22714421466958,
+      "rmse": 17.386710518748313,
+      "bias_pred_minus_actual": -0.07204390427361354
+    },
+    {
+      "season": "2024-25",
+      "method": "score_band",
+      "n": 2460,
+      "mae": 15.173513042657772,
+      "rmse": 17.394782706866486,
+      "bias_pred_minus_actual": -0.03330259431088701
+    },
+    {
+      "season": "2025-26",
+      "method": "raw",
+      "n": 2460,
+      "mae": 15.063610492489202,
+      "rmse": 17.58453659996786,
+      "bias_pred_minus_actual": 0.13773486129636686
+    },
+    {
+      "season": "2025-26",
+      "method": "global_bias",
+      "n": 2460,
+      "mae": 15.062403981278582,
+      "rmse": 17.584012216550487,
+      "bias_pred_minus_actual": -0.023001917397102473
+    },
+    {
+      "season": "2025-26",
+      "method": "affine",
+      "n": 2460,
+      "mae": 15.269298594386973,
+      "rmse": 17.594257299362052,
+      "bias_pred_minus_actual": -0.02490097602486419
+    },
+    {
+      "season": "2025-26",
+      "method": "score_band",
+      "n": 2460,
+      "mae": 15.189209647935035,
+      "rmse": 17.61020034019636,
+      "bias_pred_minus_actual": 0.019884327163698312
+    }
+  ],
+  "paired_game_cluster_bootstrap": [
+    {
+      "season": "2024-25",
+      "method": "global_bias",
+      "delta_mae_candidate_minus_raw": -0.0010809211193889574,
+      "ci95_low": -0.0025033380721612036,
+      "ci95_high": 0.000316591118464447,
+      "game_clusters": 1230
+    },
+    {
+      "season": "2024-25",
+      "method": "affine",
+      "delta_mae_candidate_minus_raw": 0.16876165623462372,
+      "ci95_low": 0.12963774496922542,
+      "ci95_high": 0.20822854508284552,
+      "game_clusters": 1230
+    },
+    {
+      "season": "2024-25",
+      "method": "score_band",
+      "delta_mae_candidate_minus_raw": 0.1151304842228132,
+      "ci95_low": 0.0862983154649717,
+      "ci95_high": 0.14226714596790496,
+      "game_clusters": 1230
+    },
+    {
+      "season": "2025-26",
+      "method": "global_bias",
+      "delta_mae_candidate_minus_raw": -0.0012065112106200112,
+      "ci95_low": -0.0027384165195836674,
+      "ci95_high": 0.0003405838905286681,
+      "game_clusters": 1230
+    },
+    {
+      "season": "2025-26",
+      "method": "affine",
+      "delta_mae_candidate_minus_raw": 0.20568810189776815,
+      "ci95_low": 0.16652785051158728,
+      "ci95_high": 0.24302559927284817,
+      "game_clusters": 1230
+    },
+    {
+      "season": "2025-26",
+      "method": "score_band",
+      "delta_mae_candidate_minus_raw": 0.12559915544583167,
+      "ci95_low": 0.09784130231601598,
+      "ci95_high": 0.1537226327349705,
+      "game_clusters": 1230
+    }
+  ],
+  "distribution_interval_metrics": [
+    {
+      "season": "2022-23",
+      "n": 2460,
+      "mean_mae": 15.433265896928988,
+      "mean_rmse": 17.370599032198772,
+      "mean_bias_pred_minus_actual": 0.15271179695439532,
+      "p10_p90_coverage": 0.866260162601626,
+      "below_p10_rate": 0.06666666666666667,
+      "above_p90_rate": 0.06707317073170732,
+      "median_coverage_actual_le_p50": 0.552439024390244,
+      "mean_interval_width": 44.16247967479675
+    },
+    {
+      "season": "2023-24",
+      "n": 2460,
+      "mean_mae": 15.235309433355564,
+      "mean_rmse": 17.49683311239632,
+      "mean_bias_pred_minus_actual": 0.16989999166349085,
+      "p10_p90_coverage": 0.833739837398374,
+      "below_p10_rate": 0.08373983739837398,
+      "above_p90_rate": 0.08252032520325203,
+      "median_coverage_actual_le_p50": 0.5487804878048781,
+      "mean_interval_width": 43.73085365853659
+    },
+    {
+      "season": "2024-25",
+      "n": 2460,
+      "mean_mae": 15.054158280535441,
+      "mean_rmse": 17.38358237153429,
+      "mean_bias_pred_minus_actual": 0.08155403447345021,
+      "p10_p90_coverage": 0.8516260162601627,
+      "below_p10_rate": 0.07317073170731707,
+      "above_p90_rate": 0.07520325203252033,
+      "median_coverage_actual_le_p50": 0.5398373983739837,
+      "mean_interval_width": 44.08963414634147
+    },
+    {
+      "season": "2025-26",
+      "n": 2460,
+      "mean_mae": 15.065578206380208,
+      "mean_rmse": 17.578282967942783,
+      "mean_bias_pred_minus_actual": 0.1373699405329014,
+      "p10_p90_coverage": 0.8357723577235773,
+      "below_p10_rate": 0.08252032520325203,
+      "above_p90_rate": 0.08170731707317073,
+      "median_coverage_actual_le_p50": 0.5459349593495935,
+      "mean_interval_width": 44.30829268292683
+    },
+    {
+      "season": "pooled",
+      "n": 9840,
+      "mean_mae": 15.19707795430005,
+      "mean_rmse": 17.45753310085261,
+      "mean_bias_pred_minus_actual": 0.13538394090605946,
+      "p10_p90_coverage": 0.8468495934959349,
+      "below_p10_rate": 0.07652439024390244,
+      "above_p90_rate": 0.0766260162601626,
+      "median_coverage_actual_le_p50": 0.5467479674796748,
+      "mean_interval_width": 44.07281504065041
+    }
+  ],
+  "decision": "retain raw Monte Carlo expected coach score; global correction has negligible, non-significant MAE effect, while affine and score-band corrections worsen MAE",
+  "uses_historical_full_lineups": false,
+  "uses_2026_27_prospective_bundle": false
+}

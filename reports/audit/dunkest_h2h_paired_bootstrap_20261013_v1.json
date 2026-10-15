@@ -1,0 +1,105 @@
+{
+  "generated_at_utc": "2026-10-13T09:26:07.518450+00:00",
+  "paired_rows": 55565,
+  "round_clusters": 467,
+  "seasons": [
+    "13",
+    "19",
+    "9"
+  ],
+  "bootstrap_replicates": 10000,
+  "bootstrap_unit": "whole Dunkest season-week-round clusters, resampled within held-out season; macro-season pooled delta gives equal weight to each held-out season",
+  "comparisons": {
+    "h2h_unshrunk_minus_expanded_matchup": {
+      "macro_season_delta_mae_ci95": [
+        -0.08238168103001252,
+        -0.022040003263375945
+      ],
+      "bootstrap_fraction_delta_below_zero": 1.0,
+      "per_season": {
+        "13": {
+          "ci95": [
+            -0.1244833391125731,
+            -0.009410335132432392
+          ],
+          "fraction_below_zero": 0.9994
+        },
+        "19": {
+          "ci95": [
+            -0.11306082503352936,
+            -0.02367166091656816
+          ],
+          "fraction_below_zero": 1.0
+        },
+        "9": {
+          "ci95": [
+            -0.09566480228859406,
+            0.006072364486011512
+          ],
+          "fraction_below_zero": 0.9195
+        }
+      }
+    },
+    "h2h_shrunk_minus_expanded_matchup": {
+      "macro_season_delta_mae_ci95": [
+        -0.08025254189608395,
+        -0.02206505762588105
+      ],
+      "bootstrap_fraction_delta_below_zero": 1.0,
+      "per_season": {
+        "13": {
+          "ci95": [
+            -0.12080578785373966,
+            -0.010427103538809388
+          ],
+          "fraction_below_zero": 0.9998
+        },
+        "19": {
+          "ci95": [
+            -0.1158687529175661,
+            -0.02460621757305097
+          ],
+          "fraction_below_zero": 1.0
+        },
+        "9": {
+          "ci95": [
+            -0.08464070268708523,
+            0.005424374952384397
+          ],
+          "fraction_below_zero": 0.926
+        }
+      }
+    },
+    "h2h_shrunk_minus_h2h_unshrunk": {
+      "macro_season_delta_mae_ci95": [
+        -0.004999091365176732,
+        0.005744060165911875
+      ],
+      "bootstrap_fraction_delta_below_zero": 0.457,
+      "per_season": {
+        "13": {
+          "ci95": [
+            -0.008148897136458819,
+            0.009565844303493796
+          ],
+          "fraction_below_zero": 0.4333
+        },
+        "19": {
+          "ci95": [
+            -0.010388454305109058,
+            0.006105512800946164
+          ],
+          "fraction_below_zero": 0.6909
+        },
+        "9": {
+          "ci95": [
+            -0.007938379693668632,
+            0.012926751146505077
+          ],
+          "fraction_below_zero": 0.347
+        }
+      }
+    }
+  },
+  "production_changed": false
+}

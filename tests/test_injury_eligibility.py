@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 
 from dunkest.rules.eligibility import filter_injured
 from dunkest.config import Settings
@@ -30,75 +29,128 @@ def test_lineups_surname_only_out_row_removes_unique_player_even_when_column_tea
     assert eligible["player_name"].tolist() == ["Healthy Player"]
 
 
-def test_fresh_lineups_status_replaces_stale_cached_injury_rows(tmp_path, monkeypatch):
-    (tmp_path / "current_lineups_market.csv").write_text(
-        "player_name,team,status\nAvailable Player,BOS,AVAILABLE\nOut Player,NYK,OUT\n",
-        encoding="utf-8",
-    )
-    settings = Settings(data_dir=str(tmp_path))
-    cached = pd.DataFrame({
-        "player_name": ["Available Player", "Older Injury"],
-        "team": ["BOS", "CHI"],
-        "status": ["OUT", "OUT"],
+def test_abbreviated_out_excludes_only_matching_initial_when_teammates_share_surname():
+    predictions = pd.DataFrame({
+        "player_name": ["Baba Miller", "Jordan Miller", "Brandon Miller", "Healthy Player"],
+        "team": ["LAC", "LAC", "CHA", "BOS"],
     })
-    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: True)
-    monkeypatch.setattr(access, "read_parquet", lambda path: cached.copy())
-
-    injuries = access.get_injuries(settings)
-
-    assert set(injuries["player_name"]) == {"Out Player", "Older Injury"}
-
-
-def test_complete_lineups_snapshot_drops_stale_cached_out_rows(tmp_path, monkeypatch):
-    market_path = tmp_path / "current_lineups_market.csv"
-    market_path.write_text(
-        "player_name,team,status,dunkest_turn\n"
-        "Healthy Player,BOS,AVAILABLE,1\n"
-        "Current Out,NYK,OUT,1\n",
-        encoding="utf-8",
-    )
-    (tmp_path / "current_lineups_market.csv.meta.json").write_text(json.dumps({
-        "source": "dunkest_lineups_browser",
-        "dunkest_turn": 1,
-        "availability_snapshot_complete": True,
-    }), encoding="utf-8")
-    settings = Settings(data_dir=str(tmp_path))
-    settings.target_dunkest_turn = 1
-    cached = pd.DataFrame({
-        "player_name": ["Healthy Player", "Old Turn Out"],
-        "team": ["BOS", "CHI"], "status": ["OUT", "OUT"],
+    injuries = pd.DataFrame({
+        "player_name": ["J. Miller"], "team": ["LAC"], "status": ["OUT"],
     })
-    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: True)
-    monkeypatch.setattr(access, "read_parquet", lambda path: cached.copy())
 
-    injuries = access.get_injuries(settings)
+    eligible = filter_injured(predictions, injuries)
 
-    assert injuries[["player_name", "team", "status"]].to_dict("records") == [
-        {"player_name": "Current Out", "team": "NYK", "status": "OUT"}
+    assert eligible["player_name"].tolist() == [
+        "Baba Miller", "Brandon Miller", "Healthy Player",
     ]
 
 
-def test_authoritative_lineups_turn_snapshot_drops_stale_injury_cache(tmp_path, monkeypatch):
+def test_official_full_name_out_does_not_remove_different_player_with_same_surname():
+    predictions = pd.DataFrame({
+        "player_name": ["Baba Miller", "Jordan Miller", "Healthy Player"],
+        "team": ["LAC", "LAC", "BOS"],
+    })
+    injuries = pd.DataFrame({
+        "player_name": ["Baba Miller"], "team": ["LAC"], "status": ["OUT"],
+    })
+
+    eligible = filter_injured(predictions, injuries)
+
+    assert eligible["player_name"].tolist() == ["Jordan Miller", "Healthy Player"]
+
+
+def test_official_dunkest_injury_page_is_authoritative_over_lineups_status(tmp_path, monkeypatch):
     (tmp_path / "current_lineups_market.csv").write_text(
-        "player_name,team,status,dunkest_turn\nHealthy Player,BOS,AVAILABLE,2\n",
+        "player_name,team,status,dunkest_turn\n"
+        "Lineups Only Out,NYK,OUT,1\n"
+        "Official Player,BOS,AVAILABLE,1\n",
         encoding="utf-8",
     )
     (tmp_path / "lineups_availability.csv").write_text(
-        "player_name,team,status,dunkest_turn\n"
-        "Round One Out,NYK,OUT,1\n"
-        "Round Two Out,CHI,OUT,2\n",
+        "player_name,team,status,dunkest_turn\nLineups Only Out,NYK,OUT,1\n",
         encoding="utf-8",
     )
     settings = Settings(data_dir=str(tmp_path))
-    settings.target_gameweek = 1
-    settings.target_dunkest_turn = 2
-    cached = pd.DataFrame({
-        "player_name": ["Healthy Player", "Older Injury"],
-        "team": ["BOS", "CHI"], "status": ["OUT", "OUT"],
+    settings.target_gameweek = 2
+    settings.target_dunkest_turn = 1
+    official = pd.DataFrame({
+        "player_name": ["Official Player", "J. Butler"],
+        "team": ["BOS", "GSW"],
+        "status": ["AVAILABLE", "OUT"],
     })
-    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: True)
-    monkeypatch.setattr(access, "read_parquet", lambda path: cached.copy())
+    calls = []
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: False)
+    monkeypatch.setattr(access.dk_module, "scrape_injuries", lambda *args, **kwargs: calls.append(True) or official.copy())
 
     injuries = access.get_injuries(settings)
 
-    assert set(injuries["player_name"]) == {"Round Two Out"}
+    assert calls == [True]
+    assert set(injuries["player_name"]) == {"Official Player", "J. Butler"}
+    assert injuries.loc[injuries.player_name.eq("J. Butler"), "status"].item() == "OUT"
+    assert "Lineups Only Out" not in set(injuries.player_name)
+    metadata = access.read_cache_metadata(tmp_path / "processed" / "injuries.parquet")
+    assert metadata["source"] == "dunkest_official_injuries_page"
+    assert metadata["gameweek"] == 2
+
+
+def test_official_injury_cache_is_scoped_to_same_gameweek(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path))
+    settings.target_gameweek = 2
+    cache_path = tmp_path / "processed" / "injuries.parquet"
+    cache_path.parent.mkdir(parents=True)
+    cache_path.touch()
+    cached = pd.DataFrame({
+        "player_name": ["Cached Official Out"], "team": ["NYK"], "status": ["OUT"],
+    })
+    monkeypatch.setattr(access, "read_cache_metadata", lambda path: {
+        "source": "dunkest_official_injuries_page", "season_id": settings.season_id,
+        "gameweek": 2,
+    })
+    monkeypatch.setattr(access, "read_parquet", lambda path: cached.copy())
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: True)
+    monkeypatch.setattr(
+        access, "dk_module",
+        type("Client", (), {"scrape_injuries": staticmethod(lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("should use scoped cache")))})(),
+    )
+
+    injuries = access.get_injuries(settings)
+
+    assert injuries.player_name.tolist() == ["Cached Official Out"]
+
+
+def test_new_gameweek_refetches_injury_page_instead_of_reusing_previous_gameweek(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path))
+    settings.target_gameweek = 3
+    old = pd.DataFrame({"player_name": ["Old GW Out"], "team": ["CHI"], "status": ["OUT"]})
+    current = pd.DataFrame({"player_name": ["Current GW Out"], "team": ["BOS"], "status": ["OUT"]})
+    monkeypatch.setattr(access, "read_cache_metadata", lambda path: {
+        "source": "dunkest_official_injuries_page", "season_id": settings.season_id,
+        "gameweek": 2,
+    })
+    monkeypatch.setattr(access, "read_parquet", lambda path: old.copy())
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: True)
+    monkeypatch.setattr(access.dk_module, "scrape_injuries", lambda *args, **kwargs: current.copy())
+
+    injuries = access.get_injuries(settings)
+
+    assert injuries.player_name.tolist() == ["Current GW Out"]
+
+
+def test_official_injury_scrape_failure_does_not_fall_back_to_lineups(tmp_path, monkeypatch):
+    (tmp_path / "lineups_availability.csv").write_text(
+        "player_name,team,status,dunkest_turn\nLineups Out,NYK,OUT,1\n",
+        encoding="utf-8",
+    )
+    settings = Settings(data_dir=str(tmp_path))
+    settings.target_gameweek = 4
+    monkeypatch.setattr(access, "read_cache_metadata", lambda path: {})
+    monkeypatch.setattr(access, "read_parquet", lambda path: None)
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: False)
+    monkeypatch.setattr(
+        access.dk_module, "scrape_injuries",
+        lambda *args, **kwargs: (_ for _ in ()).throw(OSError("site unavailable")),
+    )
+
+    import pytest
+    with pytest.raises(RuntimeError, match="non uso lo scraping Lineups come fallback"):
+        access.get_injuries(settings)

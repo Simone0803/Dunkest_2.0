@@ -1,0 +1,26 @@
+{
+  "generated_at_utc": "2026-10-13T08:51:23.020647+00:00",
+  "input": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_predictions.csv",
+  "evaluated_rows": 9840,
+  "methods": [
+    "model_pregame_team_form",
+    "baseline_previous5_base_score",
+    "baseline_previous10_base_score",
+    "baseline_train_median"
+  ],
+  "cr_difference_scenarios": [
+    0.0,
+    1.5,
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    14.0,
+    16.0
+  ],
+  "official_rule_source": "https://docs.dunkest.com/regolamento-it/regolamento-fantasy/punteggio-allenatori",
+  "official_coefficient_checks_passed": 8,
+  "historical_coach_market_available_for_test_seasons": false,
+  "interpretation": "Multiplier rule application is deterministic and checked against the official regulation. Since historical coach CR pairs are not archived for these test seasons, all CR spreads are controlled sensitivity scenarios, not exact historical PDK evaluation.",
+  "production_changed": false
+}

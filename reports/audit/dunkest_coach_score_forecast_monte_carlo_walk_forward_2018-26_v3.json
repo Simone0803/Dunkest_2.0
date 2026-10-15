@@ -1,0 +1,187 @@
+{
+  "generated_at_utc": "2026-10-13T09:05:19.359876+00:00",
+  "test_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "selected_team_score_half_life_games": 15.0,
+  "selection_season": "2024-25 validation",
+  "final_holdout_season": "2025-26",
+  "input_team_point_predictions": "reports/audit/coach_points_model_tuning_walk_forward_2018-26_v3.csv",
+  "input_actual_neutral_coach_scores": "reports/audit/dunkest_coach_base_points_walk_forward_2018-26_v1_outcomes.csv",
+  "draws_per_game": 8192,
+  "simulation": "correlated normal team scores using prior-only team score SDs, prior-only score correlation and prior-only overtime frequency; official coach rules applied with coach_cr=opponent_cr=10",
+  "rows": 9840,
+  "unique_games": 4920,
+  "metrics": [
+    {
+      "test_season": "2022-23",
+      "method": "monte_carlo_team_score_distribution",
+      "n": 2460,
+      "mae": 15.422663296335111,
+      "rmse": 17.3760042330277,
+      "bias_pred_minus_actual": -0.12736746935340448
+    },
+    {
+      "test_season": "2022-23",
+      "method": "direct_base_score_model",
+      "n": 2460,
+      "mae": 16.127432580701104,
+      "rmse": 17.740191291246457,
+      "bias_pred_minus_actual": 0.02854087367252609
+    },
+    {
+      "test_season": "2022-23",
+      "method": "baseline_previous5",
+      "n": 2460,
+      "mae": 16.873658536585364,
+      "rmse": 19.506901842993805,
+      "bias_pred_minus_actual": 0.007967479674796708
+    },
+    {
+      "test_season": "2022-23",
+      "method": "baseline_previous10",
+      "n": 2460,
+      "mae": 16.63654471544715,
+      "rmse": 18.70615708819238,
+      "bias_pred_minus_actual": -0.0018292682926829282
+    },
+    {
+      "test_season": "2023-24",
+      "method": "monte_carlo_team_score_distribution",
+      "n": 2460,
+      "mae": 15.224356352022992,
+      "rmse": 17.48852667278397,
+      "bias_pred_minus_actual": -0.10037201672065549
+    },
+    {
+      "test_season": "2023-24",
+      "method": "direct_base_score_model",
+      "n": 2460,
+      "mae": 16.249609226477073,
+      "rmse": 18.00462667883947,
+      "bias_pred_minus_actual": -0.027768077133238374
+    },
+    {
+      "test_season": "2023-24",
+      "method": "baseline_previous5",
+      "n": 2460,
+      "mae": 17.007642276422764,
+      "rmse": 20.00512292112775,
+      "bias_pred_minus_actual": -0.005365853658536526
+    },
+    {
+      "test_season": "2023-24",
+      "method": "baseline_previous10",
+      "n": 2460,
+      "mae": 16.606951219512197,
+      "rmse": 19.124525925363972,
+      "bias_pred_minus_actual": 0.013536585365853691
+    },
+    {
+      "test_season": "2024-25",
+      "method": "monte_carlo_team_score_distribution",
+      "n": 2460,
+      "mae": 15.037898663776676,
+      "rmse": 17.388478544303617,
+      "bias_pred_minus_actual": -0.17533584222560974
+    },
+    {
+      "test_season": "2024-25",
+      "method": "direct_base_score_model",
+      "n": 2460,
+      "mae": 16.000108991453754,
+      "rmse": 17.980020761050096,
+      "bias_pred_minus_actual": 0.019001586871718747
+    },
+    {
+      "test_season": "2024-25",
+      "method": "baseline_previous5",
+      "n": 2460,
+      "mae": 16.729512195121952,
+      "rmse": 19.850686949265096,
+      "bias_pred_minus_actual": 0.010650406504065062
+    },
+    {
+      "test_season": "2024-25",
+      "method": "baseline_previous10",
+      "n": 2460,
+      "mae": 16.49113821138211,
+      "rmse": 19.125859564083406,
+      "bias_pred_minus_actual": -0.0008130081300813008
+    },
+    {
+      "test_season": "2025-26",
+      "method": "monte_carlo_team_score_distribution",
+      "n": 2460,
+      "mae": 15.05102112312627,
+      "rmse": 17.580802914658538,
+      "bias_pred_minus_actual": -0.11876141307799797
+    },
+    {
+      "test_season": "2025-26",
+      "method": "direct_base_score_model",
+      "n": 2460,
+      "mae": 15.915299095063068,
+      "rmse": 18.007851081558716,
+      "bias_pred_minus_actual": -0.013994930721379814
+    },
+    {
+      "test_season": "2025-26",
+      "method": "baseline_previous5",
+      "n": 2460,
+      "mae": 16.96479674796748,
+      "rmse": 20.18302877187921,
+      "bias_pred_minus_actual": -0.012601626016260204
+    },
+    {
+      "test_season": "2025-26",
+      "method": "baseline_previous10",
+      "n": 2460,
+      "mae": 16.649227642276426,
+      "rmse": 19.428756974160123,
+      "bias_pred_minus_actual": -0.016788617886178733
+    },
+    {
+      "test_season": "pooled_2022-26",
+      "method": "monte_carlo_team_score_distribution",
+      "n": 9840,
+      "mae": 15.183984858815263,
+      "rmse": 17.4586504740533,
+      "bias_pred_minus_actual": -0.13045918534441692
+    },
+    {
+      "test_season": "pooled_2022-26",
+      "method": "direct_base_score_model",
+      "n": 9840,
+      "mae": 16.073112473423752,
+      "rmse": 17.933521796051263,
+      "bias_pred_minus_actual": 0.0014448631724066428
+    },
+    {
+      "test_season": "pooled_2022-26",
+      "method": "baseline_previous5",
+      "n": 9840,
+      "mae": 16.89390243902439,
+      "rmse": 19.887990002548356,
+      "bias_pred_minus_actual": 0.00016260162601626393
+    },
+    {
+      "test_season": "pooled_2022-26",
+      "method": "baseline_previous10",
+      "n": 9840,
+      "mae": 16.59596544715447,
+      "rmse": 19.09805557186428,
+      "bias_pred_minus_actual": -0.001473577235772328
+    }
+  ],
+  "limitations": [
+    "Equal coach CR isolates base score and is not exact historical credit-adjusted PDK.",
+    "Historical overtime probability and team-score volatility are estimated only from games completed before the target date.",
+    "Monte Carlo is a challenger experiment, not a production change.",
+    "2025-26 remains a reported holdout; the half-life was selected using 2024-25 only."
+  ],
+  "production_changed": false
+}

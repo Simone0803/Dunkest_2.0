@@ -1,0 +1,76 @@
+{
+  "generated_at_utc": "2026-10-13T09:16:24.226019+00:00",
+  "paired_rows": 55565,
+  "round_clusters": 467,
+  "test_seasons": [
+    "13",
+    "19",
+    "9"
+  ],
+  "bootstrap_replicates": 10000,
+  "bootstrap_unit": "Dunkest season-week-round cluster; resampling is stratified by held-out season and all player outcomes in a sampled round stay together.",
+  "comparisons": {
+    "expanded_v2_minus_matchup_v1": {
+      "pooled_delta_ci95": [
+        -0.015732836315212835,
+        -0.003252087967075132
+      ],
+      "bootstrap_fraction_delta_below_zero": 0.999,
+      "per_season": {
+        "13": {
+          "ci95": [
+            -0.022401501960344586,
+            -0.00018374779628510887
+          ],
+          "fraction_below_zero": 0.9761
+        },
+        "19": {
+          "ci95": [
+            -0.020309358425356364,
+            -0.0009945568914216916
+          ],
+          "fraction_below_zero": 0.9848
+        },
+        "9": {
+          "ci95": [
+            -0.018374662369400933,
+            0.005692739975800791
+          ],
+          "fraction_below_zero": 0.8464
+        }
+      }
+    },
+    "expanded_v2_minus_credit_only": {
+      "pooled_delta_ci95": [
+        -0.03155053637998002,
+        -0.00431564479333051
+      ],
+      "bootstrap_fraction_delta_below_zero": 0.9944,
+      "per_season": {
+        "13": {
+          "ci95": [
+            -0.0353273215890695,
+            0.009704624316280821
+          ],
+          "fraction_below_zero": 0.8769
+        },
+        "19": {
+          "ci95": [
+            -0.05145654530679963,
+            -0.008137405584014117
+          ],
+          "fraction_below_zero": 0.9954
+        },
+        "9": {
+          "ci95": [
+            -0.036105708051214366,
+            0.016858518314609633
+          ],
+          "fraction_below_zero": 0.7723
+        }
+      }
+    }
+  },
+  "production_changed": false,
+  "interpretation": "This is a small incremental-feature test. The pooled bootstrap uses equal weight per held-out season; it is not evidence for changing production unless gains are practically material and robust."
+}

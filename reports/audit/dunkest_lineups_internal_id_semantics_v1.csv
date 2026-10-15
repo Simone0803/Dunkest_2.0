@@ -1,0 +1,601 @@
+lineups_entity_id,player_name,team_code,position,quotation,status,observed_names,same_numeric_id_in_profile_catalog,profile_catalog_name_at_same_id,profile_catalog_slug_at_same_id,name_matches_profile_catalog_slug,name_matched_profile_id,name_matched_profile_slug,identity_warning
+1,Nikola Jokic,DEN,Center,30.0,starter,,True,Adams Jaylen,jaylen-adams,True,248,nikola-jokic,Lineups entity ID is not a profile ID unless independently verified
+2,Giannis Antetokounmpo,MIA,Forward,25.0,starter,,True,Adams Steven,steven-adams,True,14,giannis-antetokounmpo,Lineups entity ID is not a profile ID unless independently verified
+3,Luka Doncic,LAL,Guard,27.0,starter,,True,Adebayo Bam,bam-adebayo,True,127,luka-doncic,Lineups entity ID is not a profile ID unless independently verified
+4,Joel Embiid,PHI,Center,18.0,starter,,True,Adel Deng,deng-adel,True,140,joel-embiid,Lineups entity ID is not a profile ID unless independently verified
+5,Kevin Durant,HOU,Forward,16.0,starter,,True,Aldridge LaMarcus,lamarcus-aldridge,True,135,kevin-durant,Lineups entity ID is not a profile ID unless independently verified
+6,Lebron James,PHI,Forward,16.0,starter,,True,Alkins Rawle,rawle-alkins,True,237,lebron-james,Lineups entity ID is not a profile ID unless independently verified
+7,James Harden,CLE,Guard,14.0,starter,,True,Allen Grayson,grayson-allen,True,190,james-harden,Lineups entity ID is not a profile ID unless independently verified
+8,Stephen Curry,GSW,Guard,15.0,starter,,True,Allen Jarrett,jarrett-allen,True,111,stephen-curry,Lineups entity ID is not a profile ID unless independently verified
+9,Karl-anthony Towns,NYK,Center,16.5,starter,,True,Allen Kadeem,kadeem-allen,True,448,karl-anthony-towns,Lineups entity ID is not a profile ID unless independently verified
+10,Anthony Davis,WAS,Forward,16.0,starter,,True,Aminu Al-Farouq,al-farouq-aminu,True,113,anthony-davis,Lineups entity ID is not a profile ID unless independently verified
+11,Domantas Sabonis,SAC,Center,18.0,starter,,True,Anderson Justin,justin-anderson,True,409,domantas-sabonis,Lineups entity ID is not a profile ID unless independently verified
+12,Trae Young,WAS,Guard,15.5,starter,,True,Anderson Kyle,kyle-anderson,True,492,trae-young,Lineups entity ID is not a profile ID unless independently verified
+13,Rudy Gobert,MIN,Center,11.5,starter,,True,Anderson Ryan,ryan-anderson,True,174,rudy-gobert,Lineups entity ID is not a profile ID unless independently verified
+14,Kawhi Leonard,TOR,Forward,15.0,starter,,True,Antetokounmpo Giannis,giannis-antetokounmpo,True,278,kawhi-leonard,Lineups entity ID is not a profile ID unless independently verified
+16,Ja Morant,POR,Guard,13.0,starter,,True,Anunoby OG,og-anunoby,True,646,ja-morant,Lineups entity ID is not a profile ID unless independently verified
+17,Damian Lillard,POR,Guard,13.0,starter,,True,Arcidiacono Ryan,ryan-arcidiacono,True,282,damian-lillard,Lineups entity ID is not a profile ID unless independently verified
+18,Jimmy Butler,GSW,Forward,9.5,out,,True,Ariza Trevor,trevor-ariza,True,74,jimmy-butler,Lineups entity ID is not a profile ID unless independently verified
+19,Jayson Tatum,BOS,Forward,18.0,starter,,True,Augustin D.J.,dj-augustin,True,436,jayson-tatum,Lineups entity ID is not a profile ID unless independently verified
+20,Dejounte Murray,NOP,Guard,12.0,starter,,True,Ayton Deandre,deandre-ayton,True,340,dejounte-murray,Lineups entity ID is not a profile ID unless independently verified
+22,Kyrie Irving,DAL,Guard,12.0,starter,,True,Bagley III Marvin,marvin-bagley-iii,True,229,kyrie-irving,Lineups entity ID is not a profile ID unless independently verified
+23,Bam Adebayo,MIA,Center,15.0,starter,,True,Ball Lonzo,lonzo-ball,True,3,bam-adebayo,Lineups entity ID is not a profile ID unless independently verified
+24,Pascal Siakam,IND,Forward,12.5,starter,,True,Bamba Mo,mo-bamba,True,420,pascal-siakam,Lineups entity ID is not a profile ID unless independently verified
+25,Demar Derozan,DEN,Forward,9.0,bench,,True,Barea J.J.,jj-barea,True,120,demar-derozan,Lineups entity ID is not a profile ID unless independently verified
+26,Devin Booker,PHX,Guard,14.0,starter,,True,Barnes Harrison,harrison-barnes,True,54,devin-booker,Lineups entity ID is not a profile ID unless independently verified
+27,Paul George,BOS,Forward,11.5,starter,,True,Barton Will,will-barton,True,169,paul-george,Lineups entity ID is not a profile ID unless independently verified
+29,Deandre Ayton,WAS,Center,9.5,bench,,True,Batum Nicolas,nicolas-batum,True,20,deandre-ayton,Lineups entity ID is not a profile ID unless independently verified
+30,Bradley Beal,LAC,Guard,8.5,bench,,True,Bayless Jerryd,jerryd-bayless,True,33,bradley-beal,Lineups entity ID is not a profile ID unless independently verified
+31,Donovan Mitchell,CLE,Guard,14.0,starter,,True,Baynes Aron,aron-baynes,True,326,donovan-mitchell,Lineups entity ID is not a profile ID unless independently verified
+32,Julius Randle,BKN,Forward,14.5,starter,,True,Bazemore Kent,kent-bazemore,True,391,julius-randle,Lineups entity ID is not a profile ID unless independently verified
+33,Nikola Vucevic,ORL,Center,10.0,bench,,True,Beal Bradley,bradley-beal,True,460,nikola-vucevic,Lineups entity ID is not a profile ID unless independently verified
+34,Lamelo Ball,MIN,Guard,14.5,starter,,True,Beasley Malik,malik-beasley,True,705,lamelo-ball,Lineups entity ID is not a profile ID unless independently verified
+35,Jusuf Nurkic,UTA,Center,10.0,starter,,True,Belinelli Marco,marco-belinelli,True,356,jusuf-nurkic,Lineups entity ID is not a profile ID unless independently verified
+36,Khris Middleton,WAS,Forward,6.0,bench,,True,Bell Jordan,jordan-bell,True,318,khris-middleton,Lineups entity ID is not a profile ID unless independently verified
+37,Darius Garland,LAC,Guard,13.0,starter,,True,Bembry DeAndre',deandre-bembry,True,606,darius-garland,Lineups entity ID is not a profile ID unless independently verified
+38,Clint Capela,HOU,Center,5.5,bench,,True,Bender Dragan,dragan-bender,True,78,clint-capela,Lineups entity ID is not a profile ID unless independently verified
+39,Shai Gilgeous-Alexander,OKC,Guard,22.0,starter,,True,Bertans Dairis,dairis-bertans,True,173,shai-gilgeous-alexander,Lineups entity ID is not a profile ID unless independently verified
+40,Jarrett Allen,CLE,Center,12.5,starter,,True,Bertans Davis,davis-bertans,True,8,jarrett-allen,Lineups entity ID is not a profile ID unless independently verified
+41,Fred Vanvleet,HOU,Guard,10.0,starter,,True,Beverley Patrick,patrick-beverley,True,458,fred-vanvleet,Lineups entity ID is not a profile ID unless independently verified
+42,Brandon Ingram,LAC,Forward,10.0,out,,True,Birch Khem,khem-birch,True,228,brandon-ingram,Lineups entity ID is not a profile ID unless independently verified
+43,Tyrese Haliburton,IND,Guard,14.5,starter,,True,Biyombo Bismack,bismack-biyombo,True,722,tyrese-haliburton,Lineups entity ID is not a profile ID unless independently verified
+45,De'Aaron Fox,SAS,Guard,11.0,starter,,True,Blakeney Antonio,antonio-blakeney,False,,,Lineups entity ID is not a profile ID unless independently verified
+46,Jaylen Brown,PHI,Forward,14.0,starter,,True,Bledsoe Eric,eric-bledsoe,True,65,jaylen-brown,Lineups entity ID is not a profile ID unless independently verified
+47,Kristaps Porzingis,GSW,Center,9.5,out,,True,Blossomgame Jaron,jaron-blossomgame,True,384,kristaps-porzingis,Lineups entity ID is not a profile ID unless independently verified
+48,Jrue Holiday,POR,Guard,9.0,bench,,True,Bluiett Trevon,trevon-bluiett,True,212,jrue-holiday,Lineups entity ID is not a profile ID unless independently verified
+49,Zion Williamson,NOP,Forward,12.5,starter,,True,Bogdanovic Bogdan,bogdan-bogdanovic,True,684,zion-williamson,Lineups entity ID is not a profile ID unless independently verified
+50,CJ Mccollum,ATL,Guard,10.0,starter,,True,Bogdanovic Bojan,bojan-bogdanovic,True,307,cj-mccollum,Lineups entity ID is not a profile ID unless independently verified
+51,Robert Williams III,POR,Center,8.0,bench,,True,Bogut Andrew,andrew-bogut,False,,,Lineups entity ID is not a profile ID unless independently verified
+52,Ben Simmons,SAC,Guard,6.0,bench,,True,Bolden Jonah,jonah-bolden,True,421,ben-simmons,Lineups entity ID is not a profile ID unless independently verified
+53,Anthony Edwards,MIN,Guard,16.5,starter,,True,Bonga Isaac,isaac-bonga,True,715,anthony-edwards,Lineups entity ID is not a profile ID unless independently verified
+54,Josh Giddey,CHI,Guard,15.5,starter,,True,Booker Devin,devin-booker,True,946,josh-giddey,Lineups entity ID is not a profile ID unless independently verified
+55,Draymond Green,GSW,Forward,8.0,starter,,True,Boucher Chris,chris-boucher,True,184,draymond-green,Lineups entity ID is not a profile ID unless independently verified
+56,Zach Lavine,SAC,Guard,7.5,starter,,True,Bradley Avery,avery-bradley,True,271,zach-lavine,Lineups entity ID is not a profile ID unless independently verified
+57,John Collins,DET,Forward,9.5,starter,,True,Bradley Tony,tony-bradley,True,96,john-collins,Lineups entity ID is not a profile ID unless independently verified
+58,Evan Mobley,CLE,Forward,14.0,starter,,True,Brewer Corey,corey-brewer,True,983,evan-mobley,Lineups entity ID is not a profile ID unless independently verified
+60,Jamal Murray,DEN,Guard,14.5,starter,,True,Bridges Miles,miles-bridges,True,341,jamal-murray,Lineups entity ID is not a profile ID unless independently verified
+61,Tobias Harris,SAS,Forward,10.5,starter,,True,Broekhoff Ryan,ryan-broekhoff,True,196,tobias-harris,Lineups entity ID is not a profile ID unless independently verified
+62,Scottie Barnes,TOR,Forward,17.0,starter,,True,Brogdon Malcolm,malcolm-brogdon,True,919,scottie-barnes,Lineups entity ID is not a profile ID unless independently verified
+63,Collin Sexton,LAL,Guard,7.5,bench,,True,Brooks Dillon,dillon-brooks,True,417,collin-sexton,Lineups entity ID is not a profile ID unless independently verified
+64,Cade Cunningham,DET,Guard,21.0,starter,,True,Brown Bruce,bruce-brown,True,934,cade-cunningham,Lineups entity ID is not a profile ID unless independently verified
+65,Keldon Johnson,SAS,Forward,7.0,starter,,True,Brown Jaylen,jaylen-brown,True,627,keldon-johnson,Lineups entity ID is not a profile ID unless independently verified
+67,Marcus Smart,HOU,Guard,7.0,bench,,True,Brown Jr. Troy,troy-brown-jr,True,424,marcus-smart,Lineups entity ID is not a profile ID unless independently verified
+68,Jakob Poeltl,TOR,Center,9.5,starter,,True,Brunson Jalen,jalen-brunson,True,379,jakob-poeltl,Lineups entity ID is not a profile ID unless independently verified
+69,Paolo Banchero,ORL,Forward,14.0,starter,,True,Bryant Thomas,thomas-bryant,True,1128,paolo-banchero,Lineups entity ID is not a profile ID unless independently verified
+70,Klay Thompson,MIA,Guard,6.0,starter,,True,Bullock Jr. Reggie,reggie-bullock-jr,True,444,klay-thompson,Lineups entity ID is not a profile ID unless independently verified
+72,Jabari Smith Jr,HOU,Forward,10.5,starter,,True,Burks Alec,alec-burks,True,1144,jabari-smith-jr,Lineups entity ID is not a profile ID unless independently verified
+73,Jaren Jackson Jr,UTA,Forward,12.0,starter,,True,Burton Deonte,deonte-burton,True,236,jaren-jackson-jr,Lineups entity ID is not a profile ID unless independently verified
+74,Saddiq Bey,NOP,Forward,9.5,starter,,True,Butler Jimmy,jimmy-butler,True,707,saddiq-bey,Lineups entity ID is not a profile ID unless independently verified
+75,Kyle Kuzma,MIL,Forward,7.0,starter,,True,Caboclo Bruno,bruno-caboclo,True,268,kyle-kuzma,Lineups entity ID is not a profile ID unless independently verified
+76,Wendell Carter Jr,ORL,Center,10.0,starter,,True,Calderon Jose,jose-calderon,True,82,wendell-carter-jr,Lineups entity ID is not a profile ID unless independently verified
+77,Mike Conley,BOS,Guard,6.0,bench,,True,Caldwell-Pope Kentavious,kentavious-caldwell-pope,True,100,mike-conley,Lineups entity ID is not a profile ID unless independently verified
+78,Jordan Poole,NOP,Guard,8.5,bench,,True,Capela Clint,clint-capela,True,657,jordan-poole,Lineups entity ID is not a profile ID unless independently verified
+80,Steve Kerr,GSW,Head Coach,7.0,bench,,True,Carter Jevon,jevon-carter,False,,,Lineups entity ID is not a profile ID unless independently verified
+81,Al Horford,GSW,Center,6.5,starter,,True,Carter Vince,vince-carter,True,217,al-horford,Lineups entity ID is not a profile ID unless independently verified
+82,Caris Levert,MIL,Guard,5.0,bench,,True,Carter Jr. Wendell,wendell-carter-jr,True,281,caris-levert,Lineups entity ID is not a profile ID unless independently verified
+83,Michael Porter Jr,BKN,Forward,13.0,starter,,True,Carter-Williams Michael,michael-carter-williams,True,381,michael-porter-jr,Lineups entity ID is not a profile ID unless independently verified
+84,Joe Mazzulla,BOS,Head Coach,8.0,bench,,True,Caruso Alex,alex-caruso,False,,,Lineups entity ID is not a profile ID unless independently verified
+85,Myles Turner,MIL,Center,9.0,starter,,True,Cauley-Stein Willie,willie-cauley-stein,True,453,myles-turner,Lineups entity ID is not a profile ID unless independently verified
+86,Andrew Wiggins,MIA,Forward,10.5,starter,,True,Caupain Troy,troy-caupain,True,477,andrew-wiggins,Lineups entity ID is not a profile ID unless independently verified
+87,Taylor Jenkins,MIL,Head Coach,7.0,bench,,True,Cavanaugh Tyler,tyler-cavanaugh,False,,,Lineups entity ID is not a profile ID unless independently verified
+90,Jerami Grant,MEM,Forward,8.5,starter,,True,Chealey Joe,joe-chealey,True,180,jerami-grant,Lineups entity ID is not a profile ID unless independently verified
+91,Tyrese Maxey,PHI,Guard,17.0,starter,,True,Chiozza Chris,chris-chiozza,True,742,tyrese-maxey,Lineups entity ID is not a profile ID unless independently verified
+92,Og Anunoby,NYK,Forward,12.5,starter,,True,Chriss Marquese,marquese-chriss,True,16,og-anunoby,Lineups entity ID is not a profile ID unless independently verified
+93,Kevin Porter Jr,MIL,Guard,10.0,bench,,True,Clark Gary,gary-clark,True,659,kevin-porter-jr,Lineups entity ID is not a profile ID unless independently verified
+94,Jordan Ott,PHX,Head Coach,7.0,bench,,True,Clark Ian,ian-clark,False,,,Lineups entity ID is not a profile ID unless independently verified
+95,RJ Barrett,TOR,Forward,10.0,starter,,True,Clarkson Jordan,jordan-clarkson,True,577,rj-barrett,Lineups entity ID is not a profile ID unless independently verified
+96,Andre Drummond,NYK,Center,6.0,bench,,True,Collins John,john-collins,True,132,andre-drummond,Lineups entity ID is not a profile ID unless independently verified
+98,Lauri Markkanen,UTA,Forward,12.5,starter,,True,Collison Darren,darren-collison,True,301,lauri-markkanen,Lineups entity ID is not a profile ID unless independently verified
+99,Tyronn Lue,LAC,Head Coach,6.5,bench,,True,Colson Bonzie,bonzie-colson,False,,,Lineups entity ID is not a profile ID unless independently verified
+100,Ivica Zubac,IND,Center,12.5,starter,,True,Conley Mike,mike-conley,True,496,ivica-zubac,Lineups entity ID is not a profile ID unless independently verified
+101,Bobby Portis,MIA,Forward,8.0,bench,,True,Connaughton Pat,pat-connaughton,True,383,bobby-portis,Lineups entity ID is not a profile ID unless independently verified
+102,Jalen Brunson,NYK,Guard,16.0,starter,,True,Cook Quinn,quinn-cook,True,68,jalen-brunson,Lineups entity ID is not a profile ID unless independently verified
+104,Jordi Fernandez,BKN,Head Coach,6.0,bench,,True,Covington Robert,robert-covington,False,,,Lineups entity ID is not a profile ID unless independently verified
+105,Marvin Bagley III,DEN,Forward,7.0,bench,,True,Crabbe Allen,allen-crabbe,True,22,marvin-bagley-iii,Lineups entity ID is not a profile ID unless independently verified
+106,Aaron Gordon,DEN,Forward,8.5,starter,,True,Craig Torrey,torrey-craig,True,176,aaron-gordon,Lineups entity ID is not a profile ID unless independently verified
+107,Gary Trent Jr,MIL,Guard,4.5,bench,,True,Crawford Jamal,jamal-crawford,True,449,gary-trent-jr,Lineups entity ID is not a profile ID unless independently verified
+110,Tyler Herro,MIL,Guard,12.0,starter,,True,Curry Seth,seth-curry,True,617,tyler-herro,Lineups entity ID is not a profile ID unless independently verified
+111,Jarred Vanderbilt,LAL,Forward,4.0,bench,,True,Curry Stephen,stephen-curry,True,457,jarred-vanderbilt,Lineups entity ID is not a profile ID unless independently verified
+112,Jalen Green,PHX,Guard,9.5,starter,,True,Daniels Troy,troy-daniels,True,949,jalen-green,Lineups entity ID is not a profile ID unless independently verified
+113,Erik Spoelstra,MIA,Head Coach,9.0,bench,,True,Davis Anthony,anthony-davis,False,,,Lineups entity ID is not a profile ID unless independently verified
+114,Harrison Barnes,SAS,Forward,4.0,starter,,True,Davis Ed,ed-davis,True,26,harrison-barnes,Lineups entity ID is not a profile ID unless independently verified
+115,Nick Nurse,PHI,Head Coach,10.5,bench,,True,Dedmon Dewayne,dewayne-dedmon,False,,,Lineups entity ID is not a profile ID unless independently verified
+116,Devin Vassell,SAS,Guard,10.0,starter,,True,Dekker Sam,sam-dekker,True,774,devin-vassell,Lineups entity ID is not a profile ID unless independently verified
+117,Brook Lopez,LAC,Center,8.0,starter,,True,Delgado Angel,angel-delgado,True,286,brook-lopez,Lineups entity ID is not a profile ID unless independently verified
+118,Tuomas Iisalo,MEM,Head Coach,6.0,bench,,True,Dellavedova Matthew,matthew-dellavedova,False,,,Lineups entity ID is not a profile ID unless independently verified
+119,Josh Hart,NYK,Forward,12.0,starter,,True,Deng Luol,luol-deng,True,198,josh-hart,Lineups entity ID is not a profile ID unless independently verified
+120,Dorian Finney-Smith,ATL,Forward,4.0,bench,,True,DeRozan DeMar,demar-derozan,True,152,dorian-finney-smith,Lineups entity ID is not a profile ID unless independently verified
+121,Mikal Bridges,NYK,Forward,9.5,starter,,True,Derrickson Marcus,marcus-derrickson,True,59,mikal-bridges,Lineups entity ID is not a profile ID unless independently verified
+122,Keegan Murray,SAC,Forward,8.0,starter,,True,Diallo Cheick,cheick-diallo,True,1113,keegan-murray,Lineups entity ID is not a profile ID unless independently verified
+123,Franz Wagner,ORL,Forward,12.0,starter,,True,Diallo Hamidou,hamidou-diallo,True,1019,franz-wagner,Lineups entity ID is not a profile ID unless independently verified
+124,P.J. Washington,DAL,Forward,9.0,starter,,True,Dieng Gorgui,gorgui-dieng,False,,,Lineups entity ID is not a profile ID unless independently verified
+125,Anfernee Simons,PHI,Guard,8.0,bench,,True,Dinwiddie Spencer,spencer-dinwiddie,True,423,anfernee-simons,Lineups entity ID is not a profile ID unless independently verified
+126,Desmond Bane,ORL,Guard,11.5,starter,,True,DiVincenzo Donte,donte-divincenzo,True,706,desmond-bane,Lineups entity ID is not a profile ID unless independently verified
+127,Mitchell Robinson,BOS,Center,6.5,starter,,True,Doncic Luka,luka-doncic,True,401,mitchell-robinson,Lineups entity ID is not a profile ID unless independently verified
+129,Jason Kidd,DAL,Head Coach,7.5,bench,,True,Dotson Damyean,damyean-dotson,False,,,Lineups entity ID is not a profile ID unless independently verified
+130,Nicolas Claxton,CHI,Center,9.5,starter,,True,Dozier PJ,pj-dozier,False,,,Lineups entity ID is not a profile ID unless independently verified
+131,Cameron Johnson,DEN,Forward,9.0,starter,,True,Dragic Goran,goran-dragic,True,626,cameron-johnson,Lineups entity ID is not a profile ID unless independently verified
+132,Davion Mitchell,MIA,Guard,9.0,starter,,True,Drummond Andre,andre-drummond,True,982,davion-mitchell,Lineups entity ID is not a profile ID unless independently verified
+134,Buddy Hield,CHI,Guard,4.0,bench,,True,Dunn Kris,kris-dunn,True,207,buddy-hield,Lineups entity ID is not a profile ID unless independently verified
+136,Kevin Love,UTA,Forward,4.5,bench,,True,Duval Trevon,trevon-duval,True,288,kevin-love,Lineups entity ID is not a profile ID unless independently verified
+137,Dillon Brooks,PHX,Forward,9.0,starter,,True,Edwards Vincent,vincent-edwards,True,63,dillon-brooks,Lineups entity ID is not a profile ID unless independently verified
+138,JJ Redick,LAL,Head Coach,8.0,bench,,True,Ellenson Henry,henry-ellenson,True,392,jj-redick,Lineups entity ID is not a profile ID unless independently verified
+139,Tre Jones,CHI,Guard,9.0,bench,,True,Ellington Wayne,wayne-ellington,True,731,tre-jones,Lineups entity ID is not a profile ID unless independently verified
+140,Alperen Sengun,HOU,Center,17.5,starter,,True,Embiid Joel,joel-embiid,True,1001,alperen-sengun,Lineups entity ID is not a profile ID unless independently verified
+141,Rui Hachimura,LAC,Forward,8.5,starter,,True,Ennis III James,james-ennis-iii,True,611,rui-hachimura,Lineups entity ID is not a profile ID unless independently verified
+142,Seth Curry,GSW,Guard,4.0,bench,,True,Eubanks Drew,drew-eubanks,True,110,seth-curry,Lineups entity ID is not a profile ID unless independently verified
+143,David Adelman,DEN,Head Coach,10.0,bench,,True,Evans Jacob,jacob-evans,False,,,Lineups entity ID is not a profile ID unless independently verified
+144,Jordan Clarkson,NYK,Guard,6.0,bench,,True,Evans Jawun,jawun-evans,True,95,jordan-clarkson,Lineups entity ID is not a profile ID unless independently verified
+145,Steven Adams,HOU,Center,6.0,bench,,True,Exum Dante,dante-exum,True,2,steven-adams,Lineups entity ID is not a profile ID unless independently verified
+147,Bogdan Bogdanovic,HOU,Guard,6.0,bench,,True,Favors Derrick,derrick-favors,True,49,bogdan-bogdanovic,Lineups entity ID is not a profile ID unless independently verified
+149,Kelly Oubre Jr,IND,Forward,8.0,bench,,True,Felton Raymond,raymond-felton,True,367,kelly-oubre-jr,Lineups entity ID is not a profile ID unless independently verified
+151,Derrick White,BOS,Guard,10.5,starter,,True,Ferrell Yogi,yogi-ferrell,True,474,derrick-white,Lineups entity ID is not a profile ID unless independently verified
+152,Luguentz Dort,ATL,Guard,6.0,bench,,True,Finney-Smith Dorian,dorian-finney-smith,True,600,luguentz-dort,Lineups entity ID is not a profile ID unless independently verified
+154,Bennedict Mathurin,NOP,Guard,8.0,bench,,True,Fournier Evan,evan-fournier,True,1122,bennedict-mathurin,Lineups entity ID is not a profile ID unless independently verified
+155,Chris Finch,MIN,Head Coach,10.0,bench,,True,Fox De'Aaron,deaaron-fox,False,,,Lineups entity ID is not a profile ID unless independently verified
+157,Tim Hardaway Jr,MIA,Forward,6.5,bench,,True,Frazier Tim,tim-frazier,True,189,tim-hardaway-jr,Lineups entity ID is not a profile ID unless independently verified
+158,Isaiah Stewart,MEM,Forward,6.5,bench,,True,Frazier Jr. Melvin,melvin-frazier-jr,True,767,isaiah-stewart,Lineups entity ID is not a profile ID unless independently verified
+161,Quin Snyder,ATL,Head Coach,8.5,bench,,True,Fultz Markelle,markelle-fultz,False,,,Lineups entity ID is not a profile ID unless independently verified
+162,Norman Powell,CHI,Guard,9.0,starter,,True,Gabriel Wenyen,wenyen-gabriel,True,386,norman-powell,Lineups entity ID is not a profile ID unless independently verified
+166,Precious Achiuwa,SAC,Forward,9.0,bench,,True,Gasol Marc,marc-gasol,True,700,precious-achiuwa,Lineups entity ID is not a profile ID unless independently verified
+168,Kevon Looney,LAL,Center,4.5,bench,,True,Gay Rudy,rudy-gay,True,285,kevon-looney,Lineups entity ID is not a profile ID unless independently verified
+169,Jalen Suggs,ORL,Guard,9.0,starter,,True,George Paul,paul-george,True,1011,jalen-suggs,Lineups entity ID is not a profile ID unless independently verified
+170,Dwight Powell,DAL,Center,4.5,bench,,True,Gibson Jonathan,jonathan-gibson,True,385,dwight-powell,Lineups entity ID is not a profile ID unless independently verified
+171,Kenny Atkinson,CLE,Head Coach,9.5,bench,,True,Gibson Taj,taj-gibson,False,,,Lineups entity ID is not a profile ID unless independently verified
+172,Jaden Mcdaniels,MIN,Forward,9.5,starter,,True,Giles III Harry,harry-giles-iii,True,744,jaden-mcdaniels,Lineups entity ID is not a profile ID unless independently verified
+173,De'Andre Hunter,SAC,Forward,6.5,starter,,True,Gilgeous-Alexander Shai,shai-gilgeous-alexander,False,,,Lineups entity ID is not a profile ID unless independently verified
+174,Jae'Sean Tate,HOU,Forward,4.0,bench,,True,Gobert Rudy,rudy-gobert,False,,,Lineups entity ID is not a profile ID unless independently verified
+176,Tiago Splitter,CHI,Head Coach,6.5,bench,,True,Gordon Aaron,aaron-gordon,False,,,Lineups entity ID is not a profile ID unless independently verified
+178,Royce O'Neale,CHA,Forward,8.0,bench,,True,Graham Devonte',devonte-graham,False,,,Lineups entity ID is not a profile ID unless independently verified
+179,Mo Bamba,UTA,Center,4.0,bench,,True,Graham Treveon,treveon-graham,True,24,mo-bamba,Lineups entity ID is not a profile ID unless independently verified
+180,Kevin Huerter,DET,Guard,6.5,bench,,True,Grant Jerami,jerami-grant,True,220,kevin-huerter,Lineups entity ID is not a profile ID unless independently verified
+181,Darko Rajakovic,TOR,Head Coach,8.0,bench,,True,Grant Jerian,jerian-grant,False,,,Lineups entity ID is not a profile ID unless independently verified
+182,Thomas Bryant,CLE,Center,4.0,bench,,True,Grantham Donte,donte-grantham,True,69,thomas-bryant,Lineups entity ID is not a profile ID unless independently verified
+184,Malik Monk,SAC,Guard,6.5,bench,,True,Green Draymond,draymond-green,True,328,malik-monk,Lineups entity ID is not a profile ID unless independently verified
+185,Coby White,CHA,Guard,9.0,starter,,True,Green Gerald,gerald-green,True,681,coby-white,Lineups entity ID is not a profile ID unless independently verified
+186,Jalen Smith,CHI,Center,7.0,starter,,True,Green JaMychal,jamychal-green,True,764,jalen-smith,Lineups entity ID is not a profile ID unless independently verified
+189,Jamahl Mosley,NOP,Head Coach,6.5,bench,,True,Hardaway Jr. Tim,tim-hardaway-jr,False,,,Lineups entity ID is not a profile ID unless independently verified
+190,Kyle Anderson,TOR,Forward,4.0,bench,,True,Harden James,james-harden,True,12,kyle-anderson,Lineups entity ID is not a profile ID unless independently verified
+192,Ayo Dosunmu,MIN,Guard,10.0,bench,,True,Harrell Montrezl,montrezl-harrell,True,937,ayo-dosunmu,Lineups entity ID is not a profile ID unless independently verified
+197,Jonathan Isaac,ORL,Forward,4.0,bench,,True,Harrison Shaquille,shaquille-harrison,True,230,jonathan-isaac,Lineups entity ID is not a profile ID unless independently verified
+200,Onyeka Okongwu,ATL,Center,12.0,starter,,True,Haslem Udonis,udonis-haslem,True,751,onyeka-okongwu,Lineups entity ID is not a profile ID unless independently verified
+201,Jonathan Kuminga,MIN,Forward,7.0,starter,,True,Hayward Gordon,gordon-hayward,True,970,jonathan-kuminga,Lineups entity ID is not a profile ID unless independently verified
+202,Dyson Daniels,ATL,Guard,12.0,starter,,True,Henson John,john-henson,True,1149,dyson-daniels,Lineups entity ID is not a profile ID unless independently verified
+206,Tyus Jones,DEN,Guard,4.0,bench,,True,Hicks Isaiah,isaiah-hicks,True,251,tyus-jones,Lineups entity ID is not a profile ID unless independently verified
+207,Patrick Williams,CHI,Forward,5.5,bench,,True,Hield Buddy,buddy-hield,True,776,patrick-williams,Lineups entity ID is not a profile ID unless independently verified
+208,Micah Nori,POR,Head Coach,7.5,bench,,True,Highsmith Haywood,haywood-highsmith,False,,,Lineups entity ID is not a profile ID unless independently verified
+211,Grayson Allen,CHA,Guard,7.0,starter,,True,Holiday Aaron,aaron-holiday,True,7,grayson-allen,Lineups entity ID is not a profile ID unless independently verified
+213,Isaac Okoro,CHI,Forward,5.5,bench,,True,Holiday Justin,justin-holiday,True,752,isaac-okoro,Lineups entity ID is not a profile ID unless independently verified
+215,Gabe Vincent,ATL,Guard,5.2,bench,,True,Holmes Richaun,richaun-holmes,True,675,gabe-vincent,Lineups entity ID is not a profile ID unless independently verified
+216,Kentavious Caldwell-Pope,PHI,Guard,4.0,bench,,True,Hood Rodney,rodney-hood,True,77,kentavious-caldwell-pope,Lineups entity ID is not a profile ID unless independently verified
+219,Gary Payton II,GSW,Guard,7.0,bench,,True,Howard Dwight,dwight-howard,True,561,gary-payton-ii,Lineups entity ID is not a profile ID unless independently verified
+220,Mike Brown,NYK,Head Coach,11.0,bench,,True,Huerter Kevin,kevin-huerter,False,,,Lineups entity ID is not a profile ID unless independently verified
+221,Deni Avdija,POR,Forward,14.5,starter,,True,Humphries Isaac,isaac-humphries,True,703,deni-avdija,Lineups entity ID is not a profile ID unless independently verified
+222,Duncan Robinson,DET,Forward,7.5,starter,,True,Hunter R.J.,rj-hunter,True,399,duncan-robinson,Lineups entity ID is not a profile ID unless independently verified
+225,Bruce Brown,DEN,Guard,6.0,bench,,True,Iguodala Andre,andre-iguodala,True,64,bruce-brown,Lineups entity ID is not a profile ID unless independently verified
+226,Herbert Jones,NOP,Forward,6.5,starter,,True,Ilyasova Ersan,ersan-ilyasova,True,966,herbert-jones,Lineups entity ID is not a profile ID unless independently verified
+228,Jeremy Sochan,POR,Forward,6.5,bench,,True,Ingram Brandon,brandon-ingram,True,1142,jeremy-sochan,Lineups entity ID is not a profile ID unless independently verified
+229,Larry Nance Jr,IND,Forward,4.0,bench,,True,Irving Kyrie,kyrie-irving,True,346,larry-nance-jr,Lineups entity ID is not a profile ID unless independently verified
+231,Charles Lee,CHA,Head Coach,7.0,bench,,True,Iwundu Wes,wes-iwundu,False,,,Lineups entity ID is not a profile ID unless independently verified
+232,Daniel Gafford,DAL,Center,9.0,starter,,True,Jackson Frank,frank-jackson,True,605,daniel-gafford,Lineups entity ID is not a profile ID unless independently verified
+233,Max Strus,LAC,Guard,6.0,out,,True,Jackson Josh,josh-jackson,True,669,max-strus,Lineups entity ID is not a profile ID unless independently verified
+237,Terance Mann,BKN,Guard,5.0,bench,,True,James LeBron,lebron-james,True,635,terance-mann,Lineups entity ID is not a profile ID unless independently verified
+238,Immanuel Quickley,TOR,Guard,10.0,starter,,True,Jefferson Amile,amile-jefferson,True,757,immanuel-quickley,Lineups entity ID is not a profile ID unless independently verified
+239,Donte DiVincenzo,MIN,Guard,8.0,out,,True,Jenkins John,john-jenkins,True,126,donte-divincenzo,Lineups entity ID is not a profile ID unless independently verified
+240,Ousmane Dieng,MIL,Forward,7.0,bench,,True,Jerebko Jonas,jonas-jerebko,True,1153,ousmane-dieng,Lineups entity ID is not a profile ID unless independently verified
+241,Simone Fontecchio,MIA,Forward,6.0,bench,,True,Johnson Alize,alize-johnson,True,1125,simone-fontecchio,Lineups entity ID is not a profile ID unless independently verified
+242,Xavier Tillman,CHA,Forward,4.0,bench,,True,Johnson Amir,amir-johnson,True,772,xavier-tillman,Lineups entity ID is not a profile ID unless independently verified
+244,Brian Keefe,WAS,Head Coach,7.5,bench,,True,Johnson James,james-johnson,False,,,Lineups entity ID is not a profile ID unless independently verified
+246,Grant Williams,CHA,Forward,4.5,bench,,True,Johnson Tyler,tyler-johnson,True,682,grant-williams,Lineups entity ID is not a profile ID unless independently verified
+249,Jalen Duren,DET,Center,14.5,starter,,True,Jones Damian,damian-jones,True,1146,jalen-duren,Lineups entity ID is not a profile ID unless independently verified
+250,T.J. Mcconnell,IND,Guard,7.0,bench,,True,Jones Jemerrio,jemerrio-jones,False,,,Lineups entity ID is not a profile ID unless independently verified
+251,Luke Kennard,PHX,Guard,7.5,bench,,True,Jones Tyus,tyus-jones,True,257,luke-kennard,Lineups entity ID is not a profile ID unless independently verified
+252,Will Hardy,UTA,Head Coach,6.5,bench,,True,Jones Jr. Derrick,derrick-jones-jr,False,,,Lineups entity ID is not a profile ID unless independently verified
+258,Alex Caruso,OKC,Guard,6.5,bench,,True,Kidd-Gilchrist Michael,michael-kidd-gilchrist,True,84,alex-caruso,Lineups entity ID is not a profile ID unless independently verified
+260,Obi Toppin,IND,Forward,6.0,bench,,True,Kleber Maxi,maxi-kleber,True,773,obi-toppin,Lineups entity ID is not a profile ID unless independently verified
+261,Goga Bitadze,ORL,Center,6.0,bench,,True,Knight Brandon,brandon-knight,True,579,goga-bitadze,Lineups entity ID is not a profile ID unless independently verified
+264,Taj Gibson,MEM,Forward,4.0,bench,,True,Kornet Luke,luke-kornet,True,171,taj-gibson,Lineups entity ID is not a profile ID unless independently verified
+266,Payton Pritchard,BOS,Guard,11.5,bench,,True,Koufos Kosta,kosta-koufos,True,756,payton-pritchard,Lineups entity ID is not a profile ID unless independently verified
+269,De'Anthony Melton,GSW,Guard,7.0,bench,,True,Labissiere Skal,skal-labissiere,False,,,Lineups entity ID is not a profile ID unless independently verified
+272,Doug Christie,SAC,Head Coach,6.0,bench,,True,Layman Jake,jake-layman,False,,,Lineups entity ID is not a profile ID unless independently verified
+273,Jalen Williams,OKC,Forward,13.0,starter,,True,Leaf T.J.,tj-leaf,True,1106,jalen-williams,Lineups entity ID is not a profile ID unless independently verified
+276,Jose Alvarado,NYK,Guard,6.5,bench,,True,Lemon Jr. Walter,walter-lemon-jr,True,914,jose-alvarado,Lineups entity ID is not a profile ID unless independently verified
+277,Jeff Green,HOU,Forward,4.0,bench,,True,Len Alex,alex-len,True,187,jeff-green,Lineups entity ID is not a profile ID unless independently verified
+278,Isaiah Hartenstein,OKC,Center,10.5,starter,,True,Leonard Kawhi,kawhi-leonard,True,199,isaiah-hartenstein,Lineups entity ID is not a profile ID unless independently verified
+279,Zach Collins,CHI,Forward,4.0,bench,,True,Leonard Meyers,meyers-leonard,True,97,zach-collins,Lineups entity ID is not a profile ID unless independently verified
+280,Aaron Nesmith,IND,Forward,7.5,starter,,True,Leuer Jon,jon-leuer,True,747,aaron-nesmith,Lineups entity ID is not a profile ID unless independently verified
+282,Matisse Thybulle,LAL,Forward,4.0,bench,,True,Lillard Damian,damian-lillard,True,671,matisse-thybulle,Lineups entity ID is not a profile ID unless independently verified
+283,Ime Udoka,HOU,Head Coach,9.0,bench,,True,Lin Jeremy,jeremy-lin,False,,,Lineups entity ID is not a profile ID unless independently verified
+286,Pat Connaughton,CHA,Guard,4.0,bench,,True,Lopez Brook,brook-lopez,True,101,pat-connaughton,Lineups entity ID is not a profile ID unless independently verified
+287,Mark Daigneault,OKC,Head Coach,11.0,bench,,True,Lopez Robin,robin-lopez,False,,,Lineups entity ID is not a profile ID unless independently verified
+290,Jericho Sims,MIL,Center,7.0,bench,,True,Loyd Jordan,jordan-loyd,True,1004,jericho-sims,Lineups entity ID is not a profile ID unless independently verified
+291,Jaxson Hayes,UTA,Center,6.0,bench,,True,Lucas Kalin,kalin-lucas,True,615,jaxson-hayes,Lineups entity ID is not a profile ID unless independently verified
+294,Josh Green,UTA,Guard,5.0,bench,,True,Lyles Trey,trey-lyles,True,720,josh-green,Lineups entity ID is not a profile ID unless independently verified
+296,Derrick Jones Jr,LAC,Forward,6.5,starter,,True,Macon Daryl,daryl-macon,True,252,derrick-jones-jr,Lineups entity ID is not a profile ID unless independently verified
+297,Austin Reaves,LAL,Guard,14.5,starter,,True,Macura J.P.,jp-macura,True,998,austin-reaves,Lineups entity ID is not a profile ID unless independently verified
+301,Walker Kessler,LAL,Center,10.5,starter,,True,Markkanen Lauri,lauri-markkanen,True,1124,walker-kessler,Lineups entity ID is not a profile ID unless independently verified
+303,Tre Mann,WAS,Guard,4.5,bench,,True,Mason Frank,frank-mason,True,976,tre-mann,Lineups entity ID is not a profile ID unless independently verified
+304,Caleb Martin,DAL,Forward,4.0,bench,,True,Maten Yante,yante-maten,True,636,caleb-martin,Lineups entity ID is not a profile ID unless independently verified
+305,Tari Eason,HOU,Forward,8.5,starter,,True,Matthews Wesley,wesley-matthews,True,1121,tari-eason,Lineups entity ID is not a profile ID unless independently verified
+306,Sean Sweeney,ORL,Head Coach,7.5,bench,,True,McCaw Patrick,patrick-mccaw,False,,,Lineups entity ID is not a profile ID unless independently verified
+307,Nah'shon Hyland,MIN,Guard,4.0,bench,,True,McCollum CJ,cj-mccollum,False,,,Lineups entity ID is not a profile ID unless independently verified
+308,Javonte Green,DET,Guard,4.0,bench,,True,McConnell T.J.,tj-mcconnell,True,608,javonte-green,Lineups entity ID is not a profile ID unless independently verified
+310,Shaedon Sharpe,POR,Guard,8.0,out,,True,McGee JaVale,javale-mcgee,True,1152,shaedon-sharpe,Lineups entity ID is not a profile ID unless independently verified
+311,Gary Harris,DET,Guard,4.0,bench,,True,McGruder Rodney,rodney-mcgruder,True,194,gary-harris,Lineups entity ID is not a profile ID unless independently verified
+312,Amir Coffey,PHX,Guard,4.0,bench,,True,McKinnie Alfonzo,alfonzo-mckinnie,True,596,amir-coffey,Lineups entity ID is not a profile ID unless independently verified
+315,Trey Lyles,MIN,Forward,4.0,bench,,True,Mejri Salah,salah-mejri,True,294,trey-lyles,Lineups entity ID is not a profile ID unless independently verified
+317,J.B. Bickerstaff,DET,Head Coach,9.5,bench,,True,Metu Chimezie,chimezie-metu,False,,,Lineups entity ID is not a profile ID unless independently verified
+321,Landry Shamet,NYK,Guard,5.0,bench,,True,Miller Malcolm,malcolm-miller,True,418,landry-shamet,Lineups entity ID is not a profile ID unless independently verified
+323,Rick Carlisle,IND,Head Coach,8.5,bench,,True,Millsap Paul,paul-millsap,False,,,Lineups entity ID is not a profile ID unless independently verified
+325,Quentin Grimes,LAL,Guard,7.0,starter,,True,Mirotic Nikola,nikola-mirotic,True,950,quentin-grimes,Lineups entity ID is not a profile ID unless independently verified
+326,Ziaire Williams,LAL,Forward,5.5,bench,,True,Mitchell Donovan,donovan-mitchell,True,1027,ziaire-williams,Lineups entity ID is not a profile ID unless independently verified
+327,Jordan McLaughlin,SAS,Guard,4.0,starter,,True,Mitrou-Long Naz,naz-mitrou-long,True,642,jordan-mclaughlin,Lineups entity ID is not a profile ID unless independently verified
+329,Georges Niang,GSW,Forward,4.5,bench,,True,Monroe Greg,greg-monroe,True,350,georges-niang,Lineups entity ID is not a profile ID unless independently verified
+332,Isaiah Livers,PHX,Forward,4.0,bench,,True,Moreland Eric,eric-moreland,True,974,isaiah-livers,Lineups entity ID is not a profile ID unless independently verified
+337,Mitch Johnson,SAS,Head Coach,11.0,bench,,True,Motley Johnathan,johnathan-motley,False,,,Lineups entity ID is not a profile ID unless independently verified
+341,Trendon Watford,NOP,Forward,4.0,bench,,True,Murray Jamal,jamal-murray,True,1023,trendon-watford,Lineups entity ID is not a profile ID unless independently verified
+347,Trey Murphy III,NOP,Forward,11.5,starter,,True,Napier Shabazz,shabazz-napier,True,985,trey-murphy-iii,Lineups entity ID is not a profile ID unless independently verified
+348,Naz Reid,CHA,Forward,10.0,starter,,True,Nene,nene,True,662,naz-reid,Lineups entity ID is not a profile ID unless independently verified
+352,Nickeil Alexander-Walker,ATL,Guard,11.0,starter,,True,Noel Nerlens,nerlens-noel,True,575,nickeil-alexander-walker,Lineups entity ID is not a profile ID unless independently verified
+354,Aaron Wiggins,ATL,Guard,6.5,bench,,True,Ntilikina Frank,frank-ntilikina,True,1026,aaron-wiggins,Lineups entity ID is not a profile ID unless independently verified
+356,Nikola Jovic,MIA,Forward,6.5,bench,,True,Nurkic Jusuf,jusuf-nurkic,True,1147,nikola-jovic,Lineups entity ID is not a profile ID unless independently verified
+357,Isaiah Jackson,LAC,Forward,5.0,starter,,True,Nwaba David,david-nwaba,True,960,isaiah-jackson,Lineups entity ID is not a profile ID unless independently verified
+358,Paul Reed,DET,Forward,6.0,starter,,True,O'Neale Royce,royce-oneale,True,759,paul-reed,Lineups entity ID is not a profile ID unless independently verified
+359,Blake Wesley,POR,Guard,4.0,bench,,True,O'Quinn Kyle,kyle-oquinn,True,1135,blake-wesley,Lineups entity ID is not a profile ID unless independently verified
+361,Mark Williams,PHX,Center,9.5,out,,True,Okafor Jahlil,jahlil-okafor,True,1112,mark-williams,Lineups entity ID is not a profile ID unless independently verified
+363,Jock Landale,ATL,Center,6.0,bench,,True,Okogie Josh,josh-okogie,True,971,jock-landale,Lineups entity ID is not a profile ID unless independently verified
+366,Jalen Johnson,ATL,Forward,19.0,starter,,True,Osman Cedi,cedi-osman,True,963,jalen-johnson,Lineups entity ID is not a profile ID unless independently verified
+368,Dalen Terry,GSW,Forward,6.0,bench,,True,Pachulia Zaza,zaza-pachulia,True,1123,dalen-terry,Lineups entity ID is not a profile ID unless independently verified
+369,Deandre Jordan,NOP,Center,4.0,bench,,True,Parker Jabari,jabari-parker,True,253,deandre-jordan,Lineups entity ID is not a profile ID unless independently verified
+373,Kennedy Chandler,PHX,Guard,4.0,bench,,True,Paul Chris,chris-paul,True,1138,kennedy-chandler,Lineups entity ID is not a profile ID unless independently verified
+374,Dean Wade,PHI,Forward,5.0,starter,,True,Payton Elfrid,elfrid-payton,True,676,dean-wade,Lineups entity ID is not a profile ID unless independently verified
+375,Corey Kispert,ATL,Forward,4.0,bench,,True,Phillip Tarik,tarik-phillip,True,969,corey-kispert,Lineups entity ID is not a profile ID unless independently verified
+376,Day'ron Sharpe,BKN,Center,8.5,starter,,True,Pinson Theo,theo-pinson,False,,,Lineups entity ID is not a profile ID unless independently verified
+386,Christian Braun,DEN,Guard,8.5,starter,,True,Powell Norman,norman-powell,True,1100,christian-braun,Lineups entity ID is not a profile ID unless independently verified
+393,Jaden Hardy,LAL,Guard,5.0,bench,,True,Reed Davon,davon-reed,True,1151,jaden-hardy,Lineups entity ID is not a profile ID unless independently verified
+396,Moritz Wagner,BKN,Forward,4.0,bench,,True,Rivers Austin,austin-rivers,True,462,moritz-wagner,Lineups entity ID is not a profile ID unless independently verified
+398,Miles McBride,NYK,Guard,6.5,bench,,True,Robinson Devin,devin-robinson,True,977,miles-mcbride,Lineups entity ID is not a profile ID unless independently verified
+401,Taurean Prince,DET,Forward,6.0,bench,,True,Robinson Mitchell,mitchell-robinson,True,388,taurean-prince,Lineups entity ID is not a profile ID unless independently verified
+402,Isaiah Joe,DET,Guard,6.0,bench,,True,Robinson III Glenn,glenn-robinson-iii,True,729,isaiah-joe,Lineups entity ID is not a profile ID unless independently verified
+406,Brandon Williams,GSW,Guard,7.0,bench,,True,Rozier Terry,terry-rozier,True,1066,brandon-williams,Lineups entity ID is not a profile ID unless independently verified
+409,Jake Laravia,LAL,Forward,7.0,starter,,True,Sabonis Domantas,domantas-sabonis,True,1102,jake-laravia,Lineups entity ID is not a profile ID unless independently verified
+410,Vit Krejci,POR,Guard,4.0,bench,,True,Sampson Brandon,brandon-sampson,True,835,vit-krejci,Lineups entity ID is not a profile ID unless independently verified
+411,Nick Richards,MIA,Center,5.0,bench,,True,Saric Dario,dario-saric,True,760,nick-richards,Lineups entity ID is not a profile ID unless independently verified
+413,David Roddy,DEN,Forward,4.0,bench,,True,Schroder Dennis,dennis-schroder,True,1110,david-roddy,Lineups entity ID is not a profile ID unless independently verified
+414,Zeke Nnaji,DEN,Forward,4.0,bench,,True,Scott Mike,mike-scott,True,748,zeke-nnaji,Lineups entity ID is not a profile ID unless independently verified
+422,Ty Jerome,MEM,Guard,7.5,starter,,True,Simmons Jonathon,jonathon-simmons,True,625,ty-jerome,Lineups entity ID is not a profile ID unless independently verified
+426,Naji Marshall,DAL,Forward,8.0,bench,,True,Smith JR,jr-smith,True,739,naji-marshall,Lineups entity ID is not a profile ID unless independently verified
+431,Anthony Gill,WAS,Forward,6.0,bench,,True,Spellman Omari,omari-spellman,True,719,anthony-gill,Lineups entity ID is not a profile ID unless independently verified
+432,Justin Champagnie,WAS,Guard,7.5,bench,,True,Stauskas Nik,nik-stauskas,True,929,justin-champagnie,Lineups entity ID is not a profile ID unless independently verified
+433,Peyton Watson,CLE,Guard,8.5,starter,,True,Stephenson Lance,lance-stephenson,True,1137,peyton-watson,Lineups entity ID is not a profile ID unless independently verified
+437,Sam Hauser,BOS,Forward,7.0,bench,,True,Teague Jeff,jeff-teague,True,953,sam-hauser,Lineups entity ID is not a profile ID unless independently verified
+438,Haywood Highsmith,PHX,Forward,4.0,bench,,True,Temple Garrett,garrett-temple,True,208,haywood-highsmith,Lineups entity ID is not a profile ID unless independently verified
+441,Kenyon Martin Jr,MIN,Forward,4.5,bench,,True,Thomas Isaiah,isaiah-thomas,False,,,Lineups entity ID is not a profile ID unless independently verified
+442,Josh Okogie,UTA,Guard,4.0,bench,,True,Thomas Khyri,khyri-thomas,True,363,josh-okogie,Lineups entity ID is not a profile ID unless independently verified
+443,Moses Moody,GSW,Guard,7.5,out,,True,Thomas Lance,lance-thomas,True,984,moses-moody,Lineups entity ID is not a profile ID unless independently verified
+444,Kenrich Williams,OKC,Guard,4.0,bench,,True,Thompson Klay,klay-thompson,True,481,kenrich-williams,Lineups entity ID is not a profile ID unless independently verified
+446,Scotty Pippen Jr,MEM,Guard,8.0,starter,,True,Thornwell Sindarius,sindarius-thornwell,True,1105,scotty-pippen-jr,Lineups entity ID is not a profile ID unless independently verified
+447,Charles Bassey,GSW,Center,5.0,bench,,True,Tolliver Anthony,anthony-tolliver,True,920,charles-bassey,Lineups entity ID is not a profile ID unless independently verified
+448,Luke Kornet,SAS,Center,5.0,starter,,True,Towns Karl-Anthony,karl-anthony-towns,True,264,luke-kornet,Lineups entity ID is not a profile ID unless independently verified
+452,Sandro Mamukelashvili,LAL,Forward,7.5,bench,,True,Turner Evan,evan-turner,True,975,sandro-mamukelashvili,Lineups entity ID is not a profile ID unless independently verified
+456,Ryan Rollins,MIL,Guard,11.5,starter,,True,Valentine Denzel,denzel-valentine,True,1119,ryan-rollins,Lineups entity ID is not a profile ID unless independently verified
+463,Wendell Moore,DET,Guard,4.0,bench,,True,Waiters Dion,dion-waiters,False,,,Lineups entity ID is not a profile ID unless independently verified
+464,Trevor Keels,WAS,Guard,4.0,bench,,True,Walker Kemba,kemba-walker,True,1127,trevor-keels,Lineups entity ID is not a profile ID unless independently verified
+466,Santi Aldama,DAL,Forward,8.0,bench,,True,Wall John,john-wall,True,912,santi-aldama,Lineups entity ID is not a profile ID unless independently verified
+471,Jevon Carter,ORL,Guard,4.0,bench,,True,Watanabe Yuta,yuta-watanabe,True,80,jevon-carter,Lineups entity ID is not a profile ID unless independently verified
+473,Tony Bradley,ATL,Center,4.0,bench,,True,Westbrook Russell,russell-westbrook,True,57,tony-bradley,Lineups entity ID is not a profile ID unless independently verified
+474,Neemias Queta,BOS,Center,11.0,starter,,True,White Derrick,derrick-white,True,996,neemias-queta,Lineups entity ID is not a profile ID unless independently verified
+693,Dennis Schroder,CHA,Guard,8.2,starter,,True,Walton Jr. Derrick,derrick-walton-jr,True,413,dennis-schroder,Lineups entity ID is not a profile ID unless independently verified
+703,Andrew Nembhard,IND,Guard,10.0,starter,,True,Avdija Deni,deni-avdija,True,1092,andrew-nembhard,Lineups entity ID is not a profile ID unless independently verified
+713,Chet Holmgren,OKC,Forward,13.5,starter,,True,Diakite Mamadi,mamadi-diakite,True,1145,chet-holmgren,Lineups entity ID is not a profile ID unless independently verified
+716,Jaylin Williams,OKC,Forward,6.0,bench,,True,Elleby CJ,cj-elleby,True,2406,jaylin-williams,Lineups entity ID is not a profile ID unless independently verified
+717,Tyrese Martin,PHI,Forward,4.0,bench,,True,Flynn Malachi,malachi-flynn,True,1091,tyrese-martin,Lineups entity ID is not a profile ID unless independently verified
+720,Luka Garza,BOS,Center,4.5,bench,,True,Green Josh,josh-green,True,945,luka-garza,Lineups entity ID is not a profile ID unless independently verified
+721,Josh Minott,BKN,Forward,5.0,bench,,True,Hagans Ashton,ashton-hagans,True,1130,josh-minott,Lineups entity ID is not a profile ID unless independently verified
+724,Svi Mykhailiuk,UTA,Guard,6.0,bench,,True,Hampton R.J.,rj-hampton,True,344,svi-mykhailiuk,Lineups entity ID is not a profile ID unless independently verified
+727,Julian Champagnie,SAS,Forward,9.5,starter,,True,Howard Markus,markus-howard,True,1103,julian-champagnie,Lineups entity ID is not a profile ID unless independently verified
+728,Ron Harper Jr,BOS,Guard,4.0,bench,,True,Hughes Elijah,elijah-hughes,True,1090,ron-harper-jr,Lineups entity ID is not a profile ID unless independently verified
+730,Christian Koloko,NOP,Center,4.0,bench,,True,Jones Mason,mason-jones,True,1111,christian-koloko,Lineups entity ID is not a profile ID unless independently verified
+736,A.J. Green,MIL,Guard,7.5,bench,,True,Maledon Theo,theo-maledon,False,,,Lineups entity ID is not a profile ID unless independently verified
+737,Bryce McGowens,NOP,Guard,4.0,bench,,True,Mane Karim,karim-mane,True,1131,bryce-mcgowens,Lineups entity ID is not a profile ID unless independently verified
+738,Jamal Cain,ORL,Forward,4.5,bench,,True,Mannion Nico,nico-mannion,True,1087,jamal-cain,Lineups entity ID is not a profile ID unless independently verified
+739,Dru Smith,MIA,Guard,4.5,bench,,True,Marshall Naji,naji-marshall,True,1085,dru-smith,Lineups entity ID is not a profile ID unless independently verified
+740,Caleb Houstan,NOP,Guard,4.0,bench,,True,Martin KJ,kj-martin,True,1133,caleb-houstan,Lineups entity ID is not a profile ID unless independently verified
+743,Jordan Goodwin,PHX,Guard,7.0,bench,,True,Mays Skylar,skylar-mays,True,947,jordan-goodwin,Lineups entity ID is not a profile ID unless independently verified
+747,Jabari Walker,PHI,Forward,4.0,starter,,True,Nesmith Aaron,aaron-nesmith,True,1120,jabari-walker,Lineups entity ID is not a profile ID unless independently verified
+749,Micah Potter,POR,Center,6.5,bench,,True,Nwora Jordan,jordan-nwora,True,992,micah-potter,Lineups entity ID is not a profile ID unless independently verified
+750,Moussa Diabate,CHA,Center,10.0,starter,,True,Okeke Chuma,chuma-okeke,True,1132,moussa-diabate,Lineups entity ID is not a profile ID unless independently verified
+753,Max Christie,DAL,Guard,7.5,starter,,True,Oturu Daniel,daniel-oturu,True,1139,max-christie,Lineups entity ID is not a profile ID unless independently verified
+756,Keon Ellis,BKN,Guard,7.0,bench,,True,Pritchard Payton,payton-pritchard,True,1114,keon-ellis,Lineups entity ID is not a profile ID unless independently verified
+787,Jamaree Bouyea,PHX,Guard,4.0,bench,,True,Hinton Nate,nate-hinton,True,1163,jamaree-bouyea,Lineups entity ID is not a profile ID unless independently verified
+791,Kris Dunn,LAC,Guard,7.5,bench,,True,Banks George,george-banks,True,134,kris-dunn,Lineups entity ID is not a profile ID unless independently verified
+809,Nate Williams,GSW,Guard,4.0,bench,,True,Eliyahu Lior,lior-eliyahu,True,1170,nate-williams,Lineups entity ID is not a profile ID unless independently verified
+810,Jay Huff,IND,Center,7.0,bench,,True,Ellis Ron,ron-ellis,True,957,jay-huff,Lineups entity ID is not a profile ID unless independently verified
+811,Quenton Jackson,IND,Guard,5.5,bench,,True,Elonu Chinemelu,chinemelu-elonu,True,1165,quenton-jackson,Lineups entity ID is not a profile ID unless independently verified
+1784,Victor Wembanyama,SAS,Center,28.0,starter,,False,,,True,1877,victor-wembanyama,Lineups entity ID is not a profile ID unless independently verified
+1785,Scoot Henderson,POR,Guard,6.5,bench,,False,,,True,1875,scoot-henderson,Lineups entity ID is not a profile ID unless independently verified
+1786,Miles Bridges,PHX,Forward,11.0,starter,,False,,,True,60,miles-bridges,Lineups entity ID is not a profile ID unless independently verified
+1787,Brandon Miller,CHA,Forward,11.0,starter,,False,,,True,1882,brandon-miller,Lineups entity ID is not a profile ID unless independently verified
+1788,Ausar Thompson,DET,Forward,10.0,starter,,False,,,True,1901,ausar-thompson,Lineups entity ID is not a profile ID unless independently verified
+1789,Amen Thompson,HOU,Guard,15.0,starter,,False,,,True,1900,amen-thompson,Lineups entity ID is not a profile ID unless independently verified
+1790,Cam Whitmore,DEN,Forward,4.0,bench,,False,,,True,1895,cam-whitmore,Lineups entity ID is not a profile ID unless independently verified
+1791,Jarace Walker,IND,Forward,7.5,bench,,False,,,True,1887,jarace-walker,Lineups entity ID is not a profile ID unless independently verified
+1792,Anthony Black,ORL,Guard,7.0,bench,,False,,,True,1883,anthony-black,Lineups entity ID is not a profile ID unless independently verified
+1795,Gradey Dick,LAC,Guard,5.0,bench,,False,,,True,1899,gradey-dick,Lineups entity ID is not a profile ID unless independently verified
+1796,Keyonte George,UTA,Guard,11.5,starter,,False,,,True,1892,keyonte-george,Lineups entity ID is not a profile ID unless independently verified
+1798,Trayce Jackson-Davis,TOR,Forward,4.0,bench,,False,,,True,1848,trayce-jackson-davis,Lineups entity ID is not a profile ID unless independently verified
+1799,Kris Murray,MEM,Forward,4.0,bench,,False,,,True,1850,kris-murray,Lineups entity ID is not a profile ID unless independently verified
+1800,Taylor Hendricks,MEM,Forward,6.0,bench,,False,,,True,1891,taylor-hendricks,Lineups entity ID is not a profile ID unless independently verified
+1802,Julian Strawther,DEN,Guard,4.0,bench,,False,,,True,1861,julian-strawther,Lineups entity ID is not a profile ID unless independently verified
+1804,Jaime Jaquez Jr,MIL,Forward,9.0,starter,,False,,,True,1846,jaime-jaquez-jr,Lineups entity ID is not a profile ID unless independently verified
+1805,Cason Wallace,OKC,Guard,8.5,starter,,False,,,True,1893,cason-wallace,Lineups entity ID is not a profile ID unless independently verified
+1806,Kobe Bufkin,NOP,Guard,4.0,bench,,False,,,True,1865,kobe-bufkin,Lineups entity ID is not a profile ID unless independently verified
+1807,Olivier Maxence-Prosper,MEM,Forward,7.5,bench,,False,,,True,1856,olivier-maxence-prosper,Lineups entity ID is not a profile ID unless independently verified
+1808,Jalen Pickett,LAC,Guard,4.0,bench,,False,,,True,1837,jalen-pickett,Lineups entity ID is not a profile ID unless independently verified
+1809,Marcus Sasser,DAL,Guard,4.0,bench,,False,,,True,1840,marcus-sasser,Lineups entity ID is not a profile ID unless independently verified
+1810,Ben Sheppard,IND,Guard,5.0,bench,,False,,,True,1843,ben-sheppard,Lineups entity ID is not a profile ID unless independently verified
+1812,Brice Sensabaugh,UTA,Forward,8.0,bench,,False,,,True,1898,brice-sensabaugh,Lineups entity ID is not a profile ID unless independently verified
+1813,Bilal Coulibaly,WAS,Guard,8.0,bench,,False,,,True,1905,bilal-coulibaly,Lineups entity ID is not a profile ID unless independently verified
+1814,Jordan Hawkins,NOP,Guard,5.0,bench,,False,,,True,1869,jordan-hawkins,Lineups entity ID is not a profile ID unless independently verified
+1815,Jalen Wilson,ATL,Forward,4.5,bench,,False,,,True,1839,jalen-wilson,Lineups entity ID is not a profile ID unless independently verified
+1816,Noah Clowney,BKN,Forward,6.5,bench,,False,,,True,1881,noah-clowney,Lineups entity ID is not a profile ID unless independently verified
+1819,Dereck Lively II,DAL,Center,8.5,bench,,False,,,True,1886,dereck-lively-ii,Lineups entity ID is not a profile ID unless independently verified
+1820,A.j. Lawson,TOR,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+1823,Brandin Podziemski,GSW,Guard,10.5,starter,,True,Ford Jordan,jordan-ford,True,1864,brandin-podziemski,Lineups entity ID is not a profile ID unless independently verified
+1824,Kobe Brown,IND,Forward,6.0,bench,,True,Vezenkov Sasha,sasha-vezenkov,True,1845,kobe-brown,Lineups entity ID is not a profile ID unless independently verified
+1828,Leonard Miller,CHI,Forward,7.5,bench,,True,Castleton Colin,colin-castleton,True,1879,leonard-miller,Lineups entity ID is not a profile ID unless independently verified
+1829,Jett Howard,DAL,Guard,4.0,bench,,True,Miller Jordan,jordan-miller,True,1896,jett-howard,Lineups entity ID is not a profile ID unless independently verified
+1832,Rayan Rupert,PHI,Guard,4.5,bench,,True,Norris Miles,miles-norris,True,1904,rayan-rupert,Lineups entity ID is not a profile ID unless independently verified
+1835,Sidy Cissoko,POR,Guard,4.5,bench,,True,Slawson Jalen,jalen-slawson,True,1903,sidy-cissoko,Lineups entity ID is not a profile ID unless independently verified
+1837,E.J. Liddell,BKN,Forward,5.5,bench,,True,Pickett Jalen,jalen-pickett,False,,,Lineups entity ID is not a profile ID unless independently verified
+1842,Mouhamed Gueye,ATL,Forward,4.0,bench,,True,Tshiebwe Oscar,oscar-tshiebwe,True,1867,mouhamed-gueye,Lineups entity ID is not a profile ID unless independently verified
+1843,Jordan Walsh,BOS,Guard,6.5,starter,,True,Sheppard Ben,ben-sheppard,True,1884,jordan-walsh,Lineups entity ID is not a profile ID unless independently verified
+1853,Julian Phillips,HOU,Forward,4.0,bench,,True,Jackson Jr. Andre,andre-jackson-jr,True,1890,julian-phillips,Lineups entity ID is not a profile ID unless independently verified
+1855,Sam Merrill,CLE,Guard,5.5,bench,,True,Millner Jr. Setric,setric-millner-jr,True,746,sam-merrill,Lineups entity ID is not a profile ID unless independently verified
+1856,Collin Gillespie,PHX,Guard,9.0,bench,,True,Prosper Olivier-Maxence,olivier-maxence-prosper,True,1088,collin-gillespie,Lineups entity ID is not a profile ID unless independently verified
+1861,Oscar Tshiebwe,HOU,Center,7.0,bench,,True,Strawther Julian,julian-strawther,True,1842,oscar-tshiebwe,Lineups entity ID is not a profile ID unless independently verified
+1864,Jordan Miller,LAC,Guard,7.0,out,,True,Podziemski Brandin,brandin-podziemski,True,1829,jordan-miller,Lineups entity ID is not a profile ID unless independently verified
+1865,Colin Castleton,ORL,Center,4.0,bench,,True,Bufkin Kobe,kobe-bufkin,True,1828,colin-castleton,Lineups entity ID is not a profile ID unless independently verified
+1868,Gregory Jackson,MEM,Forward,7.0,bench,,True,Fudge Alex,alex-fudge,True,1889,gregory-jackson,Lineups entity ID is not a profile ID unless independently verified
+1869,Andre Jackson Jr,TOR,Guard,4.0,bench,,True,Hawkins Jordan,jordan-hawkins,True,1853,andre-jackson-jr,Lineups entity ID is not a profile ID unless independently verified
+1870,Chris Livingston,WAS,Forward,4.0,bench,,True,Lewis Maxwell,maxwell-lewis,True,1894,chris-livingston,Lineups entity ID is not a profile ID unless independently verified
+1872,Jaylen Clark,MIN,Guard,4.0,bench,,True,Cazalon Malcolm,malcolm-cazalon,True,1851,jaylen-clark,Lineups entity ID is not a profile ID unless independently verified
+1878,Jalen Slawson,IND,Forward,6.5,bench,,True,Nnaji James,james-nnaji,True,1835,jalen-slawson,Lineups entity ID is not a profile ID unless independently verified
+1879,Dominick Barlow,PHI,Forward,5.0,bench,,True,Miller Leonard,leonard-miller,True,1155,dominick-barlow,Lineups entity ID is not a profile ID unless independently verified
+1887,Toumani Camara,POR,Forward,9.5,starter,,True,Walker Jarace,jarace-walker,True,1844,toumani-camara,Lineups entity ID is not a profile ID unless independently verified
+1975,Trey Jemison,TOR,Center,4.0,bench,,False,,,True,2148,trey-jemison,Lineups entity ID is not a profile ID unless independently verified
+1997,Tristan Vukcevic,WAS,Forward,5.0,out,,False,,,True,1873,tristan-vukcevic,Lineups entity ID is not a profile ID unless independently verified
+2001,Adam Flagler,SAC,Guard,4.0,bench,,False,,,True,2180,adam-flagler,Lineups entity ID is not a profile ID unless independently verified
+2003,Gui Santos,GSW,Forward,9.0,starter,,False,,,True,2197,gui-santos,Lineups entity ID is not a profile ID unless independently verified
+2007,Pat Spencer,PHX,Guard,5.0,bench,,False,,,True,2242,pat-spencer,Lineups entity ID is not a profile ID unless independently verified
+2008,Pete Nance,MIL,Forward,5.0,bench,,False,,,True,2140,pete-nance,Lineups entity ID is not a profile ID unless independently verified
+4560,Donovan Clingan,POR,Center,13.0,starter,,False,,,True,2444,donovan-clingan,Lineups entity ID is not a profile ID unless independently verified
+4561,Zach Edey,MEM,Center,9.0,starter,,False,,,True,2414,zach-edey,Lineups entity ID is not a profile ID unless independently verified
+4562,Alex Sarr,WAS,Center,8.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4563,Zaccharie Risacher,DAL,Forward,5.5,bench,,False,,,True,2453,zaccharie-risacher,Lineups entity ID is not a profile ID unless independently verified
+4564,Ron Holland II,DET,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4565,Reed Sheppard,HOU,Guard,7.5,bench,,False,,,True,2465,reed-sheppard,Lineups entity ID is not a profile ID unless independently verified
+4566,Matas Buzelis,CHI,Forward,11.0,starter,,False,,,True,2469,matas-buzelis,Lineups entity ID is not a profile ID unless independently verified
+4567,Kel'el Ware,MIL,Center,10.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4568,Dillon Jones,NYK,Forward,4.0,bench,,False,,,True,2415,dillon-jones,Lineups entity ID is not a profile ID unless independently verified
+4571,Kj Simpson,DEN,Guard,4.0,bench,,False,,,True,2424,kj-simpson,Lineups entity ID is not a profile ID unless independently verified
+4572,Jaylon Tyson,CLE,Guard,4.5,bench,,False,,,True,2430,jaylon-tyson,Lineups entity ID is not a profile ID unless independently verified
+4574,Dalton Knecht,LAL,Guard,4.0,bench,,False,,,True,2425,dalton-knecht,Lineups entity ID is not a profile ID unless independently verified
+4575,Cam Spencer,MEM,Guard,9.5,bench,,False,,,True,2396,cam-spencer,Lineups entity ID is not a profile ID unless independently verified
+4576,Jaylen Wells,MEM,Forward,7.0,starter,,False,,,True,2448,jaylen-wells,Lineups entity ID is not a profile ID unless independently verified
+4577,Terrence Shannon,MIN,Guard,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4578,Ajay Mitchell,OKC,Guard,8.0,bench,,False,,,True,2428,ajay-mitchell,Lineups entity ID is not a profile ID unless independently verified
+4579,Stephon Castle,SAS,Guard,13.0,starter,,False,,,True,2461,stephon-castle,Lineups entity ID is not a profile ID unless independently verified
+4580,Carlton Carrington,WAS,Guard,8.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4581,Devin Carter,BOS,Guard,6.0,bench,,False,,,True,2429,devin-carter,Lineups entity ID is not a profile ID unless independently verified
+4582,Enrique Freeman,MIN,Forward,4.0,bench,,False,,,True,2412,enrique-freeman,Lineups entity ID is not a profile ID unless independently verified
+4584,Baylor Scheierman,BOS,Guard,6.0,starter,,False,,,True,2398,baylor-scheierman,Lineups entity ID is not a profile ID unless independently verified
+4585,Quinten Post,MEM,Center,4.5,bench,,False,,,True,2408,quinten-post,Lineups entity ID is not a profile ID unless independently verified
+4588,Kyle Filipowski,UTA,Center,9.5,bench,,False,,,True,2440,kyle-filipowski,Lineups entity ID is not a profile ID unless independently verified
+4589,Tristan Da Silva,ORL,Forward,6.0,bench,,False,,,True,2421,tristan-da-silva,Lineups entity ID is not a profile ID unless independently verified
+4590,Kevin Mccullar Jr,NYK,Guard,4.0,bench,,False,,,True,2388,kevin-mccullar-jr,Lineups entity ID is not a profile ID unless independently verified
+4591,Tidjane Salaun,CHA,Forward,4.0,bench,,False,,,True,2474,tidjane-salaun,Lineups entity ID is not a profile ID unless independently verified
+4592,Antonio Reeves,MIN,Guard,4.0,bench,,False,,,True,2409,antonio-reeves,Lineups entity ID is not a profile ID unless independently verified
+4593,Yves Missi,NOP,Center,7.0,starter,,False,,,True,2455,yves-missi,Lineups entity ID is not a profile ID unless independently verified
+4596,Johnny Furphy,IND,Guard,4.0,out,,False,,,True,2466,johnny-furphy,Lineups entity ID is not a profile ID unless independently verified
+4599,Aj Johnson,MEM,Guard,4.0,bench,,False,,,True,2472,aj-johnson,Lineups entity ID is not a profile ID unless independently verified
+4600,Nikola Topic,OKC,Guard,4.0,bench,,False,,,True,2452,nikola-topic,Lineups entity ID is not a profile ID unless independently verified
+4603,Cam Christie,LAC,Guard,4.0,bench,,False,,,True,2459,cam-christie,Lineups entity ID is not a profile ID unless independently verified
+4604,Bronny James,LAL,Guard,5.0,bench,,False,,,True,2463,bronny-james,Lineups entity ID is not a profile ID unless independently verified
+4605,Pelle Larsson,MIA,Guard,7.5,bench,,False,,,True,2417,pelle-larsson,Lineups entity ID is not a profile ID unless independently verified
+4607,Ariel Hukporti,PHI,Center,4.0,out,,False,,,True,2433,ariel-hukporti,Lineups entity ID is not a profile ID unless independently verified
+4608,Tyler Kolek,NYK,Guard,4.0,bench,,False,,,True,2418,tyler-kolek,Lineups entity ID is not a profile ID unless independently verified
+4609,Jared Mccain,OKC,Guard,6.2,bench,,False,,,True,2456,jared-mccain,Lineups entity ID is not a profile ID unless independently verified
+4610,Oso Ighodaro,PHX,Center,7.5,starter,,False,,,True,2419,oso-ighodaro,Lineups entity ID is not a profile ID unless independently verified
+4611,Harrison Ingram,UTA,Forward,4.0,bench,,False,,,True,2426,harrison-ingram,Lineups entity ID is not a profile ID unless independently verified
+4612,Ja'kobe Walter,TOR,Guard,7.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+4613,Jamal Shead,TOR,Guard,6.5,bench,,False,,,True,2416,jamal-shead,Lineups entity ID is not a profile ID unless independently verified
+4614,Cody Williams,MIN,Forward,7.5,bench,,False,,,True,2457,cody-williams,Lineups entity ID is not a profile ID unless independently verified
+4615,Isaiah Collier,UTA,Guard,8.5,bench,,False,,,True,2462,isaiah-collier,Lineups entity ID is not a profile ID unless independently verified
+4618,Pacome Dadiet,NYK,Forward,4.0,bench,,False,,,True,2468,pacome-dadiet,Lineups entity ID is not a profile ID unless independently verified
+4619,Ryan Dunn,PHX,Forward,4.0,bench,,False,,,True,2446,ryan-dunn,Lineups entity ID is not a profile ID unless independently verified
+4621,Jonathan Mogbo,SAC,Forward,4.0,bench,,False,,,True,2442,jonathan-mogbo,Lineups entity ID is not a profile ID unless independently verified
+4624,Kyshawn George,WAS,Forward,8.0,starter,,False,,,True,2458,kyshawn-george,Lineups entity ID is not a profile ID unless independently verified
+4625,Keaton Wallace,ATL,Guard,4.0,bench,,False,,,True,1166,keaton-wallace,Lineups entity ID is not a profile ID unless independently verified
+4633,Pj Hall,CHA,Center,4.0,bench,,False,,,True,2420,pj-hall,Lineups entity ID is not a profile ID unless independently verified
+4634,Trey Alexander,UTA,Guard,4.5,bench,,False,,,True,2423,trey-alexander,Lineups entity ID is not a profile ID unless independently verified
+4635,Daniss Jenkins,DET,Guard,6.0,starter,,False,,,True,2402,daniss-jenkins,Lineups entity ID is not a profile ID unless independently verified
+4641,Keshad Johnson,MIA,Forward,4.0,out,,False,,,True,2399,keshad-johnson,Lineups entity ID is not a profile ID unless independently verified
+4642,Zyon Pullin,MIN,Guard,4.0,bench,,False,,,True,2552,zyon-pullin,Lineups entity ID is not a profile ID unless independently verified
+4648,Adem Bona,PHI,Forward,6.5,bench,,False,,,True,2434,adem-bona,Lineups entity ID is not a profile ID unless independently verified
+4650,Justin Edwards,PHI,Forward,4.0,starter,,False,,,True,2464,justin-edwards,Lineups entity ID is not a profile ID unless independently verified
+4672,Yuki Kawamura,LAC,Guard,4.0,bench,,False,,,True,2504,yuki-kawamura,Lineups entity ID is not a profile ID unless independently verified
+4680,Jamison Battle,TOR,Forward,4.0,bench,,False,,,True,2391,jamison-battle,Lineups entity ID is not a profile ID unless independently verified
+4682,Karlo Matkovic,NOP,Forward,5.5,bench,,False,,,True,2432,karlo-matkovic,Lineups entity ID is not a profile ID unless independently verified
+4718,Isaac Jones,DET,Forward,4.0,bench,,False,,,True,2441,isaac-jones,Lineups entity ID is not a profile ID unless independently verified
+4720,Branden Carlson,POR,Center,4.0,bench,,False,,,True,2397,branden-carlson,Lineups entity ID is not a profile ID unless independently verified
+4894,Drew Timme,MIN,Forward,4.0,bench,,False,,,True,2130,drew-timme,Lineups entity ID is not a profile ID unless independently verified
+8570,Cooper Flagg,DAL,Forward,16.5,starter,,False,,,True,2956,cooper-flagg,Lineups entity ID is not a profile ID unless independently verified
+8571,Vj Edgecombe,PHI,Guard,12.0,starter,,False,,,True,2958,vj-edgecombe,Lineups entity ID is not a profile ID unless independently verified
+8572,Nique Clifford,SAC,Guard,7.0,bench,,False,,,True,2903,nique-clifford,Lineups entity ID is not a profile ID unless independently verified
+8573,Kon Knueppel,CHA,Guard,11.0,starter,,False,,,True,2957,kon-knueppel,Lineups entity ID is not a profile ID unless independently verified
+8574,Dylan Harper,SAS,Guard,10.0,bench,,False,,,True,2959,dylan-harper,Lineups entity ID is not a profile ID unless independently verified
+8576,Danny Wolf,BKN,Forward,6.0,bench,,False,,,True,2945,danny-wolf,Lineups entity ID is not a profile ID unless independently verified
+8577,Maxime Raynaud,SAC,Center,10.0,out,,False,,,True,2929,maxime-raynaud,Lineups entity ID is not a profile ID unless independently verified
+8578,Derik Queen,NOP,Center,9.0,bench,,False,,,True,2962,derik-queen,Lineups entity ID is not a profile ID unless independently verified
+8579,Tre Johnson,WAS,Guard,5.5,bench,,False,,,True,2969,tre-johnson,Lineups entity ID is not a profile ID unless independently verified
+8580,Yang Hansen,POR,Center,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+8581,Collin Murray-boyles,TOR,Forward,8.5,bench,,False,,,True,2949,collin-murray-boyles,Lineups entity ID is not a profile ID unless independently verified
+8582,Chaz Lanier,DET,Guard,4.0,bench,,False,,,True,2901,chaz-lanier,Lineups entity ID is not a profile ID unless independently verified
+8583,Kam Jones,MIL,Guard,4.5,bench,,False,,,True,2927,kam-jones,Lineups entity ID is not a profile ID unless independently verified
+8584,Kasparas Jakucionis,MIL,Guard,6.0,bench,,False,,,True,2948,kasparas-jakucionis,Lineups entity ID is not a profile ID unless independently verified
+8586,Jeremiah Fears,NOP,Guard,8.5,bench,,False,,,True,2971,jeremiah-fears,Lineups entity ID is not a profile ID unless independently verified
+8587,Jase Richardson,ORL,Guard,4.0,bench,,False,,,True,2966,jase-richardson,Lineups entity ID is not a profile ID unless independently verified
+8588,Noah Penda,ORL,Guard,4.0,bench,,False,,,True,2973,noah-penda,Lineups entity ID is not a profile ID unless independently verified
+8589,Asa Newell,ATL,Forward,4.0,bench,,False,,,True,2965,asa-newell,Lineups entity ID is not a profile ID unless independently verified
+8590,Khaman Maluach,PHX,Center,4.0,bench,,False,,,True,2950,khaman-maluach,Lineups entity ID is not a profile ID unless independently verified
+8591,Ryan Kalkbrenner,CHA,Center,7.5,bench,,False,,,True,2908,ryan-kalkbrenner,Lineups entity ID is not a profile ID unless independently verified
+8592,Daron Holmes Ii,DEN,Forward,4.0,bench,,False,,,True,2427,daron-holmes-ii,Lineups entity ID is not a profile ID unless independently verified
+8593,Noa Essengue,CHI,Forward,4.0,bench,,False,,,True,2953,noa-essengue,Lineups entity ID is not a profile ID unless independently verified
+8594,Egor Demin,BKN,Guard,6.0,starter,,False,,,True,2964,egor-demin,Lineups entity ID is not a profile ID unless independently verified
+8595,Carter Bryant,SAS,Forward,6.0,bench,,False,,,True,2967,carter-bryant,Lineups entity ID is not a profile ID unless independently verified
+8596,Ace Bailey,UTA,Forward,8.5,starter,,False,,,True,2960,ace-bailey,Lineups entity ID is not a profile ID unless independently verified
+8597,Max Shulga,BOS,Guard,4.0,bench,,False,,,True,2892,max-shulga,Lineups entity ID is not a profile ID unless independently verified
+8598,Will Riley,WAS,Forward,7.0,bench,,False,,,True,2961,will-riley,Lineups entity ID is not a profile ID unless independently verified
+8600,Liam Mcneeley,CHA,Forward,4.0,bench,,False,,,True,2963,liam-mcneeley,Lineups entity ID is not a profile ID unless independently verified
+8601,Cedric Coward,MEM,Guard,8.0,starter,,False,,,True,2937,cedric-coward,Lineups entity ID is not a profile ID unless independently verified
+8602,Walter Clayton Jr.,MEM,Guard,5.0,bench,,False,,,True,2934,walter-clayton-jr,Lineups entity ID is not a profile ID unless independently verified
+8603,Amari Williams,BOS,Forward,4.0,bench,,False,,,True,2895,amari-williams,Lineups entity ID is not a profile ID unless independently verified
+8604,Adou Thiero,LAL,Forward,4.0,bench,,False,,,True,2943,adou-thiero,Lineups entity ID is not a profile ID unless independently verified
+8605,Tyrese Proctor,CLE,Guard,4.0,bench,,False,,,True,2939,tyrese-proctor,Lineups entity ID is not a profile ID unless independently verified
+8606,Micah Peavy,NOP,Guard,4.5,bench,,False,,,True,2909,micah-peavy,Lineups entity ID is not a profile ID unless independently verified
+8607,Yanic Konan Niederhauser,LAC,Center,4.0,out,,False,,,True,2941,yanic-konan-niederhauser,Lineups entity ID is not a profile ID unless independently verified
+8608,Rasheer Fleming,PHX,Forward,4.0,bench,,False,,,True,2942,rasheer-fleming,Lineups entity ID is not a profile ID unless independently verified
+8609,Joan Beringer,MIN,Forward,4.0,bench,,False,,,True,2974,joan-beringer,Lineups entity ID is not a profile ID unless independently verified
+8610,Nolan Traore,BKN,Guard,5.5,bench,,False,,,True,2972,nolan-traore,Lineups entity ID is not a profile ID unless independently verified
+8613,Alex Toohey,GSW,Forward,4.0,bench,,False,,,True,2946,alex-toohey,Lineups entity ID is not a profile ID unless independently verified
+8614,Ben Saraf,BKN,Guard,5.5,bench,,False,,,True,2976,ben-saraf,Lineups entity ID is not a profile ID unless independently verified
+8615,Drake Powell,BKN,Guard,4.0,bench,,False,,,True,2968,drake-powell,Lineups entity ID is not a profile ID unless independently verified
+8616,Spencer Jones,DEN,Forward,5.0,bench,,False,,,True,2394,spencer-jones,Lineups entity ID is not a profile ID unless independently verified
+8617,Sion James,CHA,Guard,4.5,bench,,False,,,True,2897,sion-james,Lineups entity ID is not a profile ID unless independently verified
+8618,Mohamed Diawara,NYK,Forward,4.0,bench,,False,,,True,2947,mohamed-diawara,Lineups entity ID is not a profile ID unless independently verified
+8619,Craig Porter,CLE,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+8620,Emanuel Miller,DEN,Forward,4.0,bench,,False,,,True,2411,emanuel-miller,Lineups entity ID is not a profile ID unless independently verified
+8621,Hugo Gonzalez,BOS,Guard,6.0,bench,,False,,,True,2975,hugo-gonzalez,Lineups entity ID is not a profile ID unless independently verified
+8703,Brooks Barnhizer,OKC,Forward,4.0,starter,,False,,,True,2928,brooks-barnhizer,Lineups entity ID is not a profile ID unless independently verified
+8704,David Jones Garcia,SAS,Guard,4.0,bench,,False,,,True,2422,david-jones-garcia,Lineups entity ID is not a profile ID unless independently verified
+8710,Javon Small,MEM,Guard,6.5,bench,,False,,,True,2924,javon-small,Lineups entity ID is not a profile ID unless independently verified
+8711,Will Richard,GSW,Guard,4.0,bench,,False,,,True,2920,will-richard,Lineups entity ID is not a profile ID unless independently verified
+8712,Ryan Nembhard,CHA,Guard,5.5,bench,,False,,,True,2921,ryan-nembhard,Lineups entity ID is not a profile ID unless independently verified
+8720,Rayj Dennis,ATL,Guard,4.0,bench,,False,,,True,2544,rayj-dennis,Lineups entity ID is not a profile ID unless independently verified
+8734,Chris Youngblood,POR,Guard,4.0,bench,,False,,,True,2906,chris-youngblood,Lineups entity ID is not a profile ID unless independently verified
+8735,Taelon Peter,SAS,Guard,4.0,bench,,False,,,True,2914,taelon-peter,Lineups entity ID is not a profile ID unless independently verified
+8736,Moussa Cisse,DAL,Center,4.5,bench,,False,,,True,2890,moussa-cisse,Lineups entity ID is not a profile ID unless independently verified
+8737,Elijah Harkless,DET,Guard,5.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+8739,Kobe Sanders,LAC,Guard,5.0,bench,,False,,,True,2891,kobe-sanders,Lineups entity ID is not a profile ID unless independently verified
+8740,Nae'qwan Tomlin,CLE,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+8742,Caleb Love,PHI,Guard,5.5,bench,,False,,,True,2912,caleb-love,Lineups entity ID is not a profile ID unless independently verified
+8785,Jamir Watkins,WAS,Forward,5.5,out,,False,,,True,2896,jamir-watkins,Lineups entity ID is not a profile ID unless independently verified
+8823,Dylan Cardwell,SAC,Center,6.5,bench,,False,,,True,2917,dylan-cardwell,Lineups entity ID is not a profile ID unless independently verified
+9036,Myron Gardner,MIA,Forward,4.0,bench,,False,,,True,2887,myron-gardner,Lineups entity ID is not a profile ID unless independently verified
+9048,Jahmai Mashack,MEM,Guard,5.0,bench,,False,,,True,3009,jahmai-mashack,Lineups entity ID is not a profile ID unless independently verified
+9050,Sharife Cooper,WAS,Guard,6.0,bench,,False,,,True,932,sharife-cooper,Lineups entity ID is not a profile ID unless independently verified
+9055,Blake Hinson,UTA,Forward,5.0,bench,,False,,,True,2540,blake-hinson,Lineups entity ID is not a profile ID unless independently verified
+9069,Julian Reese,NOP,Forward,7.0,bench,,False,,,True,2987,julian-reese,Lineups entity ID is not a profile ID unless independently verified
+9076,Malachi Smith,TOR,Guard,6.5,bench,,False,,,True,2984,malachi-smith,Lineups entity ID is not a profile ID unless independently verified
+9081,Bez Mbeng,UTA,Guard,6.0,bench,,False,,,True,2988,bez-mbeng,Lineups entity ID is not a profile ID unless independently verified
+9082,Chaney Johnson,BKN,Forward,5.5,bench,,False,,,True,2951,chaney-johnson,Lineups entity ID is not a profile ID unless independently verified
+12543,Aj Dybantsa,WAS,Forward,14.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12544,Caleb Wilson,CHI,Forward,13.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12545,Cameron Boozer,MEM,Forward,12.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12546,Darryn Peterson,UTA,Guard,12.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12547,Yaxel Lendeborg,GSW,Forward,9.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12548,Darius Acuff Jr,SAC,Guard,9.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12549,Mikel Brown Jr.,BKN,Guard,8.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12550,Keaton Wagler,LAC,Guard,8.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12551,Kingston Flemings,ATL,Guard,7.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12552,Morez Johnson,DAL,Forward,7.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12553,Hannes Steinbach,CHA,Center,7.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12554,Brayden Burries,MIL,Guard,7.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12555,Nate Ament,MIL,Forward,7.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12556,Aday Mara,OKC,Center,7.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12557,Michael Ajayi,BKN,Guard,6.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12558,Meleek Thomas,CLE,Guard,6.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12559,Ebuka Okorie,DET,Guard,6.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12560,Dailyn Swain,CHI,Forward,5.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12561,Sergio De Larrea,DAL,Guard,5.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12562,Cameron Carr,LAL,Guard,5.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12563,Karim Lopez,MEM,Forward,5.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12564,Bennett Stirtz,OKC,Guard,5.5,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12565,Jayden Quaintance,SAS,Forward,5.5,out,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12566,Chris Cenac Jr.,BOS,Forward,5.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12567,Christian Anderson,CHA,Guard,5.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12568,Mario Hezonja,CLE,Forward,5.0,bench,,False,,,True,205,mario-hezonja,Lineups entity ID is not a profile ID unless independently verified
+12569,Labaron Philon,PHI,Guard,5.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12570,Zuby Ejiofor,ATL,Forward,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12571,Joshua Jefferson,BKN,Forward,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12572,Koa Peat,PHX,Forward,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12573,Alex Karaban,SAC,Forward,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12574,Tarris Reed Jr,SAS,Center,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12575,Allen Graves,TOR,Forward,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12576,Alijah Martin,TOR,Guard,4.5,bench,,False,,,True,2898,alijah-martin,Lineups entity ID is not a profile ID unless independently verified
+12577,Nate Bittle,TOR,Center,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12578,Jaden Bradley,TOR,Guard,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12579,Tamar Bates,UTA,Guard,4.5,bench,,False,,,True,2933,tamar-bates,Lineups entity ID is not a profile ID unless independently verified
+12580,Felix Okpara,WAS,Center,4.5,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12581,Henri Veesaar,ATL,Center,4.0,out,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12582,Dillon Mitchell,BOS,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12583,Milos Uzan,BOS,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12584,Tyler Bilodeau,BKN,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12585,Kylan Boswell,BKN,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12586,Tobe Awaka,CHI,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12587,Riley Minix,CLE,Forward,4.0,bench,,False,,,True,2467,riley-minix,Lineups entity ID is not a profile ID unless independently verified
+12588,Tristan Enaruna,CLE,Forward,4.0,bench,,False,,,True,2390,tristan-enaruna,Lineups entity ID is not a profile ID unless independently verified
+12589,Ernest Udeh Jr.,CLE,Center,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12590,John Poulakidas,DAL,Guard,4.0,bench,,False,,,True,2936,john-poulakidas,Lineups entity ID is not a profile ID unless independently verified
+12591,Tobias Lawal,DAL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12592,Tarik Biberovic,DAL,Forward,4.0,bench,,False,,,True,1874,tarik-biberovic,Lineups entity ID is not a profile ID unless independently verified
+12593,Vsevolod Ishchenko,DAL,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12594,Curtis Jones,DEN,Guard,4.0,bench,,False,,,True,2923,curtis-jones,Lineups entity ID is not a profile ID unless independently verified
+12595,Trevon Brazile,DEN,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12596,Alpha Diallo,DEN,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12597,Tolu Smith,DET,Forward,4.0,bench,,False,,,True,2542,tolu-smith,Lineups entity ID is not a profile ID unless independently verified
+12598,Ugonna Onyenso,DET,Center,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12599,Lj Cryer,GSW,Guard,4.0,bench,,False,,,True,2915,lj-cryer,Lineups entity ID is not a profile ID unless independently verified
+12600,Lajae Jones,GSW,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12601,Malevy Leons,GSW,Forward,4.0,bench,,False,,,True,2502,malevy-leons,Lineups entity ID is not a profile ID unless independently verified
+12602,Isaiah Crawford,HOU,Forward,4.0,bench,,False,,,True,2395,isaiah-crawford,Lineups entity ID is not a profile ID unless independently verified
+12603,Sean Pedulla,HOU,Guard,4.0,bench,,False,,,True,3062,sean-pedulla,Lineups entity ID is not a profile ID unless independently verified
+12604,Bruce Thornton,HOU,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12605,Quadir Copeland,HOU,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12606,Braden Smith,IND,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12607,Norchad Omier,MIN,Forward,4.0,bench,,False,,,True,2889,norchad-omier,Lineups entity ID is not a profile ID unless independently verified
+12608,Baba Miller,LAC,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12609,Nick Martinelli,LAC,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12611,Chris Manon,LAL,Guard,4.0,bench,,False,,,True,2905,chris-manon,Lineups entity ID is not a profile ID unless independently verified
+12612,Ak Okereke,LAL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12613,Arthur Kaluma,LAL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12614,Richie Saunders,MEM,Guard,4.0,out,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12615,Jahmir Young,MIA,Guard,4.0,bench,,False,,,True,2393,jahmir-young,Lineups entity ID is not a profile ID unless independently verified
+12616,Ryan Conwell,MIA,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12617,Tre Donaldson,MIA,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12618,Vladislav Goldin,MIA,Center,4.0,bench,,False,,,True,2910,vladislav-goldin,Lineups entity ID is not a profile ID unless independently verified
+12619,Bogoljub Markovic,MIL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12620,Cormac Ryan,MIL,Guard,4.0,bench,,False,,,True,2499,cormac-ryan,Lineups entity ID is not a profile ID unless independently verified
+12621,Malique Lewis,MIL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12622,Trey Kaufman-renn,MIN,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12623,Isaiah Evans,MIN,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12624,Rocco Zikarsky,MIN,Center,4.0,bench,,False,,,True,2954,rocco-zikarsky,Lineups entity ID is not a profile ID unless independently verified
+12625,Jaron Pierre Jr,NOP,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12626,Jack Kayil,NYK,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12627,Tyler Nickel,NYK,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12628,Thomas Sorber,OKC,Center,4.0,bench,,False,,,True,2970,thomas-sorber,Lineups entity ID is not a profile ID unless independently verified
+12629,Otega Oweh,OKC,Guard,4.0,starter,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12630,Izaiyah Nelson,ORL,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12631,Alex Morales,ORL,Guard,4.0,bench,,False,,,True,2567,alex-morales,Lineups entity ID is not a profile ID unless independently verified
+12632,Duke Miles,PHI,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12633,Koby Brea,PHX,Guard,4.0,bench,,False,,,True,2911,koby-brea,Lineups entity ID is not a profile ID unless independently verified
+12634,Cj Huntley,PHX,Forward,4.0,bench,,False,,,True,2888,cj-huntley,Lineups entity ID is not a profile ID unless independently verified
+12635,John Tonje,POR,Guard,4.0,bench,,False,,,True,2886,john-tonje,Lineups entity ID is not a profile ID unless independently verified
+12636,Jayson Kent,POR,Forward,4.0,bench,,False,,,True,3068,jayson-kent,Lineups entity ID is not a profile ID unless independently verified
+12637,Daeqwon Plowden,SAC,Guard,4.0,bench,,False,,,True,2172,daeqwon-plowden,Lineups entity ID is not a profile ID unless independently verified
+12638,Emanuel Sharp,SAC,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12639,Ja'kobi Gillespie,SAS,Guard,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12640,Maliq Brown,SAS,Forward,4.0,bench,,False,,,False,,,Lineups entity ID is not a profile ID unless independently verified
+12641,Chucky Hepburn,TOR,Guard,4.0,bench,,False,,,True,2930,chucky-hepburn,Lineups entity ID is not a profile ID unless independently verified
+12642,Hayden Gray,UTA,Guard,4.0,bench,,False,,,True,3074,hayden-gray,Lineups entity ID is not a profile ID unless independently verified
