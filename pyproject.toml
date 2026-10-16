@@ -30,6 +30,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4", "shap>=0.44"]
 explore = ["matplotlib>=3.8", "jupyter>=1.0"]
+model-search = ["torch>=2.14"]
 
 [project.scripts]
 dunkest = "dunkest.__main__:main"

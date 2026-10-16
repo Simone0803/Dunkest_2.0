@@ -1,0 +1,85 @@
+{
+  "created_utc": "2026-10-16T08:36:15.464986+00:00",
+  "folds": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "holdout_2025_26_used": false,
+  "prospective_2026_27_used": false,
+  "model_zoo": "production Ridge + RF + GBR + Torch MLP (128,64), dropout 0.0, weight_decay 0.001",
+  "fold_metrics": [
+    {
+      "fold_season": "2022-23",
+      "n": 19165,
+      "mae": 7.555698583986057,
+      "rmse": 9.804121895792443,
+      "bias_pred_minus_actual": -0.09587462022329327,
+      "mae_actual_ge25": 12.27969330978047,
+      "n_actual_ge25": 4310,
+      "mae_actual_ge30": 14.182087368603193,
+      "n_actual_ge30": 2903,
+      "mae_history_lt5": 5.387379342020094,
+      "n_history_lt5": 384,
+      "train_rows": 36084,
+      "test_rows": 19165,
+      "fit_seconds": 88.2,
+      "model_weights": "{\"gbr\": 0.2490024373426645, \"rf\": 0.24884651961575388, \"ridge\": 0.2511657487686122, \"torch_mlp\": 0.25098529427296945}",
+      "torch_mlp_epochs": 4
+    },
+    {
+      "fold_season": "2023-24",
+      "n": 18927,
+      "mae": 7.535201025306416,
+      "rmse": 9.770345678197026,
+      "bias_pred_minus_actual": -0.05149369198904542,
+      "mae_actual_ge25": 12.144783911576399,
+      "n_actual_ge25": 4369,
+      "mae_actual_ge30": 14.027696374818804,
+      "n_actual_ge30": 2972,
+      "mae_history_lt5": 5.426062300706172,
+      "n_history_lt5": 434,
+      "train_rows": 55249,
+      "test_rows": 18927,
+      "fit_seconds": 137.5,
+      "model_weights": "{\"gbr\": 0.2501899021504522, \"rf\": 0.2493009845614378, \"ridge\": 0.25015057959028675, \"torch_mlp\": 0.2503585336978233}",
+      "torch_mlp_epochs": 8
+    },
+    {
+      "fold_season": "2024-25",
+      "n": 19590,
+      "mae": 7.545866849629266,
+      "rmse": 9.834448751601505,
+      "bias_pred_minus_actual": -0.009696531991020742,
+      "mae_actual_ge25": 11.833997112604127,
+      "n_actual_ge25": 4425,
+      "mae_actual_ge30": 13.871719687543397,
+      "n_actual_ge30": 2919,
+      "mae_history_lt5": 4.71724104852244,
+      "n_history_lt5": 404,
+      "train_rows": 74176,
+      "test_rows": 19590,
+      "fit_seconds": 186.8,
+      "model_weights": "{\"gbr\": 0.249830202829397, \"rf\": 0.24926803525660862, \"ridge\": 0.2502334148405681, \"torch_mlp\": 0.25066834707342645}",
+      "torch_mlp_epochs": 5
+    }
+  ],
+  "ensemble_pooled": {
+    "n": 57682,
+    "mae": 7.54563372893285,
+    "rmse": 9.803373638927798,
+    "bias": -0.0520441951832491,
+    "mae_ge25": 12.084209119208209,
+    "mae_ge30": 14.026889131789373
+  },
+  "production_reference_pooled": {
+    "n": 57682,
+    "mae": 7.552387908990864,
+    "rmse": 9.820905431675971,
+    "bias": -0.14472251544470607,
+    "mae_ge25": 12.211926619085293,
+    "mae_ge30": 14.196725773856864
+  },
+  "promote": false,
+  "production_code_changed": false
+}

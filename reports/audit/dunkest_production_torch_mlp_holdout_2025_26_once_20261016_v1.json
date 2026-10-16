@@ -1,0 +1,41 @@
+{
+  "created_utc": "2026-10-16T08:43:35.379878+00:00",
+  "train_seasons": "2020-21 through 2024-25",
+  "holdout_season": "2025-26",
+  "train_rows": 93766,
+  "holdout_rows": 18412,
+  "holdout_used_for_tuning": false,
+  "prospective_2026_27_used": false,
+  "candidate_selected_before_holdout": true,
+  "decision_rule": "Promote only if MAE and RMSE both improve and MAE for realized scores >=25 and >=30 does not worsen.",
+  "metrics": [
+    {
+      "model": "current_production_ensemble",
+      "n": 18412,
+      "mae": 7.554431131726463,
+      "rmse": 9.824866152811945,
+      "bias_pred_minus_actual": -0.11366189900524233,
+      "mae_actual_ge25": 12.026733257366349,
+      "n_actual_ge25": 4168,
+      "mae_actual_ge30": 14.095121215919157,
+      "n_actual_ge30": 2712,
+      "mae_history_lt5": 5.170517753001811,
+      "n_history_lt5": 440
+    },
+    {
+      "model": "production_ensemble_plus_torch_mlp",
+      "n": 18412,
+      "mae": 7.540248163707055,
+      "rmse": 9.812983673060334,
+      "bias_pred_minus_actual": -0.14050010403968244,
+      "mae_actual_ge25": 12.03765515762224,
+      "n_actual_ge25": 4168,
+      "mae_actual_ge30": 14.083888192500005,
+      "n_actual_ge30": 2712,
+      "mae_history_lt5": 5.128920794711311,
+      "n_history_lt5": 440
+    }
+  ],
+  "passes_predeclared_rule": false,
+  "production_code_changed": false
+}
