@@ -787,6 +787,30 @@ def _production_rate(hist: pd.Series | None) -> float:
     return float(rate)
 
 
+def _blend_current_season_rate(
+    prior_rate: object,
+    current_rate: object,
+    current_games: object,
+    prior_strength: float = 8.0,
+) -> tuple[float, float]:
+    """Shrink current-season production toward a prior-season/market baseline.
+
+    With one current-season game the new evidence has 1/(1+8) weight; sustained
+    production gradually dominates as the current-season sample grows.
+    """
+    prior = pd.to_numeric(prior_rate, errors="coerce")
+    current = pd.to_numeric(current_rate, errors="coerce")
+    games = pd.to_numeric(current_games, errors="coerce")
+    if pd.isna(current) or float(current) < 0 or pd.isna(games) or float(games) <= 0:
+        return (float(prior) if pd.notna(prior) and float(prior) >= 0 else np.nan, 0.0)
+    weight = float(np.clip(games, 0.0, None) / (np.clip(games, 0.0, None) + prior_strength))
+    if pd.isna(prior) or float(prior) < 0:
+        # Without a credible prior, avoid fabricating one; expose current form
+        # but report that no shrinkage baseline was available.
+        return float(current), weight
+    return float((1.0 - weight) * float(prior) + weight * float(current)), weight
+
+
 def _market_reference_slice(
     history: pd.DataFrame | None, cr: float, role: str
 ) -> pd.DataFrame:
@@ -1186,7 +1210,36 @@ def predict_players(
         sample_confidence = _sample_confidence(n_games) if pd.notna(n_games) else 0.0
         peer_rate = _market_implied_rate(market_value_history, cr, role)
         peer_minutes = _market_minutes_prior(market_value_history, cr, role)
-        if pd.notna(rate) and pd.notna(peer_rate) and pd.notna(n_games):
+        current_season_rate = (
+            pd.to_numeric(hist.get("pdk_per_min_current_season"), errors="coerce")
+            if hist is not None else np.nan
+        )
+        prior_season_rate = (
+            pd.to_numeric(hist.get("pdk_per_min_prior_seasons"), errors="coerce")
+            if hist is not None else np.nan
+        )
+        current_season_games = (
+            pd.to_numeric(hist.get("current_season_games"), errors="coerce")
+            if hist is not None else np.nan
+        )
+        # Prefer a genuine prior-season rate, then a market/role prior. Never
+        # let one hot game replace a multi-season baseline at full strength.
+        season_baseline = (
+            prior_season_rate
+            if pd.notna(prior_season_rate) and float(prior_season_rate) > 0
+            else peer_rate
+        )
+        season_adjusted_rate, current_season_weight = _blend_current_season_rate(
+            season_baseline, current_season_rate, current_season_games
+        )
+        season_adjusted = pd.notna(current_season_rate) and pd.notna(current_season_games) and current_season_games > 0
+        if season_adjusted and pd.notna(season_adjusted_rate):
+            rate = season_adjusted_rate
+            projection_source = "current_season_shrunk"
+        elif pd.notna(prior_season_rate) and float(prior_season_rate) > 0:
+            rate = float(prior_season_rate)
+            projection_source = "prior_seasons"
+        if pd.notna(rate) and pd.notna(peer_rate) and pd.notna(n_games) and not season_adjusted:
             rate = sample_confidence * rate + (1.0 - sample_confidence) * peer_rate
             if sample_confidence < 0.99:
                 projection_source = "player_history_shrunk"
@@ -1307,6 +1360,10 @@ def predict_players(
                 "minutes_projection_basis": minute_basis,
                 "implied_min": float(implied_min) if pd.notna(implied_min) else emin,
                 "historical_pdk_per_min": historical_rate,
+                "pdk_per_min_current_season": float(current_season_rate) if pd.notna(current_season_rate) else np.nan,
+                "pdk_per_min_prior_seasons": float(prior_season_rate) if pd.notna(prior_season_rate) else np.nan,
+                "current_season_games": float(current_season_games) if pd.notna(current_season_games) else 0.0,
+                "current_season_weight": float(current_season_weight),
                 "pdk_rate_for_projection": rate,
                 "cr_market_pdk_per_min": peer_rate,
                 "cr_market_minutes_per_game": peer_minutes,

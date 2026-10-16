@@ -901,6 +901,88 @@ def _attach_next_game_schedule(
     return out
 
 
+def _attach_current_season_form(
+    features: pd.DataFrame,
+    player_logs: pd.DataFrame,
+    fallback_target_date: str | None = None,
+) -> pd.DataFrame:
+    """Attach as-of current/prior-season rates to inference rows only.
+
+    The target season comes from the upcoming fixture date, not the last played
+    game. This matters for season openers, when the latest historical game is
+    still from the previous NBA season. Historical rows are strictly before the
+    target timestamp; no current-game result can leak into the forecast.
+    """
+    if features.empty or player_logs.empty or "PLAYER_NAME" not in features:
+        return features
+    if "is_inference" not in features or not features["is_inference"].fillna(False).any():
+        return features
+    if not {"PLAYER_NAME", "GAME_DATE"}.issubset(player_logs.columns):
+        return features
+
+    out = features.copy()
+    logs = player_logs.copy()
+    logs["_season_date"] = _to_naive_utc(logs["GAME_DATE"])
+    logs["_season_pdk"] = _pdk_feature_series(logs)
+    logs["_season_minutes"] = pd.to_numeric(
+        logs.get("MIN", pd.Series(np.nan, index=logs.index)), errors="coerce"
+    )
+    logs["_season_year"] = logs["_season_date"].dt.year - (
+        logs["_season_date"].dt.month.lt(7).astype(int)
+    )
+    fallback = _to_naive_utc(fallback_target_date) if fallback_target_date else pd.NaT
+    logs_by_player = {
+        name: group for name, group in logs.groupby("PLAYER_NAME", sort=False)
+    }
+
+    for idx in out.index[out["is_inference"].fillna(False).astype(bool)]:
+        player_name = out.at[idx, "PLAYER_NAME"]
+        player_history = logs_by_player.get(player_name)
+        history = player_history.copy() if player_history is not None else pd.DataFrame()
+        if history.empty:
+            out.at[idx, "pdk_per_min_current_season"] = np.nan
+            out.at[idx, "current_season_games"] = 0.0
+            out.at[idx, "pdk_per_min_prior_seasons"] = np.nan
+            out.at[idx, "prior_seasons_games"] = 0.0
+            continue
+
+        target_date = _to_naive_utc(out.at[idx, "NBA_GAME_DATETIME_UTC"]) if (
+            "NBA_GAME_DATETIME_UTC" in out and pd.notna(out.at[idx, "NBA_GAME_DATETIME_UTC"])
+        ) else fallback
+        if pd.isna(target_date):
+            valid_dates = history["_season_date"].dropna()
+            target_date = valid_dates.max() + pd.Timedelta(days=1) if not valid_dates.empty else pd.NaT
+        if pd.isna(target_date):
+            out.at[idx, "pdk_per_min_current_season"] = np.nan
+            out.at[idx, "current_season_games"] = 0.0
+            out.at[idx, "pdk_per_min_prior_seasons"] = np.nan
+            out.at[idx, "prior_seasons_games"] = 0.0
+            continue
+
+        # The game log is post-match evidence; strict timestamp filtering is
+        # essential even if the collector accidentally contains future rows.
+        history = history.loc[history["_season_date"].lt(target_date)].copy()
+        season_year = int(target_date.year - (target_date.month < 7))
+        minutes = history["_season_minutes"]
+        pdk = history["_season_pdk"]
+        valid = minutes.gt(0) & pdk.notna() & minutes.notna()
+        current = history["_season_year"].eq(season_year) & valid
+        prior = history["_season_year"].lt(season_year) & valid
+
+        current_minutes = float(minutes.loc[current].sum())
+        current_points = float(pdk.loc[current].sum())
+        prior_minutes = float(minutes.loc[prior].sum())
+        prior_points = float(pdk.loc[prior].sum())
+        out.at[idx, "pdk_per_min_current_season"] = (
+            current_points / current_minutes if current_minutes > 0 else np.nan
+        )
+        out.at[idx, "current_season_games"] = float(current.sum())
+        out.at[idx, "pdk_per_min_prior_seasons"] = (
+            prior_points / prior_minutes if prior_minutes > 0 else np.nan
+        )
+        out.at[idx, "prior_seasons_games"] = float(prior.sum())
+    return out
+
 def build_feature_matrix(
     settings: Settings,
     player_logs: pd.DataFrame,
@@ -943,6 +1025,9 @@ def build_feature_matrix(
         player_logs,
         target_gameweek=target_gameweek,
         include_completed_schedule=include_completed_schedule,
+    )
+    feats = _attach_current_season_form(
+        feats, player_logs, fallback_target_date=settings.nba_season_start
     )
     if "is_inference" in feats.columns:
         feats["is_inference"] = feats["is_inference"].fillna(False).astype(bool)
