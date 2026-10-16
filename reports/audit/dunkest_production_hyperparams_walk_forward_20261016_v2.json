@@ -1,0 +1,178 @@
+{
+  "created_utc": "2026-10-16T07:54:04.379584+00:00",
+  "dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "target": "certified official Dunkest PDK",
+  "folds": {
+    "9": "2022-23",
+    "13": "2023-24",
+    "19": "2024-25"
+  },
+  "configs": {
+    "gbr_regularized": {
+      "rf_n": 200,
+      "rf_depth": 6,
+      "rf_leaf": 1,
+      "gbr_n": 180,
+      "gbr_lr": 0.04,
+      "gbr_depth": 2,
+      "gbr_leaf": 5,
+      "gbr_subsample": 0.85
+    }
+  },
+  "fold_metadata": [
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2022-23",
+      "train_rows": 36084,
+      "test_rows": 19165,
+      "feature_count": 54,
+      "weights": {
+        "ridge": 0.3346307484444681,
+        "rf": 0.3315072055242569,
+        "gbr": 0.333862046031275
+      },
+      "ridge_alpha": 0.3,
+      "config": {
+        "rf_n": 200,
+        "rf_depth": 6,
+        "rf_leaf": 1,
+        "gbr_n": 180,
+        "gbr_lr": 0.04,
+        "gbr_depth": 2,
+        "gbr_leaf": 5,
+        "gbr_subsample": 0.85
+      }
+    },
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2023-24",
+      "train_rows": 55249,
+      "test_rows": 18927,
+      "feature_count": 54,
+      "weights": {
+        "ridge": 0.33364781615316563,
+        "rf": 0.33251034635020443,
+        "gbr": 0.3338418374966299
+      },
+      "ridge_alpha": 0.3,
+      "config": {
+        "rf_n": 200,
+        "rf_depth": 6,
+        "rf_leaf": 1,
+        "gbr_n": 180,
+        "gbr_lr": 0.04,
+        "gbr_depth": 2,
+        "gbr_leaf": 5,
+        "gbr_subsample": 0.85
+      }
+    },
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2024-25",
+      "train_rows": 74176,
+      "test_rows": 19590,
+      "feature_count": 54,
+      "weights": {
+        "ridge": 0.33380779011532163,
+        "rf": 0.3325240470446941,
+        "gbr": 0.3336681628399842
+      },
+      "ridge_alpha": 0.3,
+      "config": {
+        "rf_n": 200,
+        "rf_depth": 6,
+        "rf_leaf": 1,
+        "gbr_n": 180,
+        "gbr_lr": 0.04,
+        "gbr_depth": 2,
+        "gbr_leaf": 5,
+        "gbr_subsample": 0.85
+      }
+    }
+  ],
+  "fold_metrics": [
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2022-23",
+      "n": 19165,
+      "mae": 7.558258758395221,
+      "rmse": 9.814274128480651,
+      "bias_pred_minus_actual": -0.12307639117712448,
+      "mae_actual_ge25": 12.284976975828254,
+      "n_actual_ge25": 4310,
+      "mae_actual_ge30": 14.193879474162019,
+      "n_actual_ge30": 2903,
+      "baseline_mae": 7.768944760828063,
+      "baseline_rmse": 10.113416970239694,
+      "rf_n": 200,
+      "rf_depth": 6,
+      "rf_leaf": 1,
+      "gbr_n": 180,
+      "gbr_lr": 0.04,
+      "gbr_depth": 2,
+      "gbr_leaf": 5,
+      "gbr_subsample": 0.85
+    },
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2023-24",
+      "n": 18927,
+      "mae": 7.5480413892296125,
+      "rmse": 9.787684008734756,
+      "bias_pred_minus_actual": -0.024130430951142933,
+      "mae_actual_ge25": 12.110302590761295,
+      "n_actual_ge25": 4369,
+      "mae_actual_ge30": 13.990996451924438,
+      "n_actual_ge30": 2972,
+      "baseline_mae": 7.765219974656176,
+      "baseline_rmse": 10.100281012674566,
+      "rf_n": 200,
+      "rf_depth": 6,
+      "rf_leaf": 1,
+      "gbr_n": 180,
+      "gbr_lr": 0.04,
+      "gbr_depth": 2,
+      "gbr_leaf": 5,
+      "gbr_subsample": 0.85
+    },
+    {
+      "candidate": "gbr_regularized",
+      "fold_season": "2024-25",
+      "n": 19590,
+      "mae": 7.570363080332412,
+      "rmse": 9.858209821231089,
+      "bias_pred_minus_actual": -0.08225335736594863,
+      "mae_actual_ge25": 12.011202909574699,
+      "n_actual_ge25": 4425,
+      "mae_actual_ge30": 14.123322524835693,
+      "n_actual_ge30": 2919,
+      "baseline_mae": 7.792002310662227,
+      "baseline_rmse": 10.179534900090841,
+      "rf_n": 200,
+      "rf_depth": 6,
+      "rf_leaf": 1,
+      "gbr_n": 180,
+      "gbr_lr": 0.04,
+      "gbr_depth": 2,
+      "gbr_leaf": 5,
+      "gbr_subsample": 0.85
+    }
+  ],
+  "summary": [
+    {
+      "candidate": "gbr_regularized",
+      "n": 57682.0,
+      "weighted_mae": 7.559017045565431,
+      "weighted_rmse": 9.820513907369529,
+      "weighted_bias": -0.07674524070456652,
+      "mae_actual_ge25": 12.134289961822644,
+      "mae_actual_ge30": 14.101893565909387,
+      "folds": 3.0
+    }
+  ],
+  "selection_rule": "Rank by pooled row-weighted MAE, then pooled RMSE; inspect bias and high-score cohorts before promotion.",
+  "production_changed": false,
+  "holdout_2025_26_used": false,
+  "prospective_2026_27_used": false,
+  "holdout_note": "The source parquet contains historical seasons, but season 2025/26 is not used in any tuning fold or metric."
+}
