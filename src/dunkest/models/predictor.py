@@ -791,11 +791,12 @@ def _blend_current_season_rate(
     prior_rate: object,
     current_rate: object,
     current_games: object,
-    prior_strength: float = 8.0,
+    prior_strength: float = 12.0,
 ) -> tuple[float, float]:
     """Shrink current-season production toward a prior-season/market baseline.
 
-    With one current-season game the new evidence has 1/(1+8) weight; sustained
+    Prior strength is calibrated on historical, past-only player-game observations.
+    With one current-season game the new evidence has 1/13 weight; sustained
     production gradually dominates as the current-season sample grows.
     """
     prior = pd.to_numeric(prior_rate, errors="coerce")
@@ -805,9 +806,14 @@ def _blend_current_season_rate(
         return (float(prior) if pd.notna(prior) and float(prior) >= 0 else np.nan, 0.0)
     weight = float(np.clip(games, 0.0, None) / (np.clip(games, 0.0, None) + prior_strength))
     if pd.isna(prior) or float(prior) < 0:
-        # Without a credible prior, avoid fabricating one; expose current form
-        # but report that no shrinkage baseline was available.
-        return float(current), weight
+        # Do not let a tiny current-season sample become an unshrunk forecast.
+        # The caller can fall back to player-market or CR/role priors. If no
+        # independent prior exists, require a full prior-strength sample before
+        # trusting the season-only estimate; this avoids a one-game spike without
+        # suppressing a player who builds a substantial sample during the season.
+        if float(games) >= prior_strength:
+            return float(current), 1.0
+        return np.nan, 0.0
     return float((1.0 - weight) * float(prior) + weight * float(current)), weight
 
 
@@ -1236,6 +1242,11 @@ def predict_players(
         if season_adjusted and pd.notna(season_adjusted_rate):
             rate = season_adjusted_rate
             projection_source = "current_season_shrunk"
+        elif season_adjusted and pd.isna(season_baseline):
+            # The feature-level season mean may itself be this same tiny current
+            # sample. Clear it and route through independent market/role priors.
+            rate = np.nan
+            projection_source = "current_season_without_baseline"
         elif pd.notna(prior_season_rate) and float(prior_season_rate) > 0:
             rate = float(prior_season_rate)
             projection_source = "prior_seasons"
