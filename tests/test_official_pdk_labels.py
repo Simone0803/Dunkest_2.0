@@ -5,7 +5,10 @@ import pandas as pd
 import pytest
 
 from dunkest.config import Settings
-from dunkest.data.dunkest.official_pdk import attach_official_pdk_labels
+from dunkest.data.dunkest.official_pdk import (
+    attach_official_pdk_labels,
+    official_pdk_overlay_path,
+)
 from dunkest.models.predictor import (
     MIN_OFFICIAL_PDK_TRAINING_ROWS,
     _resolve_training_target,
@@ -50,6 +53,17 @@ def test_official_pdk_overlay_joins_by_identity_and_preserves_proxy(tmp_path):
     assert len(actual) == len(base)
 
 
+def test_official_pdk_overlay_path_prefers_v4_and_falls_back_to_legacy(tmp_path):
+    processed = tmp_path / "processed"
+    processed.mkdir()
+    v4 = processed / "player_game_logs_2025-26_official_pdk_overlay_v4.parquet"
+    legacy = processed / "player_game_logs_2025-26_official_pdk_overlay.parquet"
+    legacy.write_bytes(b"legacy")
+    assert official_pdk_overlay_path(tmp_path, "2025-26") == legacy
+    v4.write_bytes(b"v4")
+    assert official_pdk_overlay_path(tmp_path, "2025-26") == v4
+
+
 def test_official_pdk_overlay_without_matches_is_not_applied(tmp_path):
     processed = tmp_path / "processed"
     processed.mkdir()
@@ -86,7 +100,7 @@ def test_auto_training_target_uses_official_labels_only_above_threshold():
     assert _resolve_training_target(Settings(), features) == "target_pdk_official"
 
 
-def test_auto_training_target_falls_back_when_official_coverage_is_small():
+def test_auto_training_target_fails_closed_when_official_coverage_is_small():
     features = pd.DataFrame(
         {
             "target_pdk": [10.0] * 100,
@@ -94,7 +108,17 @@ def test_auto_training_target_falls_back_when_official_coverage_is_small():
         }
     )
 
-    assert _resolve_training_target(Settings(), features) == "target_pdk"
+    with pytest.raises(ValueError, match="Refusing to silently train on proxy PDK labels"):
+        _resolve_training_target(Settings(), features)
+
+
+def test_auto_training_target_fails_when_official_column_is_absent():
+    features = pd.DataFrame({"target_pdk": [10.0] * 100})
+
+    with pytest.raises(ValueError, match="target_pdk_official column, but it is missing") as exc:
+        _resolve_training_target(Settings(), features)
+
+    assert "training_target='target_pdk'" in str(exc.value)
 
 
 def test_explicit_training_target_overrides_auto_selection():

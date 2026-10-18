@@ -74,3 +74,24 @@ def test_realized_score_rejects_unverified_coach_or_unknown_transfer_count():
     )
     assert not no_transfers.complete
     assert no_transfers.reason == "invalid_transfer_count_or_penalty"
+
+
+def test_realized_score_marks_missing_or_nonnumeric_verified_coach_as_incomplete():
+    for coach_score in (None, "unknown", float("nan")):
+        result = score_realized_team(
+            _players(), _scores(), actual_coach_score=coach_score,
+            transfer_count=0, transfer_penalty=5.0, coach_fixture_verified=True,
+        )
+        assert not result.complete
+        assert math.isnan(result.team_score)
+        assert result.reason == "missing_or_unverified_coach_actual"
+
+
+def test_realized_score_marks_missing_player_actual_container_as_incomplete():
+    result = score_realized_team(
+        _players(), None, actual_coach_score=8.0,
+        transfer_count=0, transfer_penalty=5.0, coach_fixture_verified=True,
+    )
+    assert not result.complete
+    assert math.isnan(result.team_score)
+    assert result.reason == "missing_player_actuals"

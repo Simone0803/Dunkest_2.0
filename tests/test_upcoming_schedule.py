@@ -182,6 +182,9 @@ def test_player_opponent_rate_is_shrunk_toward_season_rate():
         {
             "MIN": [20.0, 20.0, 20.0],
             "PDK": [10.0, 20.0, 10.0],
+            "PDK_OFFICIAL_VALID": [10.0, 20.0, 10.0],
+            "SEASON_YEAR": ["2025-26"] * 3,
+            "GAME_DATE": pd.to_datetime(["2025-10-20", "2025-10-22", "2025-10-24"]),
             "OPPONENT": ["MIA", "NYK", "BOS"],
         }
     )

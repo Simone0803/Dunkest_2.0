@@ -1,0 +1,353 @@
+{
+  "generated_at_utc": "2026-10-18T09:34:14.567115+00:00",
+  "protocol": "Saved all-prior-seasons low-history-weighted predictions are paired to the exact certified held-out adapter rows. Simple baselines use only strictly prior official PDK and NBA-minute history. No models are refit.",
+  "test_seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "model_method": "all_prior_seasons_low_history_weighted",
+  "model_rows": 57682,
+  "baseline_definitions": {
+    "previous_3_official_pdk_mean": "pdk_mean_3",
+    "previous_5_official_pdk_mean": "pdk_mean_5",
+    "previous_10_official_pdk_mean": "pdk_mean_10",
+    "past_season_official_pdk_mean": "pdk_season_mean from the shared official-only history contract",
+    "past_official_pdk_per_min_x_previous_5_nba_minutes": "pdk_per_min_season * prev5_nba_min_mean; both inputs are past-only"
+  },
+  "metrics": [
+    {
+      "baseline": "previous_3_official_pdk_mean",
+      "rows": 57433,
+      "coverage_of_model_test_rows": 0.9956832287368677,
+      "baseline_metrics": {
+        "n": 57433,
+        "mae": 8.319294598343577,
+        "rmse": 10.912681041153183,
+        "bias_pred_minus_actual": -0.029119379682992996
+      },
+      "model_metrics_on_same_rows": {
+        "n": 57433,
+        "mae": 7.52094512693817,
+        "rmse": 9.775216727886548,
+        "bias_pred_minus_actual": -0.11770042442011996
+      },
+      "delta_mae_model_minus_baseline": -0.7983494714054061,
+      "folds": [
+        {
+          "test_season": "2022-23",
+          "n": 19086,
+          "mae": 8.294078556708232,
+          "rmse": 10.890947527488274,
+          "bias_pred_minus_actual": -0.06673338223479694,
+          "model_mae_same_rows": 7.525786575317789,
+          "delta_mae_model_minus_baseline": -0.7682919813904439,
+          "coverage_of_model_test_rows": 0.9958779024262979
+        },
+        {
+          "test_season": "2023-24",
+          "n": 18839,
+          "mae": 8.310742873825575,
+          "rmse": 10.887768726513055,
+          "bias_pred_minus_actual": 0.03264654882601685,
+          "model_mae_same_rows": 7.505518948341714,
+          "delta_mae_model_minus_baseline": -0.805223925483861,
+          "coverage_of_model_test_rows": 0.9953505574047656
+        },
+        {
+          "test_season": "2024-25",
+          "n": 19508,
+          "mae": 8.352223617661132,
+          "rmse": 10.957860236307027,
+          "bias_pred_minus_actual": -0.05196679994532165,
+          "model_mae_same_rows": 7.531105568541887,
+          "delta_mae_model_minus_baseline": -0.8211180491192448,
+          "coverage_of_model_test_rows": 0.9958141909137315
+        }
+      ]
+    },
+    {
+      "baseline": "previous_5_official_pdk_mean",
+      "rows": 57433,
+      "coverage_of_model_test_rows": 0.9956832287368677,
+      "baseline_metrics": {
+        "n": 57433,
+        "mae": 7.974928638587571,
+        "rmse": 10.437877555479194,
+        "bias_pred_minus_actual": -0.04041463096129401
+      },
+      "model_metrics_on_same_rows": {
+        "n": 57433,
+        "mae": 7.52094512693817,
+        "rmse": 9.775216727886548,
+        "bias_pred_minus_actual": -0.11770042442011996
+      },
+      "delta_mae_model_minus_baseline": -0.45398351164940065,
+      "folds": [
+        {
+          "test_season": "2022-23",
+          "n": 19086,
+          "mae": 7.970177529777499,
+          "rmse": 10.44204695762559,
+          "bias_pred_minus_actual": -0.08245052219777148,
+          "model_mae_same_rows": 7.525786575317789,
+          "delta_mae_model_minus_baseline": -0.4443909544597092,
+          "coverage_of_model_test_rows": 0.9958779024262979
+        },
+        {
+          "test_season": "2023-24",
+          "n": 18839,
+          "mae": 7.959065652812429,
+          "rmse": 10.413146477785043,
+          "bias_pred_minus_actual": 0.023812843923067355,
+          "model_mae_same_rows": 7.505518948341714,
+          "delta_mae_model_minus_baseline": -0.4535467044707147,
+          "coverage_of_model_test_rows": 0.9953505574047656
+        },
+        {
+          "test_season": "2024-25",
+          "n": 19508,
+          "mae": 7.994895957214135,
+          "rmse": 10.457633501331154,
+          "bias_pred_minus_actual": -0.06131294853393481,
+          "model_mae_same_rows": 7.531105568541887,
+          "delta_mae_model_minus_baseline": -0.46379038867224864,
+          "coverage_of_model_test_rows": 0.9958141909137315
+        }
+      ]
+    },
+    {
+      "baseline": "previous_10_official_pdk_mean",
+      "rows": 57433,
+      "coverage_of_model_test_rows": 0.9956832287368677,
+      "baseline_metrics": {
+        "n": 57433,
+        "mae": 7.767279439824845,
+        "rmse": 10.129777321785312,
+        "bias_pred_minus_actual": -0.06551893807801995
+      },
+      "model_metrics_on_same_rows": {
+        "n": 57433,
+        "mae": 7.52094512693817,
+        "rmse": 9.775216727886548,
+        "bias_pred_minus_actual": -0.11770042442011996
+      },
+      "delta_mae_model_minus_baseline": -0.24633431288667398,
+      "folds": [
+        {
+          "test_season": "2022-23",
+          "n": 19086,
+          "mae": 7.763527001009633,
+          "rmse": 10.113653266081169,
+          "bias_pred_minus_actual": -0.09439563986899732,
+          "model_mae_same_rows": 7.525786575317789,
+          "delta_mae_model_minus_baseline": -0.2377404256918431,
+          "coverage_of_model_test_rows": 0.9958779024262979
+        },
+        {
+          "test_season": "2023-24",
+          "n": 18839,
+          "mae": 7.754634453013294,
+          "rmse": 10.096489774608251,
+          "bias_pred_minus_actual": 0.00776084229186833,
+          "model_mae_same_rows": 7.505518948341714,
+          "delta_mae_model_minus_baseline": -0.24911550467158133,
+          "coverage_of_model_test_rows": 0.9953505574047656
+        },
+        {
+          "test_season": "2024-25",
+          "n": 19508,
+          "mae": 7.783162049716681,
+          "rmse": 10.177520691998621,
+          "bias_pred_minus_actual": -0.1080336526569482,
+          "model_mae_same_rows": 7.531105568541887,
+          "delta_mae_model_minus_baseline": -0.25205648117479545,
+          "coverage_of_model_test_rows": 0.9958141909137315
+        }
+      ]
+    },
+    {
+      "baseline": "past_season_official_pdk_mean",
+      "rows": 57433,
+      "coverage_of_model_test_rows": 0.9956832287368677,
+      "baseline_metrics": {
+        "n": 57433,
+        "mae": 7.715078210938718,
+        "rmse": 10.115432644515769,
+        "bias_pred_minus_actual": -0.691460453814956
+      },
+      "model_metrics_on_same_rows": {
+        "n": 57433,
+        "mae": 7.52094512693817,
+        "rmse": 9.775216727886548,
+        "bias_pred_minus_actual": -0.11770042442011996
+      },
+      "delta_mae_model_minus_baseline": -0.19413308400054716,
+      "folds": [
+        {
+          "test_season": "2022-23",
+          "n": 19086,
+          "mae": 7.695065267679897,
+          "rmse": 10.085222765082847,
+          "bias_pred_minus_actual": -0.7341918434500802,
+          "model_mae_same_rows": 7.525786575317789,
+          "delta_mae_model_minus_baseline": -0.16927869236210755,
+          "coverage_of_model_test_rows": 0.9958779024262979
+        },
+        {
+          "test_season": "2023-24",
+          "n": 18839,
+          "mae": 7.71355589836032,
+          "rmse": 10.097368486739505,
+          "bias_pred_minus_actual": -0.553632334899578,
+          "model_mae_same_rows": 7.505518948341714,
+          "delta_mae_model_minus_baseline": -0.2080369500186063,
+          "coverage_of_model_test_rows": 0.9953505574047656
+        },
+        {
+          "test_season": "2024-25",
+          "n": 19508,
+          "mae": 7.736128338153313,
+          "rmse": 10.162265565346042,
+          "bias_pred_minus_actual": -0.7827549293978363,
+          "model_mae_same_rows": 7.531105568541887,
+          "delta_mae_model_minus_baseline": -0.20502276961142687,
+          "coverage_of_model_test_rows": 0.9958141909137315
+        }
+      ]
+    },
+    {
+      "baseline": "past_official_pdk_per_min_x_previous_5_nba_minutes",
+      "rows": 57425,
+      "coverage_of_model_test_rows": 0.9955445372906626,
+      "baseline_metrics": {
+        "n": 57425,
+        "mae": 7.685501453255191,
+        "rmse": 10.063201372814275,
+        "bias_pred_minus_actual": -0.30366879702071864
+      },
+      "model_metrics_on_same_rows": {
+        "n": 57425,
+        "mae": 7.521455321848838,
+        "rmse": 9.775696858235522,
+        "bias_pred_minus_actual": -0.11772897517244199
+      },
+      "delta_mae_model_minus_baseline": -0.16404613140635424,
+      "folds": [
+        {
+          "test_season": "2022-23",
+          "n": 19081,
+          "mae": 7.680863891994078,
+          "rmse": 10.04369523718213,
+          "bias_pred_minus_actual": -0.3942408569840597,
+          "model_mae_same_rows": 7.526900868426836,
+          "delta_mae_model_minus_baseline": -0.15396302356724262,
+          "coverage_of_model_test_rows": 0.9956170101747978
+        },
+        {
+          "test_season": "2023-24",
+          "n": 18837,
+          "mae": 7.641118112624869,
+          "rmse": 10.007363619592384,
+          "bias_pred_minus_actual": -0.19861135980887654,
+          "model_mae_same_rows": 7.506135985068796,
+          "delta_mae_model_minus_baseline": -0.13498212755607134,
+          "coverage_of_model_test_rows": 0.995244888254874
+        },
+        {
+          "test_season": "2024-25",
+          "n": 19507,
+          "mae": 7.7328966597901125,
+          "rmse": 10.135771687298284,
+          "bias_pred_minus_actual": -0.31652374491629237,
+          "model_mae_same_rows": 7.530921865790543,
+          "delta_mae_model_minus_baseline": -0.20197479399957044,
+          "coverage_of_model_test_rows": 0.99576314446146
+        }
+      ]
+    }
+  ],
+  "paired_date_cluster_bootstrap": {
+    "replicates": 10000,
+    "seed": 20261018,
+    "resampling_unit": "game date within each test season, then equal-season macro average",
+    "results": {
+      "previous_3_official_pdk_mean": {
+        "season_deltas_model_minus_baseline": {
+          "2022-23": -0.7682919813904439,
+          "2023-24": -0.805223925483861,
+          "2024-25": -0.8211180491192448
+        },
+        "equal_season_macro_delta_model_minus_baseline": -0.7982113186645167,
+        "ci95_equal_season_macro": [
+          -0.8346749311065419,
+          -0.7293164008013564
+        ],
+        "bootstrap_fraction_model_lower_mae": 1.0
+      },
+      "previous_5_official_pdk_mean": {
+        "season_deltas_model_minus_baseline": {
+          "2022-23": -0.4443909544597092,
+          "2023-24": -0.4535467044707147,
+          "2024-25": -0.46379038867224864
+        },
+        "equal_season_macro_delta_model_minus_baseline": -0.45390934920089093,
+        "ci95_equal_season_macro": [
+          -0.49900404667523673,
+          -0.41462617749483865
+        ],
+        "bootstrap_fraction_model_lower_mae": 1.0
+      },
+      "previous_10_official_pdk_mean": {
+        "season_deltas_model_minus_baseline": {
+          "2022-23": -0.2377404256918431,
+          "2023-24": -0.24911550467158133,
+          "2024-25": -0.25205648117479545
+        },
+        "equal_season_macro_delta_model_minus_baseline": -0.24630413717940666,
+        "ci95_equal_season_macro": [
+          -0.27847480475808,
+          -0.21927059003886074
+        ],
+        "bootstrap_fraction_model_lower_mae": 1.0
+      },
+      "past_season_official_pdk_mean": {
+        "season_deltas_model_minus_baseline": {
+          "2022-23": -0.16927869236210755,
+          "2023-24": -0.2080369500186063,
+          "2024-25": -0.20502276961142687
+        },
+        "equal_season_macro_delta_model_minus_baseline": -0.19411280399738026,
+        "ci95_equal_season_macro": [
+          -0.21994806529615094,
+          -0.15575379878678336
+        ],
+        "bootstrap_fraction_model_lower_mae": 1.0
+      },
+      "past_official_pdk_per_min_x_previous_5_nba_minutes": {
+        "season_deltas_model_minus_baseline": {
+          "2022-23": -0.15396302356724262,
+          "2023-24": -0.13498212755607134,
+          "2024-25": -0.20197479399957044
+        },
+        "equal_season_macro_delta_model_minus_baseline": -0.16363998170762814,
+        "ci95_equal_season_macro": [
+          -0.19208407022512852,
+          -0.11972146851260605
+        ],
+        "bootstrap_fraction_model_lower_mae": 1.0
+      }
+    }
+  },
+  "limitations": [
+    "Historical validation folds are not a pristine project-wide holdout.",
+    "Coverage differs across simple baselines because players without enough prior official history have no direct seasonal/rate estimate; model metrics are reported on each baseline's same rows.",
+    "Player-score comparisons do not validate coach scores, lineup policy, credits, injuries or transfer strategy.",
+    "2025/26 and 2026/27 prospective outcomes were not loaded or used."
+  ],
+  "outputs": {
+    "metrics": "reports/audit/dunkest_multiseason_temporal_baselines_20261018_v1_metrics.csv",
+    "json": "reports/audit/dunkest_multiseason_temporal_baselines_20261018_v1.json",
+    "report": "reports/audit/dunkest_multiseason_temporal_baselines_20261018_v1.md"
+  }
+}

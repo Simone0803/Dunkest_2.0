@@ -84,7 +84,9 @@ def main():
     if (earliest - run_time).total_seconds() > max_age_hours * 3600:
         raise SystemExit(f"Source forecast is stale for a decisive pre-lock test: run age at earliest kickoff exceeds {max_age_hours:.0f} hours.")
     snapshot_entries = {e["path"]: e for e in manifest["pre_match_snapshot"]["files"]}
-    required_snapshots = ["current_lineups_market.csv", "lineups_availability.csv",
+    # Official injuries is the active availability source; the old
+    # lineups_availability.csv is not written by the current scraper.
+    required_snapshots = ["current_lineups_market.csv",
         f"player_credits_{cfg['season_id']}_gw{gw}.parquet",
         f"coach_market_{cfg['season_id']}_gw{gw}.parquet",
         f"injuries_{cfg['season_id']}_gw{gw}.parquet"]

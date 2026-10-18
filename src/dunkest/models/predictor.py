@@ -299,14 +299,20 @@ def _resolve_training_target(
                 f"Training target: target_pdk_official ({count:,} finite official labels)."
             )
             return "target_pdk_official"
-        print(
-            "Training target: target_pdk "
-            f"(official labels available: {count:,}; requires "
-            f"{MIN_OFFICIAL_PDK_TRAINING_ROWS:,} for auto-selection)."
+        raise ValueError(
+            "Automatic training target selection found only "
+            f"{count:,} finite official PDK labels; "
+            f"{MIN_OFFICIAL_PDK_TRAINING_ROWS:,} are required. "
+            "Refusing to silently train on proxy PDK labels. Set "
+            "training_target='target_pdk' to explicitly allow the proxy target, "
+            "or provide a sufficiently complete official-label overlay."
         )
-    else:
-        print("Training target: target_pdk (no official PDK labels in feature matrix).")
-    return "target_pdk"
+    raise ValueError(
+        "Automatic training target selection requires the "
+        "target_pdk_official column, but it is missing. "
+        "Set training_target='target_pdk' to explicitly allow proxy PDK labels, "
+        "or provide the official-label overlay."
+    )
 
 
 def train_models(

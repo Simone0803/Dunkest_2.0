@@ -15,11 +15,13 @@ GAMEWEEK="${DUNKEST_GAMEWEEK:-1}"
 # Use the latest already-frozen fixture map only for this preflight; the strict
 # archive script revalidates the fresh run's own fixture mapping afterwards.
 "$PYTHON" - "$ROOT" "$SEASON_ID" "$GAMEWEEK" "$MAX_HOURS" <<'PY'
-import json, sys
+import json, math, sys
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
 root=Path(sys.argv[1]); season_id=sys.argv[2]; gw=int(sys.argv[3]); max_hours=float(sys.argv[4])
+if not math.isfinite(max_hours) or not 0.0 < max_hours <= 36.0:
+    raise SystemExit('Preflight blocked: DUNKEST_MAX_PRELOCK_HOURS must be finite, positive, and no greater than 36 hours.')
 runs=[]
 for manifest_path in (root/'data/predictions').glob('*/manifest.json'):
     try: manifest=json.loads(manifest_path.read_text(encoding='utf-8'))
@@ -44,8 +46,8 @@ _, prior_run, kickoff=max(runs,key=lambda x:x[0])
 now=pd.Timestamp(datetime.now(timezone.utc))
 hours=(kickoff-now).total_seconds()/3600
 print(f'Preflight: season_id={season_id}, gameweek={gw}, earliest_kickoff_utc={kickoff.isoformat()}, hours_until_kickoff={hours:.2f}, prior_run={prior_run}')
-if hours < 0:
-    raise SystemExit('Preflight blocked: earliest kickoff has passed; refusing to create a pre-lock archive.')
+if hours <= 0:
+    raise SystemExit('Preflight blocked: earliest kickoff is at or has passed; refusing to launch the pre-lock run.')
 if hours > max_hours:
     raise SystemExit(f'Preflight blocked: too early ({hours:.2f}h until kickoff; maximum is {max_hours:.2f}h). Retry inside the pre-lock window. No model run or archive was created.')
 PY
@@ -72,9 +74,13 @@ for path in (root/'data/predictions').glob('*/manifest.json'):
     if ts.tzinfo is None: ts=ts.replace(tzinfo=timezone.utc)
     if ts.astimezone(timezone.utc) >= start.astimezone(timezone.utc):
         candidates.append((ts,path.parent.name))
-if not candidates:
-    raise SystemExit('No new prediction run was produced after this script started.')
-print(max(candidates)[1])
+if len(candidates) != 1:
+    found=', '.join(run_id for _,run_id in sorted(candidates)) or 'none'
+    raise SystemExit(
+        f'Expected exactly one prediction run after this script started; found {len(candidates)}: {found}. '
+        'Refusing to archive an ambiguous run.'
+    )
+print(candidates[0][1])
 PY
 )"
 

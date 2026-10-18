@@ -1,7 +1,9 @@
 import hashlib
 import importlib.util
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import sys
 
 import pandas as pd
 import pytest
@@ -133,6 +135,7 @@ def _make_fixture_run(tmp_path: Path, with_results: bool = True):
             "actual_coach_pdk": 7.0,
         }]).to_parquet(result_dir / "coach_results.parquet", index=False)
         result_manifest = {
+            "schema_version": 2,
             "season_id": "26",
             "dunkest_gameweek": 1,
             "retrieved_at_utc": "2026-10-01T17:00:00Z",
@@ -142,7 +145,18 @@ def _make_fixture_run(tmp_path: Path, with_results: bool = True):
                 "coach_results.parquet": _sha(result_dir / "coach_results.parquet"),
             },
         }
-        (result_dir / "manifest.json").write_text(json.dumps(result_manifest), encoding="utf-8")
+        manifest_path = result_dir / "manifest.json"
+        manifest_path.write_text(json.dumps(result_manifest), encoding="utf-8")
+        registry_dir = result_dir.parent / "registry"
+        registry_dir.mkdir(parents=True)
+        (registry_dir / f"{result_dir.name}.json").write_text(json.dumps({
+            "schema_version": 1,
+            "archive_id": result_dir.name,
+            "season_id": "26",
+            "dunkest_gameweek": 1,
+            "manifest_sha256": _sha(manifest_path),
+            "sha256": result_manifest["sha256"],
+        }), encoding="utf-8")
     return run_dir, result_dir
 
 
@@ -159,6 +173,32 @@ def test_forecast_metrics_and_lineup_score_from_fixture_linked_actuals(tmp_path)
     # plus 7 coach points, minus the frozen 3.5 transfer malus.
     assert lineups.iloc[0]["actual_team_score"] == pytest.approx(88.5)
     assert report["metrics"]["rank1_realized_team_score"] == pytest.approx(88.5)
+
+
+def test_repeated_evaluation_preserves_each_versioned_report(tmp_path, monkeypatch, capsys):
+    run_dir, results_dir = _make_fixture_run(tmp_path)
+    output_dir = tmp_path / "evaluation"
+    monkeypatch.setattr(sys, "argv", [
+        "evaluate_archived_run_post_match_v1.py",
+        "--data-dir", str(run_dir.parents[1]),
+        "--season-id", "26", "--gameweek", "1",
+        "--run-id", run_dir.name,
+        "--results-dir", str(results_dir),
+        "--output-dir", str(output_dir),
+    ])
+
+    assert evaluator.main() == 0
+    first_result = json.loads(capsys.readouterr().out)
+    first_json = Path(first_result["outputs"][0])
+    first_json_bytes = first_json.read_bytes()
+    first_report = json.loads(first_json_bytes)
+    assert first_report["evaluation_id"] in first_json.name
+
+    assert evaluator.main() == 0
+    second_result = json.loads(capsys.readouterr().out)
+    second_json = Path(second_result["outputs"][0])
+    assert second_json != first_json
+    assert first_json.read_bytes() == first_json_bytes
 
 
 def test_evaluation_rejects_lineup_with_fewer_than_ten_unique_players(tmp_path):
@@ -198,13 +238,60 @@ def test_pre_match_snapshot_hash_mismatch_is_rejected(tmp_path):
         evaluator.evaluate_run(run_dir, results_dir)
 
 
+def test_result_manifest_timestamp_is_authenticated_by_sibling_registry(tmp_path):
+    run_dir, results_dir = _make_fixture_run(tmp_path)
+    manifest_path = results_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["retrieved_at_utc"] = "2026-10-01T10:00:00Z"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
-def test_evaluation_rejects_undated_target_turn_availability_rows(tmp_path):
+    with pytest.raises(ValueError, match="manifest does not match its immutable registry"):
+        evaluator.evaluate_run(run_dir, results_dir)
+
+
+def test_result_manifest_rejects_future_retrieval_time_even_with_valid_registry(tmp_path):
+    run_dir, results_dir = _make_fixture_run(tmp_path)
+    manifest_path = results_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["retrieved_at_utc"] = (
+        datetime.now(timezone.utc) + timedelta(days=1)
+    ).isoformat()
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    registry_path = results_dir.parent / "registry" / f"{results_dir.name}.json"
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    registry["manifest_sha256"] = _sha(manifest_path)
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="retrieval timestamp is in the future"):
+        evaluator.evaluate_run(run_dir, results_dir)
+
+
+def test_schema_two_result_archive_requires_registry_and_schema_one_is_diagnostic_only(tmp_path):
+    run_dir, results_dir = _make_fixture_run(tmp_path)
+    registry_path = results_dir.parent / "registry" / f"{results_dir.name}.json"
+    registry_path.unlink()
+    with pytest.raises(ValueError, match="registry record is missing"):
+        evaluator.evaluate_run(run_dir, results_dir)
+
+    manifest_path = results_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["schema_version"] = 1
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    report, _, _ = evaluator.evaluate_run(run_dir, results_dir)
+    assert report["status"] == "partial"
+    authentication = next(
+        check for check in report["checks"]
+        if check["check"] == "post_match_manifest_authentication"
+    )
+    assert not authentication["passed"]
+
+
+
+def test_legacy_undated_availability_csv_does_not_override_official_injury_snapshot(tmp_path):
     run_dir, results_dir = _make_fixture_run(tmp_path)
     snapshot = run_dir / "pre_match_snapshot"
     availability_path = snapshot / "lineups_availability.csv"
-    availability = pd.read_csv(availability_path)
-    availability = availability.drop(columns=["observed_at_utc"])
+    availability = pd.read_csv(availability_path).drop(columns=["observed_at_utc"])
     availability.to_csv(availability_path, index=False)
     manifest_path = run_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -215,11 +302,9 @@ def test_evaluation_rejects_undated_target_turn_availability_rows(tmp_path):
 
     report, _, _ = evaluator.evaluate_run(run_dir, results_dir)
 
-    assert report["status"] == "partial"
-    availability_check = report["run"]["snapshot_capture_checks"]["lineups_availability"]
-    assert not availability_check["timestamp_valid"]
-    detail = next(item for item in availability_check["files"] if item["path"] == availability_path.name)
-    assert not detail["row_timestamp_check"]["passed"]
+    assert report["status"] == "ready"
+    assert report["run"]["pre_match_inputs_complete"]
+    assert "lineups_availability" not in report["run"]["snapshot_capture_checks"]
 
 def test_evaluation_rejects_input_captured_at_or_after_tipoff(tmp_path):
     run_dir, results_dir = _make_fixture_run(tmp_path)
@@ -245,7 +330,7 @@ def test_evaluation_rejects_input_captured_at_or_after_tipoff(tmp_path):
     assert market_check["files"][0]["reason"] != "ok"
 
 
-def test_evaluation_rejects_missing_required_input_snapshot(tmp_path):
+def test_legacy_availability_csv_is_not_a_required_snapshot(tmp_path):
     run_dir, results_dir = _make_fixture_run(tmp_path)
     snapshot = run_dir / "pre_match_snapshot"
     availability_path = snapshot / "lineups_availability.csv"
@@ -261,10 +346,9 @@ def test_evaluation_rejects_missing_required_input_snapshot(tmp_path):
 
     report, _, _ = evaluator.evaluate_run(run_dir, results_dir)
 
-    assert report["status"] == "partial"
-    check = next(item for item in report["checks"] if item["check"] == "pre_match_snapshot_capture_times")
-    assert not check["passed"]
-    assert not report["run"]["snapshot_capture_checks"]["lineups_availability"]["present"]
+    assert report["status"] == "ready"
+    assert report["run"]["pre_match_inputs_complete"]
+    assert "lineups_availability" not in report["run"]["snapshot_capture_checks"]
 
 
 def test_conflicting_duplicate_actuals_are_rejected():

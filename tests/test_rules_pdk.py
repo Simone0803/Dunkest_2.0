@@ -65,6 +65,46 @@ def test_coach_points_win():
     assert pts > 0
 
 
+def test_coach_margin_bucket_boundaries_match_official_score_table():
+    buckets = [
+        (1, 15, -7), (5, 15, -7),
+        (6, 18, -10), (10, 18, -10),
+        (11, 20, -13), (15, 20, -13),
+        (16, 23, -15), (20, 23, -15),
+        (21, 25, -18), (25, 25, -18),
+        (26, 28, -20), (30, 28, -20),
+        (31, 30, -23), (35, 30, -23),
+        (36, 33, -25), (40, 33, -25),
+        (41, 35, -30),
+    ]
+
+    margins = []
+    expected = []
+    for margin, win_score, loss_score in buckets:
+        for signed_margin, bucket_score in ((margin, win_score), (-margin, loss_score)):
+            team_pts = 100.0 + max(signed_margin, 0)
+            opponent_pts = 100.0 + max(-signed_margin, 0)
+            # Apply the independent high/low team-score bonuses in the rule table.
+            bonus = (
+                5.0 * (team_pts >= 120.0)
+                + 5.0 * (opponent_pts <= 95.0)
+                - 3.0 * (team_pts <= 95.0)
+                - 3.0 * (opponent_pts >= 120.0)
+            )
+            margins.append((team_pts, opponent_pts))
+            expected.append(bucket_score + bonus)
+
+    vectorized = coach_points_from_outcomes(
+        [team for team, _ in margins],
+        [opponent for _, opponent in margins],
+        8.0,
+        8.0,
+    )
+    assert vectorized.tolist() == pytest.approx(expected)
+    for (team_pts, opponent_pts), expected_score in zip(margins, expected):
+        assert coach_points_from_game(team_pts, opponent_pts, 8.0, 8.0) == pytest.approx(expected_score)
+
+
 def test_vectorized_coach_score_matches_rule_thresholds_and_overtime():
     assert coach_points_from_game(122, 94, 10.0, 5.0) == pytest.approx(38.0 * 0.87)
     assert coach_points_from_game(94, 122, 10.0, 5.0) == pytest.approx(-26.0 / 0.87)

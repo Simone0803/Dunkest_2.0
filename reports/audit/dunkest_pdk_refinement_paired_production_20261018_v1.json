@@ -1,0 +1,63 @@
+{
+  "created_utc": "2026-10-18T12:16:26.195670+00:00",
+  "candidate": "torch_dropout_mlp hidden=(128,64), dropout=0.05, weight_decay=0.0001, lr=0.001",
+  "n_paired": 57682,
+  "folds": [
+    {
+      "season": "2022-23",
+      "n": 19165,
+      "production_mae": 7.519312482082368,
+      "mlp_mae": 7.515045912507991,
+      "delta_mae_mlp_minus_production": -0.004266569574376242,
+      "production_rmse": 9.753750724461831,
+      "mlp_rmse": 9.789973320763307,
+      "production_bias": -0.042236322435122604,
+      "mlp_bias": -0.3457011062200095,
+      "mae_actual_ge25_mlp": 12.347282922819982,
+      "mae_actual_ge25_prod": 12.131644515783352,
+      "mae_actual_ge30_mlp": 14.235842262153742,
+      "mae_actual_ge30_prod": 13.997379652476074
+    },
+    {
+      "season": "2023-24",
+      "n": 18927,
+      "production_mae": 7.4984594726085385,
+      "mlp_mae": 7.503147872689598,
+      "delta_mae_mlp_minus_production": 0.004688400081059266,
+      "production_rmse": 9.746244439447551,
+      "mlp_rmse": 9.752858600048118,
+      "production_bias": -0.17955335975937292,
+      "mlp_bias": -0.11869154562743293,
+      "mae_actual_ge25_mlp": 12.033888025849164,
+      "mae_actual_ge25_prod": 12.180937622799744,
+      "mae_actual_ge30_mlp": 13.792917545345558,
+      "mae_actual_ge30_prod": 14.056323751446582
+    },
+    {
+      "season": "2024-25",
+      "n": 19590,
+      "production_mae": 7.518300083637595,
+      "mlp_mae": 7.488929539583604,
+      "delta_mae_mlp_minus_production": -0.02937054405399029,
+      "production_rmse": 9.793200297218048,
+      "mlp_rmse": 9.823265223122448,
+      "production_bias": -0.11371865120967645,
+      "mlp_bias": -0.47143220766154165,
+      "mae_actual_ge25_mlp": 12.161451976336464,
+      "mae_actual_ge25_prod": 11.947988949014142,
+      "mae_actual_ge30_mlp": 14.261312508617374,
+      "mae_actual_ge30_prod": 14.024072199882175
+    }
+  ],
+  "macro_equal_season_delta_mae_mlp_minus_production": -0.009649571182435755,
+  "date_cluster_bootstrap_95pct_interval": [
+    -0.02158169361694593,
+    0.0023741855106787207
+  ],
+  "bootstrap_replicates": 10000,
+  "seed": 20261018,
+  "holdout_2025_26_used": false,
+  "prospective_2026_27_used": false,
+  "production_changed": false,
+  "interpretation": "Paired model-selection evidence only; no lineup-level validation. A lower MAE alone does not override RMSE, tails, cohort stability, or the prospective freeze."
+}

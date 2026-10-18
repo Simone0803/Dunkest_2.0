@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import platform
 import shutil
 import subprocess
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import datetime, timezone
 from importlib.metadata import PackageNotFoundError, version
@@ -44,19 +46,46 @@ def _git_branch() -> str | None:
 
 
 def _source_fingerprint(settings: Settings) -> dict:
-    """Fingerprint source code so an artifact remains attributable without Git."""
-    source_root = settings.root / "src"
+    """Fingerprint production code and operational configuration, even without Git."""
+    root = settings.root
+    include_roots = (root / "src", root / "scripts", root / "config")
+    extensions = {".py", ".sh", ".yaml", ".yml", ".toml", ".ini", ".json", ".csv"}
+    files: set[Path] = set()
+    for directory in include_roots:
+        if directory.is_dir():
+            files.update(
+                path for path in directory.rglob("*")
+                if path.is_file() and path.suffix.lower() in extensions
+            )
+    # Root-level launchers and package metadata affect the executable pipeline.
+    for name in ("run-season-opener.sh", "run-backtest.sh", "pyproject.toml", "requirements.txt"):
+        path = root / name
+        if path.is_file():
+            files.add(path)
+
+    ordered_files = sorted(files, key=lambda path: path.relative_to(root).as_posix())
     digest = hashlib.sha256()
-    files = sorted(source_root.rglob("*.py")) if source_root.is_dir() else []
-    for path in files:
-        relative = path.relative_to(settings.root).as_posix()
+    counts = {"python_files": 0, "shell_files": 0, "config_files": 0}
+    for path in ordered_files:
+        relative = path.relative_to(root).as_posix()
         digest.update(relative.encode("utf-8"))
         digest.update(b"\0")
         with path.open("rb") as source:
             for block in iter(lambda: source.read(1024 * 1024), b""):
                 digest.update(block)
         digest.update(b"\0")
-    return {"sha256": digest.hexdigest(), "python_files": len(files)}
+        if path.suffix.lower() == ".py":
+            counts["python_files"] += 1
+        elif path.suffix.lower() == ".sh":
+            counts["shell_files"] += 1
+        else:
+            counts["config_files"] += 1
+    return {
+        "sha256": digest.hexdigest(),
+        "files": len(ordered_files),
+        **counts,
+        "included_roots": ["src", "scripts", "config", "root_launchers"],
+    }
 
 
 def _json_hash(value: object) -> str:
@@ -64,11 +93,29 @@ def _json_hash(value: object) -> str:
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
+@contextmanager
+def _atomic_new_directory(final_dir: Path):
+    """Build an immutable archive privately, then publish it with one rename."""
+    final_dir.parent.mkdir(parents=True, exist_ok=True)
+    staging_dir = final_dir.parent / f".{final_dir.name}.tmp-{uuid4().hex}"
+    staging_dir.mkdir(parents=False, exist_ok=False)
+    try:
+        yield staging_dir
+        if final_dir.exists():
+            raise FileExistsError(f"Refusing to replace existing archive: {final_dir}")
+        os.replace(staging_dir, final_dir)
+    except BaseException:
+        shutil.rmtree(staging_dir, ignore_errors=True)
+        raise
+
+
 def _input_paths(settings: Settings) -> list[Path]:
     processed = settings.data_path / "processed"
     log_season = settings.feature_season if settings.target_gameweek == 1 else settings.season
     paths = [
         processed / f"player_game_logs_{log_season}.parquet",
+        processed / f"player_game_logs_{log_season}_official_pdk_overlay_v4.parquet",
+        processed / f"player_game_logs_{log_season}_official_pdk_overlay.parquet",
         processed / f"team_game_logs_{log_season}.parquet",
         processed / f"schedule_{settings.season}.parquet",
         processed / f"future_regular_schedule_{settings.season}_v2.parquet",
@@ -81,15 +128,22 @@ def _input_paths(settings: Settings) -> list[Path]:
         processed / "dunkest_pdk_historical_random_forest_train_2020-25_test_2025-26_v1.joblib",
         processed / "dunkest_pdk_historical_random_forest_train_2020-25_test_2025-26_v1.json",
         processed / "dunkest_pdk_game_training_2020-26_v3.parquet",
+        processed / "dunkest_nba_player_games_enriched_2018-25_v1.parquet",
         processed / "player_game_logs_2025-26.parquet",
         settings.data_path / "raw" / "nba_historical_logs_2018-25_v1" / "collection_manifest.json",
         settings.data_path / "current_lineups_market.csv",
         settings.data_path / "lineups_availability.csv",
         settings.data_path / "injury_overrides.csv",
         settings.data_path / "rookie_college.csv",
+        settings.data_path / "rookie_official_pdk.csv",
         settings.root / "config" / "nba_coaches_2026.yaml",
         settings.root / "config" / "dunkest_coaches_2026-27.csv",
     ]
+    # The multi-season PLUS loader may read a pre-GW anchor and per-season
+    # caches whose season IDs are discovered from official Dunkest responses.
+    # Fingerprint every versioned cache so the run remains reproducible even
+    # when the selected historical seasons differ from the expected set.
+    paths.extend(sorted(processed.glob("plusvalenza_history*_v4.parquet")))
     paths.extend(sorted(processed.glob(f"dunkest_fixture_mapping_{settings.season_id}_*.parquet")))
     return paths
 
@@ -117,6 +171,15 @@ def _input_fingerprints(settings: Settings) -> list[dict]:
             "cache_metadata": read_cache_metadata(path),
         })
     return fingerprints
+
+
+def _code_provenance(settings: Settings) -> dict:
+    """Identify both the committed revision and the exact local source tree."""
+    return {
+        "git_hash": _git_hash(),
+        "git_branch": _git_branch(),
+        "source_fingerprint": _source_fingerprint(settings),
+    }
 
 
 def _package_versions() -> dict[str, str | None]:
@@ -326,6 +389,8 @@ def save_run_artifacts(
             "training_date_max_utc": fitted_models.get("_training_date_max_utc"),
             "training_seasons": fitted_models.get("_training_seasons", []),
             "training_dataset": fitted_models.get("_training_dataset"),
+            "training_minute_labels_dataset": fitted_models.get("_training_minute_labels_dataset"),
+            "training_minute_labels_matched_rows": fitted_models.get("_training_minute_labels_matched_rows"),
             "training_label_certification": fitted_models.get("_training_label_certification"),
             "sample_weighted_training": fitted_models.get("_sample_weighted_training", False),
             "sample_weight_mean": fitted_models.get("_sample_weight_mean"),
@@ -408,31 +473,36 @@ def save_pre_match_snapshot(
             raise ValueError(f"Outcome-bearing column(s) forbidden in pre-match archive {safe_name}: {leaked}")
         normalized_tables[safe_name] = frame.copy()
     extra = dict(metadata or {})
-    reserved = {"season_id", "dunkest_gameweek", "captured_at_utc", "source", "schema_version", "sha256"}
+    reserved = {
+        "season_id", "dunkest_gameweek", "captured_at_utc", "source", "schema_version",
+        "sha256", "git_hash", "git_branch", "source_fingerprint",
+    }
     conflicts = sorted(reserved.intersection(extra))
     if conflicts:
         raise ValueError(f"Pre-match metadata cannot override reserved fields: {conflicts}")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     root = settings.data_path / "archive" / str(settings.season_id) / f"gw{int(gameweek)}"
-    root.mkdir(parents=True, exist_ok=True)
     out = root / f"pre_match_{stamp}_{uuid4().hex[:8]}"
-    out.mkdir(parents=False, exist_ok=False)
-    hashes: dict[str, str] = {}
-    for name, frame in sorted(normalized_tables.items()):
-        path = out / name
-        frame.to_parquet(path, index=False)
-        hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    manifest = {
-        "season_id": settings.season_id,
-        "dunkest_gameweek": int(gameweek),
-        "captured_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source": source,
-        "schema_version": 1,
-        "sha256": hashes,
-        "table_rows": {name: int(len(frame)) for name, frame in normalized_tables.items()},
-    }
-    manifest.update(extra)
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    with _atomic_new_directory(out) as staging_dir:
+        hashes: dict[str, str] = {}
+        for name, frame in sorted(normalized_tables.items()):
+            path = staging_dir / name
+            frame.to_parquet(path, index=False)
+            hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        manifest = {
+            "season_id": settings.season_id,
+            "dunkest_gameweek": int(gameweek),
+            "captured_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source": source,
+            "schema_version": 1,
+            **_code_provenance(settings),
+            "sha256": hashes,
+            "table_rows": {name: int(len(frame)) for name, frame in normalized_tables.items()},
+        }
+        manifest.update(extra)
+        (staging_dir / "manifest.json").write_text(
+            json.dumps(manifest, indent=2), encoding="utf-8"
+        )
     return out
 
 def save_post_match_snapshot(
@@ -449,27 +519,58 @@ def save_post_match_snapshot(
         raise ValueError("Post-match result source must be explicit.")
     extra_metadata = dict(metadata or {})
     reserved_fields = {
-        "season_id", "dunkest_gameweek", "retrieved_at_utc", "source", "schema_version", "sha256"
+        "season_id", "dunkest_gameweek", "retrieved_at_utc", "source", "schema_version",
+        "sha256", "git_hash", "git_branch", "source_fingerprint",
     }
     conflicts = sorted(reserved_fields.intersection(extra_metadata))
     if conflicts:
         raise ValueError(f"Post-match metadata cannot override reserved fields: {conflicts}")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    out = settings.data_path / "archive" / str(settings.season_id) / f"gw{int(gameweek)}" / f"post_match_{stamp}_{uuid4().hex[:8]}"
-    out.mkdir(parents=True, exist_ok=False)
-    player_results.to_parquet(out / "player_results.parquet", index=False)
-    coach_results.to_parquet(out / "coach_results.parquet", index=False)
-    payloads = {}
-    for name in ("player_results.parquet", "coach_results.parquet"):
-        payloads[name] = hashlib.sha256((out / name).read_bytes()).hexdigest()
-    manifest = {
-        "season_id": settings.season_id,
-        "dunkest_gameweek": int(gameweek),
-        "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source": source,
+    out = (
+        settings.data_path / "archive" / str(settings.season_id) / f"gw{int(gameweek)}"
+        / f"post_match_{stamp}_{uuid4().hex[:8]}"
+    )
+    with _atomic_new_directory(out) as staging_dir:
+        player_results.to_parquet(staging_dir / "player_results.parquet", index=False)
+        coach_results.to_parquet(staging_dir / "coach_results.parquet", index=False)
+        payloads = {}
+        for name in ("player_results.parquet", "coach_results.parquet"):
+            payloads[name] = hashlib.sha256((staging_dir / name).read_bytes()).hexdigest()
+        manifest = {
+            "season_id": settings.season_id,
+            "dunkest_gameweek": int(gameweek),
+            "retrieved_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source": source,
+            "schema_version": 2,
+            **_code_provenance(settings),
+            "sha256": payloads,
+        }
+        manifest.update(extra_metadata)
+        (staging_dir / "manifest.json").write_text(
+            json.dumps(manifest, indent=2), encoding="utf-8"
+        )
+    manifest_path = out / "manifest.json"
+    registry_dir = out.parent / "registry"
+    registry_dir.mkdir(parents=True, exist_ok=True)
+    registry_path = registry_dir / f"{out.name}.json"
+    registry = {
         "schema_version": 1,
+        "archive_id": out.name,
+        "season_id": str(settings.season_id),
+        "dunkest_gameweek": int(gameweek),
+        "manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "sha256": payloads,
     }
-    manifest.update(extra_metadata)
-    (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    registry_created = False
+    try:
+        with registry_path.open("x", encoding="utf-8") as stream:
+            registry_created = True
+            stream.write(json.dumps(registry, indent=2) + "\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+    except BaseException:
+        if registry_created:
+            registry_path.unlink(missing_ok=True)
+        shutil.rmtree(out, ignore_errors=True)
+        raise
     return out

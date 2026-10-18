@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import numpy as np
 import pandas as pd
@@ -32,6 +34,24 @@ def read_frame(path: Path) -> pd.DataFrame:
                     return pd.DataFrame(value[key])
         raise ValueError(f"Cannot identify row records in JSON file: {path}")
     raise ValueError(f"Unsupported input format: {path.suffix}")
+
+
+def fingerprint_file(path: Path) -> dict:
+    """Hash one exact source file and reject files that changed during hashing."""
+    resolved = path.expanduser().resolve()
+    before = resolved.stat()
+    digest = hashlib.sha256()
+    with resolved.open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(block)
+    after = resolved.stat()
+    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+        raise RuntimeError(f"Source file changed while fingerprinting: {resolved}")
+    return {
+        "path": str(resolved),
+        "size_bytes": int(after.st_size),
+        "sha256": digest.hexdigest(),
+    }
 
 
 def resolve_run_dir(data_dir: Path, run_id: str | None = None, run_dir: str | Path | None = None) -> Path:
@@ -348,39 +368,118 @@ def main() -> int:
     coach_paths = sorted(snapshot_dir.glob(f"coach_market_{season_id}_gw{gameweek}.parquet"))
     if not mapping_paths or not market_paths or not coach_paths:
         raise ValueError("Frozen run is missing fixture mapping, player-credit market, or coach market snapshot.")
-    mapping_all = pd.read_parquet(mapping_paths[0])
-    fixtures, fixture_audit = prepare_fixture_index(mapping_all, gameweek)
-    predictions = pd.read_parquet(run_dir / "predictions.parquet")
-    market = pd.read_parquet(market_paths[0])
-    coach_market = pd.read_parquet(coach_paths[0])
-
     processed = data_dir / "processed"
     player_path = Path(args.player_games).expanduser().resolve() if args.player_games else processed / f"official_dunkest_player_games_{season}.parquet"
     team_path = Path(args.team_logs).expanduser().resolve() if args.team_logs else processed / f"team_game_logs_{season}.parquet"
     nba_player_path = Path(args.player_logs).expanduser().resolve() if args.player_logs else processed / f"player_game_logs_{season}.parquet"
+    mapping_all = pd.read_parquet(mapping_paths[0])
+    fixtures, fixture_audit = prepare_fixture_index(mapping_all, gameweek)
+
+    # Check the frozen fixture's safe retrieval cutoff before even statting or
+    # hashing official post-game files. An early diagnostic must not consume
+    # test actuals from disk or load them into memory.
+    now = pd.Timestamp(datetime.now(timezone.utc))
+    latest_kickoff = pd.to_datetime(fixtures["game_datetime_utc"], utc=True).max()
+    safe_cutoff, timing_mode = safe_postgame_retrieval_cutoff(fixtures["game_datetime_utc"])
+    timing_ok = now >= safe_cutoff
+    out = Path(args.output_dir)
+    if not timing_ok:
+        out.mkdir(parents=True, exist_ok=True)
+        collection_id = f"{now.strftime('%Y%m%dT%H%M%SZ')}_{uuid4().hex[:8]}"
+        stem = f"post_match_collection_audit_{run_id}_{collection_id}"
+        audit = {
+            "status": "not_ready",
+            "season_id": season_id,
+            "gameweek": gameweek,
+            "run_id": run_id,
+            "collection_id": collection_id,
+            "generated_at_utc": now.isoformat(),
+            "source_files": {
+                "official_player_games": str(player_path),
+                "team_logs": str(team_path),
+                "nba_player_logs_for_overtime": str(nba_player_path),
+            },
+            "source_file_fingerprints": {},
+            "timing_check": {
+                "passed": False,
+                "latest_fixture_datetime_utc": latest_kickoff.isoformat(),
+                "minimum_safe_retrieval_after_utc": safe_cutoff.isoformat(),
+                "timing_mode": timing_mode,
+            },
+            "fixture_mapping": fixture_audit,
+            "outcome_files_read": False,
+            "outcome_access_skipped_reason": "before_safe_postgame_retrieval_cutoff",
+        }
+        missing_path = out / f"{stem}_missing.csv"
+        audit_path = out / f"{stem}.json"
+        pd.DataFrame(columns=["reason"]).to_csv(missing_path, index=False)
+        audit_path.write_text(json.dumps(audit, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(json.dumps({
+            "status": audit["status"],
+            "audit": str(audit_path),
+            "missing_rows": str(missing_path),
+            "timing_check": False,
+            "minimum_safe_retrieval_after_utc": safe_cutoff.isoformat(),
+            "outcome_files_read": False,
+        }, indent=2))
+        return 2
+
+    source_paths = {
+        "official_player_games": player_path,
+        "team_logs": team_path,
+        "nba_player_logs_for_overtime": nba_player_path,
+        "frozen_run_manifest": run_dir / "manifest.json",
+        "frozen_predictions": run_dir / "predictions.parquet",
+        "fixture_mapping": mapping_paths[0],
+        "player_market": market_paths[0],
+        "coach_market": coach_paths[0],
+    }
+    source_fingerprints_before = {
+        name: fingerprint_file(path) for name, path in source_paths.items()
+    }
+
+    predictions = pd.read_parquet(run_dir / "predictions.parquet")
+    market = pd.read_parquet(market_paths[0])
+    coach_market = pd.read_parquet(coach_paths[0])
+
     official_games = read_frame(player_path)
     team_logs = read_frame(team_path)
     nba_player_logs = read_frame(nba_player_path)
     players_actual, missing_report, player_audit = build_player_actuals(predictions, market, fixtures, official_games)
     coaches_actual, coach_audit = build_coach_actuals(coach_market, fixtures, team_logs, nba_player_logs)
+    source_file_fingerprints = {
+        name: fingerprint_file(path) for name, path in source_paths.items()
+    }
+    changed_sources = [
+        name for name in source_paths
+        if source_fingerprints_before[name]["sha256"]
+        != source_file_fingerprints[name]["sha256"]
+    ]
+    if changed_sources:
+        raise RuntimeError(
+            "Collection inputs changed while actuals were being built; refusing to archive: "
+            + ", ".join(changed_sources)
+        )
 
     now = pd.Timestamp(datetime.now(timezone.utc))
-    latest_kickoff = pd.to_datetime(fixtures["game_datetime_utc"], utc=True).max()
-    safe_cutoff, timing_mode = safe_postgame_retrieval_cutoff(fixtures["game_datetime_utc"])
+    # Recheck at the end so a clock rollback during collection still fails closed.
     timing_ok = now >= safe_cutoff
     all_players_matched = player_audit["prediction_coverage"] == 1.0
     all_coaches_matched = coach_audit["coverage"] == 1.0
     ready = timing_ok and all_players_matched and all_coaches_matched
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    stem = f"post_match_collection_audit_{run_id}"
+    collection_id = f"{now.strftime('%Y%m%dT%H%M%SZ')}_{uuid4().hex[:8]}"
+    stem = f"post_match_collection_audit_{run_id}_{collection_id}"
     audit = {
         "status": "ready_to_archive" if ready else "not_ready",
         "season_id": season_id,
         "gameweek": gameweek,
         "run_id": run_id,
+        "collection_id": collection_id,
         "generated_at_utc": now.isoformat(),
         "source_files": {"official_player_games": str(player_path), "team_logs": str(team_path), "nba_player_logs_for_overtime": str(nba_player_path)},
+        "source_file_fingerprints": source_file_fingerprints,
         "timing_check": {
             "passed": bool(timing_ok),
             "latest_fixture_datetime_utc": latest_kickoff.isoformat(),
@@ -413,7 +512,9 @@ def main() -> int:
         source=f"{player_path.name} + {team_path.name}; fixture-linked by {run_id}",
         metadata={
             "run_id": run_id,
+            "collection_id": collection_id,
             "source_files": audit["source_files"],
+            "source_file_fingerprints": source_file_fingerprints,
             "coverage_audit": {
                 "player": player_audit,
                 "coach": coach_audit,

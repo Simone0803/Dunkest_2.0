@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from dunkest.config import Settings
+from dunkest.features.pdk_history import PDK_HISTORY_FEATURES, pdk_history_features_for_rows
 from dunkest.models.predictor import train_models
 
 TRAIN_SEASONS = ("2020-21", "2021-22", "2022-23", "2023-24", "2024-25")
@@ -98,6 +99,33 @@ def adapt_certified_training_rows(
         frame["target_min"] = pd.to_numeric(frame["_target_min_label"], errors="coerce")
         frame = frame.drop(columns=["_target_min_label"])
 
+    if frame.duplicated(["season_label", "PLAYER_ID", "GAME_ID"]).any():
+        raise ValueError("Certified multi-season training data contains duplicate season/player/game keys.")
+    if frame.duplicated(["PLAYER_ID", "GAME_DATE"]).any():
+        raise ValueError(
+            "Certified multi-season PDK history has duplicate player/date rows; "
+            "the four PDK history features cannot be ordered without leakage ambiguity."
+        )
+    pdk_history = pdk_history_features_for_rows(
+        frame.assign(
+            _pdk_history_player=frame["PLAYER_ID"],
+            _pdk_history_season=frame["season_label"],
+            _pdk_history_official=frame["target_pdk_official"],
+            _pdk_history_minutes=frame["target_min"],
+            _pdk_history_opponent=frame.get(
+                "opponentTeamCode", pd.Series("", index=frame.index)
+            ),
+        ),
+        group_col="_pdk_history_player",
+        date_col="GAME_DATE",
+        season_col="_pdk_history_season",
+        official_col="_pdk_history_official",
+        minutes_col="_pdk_history_minutes",
+        opponent_col="_pdk_history_opponent",
+    )
+    for feature in PDK_HISTORY_FEATURES:
+        frame[feature] = pd.to_numeric(pdk_history[feature], errors="coerce")
+
     # All mapped columns are lagged/expanding features in the V3 builder. No
     # same-game NBA box score, target score, or current-round outcome is exposed.
     mappings = {
@@ -105,7 +133,6 @@ def adapt_certified_training_rows(
         "pdk_mean_5": "prev5_pdk_mean",
         "pdk_mean_10": "prev10_pdk_mean",
         "pdk_std_5": "prev5_pdk_std",
-        "pdk_season_mean": "prev10_pdk_mean",
         "min_mean_5": "prev5_nba_min_mean",
         "min_mean_3": "prev3_nba_min_mean",
         "pts_mean_5": "prev5_nba_pts_mean",
@@ -178,7 +205,6 @@ def adapt_certified_training_rows(
         frame["pdk_median_5"] = frame[lag_columns].apply(pd.to_numeric, errors="coerce").median(axis=1)
     else:
         frame["pdk_median_5"] = np.nan
-    frame["pdk_per_min_season"] = _ratio(frame["prev5_pdk_mean"], frame["prev5_nba_min_mean"])
     for stat in ("stl", "blk", "tov", "oreb", "dreb", "fg3m", "fga", "fta"):
         source_col = f"prev5_nba_{stat}_mean"
         frame[f"{stat}_per36_5"] = _ratio(frame[source_col], frame["prev5_nba_min_mean"], 36.0) if source_col in frame else np.nan
@@ -188,9 +214,6 @@ def adapt_certified_training_rows(
     frame["ft_pct_5"] = _ratio(frame.get("prev5_nba_ftm_mean", pd.Series(np.nan, index=frame.index)), frame.get("prev5_nba_fta_mean", pd.Series(np.nan, index=frame.index)))
     frame["is_home"] = frame.get("opponentTeamPosition", pd.Series("", index=frame.index)).astype("string").str.casefold().eq("visitor").astype(float)
     frame["is_b2b"] = pd.to_numeric(frame["rest_days"], errors="coerce").le(1).astype(float)
-    frame["player_opp_pdk_per_min"] = frame["pdk_per_min_season"]
-    frame["player_opp_games"] = 0.0
-
     # Deliberately unavailable in the certified archive; these columns remain
     # NaN and are dropped by train_models instead of receiving invented values.
     for col in ("min_mean_10", "pdk_category_bonus_mean_5", "three_point_bonus_mean_5", "opp_pts_allowed_mean_5", "opp_plus_minus_mean_5", "opp_def_rating_mean_5", "opp_pace_mean_5", "opp_dreb_rate_mean_5"):
@@ -297,6 +320,8 @@ def train_multiseason_models(
     models["_prediction_is_absolute"] = True
     models["_training_seasons"] = list(TRAIN_SEASONS) + ([settings.season] if current_rows else [])
     models["_training_dataset"] = str(path)
+    models["_training_minute_labels_dataset"] = str(minute_labels_path) if minute_labels is not None else None
+    models["_training_minute_labels_matched_rows"] = int(historical["target_min"].notna().sum())
     models["_training_label_certification"] = "verified_official_dunkest_pdk_valid_rows"
     models["_training_rows"] = int(len(training))
     models["_training_current_season_rows"] = int(current_rows)

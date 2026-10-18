@@ -190,7 +190,7 @@ def test_partial_verified_mapping_is_used_without_requiring_30_active_teams(tmp_
         "team_a": "BOS", "team_b": "DET", "display_day": 20,
         "display_month": 10, "dunkest_turn": 1,
         "team_a_eligible": False, "team_b_eligible": True,
-        "observed_at_utc": "2026-10-10T08:00:00Z",
+        "observed_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
     }]).to_csv(tmp_path / "lineups_fixtures.csv", index=False)
 
     mapping = ensure_gameweek1_fixture_mapping(settings)

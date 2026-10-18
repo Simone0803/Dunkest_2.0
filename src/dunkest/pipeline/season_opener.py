@@ -23,7 +23,10 @@ from dunkest.data.cache import (
     write_parquet,
 )
 from dunkest.data.dunkest.opening import fetch_opening_coach_market, fetch_opening_market_pool
-from dunkest.data.dunkest.official_pdk import attach_official_pdk_labels
+from dunkest.data.dunkest.official_pdk import (
+    attach_official_pdk_labels,
+    official_pdk_overlay_path,
+)
 from dunkest.data.nba import collector as nba
 from dunkest.data.dunkest.fixtures import ensure_gameweek1_fixture_mapping, parse_fixture_bool
 from dunkest.data.nba.collector import require_complete_collection
@@ -457,6 +460,8 @@ def _model_artifact_metadata(models: dict) -> dict:
         "_training_date_max_utc",
         "_training_seasons",
         "_training_dataset",
+        "_training_minute_labels_dataset",
+        "_training_minute_labels_matched_rows",
         "_training_label_certification",
         "_sample_weighted_training",
         "_sample_weight_mean",
@@ -523,9 +528,15 @@ def run_season_opener(
             **report,
         )
 
+    official_pdk_overlay = official_pdk_overlay_path(
+        settings.data_path, settings.feature_season
+    )
     player_logs = attach_official_pdk_labels(
         player_logs, settings.data_path, settings.feature_season
     )
+    official_pdk_overlay_label_rows = int(pd.to_numeric(
+        player_logs.get("PDK_OFFICIAL_VALID", pd.Series(dtype=float)), errors="coerce"
+    ).notna().sum())
 
     # Use official historical Dunkest PDK when available; otherwise derive the
     # season mean from full 2025/26 NBA box scores with Dunkest's scoring rules.
@@ -843,6 +854,10 @@ def run_season_opener(
 
     meta = {
         "model_artifact_metadata": _model_artifact_metadata(models),
+        "official_pdk_overlay_source": (
+            str(official_pdk_overlay) if official_pdk_overlay is not None else None
+        ),
+        "official_pdk_overlay_label_rows": official_pdk_overlay_label_rows,
         "eligible_players": len(preds),
         "projection_weights": models.get("_projection_weights", {}),
         "projection_calibration_samples": models.get("_calibration_samples", 0),

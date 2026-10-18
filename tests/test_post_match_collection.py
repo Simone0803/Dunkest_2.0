@@ -1,9 +1,11 @@
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import sys
 
 import pandas as pd
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -189,6 +191,56 @@ def test_exact_kickoff_schedule_uses_four_hour_cutoff():
     assert mode == "exact_kickoff_plus_4h"
 
 
+def test_collection_before_safe_cutoff_does_not_access_outcome_files(tmp_path, monkeypatch, capsys):
+    data_dir = tmp_path / "data"
+    processed = data_dir / "processed"
+    processed.mkdir(parents=True)
+    run_dir = tmp_path / "workspace" / "run-early"
+    snapshot_dir = run_dir / "pre_match_snapshot"
+    snapshot_dir.mkdir(parents=True)
+    (run_dir / "manifest.json").write_text(json.dumps({
+        "run_id": "run-early",
+        "configuration": {
+            "season": "2026-27", "season_id": "26", "target_gameweek": 1,
+        },
+    }), encoding="utf-8")
+    pd.DataFrame([{
+        "nba_game_id": "game-1", "game_datetime_utc": "2026-10-22T00:00:00Z",
+        "game_date_local": "2026-10-21", "dunkest_gameweek": 1,
+        "mapping_verified": True, "source_retrieved_at_utc": "2026-10-18T07:00:00Z",
+        "raw_payload_sha256": "a" * 64, "home_team": "ATL", "away_team": "BOS",
+    }]).to_parquet(snapshot_dir / "dunkest_fixture_mapping_26_test.parquet", index=False)
+    pd.DataFrame([{"player_name": "Test Player", "team_code": "ATL"}]).to_parquet(
+        snapshot_dir / "player_credits_26_gw1.parquet", index=False
+    )
+    pd.DataFrame([{
+        "coach": "Coach A", "team": "ATL", "coach_cr": 8.0,
+        "opponent": "BOS", "opponent_coach_cr": 7.0, "nba_game_id": "game-1",
+    }]).to_parquet(snapshot_dir / "coach_market_26_gw1.parquet", index=False)
+
+    def unexpected_outcome_access(path):
+        raise AssertionError(f"outcome file accessed before safe cutoff: {path}")
+
+    monkeypatch.setattr(collector, "fingerprint_file", unexpected_outcome_access)
+    monkeypatch.setattr(collector, "read_frame", unexpected_outcome_access)
+    output_dir = tmp_path / "reports"
+    monkeypatch.setattr(sys, "argv", [
+        "build_dunkest_post_match_results_v1.py",
+        "--data-dir", str(data_dir), "--run-dir", str(run_dir),
+        "--output-dir", str(output_dir),
+    ])
+
+    assert collector.main() == 2
+    output = json.loads(capsys.readouterr().out)
+    audit = json.loads(Path(output["audit"]).read_text(encoding="utf-8"))
+    assert output["status"] == "not_ready"
+    assert output["timing_check"] is False
+    assert output["outcome_files_read"] is False
+    assert audit["outcome_access_skipped_reason"] == "before_safe_postgame_retrieval_cutoff"
+    assert audit["source_file_fingerprints"] == {}
+    assert not (data_dir / "archive" / "26" / "gw1").exists()
+
+
 def test_builder_resolves_frozen_run_from_isolated_workspace(tmp_path):
     data_dir = tmp_path / "data"
     workspace_run = tmp_path / "workspaces" / "preflight" / "predictions" / "run-1"
@@ -210,7 +262,7 @@ def test_builder_rejects_mismatched_run_id_for_explicit_workspace(tmp_path):
         collector.resolve_run_dir(tmp_path / "data", run_id="wrong-run", run_dir=workspace_run)
 
 
-def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_path, monkeypatch):
+def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_path, monkeypatch, capsys):
     data_dir = tmp_path / "data"
     processed = data_dir / "processed"
     processed.mkdir(parents=True)
@@ -264,7 +316,46 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     archived = list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))
     assert len(archived) == 1
     manifest = json.loads(archived[0].read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == 2
     assert manifest["run_id"] == "run-1"
     assert manifest["coverage_audit"]["timing_check_passed"] is True
     assert manifest["coverage_audit"]["player"]["prediction_coverage"] == 1.0
     assert manifest["coverage_audit"]["coach"]["coverage"] == 1.0
+    fingerprints = manifest["source_file_fingerprints"]
+    assert set(fingerprints) == {
+        "official_player_games", "team_logs", "nba_player_logs_for_overtime",
+        "frozen_run_manifest", "frozen_predictions", "fixture_mapping",
+        "player_market", "coach_market",
+    }
+    official_source = processed / "official_dunkest_player_games_2026-27.parquet"
+    assert fingerprints["official_player_games"]["sha256"] == hashlib.sha256(
+        official_source.read_bytes()
+    ).hexdigest()
+    assert all(len(source["sha256"]) == 64 for source in fingerprints.values())
+    registry_path = archived[0].parent.parent / "registry" / f"{archived[0].parent.name}.json"
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    assert registry["manifest_sha256"] == hashlib.sha256(archived[0].read_bytes()).hexdigest()
+    first_output = json.loads(capsys.readouterr().out)
+    first_audit = Path(first_output["audit"])
+    first_audit_bytes = first_audit.read_bytes()
+    assert manifest["collection_id"] in first_audit.name
+
+    # Re-running collection for the same frozen run must keep the earlier
+    # attempt's audit instead of replacing it with the latest source state.
+    assert collector.main() == 0
+    second_output = json.loads(capsys.readouterr().out)
+    assert Path(second_output["audit"]) != first_audit
+    assert first_audit.read_bytes() == first_audit_bytes
+    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 2
+
+    original_build_player_actuals = collector.build_player_actuals
+
+    def change_official_results_after_read(*args, **kwargs):
+        result = original_build_player_actuals(*args, **kwargs)
+        official_source.write_bytes(official_source.read_bytes() + b"changed-after-read")
+        return result
+
+    monkeypatch.setattr(collector, "build_player_actuals", change_official_results_after_read)
+    with pytest.raises(RuntimeError, match="inputs changed while actuals were being built"):
+        collector.main()
+    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 2

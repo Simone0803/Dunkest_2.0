@@ -4,8 +4,9 @@ import argparse
 import hashlib
 import json
 import math
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import numpy as np
 import pandas as pd
@@ -175,12 +176,15 @@ def validate_run(run_dir: Path, manifest: dict) -> tuple[pd.DataFrame, dict]:
     # A run timestamp alone does not prove that its cached inputs were acquired
     # before tip-off. Require timestamped sidecars for all decision-critical
     # market snapshots, and retain failures as explicit readiness diagnostics.
+    # The official, timestamped Dunkest injuries snapshot is the availability
+    # source for current runs. lineups_availability.csv is a legacy Lineups-only
+    # artifact no longer written by the active scraper and must not block OOS
+    # evaluation when the official injuries snapshot is present and fresh.
     required_inputs = {
         "player_credits": lambda name: name.startswith("player_credits_"),
         "coach_market": lambda name: name.startswith("coach_market_"),
         "injuries": lambda name: name.startswith("injuries_"),
         "current_lineups_market": lambda name: name == "current_lineups_market.csv",
-        "lineups_availability": lambda name: name == "lineups_availability.csv",
     }
     snapshot_names = {str(entry.get("path", "")) for entry in files}
     input_capture_checks = {}
@@ -256,11 +260,11 @@ def evaluate_run(run_dir: Path, results_dir: Path | None) -> tuple[dict, pd.Data
     report["checks"].append({
         "check": "pre_match_snapshot_capture_times",
         "passed": audit["snapshot_capture_metadata_ok"],
-        "detail": "All required player credits, coach market, injuries, Lineups market and availability snapshots have timestamped sidecars captured before the earliest kickoff."
+        "detail": "All required player credits, coach market, official injuries, and Lineups market snapshots have timestamped sidecars captured before the earliest kickoff."
         if audit["snapshot_capture_metadata_ok"] else "Required inputs or timestamp sidecars are missing/invalid, or at least one capture is not strictly before the earliest kickoff; see run.snapshot_capture_checks.",
     })
     if not audit["pre_match_inputs_complete"]:
-        report["limitations"].append("Complete-lineup evaluation requires frozen player credits, coach market, injuries, Lineups market, and availability snapshots.")
+        report["limitations"].append("Complete-lineup evaluation requires frozen player credits, coach market, official injuries, and Lineups market snapshots.")
     if not audit["snapshot_capture_metadata_ok"]:
         report["limitations"].append("Pre-match input provenance is not authenticated: each required input must have a valid acquisition timestamp before the earliest kickoff.")
     if results_dir is None:
@@ -269,6 +273,26 @@ def evaluate_run(run_dir: Path, results_dir: Path | None) -> tuple[dict, pd.Data
         return report, pd.DataFrame(), pd.DataFrame()
 
     result_manifest = read_json(results_dir / "manifest.json")
+    result_schema = int(result_manifest.get("schema_version", 1))
+    results_manifest_authenticated = result_schema >= 2
+    if result_schema >= 2:
+        registry_path = results_dir.parent / "registry" / f"{results_dir.name}.json"
+        if not registry_path.is_file():
+            raise ValueError("Post-match archive registry record is missing.")
+        registry = read_json(registry_path)
+        manifest_hash = sha256(results_dir / "manifest.json")
+        if (
+            registry.get("archive_id") != results_dir.name
+            or registry.get("manifest_sha256") != manifest_hash
+        ):
+            raise ValueError("Post-match archive manifest does not match its immutable registry.")
+        if (
+            str(registry.get("season_id")) != str(result_manifest.get("season_id"))
+            or int(registry.get("dunkest_gameweek", -1))
+            != int(result_manifest.get("dunkest_gameweek", -2))
+            or registry.get("sha256") != result_manifest.get("sha256")
+        ):
+            raise ValueError("Post-match archive registry metadata differs from its manifest.")
     if str(result_manifest.get("season_id")) != season_id or int(result_manifest.get("dunkest_gameweek", -1)) != gw:
         raise ValueError("Post-match archive season/GW does not match prediction run.")
     if not str(result_manifest.get("source", "")).strip():
@@ -280,6 +304,8 @@ def evaluate_run(run_dir: Path, results_dir: Path | None) -> tuple[dict, pd.Data
             "Post-match archive is earlier than the safe result-collection cutoff "
             f"({safe_cutoff.isoformat()}, mode={timing_mode})."
         )
+    if retrieved > pd.Timestamp(datetime.now(timezone.utc) + timedelta(minutes=5)):
+        raise ValueError("Post-match archive retrieval timestamp is in the future.")
     expected_hashes = result_manifest.get("sha256", {})
     result_files = {name: results_dir / name for name in ("player_results.parquet", "coach_results.parquet")}
     for name, path in result_files.items():
@@ -386,12 +412,16 @@ def evaluate_run(run_dir: Path, results_dir: Path | None) -> tuple[dict, pd.Data
         and len(complete_lineups) == len(lineup_metrics)
         and all_player_actuals_matched
         and all_coach_fixtures_matched
+        and results_manifest_authenticated
         and audit["pre_match_inputs_complete"]
         and audit["snapshot_capture_metadata_ok"]
         else "partial"
     )
     report["actuals"] = {"player_results": player_audit, "coach_results": coach_audit, "results_archive": str(results_dir), "source": result_manifest["source"], "retrieved_at_utc": retrieved.isoformat()}
     report["checks"] = [
+        {"check": "post_match_manifest_authentication", "passed": results_manifest_authenticated,
+         "detail": "Schema-2 manifest hash matches its sibling immutable registry." if results_manifest_authenticated
+         else "Legacy schema-1 result bundle is readable for diagnostics but has no registry authenticating its retrieval timestamp."},
         {"check": "snapshot_hashes", "passed": True, "detail": f"Verified {audit['snapshot_files_hash_verified']} pre-match files."},
         {"check": "pre_tipoff_run", "passed": True, "detail": "Forecast run precedes the earliest kickoff."},
         {"check": "pre_match_snapshot_capture_times", "passed": audit["snapshot_capture_metadata_ok"], "detail": "All required input capture times precede kickoff." if audit["snapshot_capture_metadata_ok"] else "Required inputs or timestamp sidecars are missing/invalid or captured at/after kickoff."},
@@ -402,6 +432,8 @@ def evaluate_run(run_dir: Path, results_dir: Path | None) -> tuple[dict, pd.Data
     report["metrics"] = {"predicted_player_fixture_rows": len(predictions), "matched_player_fixture_rows": len(matched), "player_actual_coverage": len(matched) / len(predictions) if len(predictions) else np.nan, "player_mae": mae, "player_rmse": rmse, "player_bias": bias, "p10_coverage": p10_cov, "p90_coverage": p90_cov, "interval_80_coverage": interval_cov, "mean_interval_width": interval_width, "lineup_ranks": len(lineup_metrics), "complete_lineup_ranks": len(complete_lineups), "rank1_realized_team_score": float(complete_lineups.loc[complete_lineups["rank"].eq(1), "actual_team_score"].iloc[0]) if complete_lineups["rank"].eq(1).any() else np.nan, "best_of_k_realized_team_score": float(complete_lineups["actual_team_score"].max()) if not complete_lineups.empty else np.nan}
     if report["status"] != "ready":
         report["limitations"].append("Incomplete actual player/coach fixture links make one or more lineup scores unavailable; no missing score is replaced with zero.")
+        if not results_manifest_authenticated:
+            report["limitations"].append("Legacy schema-1 result manifests are not authenticated and cannot produce certified ready metrics.")
     return report, matched, lineup_metrics
 
 
@@ -442,7 +474,10 @@ def main() -> int:
     run_id = str(manifest.get("run_id", run_dir.name))
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    stem = f"post_match_evaluation_{run_id}"
+    evaluation_id = f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}_{uuid4().hex[:8]}"
+    report["evaluation_id"] = evaluation_id
+    report["generated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    stem = f"post_match_evaluation_{run_id}_{evaluation_id}"
     (out / f"{stem}.json").write_text(json.dumps(json_safe(report), indent=2, ensure_ascii=False), encoding="utf-8")
     lines = [f"# Post-match evaluation — {run_id}", "", f"- Status: **{report['status']}**", f"- Season ID / GW: {season_id} / {gw}", ""]
     lines.append("## Metrics")

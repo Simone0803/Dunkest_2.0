@@ -43,6 +43,16 @@ def _canonical_keys(frame: pd.DataFrame, *, source: str) -> pd.DataFrame:
     return out[KEYS].reset_index(drop=True)
 
 
+def official_pdk_overlay_path(data_path: str | Path, season: str) -> Path | None:
+    """Return the versioned official-PDK overlay selected for a season, if any."""
+    processed = Path(data_path) / "processed"
+    candidates = [
+        processed / f"player_game_logs_{season}_official_pdk_overlay_v4.parquet",
+        processed / f"player_game_logs_{season}_official_pdk_overlay.parquet",
+    ]
+    return next((path for path in candidates if path.exists()), None)
+
+
 def attach_official_pdk_labels(
     player_logs: pd.DataFrame,
     data_path: str | Path,
@@ -56,12 +66,7 @@ def attach_official_pdk_labels(
     if player_logs.empty:
         return player_logs.copy()
 
-    processed = Path(data_path) / "processed"
-    candidates = [
-        processed / f"player_game_logs_{season}_official_pdk_overlay_v4.parquet",
-        processed / f"player_game_logs_{season}_official_pdk_overlay.parquet",
-    ]
-    overlay_path = next((path for path in candidates if path.exists()), None)
+    overlay_path = official_pdk_overlay_path(data_path, season)
     if overlay_path is None:
         out = player_logs.copy()
         if OFFICIAL_LABEL in out:

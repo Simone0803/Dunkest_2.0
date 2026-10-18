@@ -271,7 +271,11 @@ def test_high_cr_returner_uses_market_prior_without_mislabeling_history():
 
 
 def test_season_pdk_rate_is_weighted_by_minutes():
-    history = pd.DataFrame({"PDK": [10.0, 20.0], "MIN": [10.0, 40.0]})
+    history = pd.DataFrame({
+        "PDK": [10.0, 20.0], "PDK_OFFICIAL_VALID": [10.0, 20.0],
+        "MIN": [10.0, 40.0], "SEASON_YEAR": ["2025-26", "2025-26"],
+        "OPPONENT": ["BOS", "MIA"], "GAME_DATE": pd.to_datetime(["2025-10-20", "2025-10-22"]),
+    })
 
     features = _history_features(history, [5])
 
@@ -287,11 +291,12 @@ def test_ensemble_learns_residuals_and_calibrates_from_temporal_holdout(monkeypa
     features = pd.DataFrame({
         "GAME_DATE": pd.date_range("2025-01-01", periods=len(baseline)),
         "target_pdk": baseline + 4.0,
+        "target_pdk_official": baseline + 4.0,
         "target_min": 24.0,
         "expected_pdk_minutes_model": baseline,
     })
 
-    models, prediction = train_models(Settings(), features)
+    models, prediction = train_models(Settings(training_target="target_pdk_official"), features)
     assert models["_minutes_shadow_model"] is not None
     assert models["_minutes_shadow_training_rows"] == len(features)
     assert "_minutes_shadow_model" not in models["_weights"]

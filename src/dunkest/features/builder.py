@@ -7,6 +7,12 @@ import pandas as pd
 
 from dunkest.config import Settings
 from dunkest.features.minutes import combine_minutes_and_pdk_per_min, expected_minutes_from_history
+from dunkest.features.pdk_history import (
+    PDK_HISTORY_FEATURES,
+    pdk_history_features_for_rows,
+    season_key,
+    summarize_pdk_history,
+)
 from dunkest.names import player_key
 
 logger = logging.getLogger(__name__)
@@ -146,6 +152,7 @@ def _history_features(hist: pd.DataFrame, windows: list[int]) -> dict:
     if hist.empty:
         return feat
     pdk = _pdk_feature_series(hist)
+    feat.update(summarize_pdk_history(hist))
     for lag in range(1, 6):
         feat[f"lag{lag}_pdk"] = float(pdk.iloc[-lag]) if len(pdk) >= lag and pd.notna(pdk.iloc[-lag]) else np.nan
     feat["pdk_trend_3v10"] = (feat.get("pdk_mean_3", np.nan) - feat.get("pdk_mean_10", np.nan))
@@ -192,13 +199,6 @@ def _history_features(hist: pd.DataFrame, windows: list[int]) -> dict:
                 break
             streak += 1
         feat["team_games_since_change"] = float(streak)
-    feat["pdk_season_mean"] = pdk.mean()
-    minutes = pd.to_numeric(hist["MIN"], errors="coerce")
-    valid = minutes.gt(0) & pdk.notna()
-    total_minutes = minutes.loc[valid].sum()
-    feat["pdk_per_min_season"] = (
-        float(pdk.loc[valid].sum() / total_minutes) if total_minutes > 0 else np.nan
-    )
     feat["pts_mean_5"] = hist.tail(5)["PTS"].mean() if "PTS" in hist else np.nan
     feat["reb_mean_5"] = hist.tail(5)["REB"].mean() if "REB" in hist else np.nan
     feat["ast_mean_5"] = hist.tail(5)["AST"].mean() if "AST" in hist else np.nan
@@ -304,29 +304,14 @@ def _normalize_player_opponents(
     return players
 
 
-def _player_opponent_features(hist: pd.DataFrame, opponent: object) -> tuple[float, float]:
-    if hist.empty:
-        return np.nan, 0.0
-    minutes = pd.to_numeric(hist["MIN"], errors="coerce")
-    pdk = _pdk_feature_series(hist)
-    valid = minutes.gt(0) & pdk.notna()
-    total_minutes = minutes.loc[valid].sum()
-    if total_minutes <= 0:
-        return np.nan, 0.0
-    base_rate = float(pdk.loc[valid].sum() / total_minutes)
-    if not str(opponent or "").strip() or "OPPONENT" not in hist:
-        return base_rate, 0.0
-    against = hist["OPPONENT"].astype(str).str.upper().str.strip().eq(
-        str(opponent).strip().upper()
-    ) & valid
-    matchup_minutes = float(minutes.loc[against].sum())
-    games = float(against.sum())
-    if matchup_minutes <= 0:
-        return base_rate, games
-    matchup_pdk = float(pdk.loc[against].sum())
-    shrink_minutes = 120.0
-    shrunk_rate = (matchup_pdk + shrink_minutes * base_rate) / (matchup_minutes + shrink_minutes)
-    return float(shrunk_rate), games
+def _player_opponent_features(
+    hist: pd.DataFrame,
+    opponent: object,
+    *,
+    target_season: int | None = None,
+) -> tuple[float, float]:
+    summary = summarize_pdk_history(hist, target_season=target_season, opponent=opponent)
+    return summary["player_opp_pdk_per_min"], summary["player_opp_games"]
 
 
 def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
@@ -340,7 +325,6 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
     count = len(g)
     player_names = g["PLAYER_NAME"]
     dates = g["GAME_DATE"]
-    opponents = g.get("OPPONENT", pd.Series("", index=g.index)).astype(str).str.upper().str.strip()
     teams = g.get("TEAM_ABBREVIATION", pd.Series("", index=g.index))
     home = pd.to_numeric(
         g.get("IS_HOME", pd.Series(np.nan, index=g.index)), errors="coerce"
@@ -407,11 +391,17 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
     history_label = numeric("PDK_OFFICIAL_VALID") if "PDK_OFFICIAL_VALID" in g else pdk
     out["history_games_before_target"] = history_label.notna().astype(float).cumsum().shift(1).fillna(0.0)
     out["nba_history_games_before_target"] = np.arange(count, dtype=float)
-    valid_pdk = minutes.gt(0) & pdk.notna()
-    prior_minutes = minutes.where(valid_pdk, 0.0).cumsum().shift(1)
-    prior_pdk = pdk.where(valid_pdk, 0.0).cumsum().shift(1)
-    out["pdk_season_mean"] = pdk.expanding(min_periods=1).mean().shift(1)
-    out["pdk_per_min_season"] = prior_pdk.div(prior_minutes.where(prior_minutes.gt(0)))
+    pdk_history = pdk_history_features_for_rows(
+        g.assign(_pdk_history_player=player_names),
+        group_col="_pdk_history_player",
+        date_col="GAME_DATE",
+        season_col="SEASON_YEAR",
+        official_col="PDK_OFFICIAL_VALID",
+        minutes_col="MIN",
+        opponent_col="OPPONENT",
+    )
+    for feature in PDK_HISTORY_FEATURES:
+        out[feature] = pd.to_numeric(pdk_history[feature], errors="coerce").to_numpy()
 
     for window in windows:
         out[f"pdk_mean_{window}"] = rolling("PDK", window, "mean")
@@ -488,21 +478,6 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
     else:
         out["pdk_category_bonus_mean_5"] = np.nan
 
-    opponent_minutes = minutes.where(valid_pdk, 0.0).groupby(opponents, sort=False).cumsum()
-    opponent_minutes = opponent_minutes.groupby(opponents, sort=False).shift(1)
-    opponent_pdk = pdk.where(valid_pdk, 0.0).groupby(opponents, sort=False).cumsum()
-    opponent_pdk = opponent_pdk.groupby(opponents, sort=False).shift(1)
-    opponent_games = valid_pdk.astype(float).groupby(opponents, sort=False).cumsum()
-    opponent_games = opponent_games.groupby(opponents, sort=False).shift(1).fillna(0.0)
-    matchup_rate = (opponent_pdk + 120.0 * out["pdk_per_min_season"]).div(
-        opponent_minutes + 120.0
-    )
-    has_opponent = opponents.str.strip().ne("")
-    has_matchup_minutes = opponent_minutes.gt(0)
-    out["player_opp_pdk_per_min"] = out["pdk_per_min_season"]
-    out.loc[has_opponent & has_matchup_minutes, "player_opp_pdk_per_min"] = matchup_rate
-    out["player_opp_games"] = opponent_games.where(has_opponent, 0.0)
-
     last = g.iloc[-1]
     inference_date = pd.Timestamp(last["GAME_DATE"]) + pd.Timedelta(days=1)
     next_row = _row_identity(
@@ -520,9 +495,7 @@ def _rolling_features(g: pd.DataFrame, windows: list[int]) -> pd.DataFrame:
         },
     )
     next_row.update(_history_features(g, windows))
-    next_row["player_opp_pdk_per_min"], next_row["player_opp_games"] = _player_opponent_features(
-        g, ""
-    )
+    next_row["player_opp_pdk_per_min"], next_row["player_opp_games"] = _player_opponent_features(g, "")
     return pd.concat([out, pd.DataFrame([next_row])], ignore_index=True)
 
 
@@ -893,9 +866,14 @@ def _attach_next_game_schedule(
             player_history = player_history.loc[
                 player_history["_feature_date"].lt(game["GAME_DATE"])
             ]
-        opp_rate, opp_games = _player_opponent_features(player_history, opponent)
-        out.at[idx, "player_opp_pdk_per_min"] = opp_rate
-        out.at[idx, "player_opp_games"] = opp_games
+        pdk_summary = summarize_pdk_history(
+            player_history,
+            as_of=game["GAME_DATE"],
+            target_season=season_key(None, game["GAME_DATE"]),
+            opponent=opponent,
+        )
+        for feature in PDK_HISTORY_FEATURES:
+            out.at[idx, feature] = pdk_summary[feature]
         for feature, value in defense.get(opponent, {}).items():
             out.at[idx, feature] = value
     return out

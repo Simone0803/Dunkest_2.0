@@ -246,11 +246,11 @@ def test_lagged_pdk_features_prefer_verified_official_scores_without_target_leak
     assert actual.loc[1, "target_pdk"] == pytest.approx(25.0)
     assert pd.isna(actual.loc[1, "target_pdk_official"])
 
-    # For inference, use official labels where verified and proxy labels only
-    # where the official overlay has no certified score.
+    # Other rolling PDK form features may still use the proxy, but the four
+    # season/opponent contract features require certified official history.
     inference = actual.iloc[-1]
     assert inference["pdk_mean_3"] == pytest.approx((30.0 + 25.0) / 2.0)
-    assert inference["pdk_season_mean"] == pytest.approx((30.0 + 25.0) / 2.0)
+    assert inference["pdk_season_mean"] == pytest.approx(30.0)
 
 
 def test_rolling_features_reject_ambiguous_duplicate_player_dates():

@@ -86,7 +86,7 @@ def test_auto_training_target_uses_official_labels_only_above_threshold():
     assert _resolve_training_target(Settings(), features) == "target_pdk_official"
 
 
-def test_auto_training_target_falls_back_when_official_coverage_is_small():
+def test_auto_training_target_fails_closed_when_official_coverage_is_small():
     features = pd.DataFrame(
         {
             "target_pdk": [10.0] * 100,
@@ -94,7 +94,8 @@ def test_auto_training_target_falls_back_when_official_coverage_is_small():
         }
     )
 
-    assert _resolve_training_target(Settings(), features) == "target_pdk"
+    with pytest.raises(ValueError, match="Refusing to silently train on proxy PDK labels"):
+        _resolve_training_target(Settings(), features)
 
 
 def test_explicit_training_target_overrides_auto_selection():

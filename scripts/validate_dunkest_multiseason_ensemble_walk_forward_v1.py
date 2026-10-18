@@ -6,6 +6,7 @@ Uses certified official Dunkest PDK labels and the exact production feature adap
 experiments; 2026/27 GW1 artifacts are never read or modified.
 """
 from __future__ import annotations
+import argparse
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,12 +28,23 @@ def score(y, p):
             "rmse": float(np.sqrt(mean_squared_error(y, p))), "bias_pred_minus_actual": float(err.mean())}
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-stem",
+        default=STEM,
+        help="Versioned output stem under reports/audit (default: %(default)s).",
+    )
+    args = parser.parse_args(argv)
+    if Path(args.output_stem).name != args.output_stem or not args.output_stem.startswith("dunkest_"):
+        raise SystemExit("--output-stem must be a simple filename beginning with 'dunkest_'.")
+    output = ROOT / "reports/audit" / args.output_stem
+
     from dunkest.config import Settings
     from dunkest.models.multiseason_training import adapt_certified_training_rows
     from dunkest.models.predictor import train_models, _ensemble_predict
 
-    files = [OUT.with_suffix(".json"), OUT.with_suffix(".md"), OUT.with_name(OUT.name + "_metrics.csv"), OUT.with_name(OUT.name + "_predictions.csv")]
+    files = [output.with_suffix(".json"), output.with_suffix(".md"), output.with_name(output.name + "_metrics.csv"), output.with_name(output.name + "_predictions.csv")]
     if any(p.exists() for p in files):
         raise SystemExit(f"Refusing to overwrite existing versioned outputs for {STEM}")
     data = adapt_certified_training_rows(pd.read_parquet(DATA), include_2025_26=False)

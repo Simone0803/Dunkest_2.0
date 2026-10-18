@@ -35,7 +35,7 @@ if mapping.empty or kick.isna().any() or pd.isna(run_ts): raise SystemExit("Inva
 earliest=kick.min()
 if run_ts>=earliest or (earliest-run_ts).total_seconds()>36*3600: raise SystemExit("Refusing scoring: forecast run is not within 36 hours before the earliest kickoff.")
 entries={e["path"]:e for e in m["pre_match_snapshot"]["files"]}
-required=["current_lineups_market.csv","lineups_availability.csv",f"player_credits_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet",f"coach_market_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet",f"injuries_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet"]
+required=["current_lineups_market.csv",f"player_credits_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet",f"coach_market_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet",f"injuries_{cfg['season_id']}_gw{cfg['target_gameweek']}.parquet"]
 for name in required:
     if name not in entries or name+".meta.json" not in entries: raise SystemExit(f"Missing snapshot/metadata: {name}")
     meta=json.loads((run/"pre_match_snapshot"/(name+".meta.json")).read_text())

@@ -1,6 +1,7 @@
 """Fail-closed realized roster scoring for fixture-linked walk-forward backtests."""
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from math import isfinite
 
@@ -43,6 +44,8 @@ def score_realized_team(
     keys = players["player_name"].map(player_key)
     if keys.eq("").any() or keys.duplicated().any():
         return RealizedTeamScore(nan, nan, nan, nan, False, "invalid_or_duplicate_player_identity")
+    if not isinstance(actual_player_scores, Mapping):
+        return RealizedTeamScore(nan, nan, nan, nan, False, "missing_player_actuals")
     normalized_actuals: dict[str, float] = {}
     for name, value in actual_player_scores.items():
         normalized = player_key(name)
@@ -58,12 +61,16 @@ def score_realized_team(
     missing = [key for key in keys if key not in normalized_actuals]
     if missing:
         return RealizedTeamScore(nan, nan, nan, nan, False, "missing_player_actuals")
-    if not coach_fixture_verified or not isfinite(float(actual_coach_score)):
+    try:
+        coach_score = float(actual_coach_score)
+    except (TypeError, ValueError, OverflowError):
+        return RealizedTeamScore(nan, nan, nan, nan, False, "missing_or_unverified_coach_actual")
+    if not coach_fixture_verified or not isfinite(coach_score):
         return RealizedTeamScore(nan, nan, nan, nan, False, "missing_or_unverified_coach_actual")
     try:
         transfers = float(transfer_count)
         penalty = float(transfer_penalty)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         return RealizedTeamScore(nan, nan, nan, nan, False, "unknown_transfer_count_or_penalty")
     if not isfinite(transfers) or transfers < 0 or not transfers.is_integer() or not isfinite(penalty) or penalty < 0:
         return RealizedTeamScore(nan, nan, nan, nan, False, "invalid_transfer_count_or_penalty")
@@ -83,10 +90,10 @@ def score_realized_team(
             return RealizedTeamScore(nan, nan, nan, nan, False, "invalid_player_score_multiplier")
         player_score += normalized_actuals[key] * multiplier
     transfer_malus = transfers * penalty
-    team_score = player_score + float(actual_coach_score) - transfer_malus
+    team_score = player_score + coach_score - transfer_malus
     return RealizedTeamScore(
         player_score_before_transfers=float(player_score),
-        coach_score=float(actual_coach_score),
+        coach_score=coach_score,
         transfer_malus=float(transfer_malus),
         team_score=float(team_score),
         complete=True,

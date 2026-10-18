@@ -665,6 +665,7 @@ def ensure_gameweek1_fixture_mapping(settings: Settings) -> pd.DataFrame:
 
     observations_path = settings.data_path / "lineups_fixtures.csv"
     if observations_path.is_file():
+        observations = pd.DataFrame()
         try:
             observations = pd.read_csv(observations_path)
             observed_mapping = build_gameweek1_mapping_from_lineups_observations(
@@ -679,6 +680,27 @@ def ensure_gameweek1_fixture_mapping(settings: Settings) -> pd.DataFrame:
             if column in observed_mapping
         )
         observed_sides = 2 * len(observed_mapping)
+        observed_at = (
+            pd.to_datetime(observations.get("observed_at_utc"), utc=True, errors="coerce").dropna()
+            if "observed_at_utc" in observations else pd.Series(dtype="datetime64[ns, UTC]")
+        )
+        now_utc = pd.Timestamp.now(tz="UTC")
+        observed_fresh = bool(
+            not observed_at.empty
+            and -0.01 <= (now_utc - observed_at.max()).total_seconds() / 3600.0 <= 36.0
+        )
+        existing_retrieved = (
+            pd.to_datetime(existing.get("source_retrieved_at_utc"), utc=True, errors="coerce").dropna()
+            if "source_retrieved_at_utc" in existing else pd.Series(dtype="datetime64[ns, UTC]")
+        )
+        existing_stale = bool(
+            existing_retrieved.empty
+            or (now_utc - existing_retrieved.min()).total_seconds() / 3600.0 > 36.0
+        )
+        observation_newer = bool(
+            not observed_at.empty
+            and (existing_retrieved.empty or observed_at.max() > existing_retrieved.max())
+        )
         # A complete capture in which every single team side is explicitly
         # marked ineligible is not a usable Giornata-1 calendar. Do not silently
         # fall back to an older partial mapping, which could mislead the coach
@@ -699,8 +721,16 @@ def ensure_gameweek1_fixture_mapping(settings: Settings) -> pd.DataFrame:
         # Do not demand that every NBA franchise plays in this Giornata: the
         # official rules explicitly allow rest teams. A partial capture can
         # safely guide only the sides whose black/gray state was observed.
-        if observed_teams and observed_statuses:
-            if existing.empty or observed_statuses > existing_statuses:
+        if observed_teams and observed_statuses and observed_fresh:
+            # A fresh official Lineups capture supersedes a stale mapping even
+            # when the number of observed side-statuses is unchanged. Otherwise
+            # season-opener can keep using a several-day-old mapping forever.
+            should_refresh = (
+                existing.empty
+                or existing_stale
+                or (observation_newer and observed_statuses >= existing_statuses)
+            )
+            if should_refresh:
                 save_fixture_mapping(
                     settings,
                     observed_mapping,

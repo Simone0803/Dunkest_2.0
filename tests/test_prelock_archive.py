@@ -3,6 +3,7 @@ import importlib.util
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("prelock_archive", ROOT / "scripts/archive_dunkest_pre_lock_run_v1.py")
@@ -45,6 +46,29 @@ def test_archive_creates_integrity_manifest_and_registry(tmp_path):
     assert archive.inventory(archived) == archive.load_json(archived / "archive_manifest.json")["files"]
 
 
+def test_archive_registry_failure_removes_new_unregistered_bundle(tmp_path, monkeypatch):
+    run = make_run(tmp_path)
+    archive_root = tmp_path / "archive"
+    original_open = Path.open
+
+    def fail_registry_creation(path, mode="r", *args, **kwargs):
+        if path.parent.name == "registry" and mode == "x":
+            raise OSError("simulated registry write failure")
+        return original_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", fail_registry_creation)
+    try:
+        archive.archive_run(run, archive_root, 36)
+    except OSError as exc:
+        assert "simulated registry write failure" in str(exc)
+    else:
+        raise AssertionError("registry failure must not leave a published unregistered bundle")
+
+    assert list(archive_root.glob("season_id=*/gw=*/*")) == []
+    assert list((archive_root / "registry").glob("*.json")) == []
+    assert list(archive_root.rglob(".*.stage.*")) == []
+
+
 def test_archive_is_idempotent_but_refuses_mutated_archive(tmp_path):
     run = make_run(tmp_path)
     root = tmp_path / "archive"
@@ -83,6 +107,22 @@ def test_stale_snapshot_is_not_marked_eligible(tmp_path):
     assert out["pre_lock_eligible"] is False
     status = {x["path"]: x["status"] for x in out["snapshot_freshness"]}
     assert status[name] == "stale"
+
+
+def test_snapshot_fetched_after_prediction_is_not_marked_eligible(tmp_path):
+    run = make_run(tmp_path)
+    manifest = archive.load_json(run / "manifest.json")
+    run_time = datetime.fromisoformat(manifest["timestamp"])
+    name = "current_lineups_market.csv"
+    sidecar = run / "pre_match_snapshot" / (name + ".meta.json")
+    sidecar.write_text(json.dumps({
+        "fetched_at": (run_time + timedelta(minutes=1)).isoformat()
+    }))
+
+    status = {row["path"]: row["status"] for row in archive.freshness_report(run, manifest, 36)}
+    assert status[name] == "fetched_after_prediction"
+    result = archive.archive_run(run, tmp_path / "archive", 36)
+    assert not result["pre_lock_eligible"]
 
 
 def test_fixture_mapping_freshness_uses_embedded_source_retrieval_time(tmp_path):
@@ -125,6 +165,35 @@ def test_fixture_mapping_must_be_verified_and_within_prelock_window(tmp_path):
     assert any("unverified" in error for error in result["errors"])
 
 
+def test_gameday_mapping_freshness_is_anchored_to_earliest_kickoff(tmp_path):
+    import pandas as pd
+    run = make_run(tmp_path)
+    manifest = archive.load_json(run / "manifest.json")
+    run_time = pd.Timestamp(manifest["timestamp"])
+    mapping_path = run / "pre_match_snapshot" / "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet"
+    captured = run_time - pd.Timedelta(minutes=1)
+    mapping = pd.DataFrame([
+        {
+            "nba_game_id": "0022600001",
+            "game_datetime_utc": (run_time + pd.Timedelta(hours=2)).isoformat(),
+            "dunkest_gameweek": 1, "fantasy_eligible": True, "mapping_verified": True,
+            "source_retrieved_at_utc": captured.isoformat(), "raw_payload_sha256": "a" * 64,
+        },
+        {
+            "nba_game_id": "0022600002",
+            "game_datetime_utc": (run_time + pd.Timedelta(hours=60)).isoformat(),
+            "dunkest_gameweek": 1, "fantasy_eligible": True, "mapping_verified": True,
+            "source_retrieved_at_utc": captured.isoformat(), "raw_payload_sha256": "b" * 64,
+        },
+    ])
+    mapping.to_parquet(mapping_path, index=False)
+
+    result = archive.fixture_mapping_validation(run, manifest, 36)
+
+    assert result["status"] == "verified"
+    assert result["fixture_count"] == 2
+
+
 def test_postmatch_pipeline_requires_certified_prelock_archive_by_default(tmp_path):
     pipeline_spec = importlib.util.spec_from_file_location(
         "postmatch_pipeline", ROOT / "scripts/run_dunkest_postmatch_oos_pipeline_v1.py"
@@ -145,11 +214,98 @@ def test_postmatch_pipeline_requires_certified_prelock_archive_by_default(tmp_pa
     assert checked["run_manifest"]["run_id"] == "run_test_001"
 
 
+def test_postmatch_pipeline_passes_collected_archive_to_evaluator(tmp_path, monkeypatch):
+    import subprocess
+    pipeline_spec = importlib.util.spec_from_file_location(
+        "postmatch_pipeline_flow", ROOT / "scripts/run_dunkest_postmatch_oos_pipeline_v1.py"
+    )
+    pipeline = importlib.util.module_from_spec(pipeline_spec)
+    assert pipeline_spec and pipeline_spec.loader
+    pipeline_spec.loader.exec_module(pipeline)
+
+    run_dir = tmp_path / "certified-run"
+    run_dir.mkdir()
+    run_manifest = {
+        "run_id": "run-flow-1",
+        "configuration": {"season_id": "26", "target_gameweek": 1},
+    }
+    monkeypatch.setattr(pipeline, "validate_archive", lambda *_args, **_kwargs: {
+        "run_manifest": run_manifest, "archive_manifest": {"pre_lock_eligible": True},
+    })
+    calls = []
+
+    def fake_run(command, **kwargs):
+        calls.append(command)
+        if "build_dunkest_post_match_results_v1.py" in command[1]:
+            stdout = json.dumps({"status": "archived_complete", "archive": str(tmp_path / "results")})
+        else:
+            stdout = json.dumps({"status": "ready", "metrics": {"player_mae": 1.0}})
+        return subprocess.CompletedProcess(command, 0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
+    result = pipeline.run_pipeline(
+        run_dir, tmp_path / "data", tmp_path / "out"
+    )
+
+    assert result["status"] == "completed"
+    assert len(calls) == 2
+    assert calls[0][calls[0].index("--run-dir") + 1] == str(run_dir)
+    assert calls[1][calls[1].index("--run-dir") + 1] == str(run_dir)
+    assert calls[1][calls[1].index("--results-dir") + 1] == str(tmp_path / "results")
+    assert result["evaluation"]["status"] == "ready"
+
+
+def test_postmatch_pipeline_does_not_evaluate_when_collector_is_before_safe_cutoff(tmp_path, monkeypatch):
+    import subprocess
+    pipeline_spec = importlib.util.spec_from_file_location(
+        "postmatch_pipeline_early_cutoff", ROOT / "scripts/run_dunkest_postmatch_oos_pipeline_v1.py"
+    )
+    pipeline = importlib.util.module_from_spec(pipeline_spec)
+    assert pipeline_spec and pipeline_spec.loader
+    pipeline_spec.loader.exec_module(pipeline)
+
+    run_dir = tmp_path / "certified-run"
+    run_dir.mkdir()
+    run_manifest = {
+        "run_id": "run-flow-early",
+        "configuration": {"season_id": "26", "target_gameweek": 1},
+    }
+    monkeypatch.setattr(pipeline, "validate_archive", lambda *_args, **_kwargs: {
+        "run_manifest": run_manifest, "archive_manifest": {"pre_lock_eligible": True},
+    })
+    calls = []
+
+    def early_collector_result(command, **kwargs):
+        calls.append(command)
+        assert "build_dunkest_post_match_results_v1.py" in command[1]
+        return subprocess.CompletedProcess(
+            command,
+            2,
+            stdout=json.dumps({
+                "status": "not_ready",
+                "timing_check": False,
+                "outcome_files_read": False,
+            }),
+            stderr="",
+        )
+
+    monkeypatch.setattr(pipeline.subprocess, "run", early_collector_result)
+    with pytest.raises(RuntimeError, match="collection is not complete/ready"):
+        pipeline.run_pipeline(run_dir, tmp_path / "data", tmp_path / "out")
+
+    assert len(calls) == 1
+    assert not (tmp_path / "out" / "evaluation").exists()
+
+
 def test_capture_script_uses_canonical_archiver_and_cli_flag():
     script = (ROOT / "scripts/run_and_archive_prelock_v1.sh").read_text(encoding="utf-8")
     assert 'scripts/archive_dunkest_pre_lock_run_v1.py' in script
     assert '--max-age-hours "$MAX_HOURS"' in script
     assert 'scripts/archive_dunkest_prelock_run_v1.py" --run-id' not in script
+    assert "0.0 < max_hours <= 36.0" in script
+    assert "if hours <= 0:" in script
+    assert "if len(candidates) != 1:" in script
+    assert "Refusing to archive an ambiguous run." in script
 
 
 def test_registry_checks_manifest_hash(tmp_path):

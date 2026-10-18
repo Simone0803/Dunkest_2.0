@@ -1,0 +1,172 @@
+{
+  "audit_version": 1,
+  "seed": 20261018,
+  "input_type": "deterministic_synthetic_player_and_coach_pool",
+  "player_count": 40,
+  "coach_count": 2,
+  "candidate_objectives": [
+    [
+      "expected_value",
+      0.0
+    ],
+    [
+      "risk_adjusted",
+      0.05
+    ],
+    [
+      "risk_adjusted",
+      0.1
+    ],
+    [
+      "risk_adjusted",
+      0.2
+    ],
+    [
+      "risk_adjusted",
+      0.5
+    ]
+  ],
+  "candidate_count": 5,
+  "records": [
+    {
+      "objective": "expected_value",
+      "risk_lambda": 0.0,
+      "solver_status": "Optimal",
+      "solver_objective_value": 256.5545000000001,
+      "reported_expected_net_pdk": 256.5545000000001,
+      "p10_team": 225.9132435210916,
+      "p50_team": 256.5545000000001,
+      "p90_team": 287.19575647890855,
+      "budget_used": 111.60999999999999,
+      "selected_players": [
+        "Synthetic Player 04",
+        "Synthetic Player 09",
+        "Synthetic Player 10",
+        "Synthetic Player 15",
+        "Synthetic Player 16",
+        "Synthetic Player 19",
+        "Synthetic Player 25",
+        "Synthetic Player 27",
+        "Synthetic Player 37",
+        "Synthetic Player 39"
+      ],
+      "coach": "Synthetic Coach A",
+      "module": "3-1-1",
+      "duration_seconds": 0.086346,
+      "validation_valid": true
+    },
+    {
+      "objective": "risk_adjusted",
+      "risk_lambda": 0.05,
+      "solver_status": "Optimal",
+      "solver_objective_value": 250.59082500000002,
+      "reported_expected_net_pdk": 256.4665,
+      "p10_team": 226.73910963910976,
+      "p50_team": 256.4665,
+      "p90_team": 286.19389036089024,
+      "budget_used": 111.66999999999999,
+      "selected_players": [
+        "Synthetic Player 04",
+        "Synthetic Player 05",
+        "Synthetic Player 09",
+        "Synthetic Player 10",
+        "Synthetic Player 16",
+        "Synthetic Player 19",
+        "Synthetic Player 25",
+        "Synthetic Player 27",
+        "Synthetic Player 37",
+        "Synthetic Player 39"
+      ],
+      "coach": "Synthetic Coach A",
+      "module": "3-1-1",
+      "duration_seconds": 0.03897,
+      "validation_valid": true
+    },
+    {
+      "objective": "risk_adjusted",
+      "risk_lambda": 0.1,
+      "solver_status": "Optimal",
+      "solver_objective_value": 244.71515,
+      "reported_expected_net_pdk": 256.4665,
+      "p10_team": 226.73910963910976,
+      "p50_team": 256.4665,
+      "p90_team": 286.19389036089024,
+      "budget_used": 111.66999999999999,
+      "selected_players": [
+        "Synthetic Player 04",
+        "Synthetic Player 05",
+        "Synthetic Player 09",
+        "Synthetic Player 10",
+        "Synthetic Player 16",
+        "Synthetic Player 19",
+        "Synthetic Player 25",
+        "Synthetic Player 27",
+        "Synthetic Player 37",
+        "Synthetic Player 39"
+      ],
+      "coach": "Synthetic Coach A",
+      "module": "3-1-1",
+      "duration_seconds": 0.039055,
+      "validation_valid": true
+    },
+    {
+      "objective": "risk_adjusted",
+      "risk_lambda": 0.2,
+      "solver_status": "Optimal",
+      "solver_objective_value": 233.38959999999997,
+      "reported_expected_net_pdk": 255.79050000000004,
+      "p10_team": 227.61223982737317,
+      "p50_team": 255.79050000000004,
+      "p90_team": 283.9687601726269,
+      "budget_used": 111.66999999999999,
+      "selected_players": [
+        "Synthetic Player 04",
+        "Synthetic Player 05",
+        "Synthetic Player 09",
+        "Synthetic Player 10",
+        "Synthetic Player 16",
+        "Synthetic Player 19",
+        "Synthetic Player 25",
+        "Synthetic Player 27",
+        "Synthetic Player 37",
+        "Synthetic Player 39"
+      ],
+      "coach": "Synthetic Coach A",
+      "module": "3-1-1",
+      "duration_seconds": 0.038041,
+      "validation_valid": true
+    },
+    {
+      "objective": "risk_adjusted",
+      "risk_lambda": 0.5,
+      "solver_status": "Optimal",
+      "solver_objective_value": 201.37124999999997,
+      "reported_expected_net_pdk": 253.70950000000005,
+      "p10_team": 227.24791897616004,
+      "p50_team": 253.70950000000005,
+      "p90_team": 280.1710810238401,
+      "budget_used": 110.16,
+      "selected_players": [
+        "Synthetic Player 04",
+        "Synthetic Player 05",
+        "Synthetic Player 09",
+        "Synthetic Player 10",
+        "Synthetic Player 16",
+        "Synthetic Player 19",
+        "Synthetic Player 27",
+        "Synthetic Player 30",
+        "Synthetic Player 37",
+        "Synthetic Player 39"
+      ],
+      "coach": "Synthetic Coach A",
+      "module": "3-1-1",
+      "duration_seconds": 0.039834,
+      "validation_valid": true
+    }
+  ],
+  "all_solver_optimal": true,
+  "all_independent_validation_passed": true,
+  "risk_objectives_nonincreasing": true,
+  "decision": "retain current policy; synthetic sensitivity verifies objective behavior only and cannot select a real-data strategy",
+  "result": "pass"
+}

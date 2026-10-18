@@ -73,7 +73,7 @@ def test_training_rejects_missing_usable_features():
     features = pd.DataFrame({"target_pdk": [10.0, 15.0, np.inf, np.nan]})
 
     with pytest.raises(ValueError, match="No usable model features"):
-        train_models(Settings(), features)
+        train_models(Settings(training_target="target_pdk"), features)
 
 
 

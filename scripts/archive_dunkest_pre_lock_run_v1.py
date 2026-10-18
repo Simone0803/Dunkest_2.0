@@ -13,8 +13,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROOT = ROOT / "data/archives/pre_lock"
 RUN_FILES = ("manifest.json", "predictions.parquet", "lineups.parquet")
+# The current scraper's authoritative availability source is the timestamped
+# official injuries snapshot. lineups_availability.csv is a legacy artifact no
+# longer written by the current Lineups browser flow, so requiring it would make
+# every new capture depend on a stale, unused CSV.
 SNAPSHOTS = (
-    "current_lineups_market.csv", "lineups_availability.csv",
+    "current_lineups_market.csv",
     "player_credits_26_gw1.parquet", "injuries_26_gw1.parquet",
     "coach_market_26_gw1.parquet",
     "dunkest_fixture_mapping_26_lineups_browser_gw1_team_status_v2.parquet",
@@ -36,7 +40,6 @@ def snapshot_names(manifest: dict) -> tuple[str, ...]:
         return SNAPSHOTS
     return (
         "current_lineups_market.csv",
-        "lineups_availability.csv",
         f"player_credits_{season}_gw{gameweek}.parquet",
         f"injuries_{season}_gw{gameweek}.parquet",
         f"coach_market_{season}_gw{gameweek}.parquet",
@@ -152,7 +155,6 @@ def snapshot_content_validation(run_dir: Path, manifest: dict) -> list[dict]:
         f"player_credits_{season}_gw{gw}.parquet": ({"player_name", "team_code", "role", "cr", "gameweek"}, 400, "player_name", {"team_code", "role", "cr", "gameweek"}),
         f"coach_market_{season}_gw{gw}.parquet": ({"coach", "team", "coach_cr", "opponent", "opponent_coach", "opponent_coach_cr", "gameweek"}, 30, "team", {"coach", "coach_cr", "opponent", "opponent_coach", "opponent_coach_cr", "gameweek"}),
         f"injuries_{season}_gw{gw}.parquet": ({"player_name", "status", "team", "gameweek"}, 0, "player_name", {"status", "team", "gameweek"}),
-        "lineups_availability.csv": ({"player_name", "team", "status", "dunkest_turn", "observed_at_utc"}, 0, ("player_name", "dunkest_turn"), {"team", "status", "observed_at_utc"}),
     }
     for name in names:
         path = snap / name
@@ -254,16 +256,24 @@ def fixture_mapping_validation(run_dir: Path, manifest: dict, max_hours: float) 
         if retrieved.isna().any():
             errors.append("one or more fixture source retrieval timestamps are missing/invalid")
         if not kickoffs.isna().any() and not retrieved.isna().any():
-            if (retrieved > kickoffs).any():
-                errors.append("fixture mapping source was retrieved after kickoff")
-            if ((kickoffs - retrieved).dt.total_seconds() > max_hours * 3600).any():
-                errors.append("fixture mapping source snapshot is older than the permitted pre-lock window")
+            earliest_kickoff = kickoffs.min()
+            # The mapping is a single Giornata-level calendar capture. Its
+            # freshness window is anchored to the first kickoff, not each later
+            # Turno's kickoff; otherwise a valid pre-lock capture is guaranteed
+            # to fail for fixtures scheduled on subsequent days.
+            if (retrieved > earliest_kickoff).any():
+                errors.append("fixture mapping source was retrieved at or after the earliest kickoff")
+            mapping_age_at_first_kickoff = (
+                earliest_kickoff - retrieved
+            ).dt.total_seconds()
+            if (mapping_age_at_first_kickoff > max_hours * 3600).any():
+                errors.append("fixture mapping source snapshot is older than the permitted pre-lock window relative to earliest kickoff")
             if pd.isna(run_time):
                 errors.append("prediction run has no valid UTC timestamp")
             else:
                 if (retrieved > run_time + pd.Timedelta(minutes=5)).any():
                     errors.append("fixture mapping source was retrieved after the prediction run")
-                hours_to_kickoff = (kickoffs.min() - run_time).total_seconds() / 3600
+                hours_to_kickoff = (earliest_kickoff - run_time).total_seconds() / 3600
                 if not (0 <= hours_to_kickoff <= max_hours):
                     errors.append(f"prediction run is {hours_to_kickoff:.2f} hours before earliest kickoff; expected 0–{max_hours:.2f}")
         return {"status": "verified" if not errors else "invalid", "errors": errors,
@@ -357,15 +367,27 @@ def archive_run(run_dir: Path, archive_root: Path, max_hours: float = 36.0) -> d
     # versions carry the structural-content validation field.
     if "snapshot_content_validation" in archive_meta:
         record["snapshot_content_validation"] = archive_meta["snapshot_content_validation"]
+    archive_created = archive_status == "archived"
     if registry_path.exists():
         if load_json(registry_path) != record:
+            if archive_created:
+                shutil.rmtree(dest, ignore_errors=True)
             raise ValueError(f"Immutable registry record differs: {registry_path}")
         registry_status = "already_registered_verified"
     else:
-        with registry_path.open("x", encoding="utf-8") as stream:
-            stream.write(json.dumps(record, indent=2, ensure_ascii=False) + "\n")
-            stream.flush()
-            os.fsync(stream.fileno())
+        registry_created = False
+        try:
+            with registry_path.open("x", encoding="utf-8") as stream:
+                registry_created = True
+                stream.write(json.dumps(record, indent=2, ensure_ascii=False) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        except BaseException:
+            if registry_created:
+                registry_path.unlink(missing_ok=True)
+            if archive_created:
+                shutil.rmtree(dest, ignore_errors=True)
+            raise
         registry_status = "registered"
     return {"status": archive_status, "registry_status": registry_status,
             "run_id": run_id, "archive_path": str(dest), "registry_path": str(registry_path),

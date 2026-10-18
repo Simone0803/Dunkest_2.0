@@ -1,12 +1,54 @@
 import hashlib
 import json
+from pathlib import Path
+from types import SimpleNamespace
 
 import pandas as pd
 import pytest
 
 from dunkest.config import Settings
 from dunkest.pipeline.season_opener import _model_artifact_metadata
-from dunkest.report.artifacts import save_post_match_snapshot, save_pre_match_snapshot, save_run_artifacts
+from dunkest.report.artifacts import (
+    _source_fingerprint,
+    save_post_match_snapshot,
+    save_pre_match_snapshot,
+    save_run_artifacts,
+)
+
+
+def test_source_fingerprint_covers_operational_scripts_and_config(tmp_path):
+    files = {
+        "src/dunkest/example.py": "VALUE = 1\n",
+        "scripts/capture.py": "print('capture')\n",
+        "config/season_opener.yaml": "training_target: target_pdk_official\n",
+        "run-season-opener.sh": "echo run\n",
+        "tests/not_runtime.py": "SHOULD_NOT_BE_INCLUDED = True\n",
+    }
+    for relative, content in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+    settings = SimpleNamespace(root=tmp_path)
+    first = _source_fingerprint(settings)
+    assert first["python_files"] == 2
+    assert first["shell_files"] == 1
+    assert first["config_files"] == 1
+    assert first["files"] == 4
+
+    (tmp_path / "scripts/capture.py").write_text(
+        "print('capture changed')\n", encoding="utf-8"
+    )
+    second = _source_fingerprint(settings)
+    assert second["sha256"] != first["sha256"]
+
+    (tmp_path / "config/season_opener.yaml").write_text(
+        "training_target: explicit_proxy\n", encoding="utf-8"
+    )
+    third = _source_fingerprint(settings)
+    assert third["sha256"] != second["sha256"]
+
+
 from dunkest.data.dunkest.fixtures import load_pre_match_snapshot
 
 
@@ -25,8 +67,18 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
         json.dumps({"fetched_at": "2026-10-01T12:00:00+00:00", "source": "test", "rows": 12}),
         encoding="utf-8",
     )
+    minute_label_cache = processed / "dunkest_nba_player_games_enriched_2018-25_v1.parquet"
+    minute_label_cache.write_bytes(b"minute-label-training-input")
+    official_overlay = processed / f"player_game_logs_{settings.season}_official_pdk_overlay_v4.parquet"
+    official_overlay.write_bytes(b"official-pdk-inference-input")
+    plus_anchor = processed / "plusvalenza_history_multiseason_26_pre_gw1_5y_nba_v4.parquet"
+    plus_anchor.write_bytes(b"plusvalenza-anchor-input")
+    plus_season = processed / "plusvalenza_history_nba_25_through_gw91_v4.parquet"
+    plus_season.write_bytes(b"plusvalenza-season-input")
     market_file = tmp_path / "current_lineups_market.csv"
     market_file.write_text("player_name,cr\nPlayer One,8.0\n", encoding="utf-8")
+    rookie_official = tmp_path / "rookie_official_pdk.csv"
+    rookie_official.write_text("player_key,draft_year\nplayer-one,2025\n", encoding="utf-8")
     market_meta = {"fetched_at": "2026-10-12T20:47:03+00:00", "source": "official-lineups-api"}
     market_file.with_name(market_file.name + ".meta.json").write_text(
         json.dumps(market_meta), encoding="utf-8"
@@ -58,6 +110,8 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
         "_official_labels_available_before_filter": 1800,
         "_training_date_min_utc": "2025-10-01T00:00:00+00:00",
         "_training_date_max_utc": "2026-04-12T00:00:00+00:00",
+        "_training_minute_labels_dataset": str(minute_label_cache),
+        "_training_minute_labels_matched_rows": 1700,
         "_weights": {"ridge": 0.75, "rf": 0.25},
         "_projection_weights": {"minutes": 0.6, "ensemble": 0.4, "prior": 0.0},
         "_calibration_samples": 120,
@@ -68,6 +122,8 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     }
 
     run_metadata = {
+        "official_pdk_overlay_source": str(official_overlay),
+        "official_pdk_overlay_label_rows": 41,
         "credit_proxy_reference_rows": 42,
         "credit_proxy_reference_source": "prior_season_game_logs_official_pdk_mean_with_proxy_fallback",
         "plusvalenza_reference_incomplete_seasons": ["16", "22", "25"],
@@ -99,6 +155,8 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert manifest["model_details"]["official_labels_available_before_filter"] == 1800
     assert manifest["model_details"]["training_date_min_utc"] == "2025-10-01T00:00:00+00:00"
     assert manifest["model_details"]["training_date_max_utc"] == "2026-04-12T00:00:00+00:00"
+    assert manifest["model_details"]["training_minute_labels_dataset"] == str(minute_label_cache)
+    assert manifest["model_details"]["training_minute_labels_matched_rows"] == 1700
     assert manifest["model_details"]["model_weights"] == {"ridge": 0.75, "rf": 0.25}
     assert manifest["model_details"]["calibration_samples"] == 120
     assert manifest["model_details"]["interval_diagnostics"] == [
@@ -118,6 +176,21 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert player_input["cache_metadata"]["fetched_at"] == "2026-10-01T12:00:00+00:00"
     assert input_hashes["processed/player_game_logs_2026-27.parquet"] == hashlib.sha256(
         b"captured-input"
+    ).hexdigest()
+    assert input_hashes[
+        "processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet"
+    ] == hashlib.sha256(b"minute-label-training-input").hexdigest()
+    assert input_hashes[
+        f"processed/player_game_logs_{settings.season}_official_pdk_overlay_v4.parquet"
+    ] == hashlib.sha256(b"official-pdk-inference-input").hexdigest()
+    assert input_hashes["processed/plusvalenza_history_multiseason_26_pre_gw1_5y_nba_v4.parquet"] == hashlib.sha256(
+        b"plusvalenza-anchor-input"
+    ).hexdigest()
+    assert input_hashes["processed/plusvalenza_history_nba_25_through_gw91_v4.parquet"] == hashlib.sha256(
+        b"plusvalenza-season-input"
+    ).hexdigest()
+    assert input_hashes["rookie_official_pdk.csv"] == hashlib.sha256(
+        b"player_key,draft_year\nplayer-one,2025\n"
     ).hexdigest()
     assert input_hashes["current_lineups_market.csv"] == hashlib.sha256(
         b"player_name,cr\nPlayer One,8.0\n"
@@ -158,6 +231,8 @@ def test_season_opener_manifest_keeps_training_provenance(tmp_path):
         "_official_labels_available_before_filter": 24052,
         "_training_date_min_utc": "2025-10-01T00:00:00+00:00",
         "_training_date_max_utc": "2026-04-12T00:00:00+00:00",
+        "_training_minute_labels_dataset": "processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+        "_training_minute_labels_matched_rows": 17000,
         "_weights": {"ridge": 0.6, "rf": 0.4},
         "_projection_weights": {"minutes": 0.5, "ensemble": 0.4, "prior": 0.1},
         "_calibration_samples": 300,
@@ -175,6 +250,8 @@ def test_season_opener_manifest_keeps_training_provenance(tmp_path):
     assert details["training_rows"] == 18141
     assert details["training_rows_before_target_filter"] == 24100
     assert details["official_labels_available_before_filter"] == 24052
+    assert details["training_minute_labels_dataset"] == "processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet"
+    assert details["training_minute_labels_matched_rows"] == 17000
     assert details["feature_columns"] == ["pdk_mean_5", "rest_days"]
     assert details["model_weights"] == {"ridge": 0.6, "rf": 0.4}
     assert details["projection_weights"] == {"minutes": 0.5, "ensemble": 0.4, "prior": 0.1}
@@ -204,7 +281,10 @@ def test_post_match_snapshot_archives_hashes_and_evaluation_provenance(tmp_path)
     )
 
     manifest = json.loads((archive / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == 2
     assert manifest["run_id"] == "run-1"
+    assert manifest["source_fingerprint"]["python_files"] > 0
+    assert len(manifest["source_fingerprint"]["sha256"]) == 64
     assert manifest["source_files"]["players"] == "official_results.parquet"
     assert manifest["coverage_audit"] == {"player": 1.0, "coach": 1.0}
     assert manifest["sha256"]["player_results.parquet"] == hashlib.sha256(
@@ -212,6 +292,12 @@ def test_post_match_snapshot_archives_hashes_and_evaluation_provenance(tmp_path)
     ).hexdigest()
     assert manifest["sha256"]["coach_results.parquet"] == hashlib.sha256(
         (archive / "coach_results.parquet").read_bytes()
+    ).hexdigest()
+    registry = json.loads(
+        (archive.parent / "registry" / f"{archive.name}.json").read_text(encoding="utf-8")
+    )
+    assert registry["manifest_sha256"] == hashlib.sha256(
+        (archive / "manifest.json").read_bytes()
     ).hexdigest()
     pd.testing.assert_frame_equal(
         pd.read_parquet(archive / "player_results.parquet"), player_results
@@ -230,6 +316,30 @@ def test_post_match_snapshot_rejects_reserved_metadata_before_creating_archive(t
             metadata={"sha256": {"fake": "hash"}},
         )
     assert not (tmp_path / "archive").exists()
+
+
+def test_post_match_snapshot_registry_failure_removes_new_unregistered_archive(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    original_open = Path.open
+
+    def fail_registry_creation(path, mode="r", *args, **kwargs):
+        if path.parent.name == "registry" and mode == "x":
+            raise OSError("simulated registry write failure")
+        return original_open(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", fail_registry_creation)
+    with pytest.raises(OSError, match="simulated registry write failure"):
+        save_post_match_snapshot(
+            settings,
+            1,
+            pd.DataFrame([{"player_name": "P", "actual_pdk": 1.0}]),
+            pd.DataFrame([{"coach": "C", "actual_coach_pdk": 1.0}]),
+            source="official results",
+        )
+
+    gw_root = tmp_path / "archive" / "26" / "gw1"
+    assert list(gw_root.glob("post_match_*")) == []
+    assert list((gw_root / "registry").glob("*.json")) == []
 
 
 def test_pre_match_archive_is_immutable_and_rejects_realized_targets(tmp_path):
@@ -252,6 +362,9 @@ def test_pre_match_archive_is_immutable_and_rejects_realized_targets(tmp_path):
     manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["season_id"] == "26"
     assert manifest["dunkest_gameweek"] == 2
+    assert manifest["source"] == "unit_test"
+    assert manifest["source_fingerprint"]["python_files"] > 0
+    assert len(manifest["source_fingerprint"]["sha256"]) == 64
     assert set(manifest["sha256"]) == {"player_market.parquet", "injuries.parquet"}
     assert all(len(value) == 64 for value in manifest["sha256"].values())
 
@@ -305,3 +418,56 @@ def test_pre_match_archive_loader_requires_hashes_and_capture_before_tipoff(tmp_
     with (archive / "player_market.parquet").open("ab") as stream:
         stream.write(b"tampered")
     assert load_pre_match_snapshot(settings, 1) is None
+
+
+def test_pre_match_archive_failure_never_publishes_partial_directory(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+
+    def interrupt_write(self, path, *args, **kwargs):
+        from pathlib import Path
+
+        Path(path).write_bytes(b"partial parquet")
+        raise KeyboardInterrupt("simulated interruption")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", interrupt_write)
+    with pytest.raises(KeyboardInterrupt, match="simulated interruption"):
+        save_pre_match_snapshot(
+            settings,
+            1,
+            {"player_market.parquet": pd.DataFrame({"player_name": ["Player One"]})},
+            source="unit_test",
+        )
+
+    archive_root = tmp_path / "archive" / "26" / "gw1"
+    assert list(archive_root.glob("pre_match_*")) == []
+    assert list(archive_root.glob(".*.tmp-*")) == []
+
+
+def test_post_match_archive_failure_never_publishes_partial_directory(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), season_id="26")
+    original = pd.DataFrame.to_parquet
+    writes = 0
+
+    def interrupt_second_write(self, path, *args, **kwargs):
+        nonlocal writes
+        writes += 1
+        if writes == 2:
+            from pathlib import Path
+
+            Path(path).write_bytes(b"partial parquet")
+            raise OSError("simulated disk interruption")
+        return original(self, path, *args, **kwargs)
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", interrupt_second_write)
+    with pytest.raises(OSError, match="simulated disk interruption"):
+        save_post_match_snapshot(
+            settings,
+            1,
+            pd.DataFrame({"actual_pdk": [12.5]}),
+            pd.DataFrame({"actual_coach_pdk": [7.0]}),
+            source="unit_test",
+        )
+
+    archive_root = tmp_path / "archive" / "26" / "gw1"
+    assert list(archive_root.glob("post_match_*")) == []
+    assert list(archive_root.glob(".*.tmp-*")) == []
