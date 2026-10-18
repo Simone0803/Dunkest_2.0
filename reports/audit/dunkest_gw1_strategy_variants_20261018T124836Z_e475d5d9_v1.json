@@ -1,0 +1,83 @@
+{
+  "generated_at_utc": "2026-10-18T13:35:06.513205+00:00",
+  "source_run_id": "20261018T124836Z_e475d5d9",
+  "source_run_timestamp_utc": "2026-10-18T12:48:36.769554+00:00",
+  "season_id": "26",
+  "gameweek": 1,
+  "mapped_fixtures": 16,
+  "snapshot_max_age_hours": 36.0,
+  "snapshot_freshness": {
+    "current_lineups_market.csv": {
+      "captured_at_utc": "2026-10-18T12:45:04.759712+00:00",
+      "age_hours_at_earliest_kickoff": 35.24867785777778
+    },
+    "player_credits_26_gw1.parquet": {
+      "captured_at_utc": "2026-10-18T12:45:10.558139+00:00",
+      "age_hours_at_earliest_kickoff": 35.24706718361111
+    },
+    "coach_market_26_gw1.parquet": {
+      "captured_at_utc": "2026-10-18T12:48:33.136754+00:00",
+      "age_hours_at_earliest_kickoff": 35.19079534611111
+    },
+    "injuries_26_gw1.parquet": {
+      "captured_at_utc": "2026-10-18T12:45:10.549124+00:00",
+      "age_hours_at_earliest_kickoff": 35.24706968777778
+    }
+  },
+  "player_forecast_rows": 528,
+  "coach_forecast_rows": 30,
+  "snapshot_files_hash_verified": 12,
+  "variants": [
+    {
+      "key": "risk_adjusted_corrected_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "corrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted + corrected plusvalenza"
+    },
+    {
+      "key": "expected_value_corrected_gain",
+      "objective": "expected_value",
+      "gain_mode": "corrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Expected value + corrected plusvalenza"
+    },
+    {
+      "key": "risk_adjusted_uncorrected_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "uncorrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted + reconstructed uncorrected plusvalenza"
+    },
+    {
+      "key": "expected_value_uncorrected_gain",
+      "objective": "expected_value",
+      "gain_mode": "uncorrected",
+      "use_gain": true,
+      "risk_lambda": 0.1,
+      "label": "Expected value + reconstructed uncorrected plusvalenza"
+    },
+    {
+      "key": "risk_adjusted_no_gain",
+      "objective": "risk_adjusted",
+      "gain_mode": "none",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Risk-adjusted, plusvalenza excluded"
+    },
+    {
+      "key": "expected_value_no_gain",
+      "objective": "expected_value",
+      "gain_mode": "none",
+      "use_gain": false,
+      "risk_lambda": 0.1,
+      "label": "Expected value, plusvalenza excluded"
+    }
+  ],
+  "variant_runs_root": "/Users/simone/Documents/Dunkest/data/workspaces/dunkest_gw1_20261018/predictions/strategy_variants_20261018T124836Z_e475d5d9",
+  "comparison_policy": "Identical frozen player/coach forecasts and snapshot bytes across variants. Only objective/risk penalty and whether corrected expected plusvalenza enters optimization differ. No actual outcomes read.",
+  "limitation": "Uncorrected plusvalenza is reconstructed by subtracting the stored CR bias correction from the archived corrected expectation; because the output was quantized to 0.1 CR, this is an ablation approximation, not an exact refit of the legacy model."
+}
