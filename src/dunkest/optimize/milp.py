@@ -17,20 +17,48 @@ from dunkest.rules.roster import FORMATIONS, RosterRules, player_contribution_mu
 # uncertain participation remain candidates: expected_pdk already includes
 # P(play), and P10/P50/P90 use the zero-if-absent mixture from uncertainty.py.
 MIN_PLAY_PROB = 0.0
-# Player outcomes share pace and game-script shocks. Use a modest common
-# correlation instead of summing every individual quantile as if correlation
-# were exactly one.
-TEAM_PLAYER_SCORE_CORRELATION = 0.15
+# Historical walk-forward residuals suggest a small shared game-level component.
+# Dependence must be applied only within the same NBA fixture, not across every
+# player in a fantasy roster. This remains a diagnostic approximation until
+# complete official pre-lock lineup outcomes support direct portfolio calibration.
+TEAM_PLAYER_SCORE_CORRELATION = 0.01
 
 
 def _portfolio_spread(values: list[float], correlation: float = TEAM_PLAYER_SCORE_CORRELATION) -> float:
-    """Combine individual one-sided spreads under a common pairwise correlation."""
+    """Combine one-sided spreads under a common pairwise correlation."""
     if not values:
         return 0.0
     rho = float(max(0.0, min(1.0, correlation)))
     squares = float(sum(value * value for value in values))
     common = float(sum(values)) ** 2
     return float(((1.0 - rho) * squares + rho * common) ** 0.5)
+
+
+def _grouped_portfolio_spread(
+    values: list[float],
+    groups: list[object],
+    correlation: float = TEAM_PLAYER_SCORE_CORRELATION,
+) -> float:
+    """Combine within-fixture spreads; treat distinct fixtures as independent.
+
+    A missing fixture ID is assigned a unique group so unrelated records are
+    never spuriously correlated. Correlation is only applied to players/coaches
+    sharing a verified NBA game ID.
+    """
+    if len(values) != len(groups):
+        raise ValueError("Portfolio spread values and group IDs must have equal length.")
+    if not values:
+        return 0.0
+    grouped: dict[str, list[float]] = {}
+    for index, (value, group) in enumerate(zip(values, groups)):
+        missing = group is None or pd.isna(group) or str(group).strip() == ""
+        key = f"__missing_fixture_{index}" if missing else str(group).strip()
+        grouped.setdefault(key, []).append(float(value))
+    group_variances = [
+        _portfolio_spread(group_values, correlation) ** 2
+        for group_values in grouped.values()
+    ]
+    return float(sum(group_variances) ** 0.5)
 
 
 def _binary_variable(problem: pulp.LpProblem, name: str):
@@ -684,6 +712,7 @@ def _solve_once(
     p50_sum = 0.0
     lower_spreads: list[float] = []
     upper_spreads: list[float] = []
+    spread_groups: list[object] = []
     for i in sel:
         ep = float(df.loc[i, "expected_pdk"])
         p10 = float(df.loc[i].get("p10", ep))
@@ -702,6 +731,7 @@ def _solve_once(
         p50_sum += p50 * mult
         lower_spreads.append(max(p50 - p10, 0.0) * mult)
         upper_spreads.append(max(p90 - p50, 0.0) * mult)
+        spread_groups.append(df.loc[i].get("nba_game_id"))
 
     budget_used = float(sel_df["cr"].sum()) + coach_cr
     num_trans = transfer_count(
@@ -710,9 +740,10 @@ def _solve_once(
 
     lower_spreads.append(max(coach_p50 - coach_p10, 0.0))
     upper_spreads.append(max(coach_p90 - coach_p50, 0.0))
+    spread_groups.append(coach_df.loc[j_sel].get("nba_game_id") if m else None)
     team_p50 = p50_sum + coach_p50 - num_trans * settings.transfer_penalty
-    team_p10 = team_p50 - _portfolio_spread(lower_spreads)
-    team_p90 = team_p50 + _portfolio_spread(upper_spreads)
+    team_p10 = team_p50 - _grouped_portfolio_spread(lower_spreads, spread_groups)
+    team_p90 = team_p50 + _grouped_portfolio_spread(upper_spreads, spread_groups)
     if dynamic_turn_mode:
         turn_lineups = {}
         for turn in turn_values:

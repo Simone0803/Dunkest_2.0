@@ -1,0 +1,229 @@
+{
+  "created_utc": "2026-10-18T13:26:26.067843+00:00",
+  "source": "reports/audit/dunkest_multiseason_production_ensemble_walk_forward_20261018_v2_predictions.csv",
+  "candidate": "all_prior_seasons_low_history_weighted",
+  "test_seasons_used_for_interval_evaluation": [
+    "2023-24",
+    "2024-25"
+  ],
+  "calibration_policy": "strictly earlier walk-forward seasons; prediction-score bands chosen from forecast only; band quantiles shrunk toward pooled residual quantiles with n/(n+1000)",
+  "prospective_holdout_policy": "2025/26 and frozen 2026/27 GW1 excluded",
+  "interval_folds": [
+    {
+      "test_season": "2023-24",
+      "calibration_seasons": [
+        "2022-23"
+      ],
+      "calibration_rows": 19165,
+      "test_rows": 18927,
+      "pooled_q10_q50_q90_error": [
+        -13.256806178802536,
+        1.3035788882389578,
+        10.766806747904596
+      ],
+      "bands": [
+        {
+          "band": "<5",
+          "n_calibration": 1074,
+          "n_test": 1574,
+          "shrinkage_weight": 0.5178399228543876,
+          "q10_q50_q90_error": [
+            -10.765003088201404,
+            1.2584203278849138,
+            7.656022501843127
+          ]
+        },
+        {
+          "band": "5-10",
+          "n_calibration": 4385,
+          "n_test": 4156,
+          "shrinkage_weight": 0.8142989786443825,
+          "q10_q50_q90_error": [
+            -10.479315687215303,
+            1.881737566883294,
+            8.416324576469556
+          ]
+        },
+        {
+          "band": "10-15",
+          "n_calibration": 4873,
+          "n_test": 4474,
+          "shrinkage_weight": 0.8297292695385663,
+          "q10_q50_q90_error": [
+            -12.15259392625953,
+            1.7110906393012755,
+            10.636773995572419
+          ]
+        },
+        {
+          "band": "15-20",
+          "n_calibration": 3381,
+          "n_test": 3317,
+          "shrinkage_weight": 0.7717416115042228,
+          "q10_q50_q90_error": [
+            -14.183571208038261,
+            0.681243171735757,
+            11.699849288299266
+          ]
+        },
+        {
+          "band": "20-25",
+          "n_calibration": 2344,
+          "n_test": 2257,
+          "shrinkage_weight": 0.7009569377990431,
+          "q10_q50_q90_error": [
+            -14.781053939061364,
+            0.7939116282402752,
+            12.516487730523426
+          ]
+        },
+        {
+          "band": "25+",
+          "n_calibration": 3108,
+          "n_test": 3149,
+          "shrinkage_weight": 0.7565725413826679,
+          "q10_q50_q90_error": [
+            -15.949063547631315,
+            0.2806499264596055,
+            14.242864997090093
+          ]
+        }
+      ]
+    },
+    {
+      "test_season": "2024-25",
+      "calibration_seasons": [
+        "2022-23",
+        "2023-24"
+      ],
+      "calibration_rows": 38092,
+      "test_rows": 19590,
+      "pooled_q10_q50_q90_error": [
+        -13.329584597466445,
+        1.2782822713200566,
+        10.701921538511248
+      ],
+      "bands": [
+        {
+          "band": "<5",
+          "n_calibration": 2648,
+          "n_test": 1720,
+          "shrinkage_weight": 0.7258771929824561,
+          "q10_q50_q90_error": [
+            -9.081822882380699,
+            1.4909001659481436,
+            6.425195308125277
+          ]
+        },
+        {
+          "band": "5-10",
+          "n_calibration": 8541,
+          "n_test": 3942,
+          "shrinkage_weight": 0.8951891835237397,
+          "q10_q50_q90_error": [
+            -10.060379396108441,
+            1.9395434695292997,
+            8.174023996458814
+          ]
+        },
+        {
+          "band": "10-15",
+          "n_calibration": 9347,
+          "n_test": 4906,
+          "shrinkage_weight": 0.9033536290712284,
+          "q10_q50_q90_error": [
+            -12.128236034123239,
+            1.4660142249237544,
+            10.541828123083253
+          ]
+        },
+        {
+          "band": "15-20",
+          "n_calibration": 6698,
+          "n_test": 3504,
+          "shrinkage_weight": 0.8700961288646402,
+          "q10_q50_q90_error": [
+            -14.461302144833343,
+            0.6946951376865662,
+            11.84944047032424
+          ]
+        },
+        {
+          "band": "20-25",
+          "n_calibration": 4601,
+          "n_test": 2215,
+          "shrinkage_weight": 0.8214604534904482,
+          "q10_q50_q90_error": [
+            -15.230340507731722,
+            0.7153009176313743,
+            12.813551342179665
+          ]
+        },
+        {
+          "band": "25+",
+          "n_calibration": 6257,
+          "n_test": 3303,
+          "shrinkage_weight": 0.862202011850627,
+          "q10_q50_q90_error": [
+            -16.556485607038915,
+            0.08318114509666141,
+            14.729921064288359
+          ]
+        }
+      ]
+    }
+  ],
+  "game_cluster_diagnostics": [
+    {
+      "test_season": "2022-23",
+      "games_with_at_least_8_players": 1042,
+      "player_rows": 19165,
+      "mean_players_per_game": 18.392514395393473,
+      "mean_game_residual_pred_minus_actual": -0.10476816675033115,
+      "sd_game_mean_residual": 2.5821450040729705,
+      "within_game_residual_sd": 9.718895079835214,
+      "anova_icc_approx": 0.007174009629669721,
+      "game_mean_residual_bootstrap_95_low": -0.25931578357482665,
+      "game_mean_residual_bootstrap_95_high": 0.04911832301412614
+    },
+    {
+      "test_season": "2023-24",
+      "games_with_at_least_8_players": 1012,
+      "player_rows": 18920,
+      "mean_players_per_game": 18.695652173913043,
+      "mean_game_residual_pred_minus_actual": -0.3253278349740472,
+      "sd_game_mean_residual": 2.4865502680212295,
+      "within_game_residual_sd": 9.71456404325619,
+      "anova_icc_approx": 0.005658190198508477,
+      "game_mean_residual_bootstrap_95_low": -0.4702417667337337,
+      "game_mean_residual_bootstrap_95_high": -0.17402703346257575
+    },
+    {
+      "test_season": "2024-25",
+      "games_with_at_least_8_players": 1036,
+      "player_rows": 19576,
+      "mean_players_per_game": 18.895752895752896,
+      "mean_game_residual_pred_minus_actual": -0.2725866530971944,
+      "sd_game_mean_residual": 2.6132806768805423,
+      "within_game_residual_sd": 9.73426568035112,
+      "anova_icc_approx": 0.011455638017240593,
+      "game_mean_residual_bootstrap_95_low": -0.43313320599137234,
+      "game_mean_residual_bootstrap_95_high": -0.12106944230001633
+    }
+  ],
+  "workstream_status": {
+    "1_oof_quantile_calibration": "evaluated as an additional strictly past-only score-band challenger; no production promotion without repeated coverage and width gains",
+    "2_joint_scenario_simulation": "game-level common-shock diagnostics produced; full joint Monte Carlo awaits a validated dependence model and complete pre-lock inputs",
+    "3_risk_objective_tuning": "blocked for certification: historical lineup inputs/outcomes are not complete enough for a leakage-free lineup backtest; no risk_lambda selected",
+    "4_minutes_role_stability": "existing walk-forward minute model improves MAE over prev5 (4.983 vs 5.127 min), but prior downstream tests did not justify replacing the PDK projection; retain shadow-only status"
+  },
+  "production_point_predictions_changed": false,
+  "lineup_selection_objective_changed": false,
+  "lineup_interval_aggregation_changed": "Within-fixture dependence is now aggregated only for players/coaches sharing the same verified nba_game_id; different fixtures are treated as independent. Provisional within-fixture rho=0.01 is grounded in historical OOS game-cluster ICC diagnostics, but portfolio coverage remains uncertified without authentic full-lineup outcomes.",
+  "limitations": [
+    "These are player-game OOS diagnostics, not certified historical full-lineup outcomes.",
+    "Game-level residual ICC is a method-of-moments diagnostic, not proof of a universal correlation parameter.",
+    "A narrower interval is not accepted unless nominal 80% coverage remains near 80%.",
+    "The new grouped portfolio interval calculation changes reported lineup uncertainty, not player forecasts or lineup selection; it must be checked against prospective realized lineups after the frozen test cutoff."
+  ]
+}
