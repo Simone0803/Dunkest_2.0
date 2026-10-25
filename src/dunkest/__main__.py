@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shlex
+import shutil
+import subprocess
+import sys
 from datetime import datetime, timezone
 from math import isfinite
 from pathlib import Path
@@ -23,6 +28,43 @@ from dunkest.pipeline.season_opener import run_season_opener
 from dunkest.names import player_key
 
 
+def _prepare_and_open_current_roster(roster_path: Path) -> None:
+    """Open the current roster for editing before a post-opener run."""
+    roster_path = roster_path.expanduser().resolve()
+    roster_path.parent.mkdir(parents=True, exist_ok=True)
+    if not roster_path.exists():
+        example = Path(__file__).resolve().parents[2] / "config" / "roster.example.yaml"
+        if example.is_file():
+            shutil.copyfile(example, roster_path)
+        else:
+            roster_path.write_text(
+                "budget: null # inserisci il budget CR totale attuale\n"
+                "players:\n  - Inserisci nome giocatore 1\n"
+                "coach: Inserisci nome coach\n",
+                encoding="utf-8",
+            )
+
+    # A configured editor can be a terminal editor (EDITOR=nano) or a GUI
+    # editor with a wait option (for example VISUAL="code --wait").
+    editor = os.environ.get("VISUAL") or os.environ.get("EDITOR")
+    if editor:
+        subprocess.run([*shlex.split(editor), str(roster_path)], check=False)
+        return
+
+    if sys.platform == "darwin":
+        opener = ["open", "-t", str(roster_path)]
+    elif os.name == "nt":
+        os.startfile(str(roster_path))  # type: ignore[attr-defined]
+        opener = []
+    else:
+        opener = ["xdg-open", str(roster_path)]
+
+    if opener:
+        subprocess.Popen(opener)
+    if sys.stdin.isatty():
+        input(f"\nModifica e salva {roster_path}, poi premi Invio per continuare... ")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="dunkest")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -34,7 +76,10 @@ def main() -> None:
     p_run = sub.add_parser("run", help="Predict and optimize next gameweek")
     p_run.add_argument("--giornata", type=int, required=True)
     p_run.add_argument("--turno", type=int, default=None, help="Compatibilità legacy; lo scraping acquisisce sempre l'intera Giornata")
-    p_run.add_argument("--budget", type=float, default=None)
+    p_run.add_argument(
+        "--budget", type=float, default=None,
+        help="sovrascrive il budget letto dal file rosa",
+    )
     p_run.add_argument("--roster", type=Path, default=None)
     p_run.add_argument("--transfer-penalty", type=float, default=None)
     p_run.add_argument("--config", type=Path, default=None)
@@ -140,6 +185,7 @@ def main() -> None:
             solutions,
             meta.get("model_artifact_metadata"),
             run_metadata={key: value for key, value in meta.items() if key != "model_artifact_metadata"},
+            coach_forecasts=coach_df,
         )
         market.to_parquet(out / "opening_market.parquet", index=False)
         coach_df.to_parquet(out / "coach_predictions.parquet", index=False)
@@ -164,28 +210,49 @@ def main() -> None:
         # The Lineups scraper always captures the complete gameweek in one
         # browser session; --turno is accepted only for backward compatibility.
         settings.target_dunkest_turn = None
-        if args.giornata > 1 and args.budget is None:
-            parser.error(
-                "dalla giornata 2 devi indicare --budget con i crediti CR totali attualmente "
-                "disponibili per costruire la rosa"
-            )
         if args.budget is not None:
             if not isfinite(args.budget) or args.budget <= 0:
                 parser.error("--budget deve essere un numero finito e maggiore di zero")
             settings.budget = args.budget
-        if args.giornata > 1 and not args.roster:
-            parser.error("dalla giornata 2 devi indicare --roster con i 10 giocatori e il coach attuali")
-        if args.roster:
+        roster_path = args.roster
+        open_roster_editor = False
+        if args.giornata > 1 and roster_path is None:
+            # Interactive runs default to the editable local roster file.
+            # Non-interactive/scripted runs retain an explicit --roster requirement.
+            if not sys.stdin.isatty():
+                parser.error(
+                    "dalla giornata 2 devi indicare --roster con i 10 giocatori e il coach attuali"
+                )
+            roster_path = Path("config/current_roster.yaml")
+            open_roster_editor = True
+        if open_roster_editor:
             try:
-                players, coach = load_roster_yaml(args.roster)
+                _prepare_and_open_current_roster(roster_path)
+            except (OSError, subprocess.SubprocessError) as exc:
+                parser.error(f"impossibile aprire il file della rosa {roster_path}: {exc}")
+        if roster_path:
+            try:
+                players, coach, roster_budget = load_roster_yaml(roster_path)
             except (OSError, ValueError, TypeError) as exc:
-                parser.error(f"file --roster non valido: {exc}")
+                parser.error(f"file rosa non valido ({roster_path}): {exc}")
             if args.giornata > 1:
                 if len(players) != 10 or not isinstance(coach, str) or not coach.strip():
                     parser.error("il file --roster deve contenere esattamente 10 giocatori e il coach attuale")
                 normalized = [player_key(p) for p in players]
                 if any(not name for name in normalized) or len(set(normalized)) != 10:
                     parser.error("la rosa attuale contiene nomi vuoti o giocatori duplicati dopo la normalizzazione")
+                if args.budget is None:
+                    try:
+                        budget = float(roster_budget)
+                    except (TypeError, ValueError):
+                        parser.error(
+                            f"aggiungi 'budget: <CR totali>' a {roster_path} oppure passa --budget"
+                        )
+                    if not isfinite(budget) or budget <= 0:
+                        parser.error(
+                            f"il budget in {roster_path} deve essere finito e maggiore di zero"
+                        )
+                    settings.budget = budget
             players = [str(player).strip() for player in players]
             settings.current_roster = players
             settings.current_coach = str(coach).strip() if isinstance(coach, str) and coach.strip() else None
@@ -238,7 +305,9 @@ def main() -> None:
         for i, sol in enumerate(solutions, start=1):
             sol.rank = i
         print_matchday_report(settings, preds, coach_df, solutions)
-        out = save_run_artifacts(settings, preds, solutions, models)
+        out = save_run_artifacts(
+            settings, preds, solutions, models, coach_forecasts=coach_df
+        )
         CONSOLE.print(f"\n[bold green]Artefatti salvati[/bold green]  {out}")
         return
 

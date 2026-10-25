@@ -5,6 +5,7 @@ historical_pdk_blend_weight: 0.20
 # Preset: prima giornata NBA 2026/27, squadra nuova (95 CR, trasferimenti gratis)
 season: "2026-27"
 season_id: "26"
+dunkest_stats_season_id: "29"
 opening_prior_season_id: "25"
 nba_season_start: "2026-10-20"
 nba_season_end: "2027-06-30"

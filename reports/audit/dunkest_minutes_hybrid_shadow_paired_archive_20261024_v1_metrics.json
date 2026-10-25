@@ -1,0 +1,317 @@
+{
+  "run_id": "20261018T120440Z_88d2ef45",
+  "season_id": "26",
+  "season": "2026-27",
+  "gameweek": 1,
+  "model_code_git_hash": "de36ce03f6fdbb74bd2ac1c593e5bf7ad8c6406a",
+  "forecast_timestamp_utc": "2026-10-18T12:04:40.936984+00:00",
+  "latest_metadata_timestamp_utc": "2026-10-18T12:04:37.304519+00:00",
+  "inputs_with_acquisition_timestamp": 17,
+  "inputs_total": 30,
+  "official_cutoff_utc": null,
+  "manifest_pre_lock_eligible": false,
+  "forecast_source": "data/archives/pre_lock/season_id=26/gw=1/20261018T120440Z_88d2ef45/predictions.parquet",
+  "forecast_manifest_sha256": "e6b3c88db6abce4a683a2b1b8b89bb61a28f490f871fc7d7c9b9253c61de2927",
+  "outcome_source": "data/processed/player_game_logs_2026-27.parquet",
+  "outcome_source_sha256": "b74e46b0df459ce4505998046686de5527d25876ac1f1a5c0fd3585e5bcbbc1d",
+  "target_game_dates": [
+    "2026-10-20",
+    "2026-10-21",
+    "2026-10-22"
+  ],
+  "coverage": {
+    "n_candidates": 528,
+    "n_candidates_with_hybrid": 528,
+    "n_candidates_with_hgb": 443,
+    "n_candidates_with_observed_log_row": 295,
+    "n_paired_scored": 289,
+    "n_paired_players": 289,
+    "n_paired_games": 16,
+    "n_missing_log_outcome": 233,
+    "n_shadow_missing_among_observed": 6,
+    "n_zero_minutes_verified_from_logs": 0,
+    "n_absent_players_not_scored_as_zero": 233
+  },
+  "metrics": [
+    {
+      "cohort": "paired_all_hybrid",
+      "n_records": 289,
+      "n_players": 289,
+      "n_games": 16,
+      "mae": 7.218202144514979,
+      "rmse": 9.320932969931098,
+      "bias_pred_minus_actual": -5.392591427863509
+    },
+    {
+      "cohort": "paired_all_hgb",
+      "n_records": 289,
+      "n_players": 289,
+      "n_games": 16,
+      "mae": 5.225174177884249,
+      "rmse": 6.567813422371501,
+      "bias_pred_minus_actual": -0.704976195879633
+    },
+    {
+      "cohort": "history_lt5_hybrid",
+      "n_records": 1,
+      "n_players": 1,
+      "n_games": 1,
+      "mae": 7.305479840434886,
+      "rmse": 7.305479840434886,
+      "bias_pred_minus_actual": -7.305479840434886
+    },
+    {
+      "cohort": "history_lt5_hgb",
+      "n_records": 1,
+      "n_players": 1,
+      "n_games": 1,
+      "mae": 4.82131726811222,
+      "rmse": 4.82131726811222,
+      "bias_pred_minus_actual": -4.82131726811222
+    },
+    {
+      "cohort": "history_ge5_hybrid",
+      "n_records": 288,
+      "n_players": 288,
+      "n_games": 16,
+      "mae": 7.2178990969597026,
+      "rmse": 9.327172387624172,
+      "bias_pred_minus_actual": -5.385949454208748
+    },
+    {
+      "cohort": "history_ge5_hgb",
+      "n_records": 288,
+      "n_players": 288,
+      "n_games": 16,
+      "mae": 5.226576458820957,
+      "rmse": 6.573069250860556,
+      "bias_pred_minus_actual": -0.690683344934381
+    }
+  ],
+  "subgroup_metrics": {
+    "role": [
+      {
+        "group": "C",
+        "hybrid": {
+          "cohort": "C",
+          "n_records": 51,
+          "n_players": 51,
+          "n_games": 16,
+          "mae": 5.740505472170949,
+          "rmse": 7.488677598679424,
+          "bias_pred_minus_actual": -2.583913374487612
+        },
+        "hgb": {
+          "cohort": "C",
+          "n_records": 51,
+          "n_players": 51,
+          "n_games": 16,
+          "mae": 5.833450462754543,
+          "rmse": 7.14909433196651,
+          "bias_pred_minus_actual": 0.232677363370011
+        }
+      },
+      {
+        "group": "F",
+        "hybrid": {
+          "cohort": "F",
+          "n_records": 113,
+          "n_players": 113,
+          "n_games": 16,
+          "mae": 7.341570952456472,
+          "rmse": 9.726870685700117,
+          "bias_pred_minus_actual": -5.126697579579492
+        },
+        "hgb": {
+          "cohort": "F",
+          "n_records": 113,
+          "n_players": 113,
+          "n_games": 16,
+          "mae": 4.883746672665756,
+          "rmse": 6.172198637662547,
+          "bias_pred_minus_actual": -0.5036081475094342
+        }
+      },
+      {
+        "group": "G",
+        "hybrid": {
+          "cohort": "G",
+          "n_records": 125,
+          "n_players": 125,
+          "n_games": 16,
+          "mae": 7.709576984452234,
+          "rmse": 9.615407350798812,
+          "bias_pred_minus_actual": -6.778900112489627
+        },
+        "hgb": {
+          "cohort": "G",
+          "n_records": 125,
+          "n_players": 125,
+          "n_games": 16,
+          "mae": 5.285647918374686,
+          "rmse": 6.6662822814253255,
+          "bias_pred_minus_actual": -1.2695755637801471
+        }
+      }
+    ],
+    "lineup_group": [
+      {
+        "group": "",
+        "hybrid": {
+          "cohort": "",
+          "n_records": 16,
+          "n_players": 16,
+          "n_games": 11,
+          "mae": 16.33475414131418,
+          "rmse": 18.673176721508952,
+          "bias_pred_minus_actual": -16.251526332804065
+        },
+        "hgb": {
+          "cohort": "",
+          "n_records": 16,
+          "n_players": 16,
+          "n_games": 11,
+          "mae": 3.3962041582683673,
+          "rmse": 4.0263275345587015,
+          "bias_pred_minus_actual": -0.4093350954545147
+        }
+      },
+      {
+        "group": "PANCHINA",
+        "hybrid": {
+          "cohort": "PANCHINA",
+          "n_records": 146,
+          "n_players": 146,
+          "n_games": 16,
+          "mae": 8.025800135417454,
+          "rmse": 9.970435926122368,
+          "bias_pred_minus_actual": -6.37798541768038
+        },
+        "hgb": {
+          "cohort": "PANCHINA",
+          "n_records": 146,
+          "n_players": 146,
+          "n_games": 16,
+          "mae": 5.644743898608614,
+          "rmse": 7.069311230847567,
+          "bias_pred_minus_actual": 0.8574469290539434
+        }
+      },
+      {
+        "group": "QUINTETTO",
+        "hybrid": {
+          "cohort": "QUINTETTO",
+          "n_records": 127,
+          "n_players": 127,
+          "n_games": 16,
+          "mae": 5.14124042309334,
+          "rmse": 6.284250246864676,
+          "bias_pred_minus_actual": -2.8917214987901874
+        },
+        "hgb": {
+          "cohort": "QUINTETTO",
+          "n_records": 127,
+          "n_players": 127,
+          "n_games": 16,
+          "mae": 4.973255603774774,
+          "rmse": 6.21821016310986,
+          "bias_pred_minus_actual": -2.5383937852269085
+        }
+      }
+    ]
+  },
+  "observed_date_slices_not_independent_forecast_folds": [
+    {
+      "date": "2026-10-20",
+      "hybrid": {
+        "cohort": "date",
+        "n_records": 62,
+        "n_players": 62,
+        "n_games": 3,
+        "mae": 5.870113281915552,
+        "rmse": 7.634435226923555,
+        "bias_pred_minus_actual": -5.099308498111195
+      },
+      "hgb": {
+        "cohort": "date",
+        "n_records": 62,
+        "n_players": 62,
+        "n_games": 3,
+        "mae": 4.6699419621595295,
+        "rmse": 5.520331411436481,
+        "bias_pred_minus_actual": -1.0926724707591824
+      }
+    },
+    {
+      "date": "2026-10-21",
+      "hybrid": {
+        "cohort": "date",
+        "n_records": 210,
+        "n_players": 210,
+        "n_games": 11,
+        "mae": 7.633583464498032,
+        "rmse": 9.78650832844875,
+        "bias_pred_minus_actual": -5.5056113936921625
+      },
+      "hgb": {
+        "cohort": "date",
+        "n_records": 210,
+        "n_players": 210,
+        "n_games": 11,
+        "mae": 5.444668520148584,
+        "rmse": 6.903947410250906,
+        "bias_pred_minus_actual": -0.5897767559889602
+      }
+    },
+    {
+      "date": "2026-10-22",
+      "hybrid": {
+        "cohort": "date",
+        "n_records": 17,
+        "n_players": 17,
+        "n_games": 2,
+        "mae": 7.0035805142046215,
+        "rmse": 9.015372301712222,
+        "bias_pred_minus_actual": -5.066082534959161
+      },
+      "hgb": {
+        "cohort": "date",
+        "n_records": 17,
+        "n_players": 17,
+        "n_games": 2,
+        "mae": 4.538738030791453,
+        "rmse": 5.777336666137257,
+        "bias_pred_minus_actual": -0.71407698026253
+      }
+    }
+  ],
+  "paired_delta_hgb_minus_hybrid_bootstrap_95_ci_by_nba_game": {
+    "mae": [
+      -2.4938048545816374,
+      -1.5301669096104507
+    ],
+    "rmse": [
+      -3.453050993276981,
+      -2.0590312652674947
+    ],
+    "bias": [
+      4.1268414118318715,
+      5.260367221384516
+    ]
+  },
+  "bootstrap": {
+    "method": "paired resampling of nba_game_id clusters",
+    "replicates": 10000,
+    "seed": 20261024
+  },
+  "limitations": [
+    "One archived target GW only; this is not a multi-season walk-forward evaluation.",
+    "Archive manifest marks pre_lock_eligible=false because fixture mapping freshness and Lineups snapshot validation failed.",
+    "NBA logs contain rows only for observed player-game appearances here; absent candidates remain unlabelled, not zero minutes.",
+    "Forecast output does not preserve canonical Dunkest player IDs; identity uses a unique normalized name/team/game key.",
+    "No explicit official lock timestamp is present, so pre-lock certification is not claimed.",
+    "Only 19 of 28 manifest input entries have fetched_at metadata; feature timing is not fully certified although all available acquisition timestamps precede the forecast.",
+    "Team changes and role/rotation changes cannot be established against archived prior snapshots for this one target round.",
+    "No faithful counterfactual PDK forecast can be reconstructed by substituting shadow minutes while holding the production predictor fixed."
+  ]
+}

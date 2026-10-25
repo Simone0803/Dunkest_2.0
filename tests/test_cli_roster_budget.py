@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 
+import pandas as pd
 import pytest
 
 from dunkest.__main__ import main
@@ -12,19 +13,43 @@ def _stub_settings(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Settings, "from_yaml", classmethod(lambda cls, path=None: Settings()))
 
 
-def test_run_after_gameweek_one_requires_explicit_budget(monkeypatch, capsys):
-    _stub_settings(monkeypatch)
+def test_run_after_gameweek_one_uses_budget_from_roster(monkeypatch, tmp_path):
+    import dunkest.__main__ as cli
+    from dunkest.data.dunkest import fixtures, lineups_browser
+
+    settings = Settings(data_dir=str(tmp_path))
+    monkeypatch.setattr(
+        Settings, "from_yaml", classmethod(lambda cls, path=None: settings)
+    )
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+    roster = tmp_path / "current_roster.yaml"
+    roster.write_text(
+        "budget: 96.1\nplayers:\n" + "".join(f"  - Player {i}\n" for i in range(10)) + "coach: Coach\n",
+        encoding="utf-8",
+    )
     monkeypatch.setattr(
         sys,
         "argv",
-        ["dunkest", "run", "--giornata", "2", "--roster", "config/current_roster.yaml"],
+        ["dunkest", "run", "--giornata", "2", "--roster", str(roster)],
+    )
+    monkeypatch.setattr(lineups_browser, "scrape_lineups_market", lambda *a, **k: None)
+    monkeypatch.setattr(
+        fixtures, "save_current_capture_fixture_mapping",
+        lambda *a, **k: pd.DataFrame([{"verified": True}]),
     )
 
-    with pytest.raises(SystemExit) as exc:
-        main()
+    class StopBeforeTraining(Exception):
+        pass
 
-    assert exc.value.code == 2
-    assert "--budget" in capsys.readouterr().err
+    def stop_before_training(received):
+        assert received.budget == 96.1
+        assert len(received.current_roster) == 10
+        raise StopBeforeTraining
+
+    monkeypatch.setattr(cli, "run_train", stop_before_training)
+
+    with pytest.raises(StopBeforeTraining):
+        main()
 
 
 @pytest.mark.parametrize("budget", ["0", "-1", "nan", "inf"])

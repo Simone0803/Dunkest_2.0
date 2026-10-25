@@ -1,5 +1,6 @@
 from __future__ import annotations
 import importlib.util
+import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -26,12 +27,152 @@ def make_run(tmp_path: Path, *, unknown_fixture_time: bool = False) -> Path:
     (run / "manifest.json").write_text(json.dumps(manifest))
     (run / "predictions.parquet").write_bytes(b"prediction-bytes")
     (run / "lineups.parquet").write_bytes(b"lineup-bytes")
+    forecast_bytes = b"candidate-forecast-bytes"
+    (run / "player_forecast_snapshot.parquet").write_bytes(forecast_bytes)
+    import pandas as pd
+    feature_path = run / "runtime_feature_snapshot.parquet"
+    pd.DataFrame([{
+        "forecast_record_id": "record-1", "dunkest_player_id": "dk-1",
+        "canonical_player_id": "dk-1", "nba_game_id": "nba-1",
+        "player_key": "player-one", "feature_match_status": "missing",
+        "candidate_key_count": 1, "source_feature_row_count": 0,
+    }]).to_parquet(feature_path, index=False)
+    manifest["player_forecast_snapshot"] = {
+        "path": "player_forecast_snapshot.parquet",
+        "sha256": hashlib.sha256(forecast_bytes).hexdigest(),
+        "candidate_rows": 1,
+        "certification": {"pre_lock_eligible": False},
+    }
+    manifest["runtime_feature_snapshot"] = {
+        "path": feature_path.name,
+        "sha256": hashlib.sha256(feature_path.read_bytes()).hexdigest(),
+        "candidate_rows": 1,
+        "source_input_dataset_identifier": "test-inputs",
+        "source_input_provenance": [],
+        "certification_status": "valid",
+    }
+    manifest["dataset_identifier"] = "test-inputs"
+    (run / "manifest.json").write_text(json.dumps(manifest))
     fetched = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
     for name in archive.SNAPSHOTS:
-        (snap / name).write_bytes(("snapshot:" + name).encode())
+        if name.startswith("dunkest_players_"):
+            import pandas as pd
+            pd.DataFrame([{
+                "player_name": f"Player {i}", "cr": 5.0, "team_code": "BOS", "position": "G"
+            } for i in range(410)]).to_parquet(snap / name, index=False)
+        else:
+            (snap / name).write_bytes(("snapshot:" + name).encode())
         if name in archive.FRESHNESS_REQUIRED:
             (snap / (name + ".meta.json")).write_text(json.dumps({"fetched_at": fetched}))
     return run
+
+
+def make_versioned_snapshot_run(tmp_path: Path) -> tuple[Path, dict]:
+    import pandas as pd
+
+    run = make_run(tmp_path)
+    manifest = archive.load_json(run / "manifest.json")
+    run_at = datetime.fromisoformat(manifest["timestamp"])
+    forecast_at = run_at - timedelta(seconds=30)
+    cutoff = run_at + timedelta(hours=2)
+    forecast_id = "player-record-1"
+    config_hash, input_hash, source_hash = "b" * 64, "c" * 64, "d" * 64
+    player = pd.DataFrame([{
+        "forecast_run_id": manifest["run_id"], "forecast_record_id": forecast_id,
+        "forecast_schema_version": 1, "player_key": "player-one",
+        "dunkest_player_id": "dk-1", "canonical_player_id": "dk-1",
+        "canonical_player_id_source": "dunkest_player_id", "nba_game_id": "nba-1",
+        "dunkest_turn": 1, "forecast_timestamp_utc": forecast_at.isoformat(),
+        "prediction_cutoff_utc": cutoff.isoformat(), "forecast_model_version": "model-v1",
+        "forecast_code_version": "model-v1", "forecast_configuration_sha256": config_hash,
+        "forecast_input_dataset_identifier": input_hash,
+        "forecast_source_fingerprint_sha256": source_hash,
+        "expected_min": 24.0, "expected_min_model_shadow": float("nan"),
+        "pdk_rate_for_projection": 0.5, "p_play": 1.0, "ensemble_pdk": 12.0,
+        "prior_pdk": 11.0, "implied_min": 24.0, "has_history": True, "n_games": 20,
+        "historical_rf_pdk": 12.0, "historical_rf_blend_weight": 0.0,
+        "component_minutes_pdk": 12.0, "component_ensemble_pdk": 12.0,
+        "component_prior_pdk": 11.0, "projection_weight_minutes": 1.0,
+        "projection_weight_ensemble": 0.0, "projection_weight_prior": 0.0,
+        "expected_pdk_conditional": 12.0, "expected_pdk": 12.0,
+    }])
+    runtime = pd.DataFrame([{
+        "forecast_run_id": manifest["run_id"],
+        "forecast_record_id": forecast_id, "dunkest_player_id": "dk-1",
+        "canonical_player_id": "dk-1", "nba_game_id": "nba-1",
+        "player_key": "player-one", "feature_match_status": "matched",
+        "candidate_key_count": 1, "source_feature_row_count": 1,
+        "minutes_shadow_status": "unavailable", "forecast_timestamp_utc": forecast_at,
+        "runtime_feature_schema_version": 1,
+    }])
+    shadow = pd.DataFrame([{
+        "forecast_run_id": manifest["run_id"], "forecast_record_id": forecast_id,
+        "canonical_player_id": "dk-1", "dunkest_player_id": "dk-1",
+        "player_key": "player-one", "nba_game_id": "nba-1", "dunkest_turn": 1,
+        "forecast_timestamp_utc": forecast_at, "prediction_cutoff_utc": cutoff,
+        "forecast_model_version": "model-v1", "forecast_code_version": "code-v1",
+        "forecast_configuration_sha256": config_hash,
+        "forecast_input_dataset_identifier": input_hash,
+        "forecast_source_fingerprint_sha256": source_hash,
+        "expected_min_model_shadow": float("nan"), "minutes_shadow_status": "unavailable",
+        "shadow_forecast_schema_version": 1,
+    }])
+    coaches = pd.DataFrame([{
+        "forecast_run_id": manifest["run_id"], "forecast_record_id": "coach-record-1",
+        "coach_key": "coach-bos", "coach": "Coach BOS", "team": "BOS",
+        "nba_game_id": "nba-1", "dunkest_turn": 1,
+        "forecast_timestamp_utc": forecast_at, "prediction_cutoff_utc": cutoff,
+        "expected_coach_pdk": 10.0, "coach_cr": 8.0,
+        "coach_forecast_schema_version": 1, "forecast_model_version": "model-v1",
+        "forecast_code_version": "model-v1",
+        "forecast_configuration_sha256": config_hash,
+        "forecast_input_dataset_identifier": input_hash,
+        "forecast_source_fingerprint_sha256": source_hash,
+    }])
+    frames = {
+        "player_forecast_snapshot": ("player_forecast_snapshot.parquet", player),
+        "runtime_feature_snapshot": ("runtime_feature_snapshot.parquet", runtime),
+        "shadow_forecast_snapshot": ("shadow_forecast_snapshot.parquet", shadow),
+        "coach_forecast_snapshot": ("coach_forecast_snapshot.parquet", coaches),
+    }
+    descriptors = {}
+    for name, (filename, frame) in frames.items():
+        path = run / filename
+        frame.to_parquet(path, index=False)
+        descriptors[name] = {"path": filename, "sha256": archive.digest(path)}
+    manifest.update({
+        "schema_version": 2,
+        "snapshot_schemas": {
+            "player_forecast": 1, "runtime_features": 1,
+            "shadow_forecast": 1, "coach_forecast": 1,
+        },
+        "archive_status": "complete", "persistence_errors": [],
+        "config_sha256": config_hash, "dataset_identifier": input_hash,
+        "source_fingerprint": {"sha256": source_hash},
+        "player_forecast_snapshot": {
+            **descriptors["player_forecast_snapshot"], "schema_version": 1, "status": "valid",
+            "candidate_rows": 1, "columns": list(player.columns),
+            "forecast_timestamp_utc": forecast_at.isoformat(),
+            "prediction_cutoff_utc": cutoff.isoformat(), "model_version": "model-v1",
+            "certification": {"pre_lock_eligible": False},
+        },
+        "runtime_feature_snapshot": {
+            **descriptors["runtime_feature_snapshot"], "schema_version": 1, "status": "valid",
+            "candidate_rows": 1, "source_input_dataset_identifier": input_hash,
+            "source_input_provenance": [], "certification_status": "valid",
+        },
+        "shadow_forecast_snapshot": {
+            **descriptors["shadow_forecast_snapshot"], "schema_version": 1,
+            "status": "unavailable", "rows": 1, "available_rows": 0,
+            "optimizer_input": False,
+        },
+        "coach_forecast_snapshot": {
+            **descriptors["coach_forecast_snapshot"], "schema_version": 1, "status": "valid",
+            "rows": 1, "columns": list(coaches.columns),
+        },
+    })
+    (run / "manifest.json").write_text(json.dumps(manifest))
+    return run, manifest
 
 
 def test_archive_creates_integrity_manifest_and_registry(tmp_path):
@@ -84,6 +225,60 @@ def test_archive_is_idempotent_but_refuses_mutated_archive(tmp_path):
         assert "integrity check failed" in str(exc)
     else:
         raise AssertionError("mutated archive should fail integrity verification")
+
+
+def test_runtime_feature_snapshot_hash_identity_and_availability_are_checked(tmp_path):
+    import pandas as pd
+
+    run = tmp_path / "run"
+    run.mkdir()
+    candidates = pd.DataFrame([{
+        "forecast_record_id": "record-1", "dunkest_player_id": "dk-1", "nba_game_id": "nba-1",
+        "expected_min_model_shadow": 22.0, "minutes_shadow_status": "available",
+    }])
+    candidates.to_parquet(run / "player_forecast_snapshot.parquet", index=False)
+    features = pd.DataFrame([{
+        "forecast_record_id": "record-1", "dunkest_player_id": "dk-1", "canonical_player_id": "dk-1",
+        "nba_game_id": "nba-1", "player_key": "player-one", "feature_match_status": "matched",
+        "candidate_key_count": 1, "source_feature_row_count": 1,
+        "minutes_shadow_status": "available",
+        "forecast_timestamp_utc": "2030-10-20T15:00:00Z",
+        "runtime_feature__available_at_utc": "2030-10-20T14:00:00Z",
+        "runtime_feature__hgb_input__lag1_nba_min": 20.0,
+    }])
+    feature_path = run / "runtime_feature_snapshot.parquet"
+    features.to_parquet(feature_path, index=False)
+    manifest = {"dataset_identifier": "inputset", "inputs": [], "runtime_feature_snapshot": {
+        "path": feature_path.name, "sha256": archive.digest(feature_path),
+        "candidate_rows": 1, "source_input_dataset_identifier": "inputset",
+        "source_input_provenance": [],
+        "certification_status": "valid",
+    }}
+
+    assert archive.runtime_feature_snapshot_validation(run, manifest)["status"] == "valid"
+
+    features.loc[0, "runtime_feature__available_at_utc"] = "2030-10-20T15:01:00Z"
+    features.to_parquet(feature_path, index=False)
+    manifest["runtime_feature_snapshot"]["sha256"] = archive.digest(feature_path)
+    late = archive.runtime_feature_snapshot_validation(run, manifest)
+    assert late["status"] == "invalid"
+    assert any("after the forecast" in error for error in late["errors"])
+
+
+def test_runtime_feature_snapshot_with_missing_columns_fails_cleanly(tmp_path):
+    import pandas as pd
+
+    run = make_run(tmp_path)
+    feature_path = run / "runtime_feature_snapshot.parquet"
+    features = pd.read_parquet(feature_path).drop(columns=["forecast_record_id"])
+    features.to_parquet(feature_path, index=False)
+    manifest = archive.load_json(run / "manifest.json")
+    manifest["runtime_feature_snapshot"]["sha256"] = archive.digest(feature_path)
+
+    result = archive.runtime_feature_snapshot_validation(run, manifest)
+
+    assert result["status"] == "invalid"
+    assert any("lacks fields" in error for error in result["errors"])
 
 
 def test_missing_required_snapshot_fails_closed(tmp_path):
@@ -373,6 +568,291 @@ def test_independent_reviewer_rechecks_fixture_mapping_not_only_freshness(tmp_pa
     assert result["rechecked_pre_lock_eligible"] is False
 
 
+def test_versioned_snapshot_bundle_validates_all_components_and_hashes(tmp_path):
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "complete"
+    assert all(component["status"] == "valid" for component in result["components"].values())
+    assert result["components"]["shadow_forecast_snapshot"]["rows"] == 1
+
+
+def test_versioned_snapshot_bundle_marks_missing_component_incomplete(tmp_path):
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    (run / "coach_forecast_snapshot.parquet").unlink()
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "incomplete"
+    assert any("coach_forecast_snapshot" in error and "missing" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_detects_hash_mismatch(tmp_path):
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    manifest["runtime_feature_snapshot"]["sha256"] = "0" * 64
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "unverifiable"
+    assert any("hash differs" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_detects_duplicate_ids_and_bad_references(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    player_path = run / "player_forecast_snapshot.parquet"
+    players = pd.read_parquet(player_path)
+    players = pd.concat([players, players], ignore_index=True)
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+    manifest["player_forecast_snapshot"]["candidate_rows"] = 2
+    manifest["player_forecast_snapshot"]["columns"] = list(players.columns)
+    shadow_path = run / "shadow_forecast_snapshot.parquet"
+    shadow = pd.read_parquet(shadow_path)
+    shadow.loc[0, "forecast_record_id"] = "different-record"
+    shadow.to_parquet(shadow_path, index=False)
+    manifest["shadow_forecast_snapshot"]["sha256"] = archive.digest(shadow_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "unverifiable"
+    assert any("duplicated" in error for error in result["errors"])
+    assert any("IDs do not match" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_rejects_timestamps_after_cutoff(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    player_path = run / "player_forecast_snapshot.parquet"
+    players = pd.read_parquet(player_path)
+    late = pd.Timestamp(manifest["player_forecast_snapshot"]["prediction_cutoff_utc"]) + pd.Timedelta(minutes=1)
+    players.loc[0, "forecast_timestamp_utc"] = late.isoformat()
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "unverifiable"
+    assert any("at/after cutoff" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_rejects_unparseable_forecast_timestamp(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    player_path = run / "player_forecast_snapshot.parquet"
+    players = pd.read_parquet(player_path)
+    players.loc[0, "forecast_timestamp_utc"] = "not-a-timestamp"
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "unverifiable"
+    assert any("missing timestamps" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_flags_ambiguous_runtime_mapping(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    runtime_path = run / "runtime_feature_snapshot.parquet"
+    runtime = pd.read_parquet(runtime_path)
+    runtime.loc[0, "feature_match_status"] = "ambiguous_feature_identity"
+    runtime.to_parquet(runtime_path, index=False)
+    manifest["runtime_feature_snapshot"]["sha256"] = archive.digest(runtime_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "mapping_ambiguous"
+    assert any("ambiguous" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_rejects_incomplete_coach_forecast(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    coach_path = run / "coach_forecast_snapshot.parquet"
+    coaches = pd.read_parquet(coach_path).drop(columns=["expected_coach_pdk"])
+    coaches.to_parquet(coach_path, index=False)
+    manifest["coach_forecast_snapshot"]["sha256"] = archive.digest(coach_path)
+    manifest["coach_forecast_snapshot"]["columns"] = list(coaches.columns)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "incomplete"
+    assert any("coach forecast snapshot is incomplete" in error for error in result["errors"])
+
+
+def test_versioned_snapshot_bundle_enforces_shadow_separation(tmp_path):
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    manifest["shadow_forecast_snapshot"]["optimizer_input"] = True
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "unverifiable"
+    assert any("excluded from optimizer" in error for error in result["errors"])
+
+    import pandas as pd
+    shadow_path = run / "shadow_forecast_snapshot.parquet"
+    shadow = pd.read_parquet(shadow_path)
+    shadow["expected_pdk"] = 99.0
+    shadow.to_parquet(shadow_path, index=False)
+    manifest["shadow_forecast_snapshot"]["sha256"] = archive.digest(shadow_path)
+    manifest["shadow_forecast_snapshot"]["optimizer_input"] = False
+    separated = archive.versioned_forecast_snapshot_validation(run, manifest)
+    assert separated["status"] == "unverifiable"
+    assert any("operational PDK prediction" in error for error in separated["errors"])
+
+
+def test_legacy_archive_remains_reviewable_but_is_not_evaluation_ready(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "legacy_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run = make_run(tmp_path)
+    archive_root = tmp_path / "archive"
+    archived = archive.archive_run(run, archive_root, 36)
+
+    result = reviewer.review(Path(archived["archive_path"]), 36)
+
+    assert result["integrity_ok"] is True
+    assert result["status"] == "legacy"
+    assert result["rechecked_pre_lock_eligible"] is False
+
+
+def test_schema_v1_archived_bundle_and_registry_remain_readable_without_rewrite(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "schema_v1_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run = make_run(tmp_path)
+    archive_root = tmp_path / "archive"
+    archived = archive.archive_run(run, archive_root, 36)
+    archive_dir = Path(archived["archive_path"])
+    archive_manifest_path = archive_dir / "archive_manifest.json"
+    archive_manifest = archive.load_json(archive_manifest_path)
+    archive_manifest["schema_version"] = 1
+    archive_manifest.pop("versioned_forecast_snapshot_validation", None)
+    archive_manifest_path.write_text(json.dumps(archive_manifest))
+    registry_path = Path(archived["registry_path"])
+    registry = archive.load_json(registry_path)
+    registry["schema_version"] = 1
+    registry.pop("shadow_forecast_snapshot_sha256", None)
+    registry.pop("coach_forecast_snapshot_sha256", None)
+    registry.pop("versioned_forecast_snapshot_validation", None)
+    registry["archive_manifest_sha256"] = archive.digest(archive_manifest_path)
+    registry_path.write_text(json.dumps(registry))
+    before = {
+        path.relative_to(archive_dir).as_posix(): archive.digest(path)
+        for path in archive_dir.rglob("*") if path.is_file()
+    }
+
+    result = reviewer.review(archive_dir, 36)
+
+    after = {
+        path.relative_to(archive_dir).as_posix(): archive.digest(path)
+        for path in archive_dir.rglob("*") if path.is_file()
+    }
+    assert result["integrity_ok"] is True
+    assert result["status"] == "legacy"
+    assert result["rechecked_pre_lock_eligible"] is False
+    assert after == before
+    assert archive.archive_run(run, archive_root, 36)["status"] == "already_archived_verified"
+
+
+def test_complete_versioned_archive_is_reviewed_but_not_certified_without_lock_evidence(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "complete_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+
+    result = reviewer.review(Path(archived["archive_path"]), 36)
+
+    assert archived["forecast_snapshot_validation"]["status"] == "complete"
+    assert result["integrity_ok"] is True
+    assert result["rechecked_versioned_forecast_snapshot_validation"]["status"] == "complete"
+    assert result["status"] == "not_pre_lock_eligible"
+    assert result["rechecked_pre_lock_eligible"] is False
+
+
+def test_reviewer_never_marks_incomplete_v2_archive_ready(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "incomplete_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    (run / "coach_forecast_snapshot.parquet").unlink()
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+
+    result = reviewer.review(Path(archived["archive_path"]), 36)
+
+    assert archived["pre_lock_eligible"] is False
+    assert result["status"] == "incomplete"
+    assert result["rechecked_pre_lock_eligible"] is False
+    assert result["rechecked_versioned_forecast_snapshot_validation"]["status"] == "incomplete"
+
+
+def test_reviewer_hash_error_raises_instead_of_returning_a_valid_review(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "corrupt_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+    archive_dir = Path(archived["archive_path"])
+    (archive_dir / "coach_forecast_snapshot.parquet").write_bytes(b"tampered")
+
+    with pytest.raises(ValueError, match="Archived file hashes do not match"):
+        reviewer.review(archive_dir, 36)
+
+
+def test_postmatch_gate_accepts_complete_snapshot_bundle_only_as_unverified_diagnostic(tmp_path):
+    pipeline_spec = importlib.util.spec_from_file_location(
+        "complete_bundle_postmatch_gate", ROOT / "scripts/run_dunkest_postmatch_oos_pipeline_v1.py"
+    )
+    pipeline = importlib.util.module_from_spec(pipeline_spec)
+    assert pipeline_spec and pipeline_spec.loader
+    pipeline_spec.loader.exec_module(pipeline)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+
+    checked = pipeline.validate_archive(Path(archived["archive_path"]), allow_ineligible=True)
+
+    assert checked["forecast_snapshot_validation"]["status"] == "complete"
+    assert archived["pre_lock_eligible"] is False
+
+
+def test_postmatch_gate_rejects_incomplete_v2_even_in_diagnostic_mode(tmp_path):
+    pipeline_spec = importlib.util.spec_from_file_location(
+        "incomplete_bundle_postmatch_gate", ROOT / "scripts/run_dunkest_postmatch_oos_pipeline_v1.py"
+    )
+    pipeline = importlib.util.module_from_spec(pipeline_spec)
+    assert pipeline_spec and pipeline_spec.loader
+    pipeline_spec.loader.exec_module(pipeline)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    (run / "coach_forecast_snapshot.parquet").unlink()
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+
+    with pytest.raises(ValueError, match="snapshots are incomplete or unverifiable"):
+        pipeline.validate_archive(Path(archived["archive_path"]), allow_ineligible=True)
+
+
 
 def test_snapshot_names_follow_target_season_and_gameweek(tmp_path):
     run = make_run(tmp_path)
@@ -414,6 +894,41 @@ def test_snapshot_content_validation_rejects_truncated_player_market(tmp_path):
     result = {row["path"]: row for row in archive.snapshot_content_validation(run, manifest)}
     assert result["current_lineups_market.csv"]["status"] == "invalid"
     assert any("too few rows" in err for err in result["current_lineups_market.csv"]["errors"])
+
+
+def test_missing_market_is_archived_for_diagnostics_and_reviewer_keeps_it_incomplete(tmp_path):
+    reviewer_spec = importlib.util.spec_from_file_location(
+        "missing_market_prelock_reviewer", ROOT / "scripts/review_dunkest_pre_lock_archive_v1.py"
+    )
+    reviewer = importlib.util.module_from_spec(reviewer_spec)
+    assert reviewer_spec and reviewer_spec.loader
+    reviewer_spec.loader.exec_module(reviewer)
+    run, _ = make_versioned_snapshot_run(tmp_path)
+    manifest_path = run / "manifest.json"
+    manifest = archive.load_json(manifest_path)
+    market_name = "dunkest_players_26_gw1.parquet"
+    market_path = run / "pre_match_snapshot" / market_name
+    market_path.unlink()
+    sidecar = market_path.with_name(market_name + ".meta.json")
+    sidecar.unlink(missing_ok=True)
+    manifest["required_pre_match_inputs"] = {
+        "dunkest_market_snapshot": {
+            "status": "missing", "path": market_name, "sha256": None, "source": None,
+            "reason": "required pre-lock Dunkest market snapshot was absent at archive time",
+        }
+    }
+    manifest["archive_status"] = "incomplete"
+    manifest["snapshot_set_complete"] = False
+    manifest_path.write_text(json.dumps(manifest))
+
+    archived = archive.archive_run(run, tmp_path / "archive", 36)
+
+    assert archived["status"] == "archived"
+    assert archived["pre_lock_eligible"] is False
+    review = reviewer.review(Path(archived["archive_path"]), 36)
+    assert review["status"] == "incomplete"
+    assert review["rechecked_pre_lock_eligible"] is False
+    assert review["rechecked_required_pre_match_inputs"]["dunkest_market_snapshot"]["status"] == "missing"
 
 
 def test_snapshot_content_validation_checks_target_round_and_coach_coverage(tmp_path):

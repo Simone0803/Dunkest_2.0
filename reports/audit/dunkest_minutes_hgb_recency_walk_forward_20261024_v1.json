@@ -1,0 +1,1246 @@
+{
+  "generated_utc": "2026-10-24T08:21:10.747826+00:00",
+  "experiment": "fixed two-season exponential recency weighting of existing HGB minutes estimator",
+  "hypothesis": "recent minutes relationships drift across seasons; recency weighting may improve held-out MAE without altering features or estimator hyperparameters",
+  "intervention_predeclared": true,
+  "production_model_changed": false,
+  "production_hybrid_changed": false,
+  "optimizer_changed": false,
+  "input_files": [
+    {
+      "path": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+      "sha256": "9f1cae2490822bc3617f96e35463473787fbfec016236f27a5c586f0cd9c72e5"
+    },
+    {
+      "path": "data/processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet",
+      "sha256": "8fcc27e13f9f68962f8b6c24a3bf4a387c57b77d8e0431db78b32291e2fd0c93"
+    },
+    {
+      "path": "data/processed/official_dunkest_vs_nba_matched_2025-26.parquet",
+      "sha256": "d85586050858d722bd886c3ab116adba869920cb5dd4a4a26bfc2b1305715227"
+    }
+  ],
+  "dataset_coverage": {
+    "source_rows": 112178,
+    "rows_after_target_link": 112165,
+    "rows_without_target_minutes_excluded": 13,
+    "historical_label_rows_unique": 172084,
+    "historical_label_duplicate_keys_same_minutes_collapsed": 0,
+    "final_2025_26_official_valid_label_rows": 18412,
+    "valid_dunkest_player_id_rows": 112165,
+    "unique_nba_games": 6121,
+    "season_rows": {
+      "13": 18927,
+      "19": 19590,
+      "25": 18412,
+      "5": 17655,
+      "7": 18416,
+      "9": 19165
+    }
+  },
+  "seasons_with_target_data": [
+    "2020-21",
+    "2021-22",
+    "2022-23",
+    "2023-24",
+    "2024-25",
+    "2025-26"
+  ],
+  "excluded_seasons": {
+    "2018-19": "official Dunkest labels invalid for target scoring per existing historical-data audit",
+    "2019-20": "official Dunkest labels invalid for target scoring per existing historical-data audit"
+  },
+  "folds": {
+    "9": {
+      "train_rows": 36071,
+      "test_rows": 19165,
+      "train_max_date_utc": "2022-04-10T00:00:00+00:00",
+      "test_min_date_utc": "2022-10-18T00:00:00+00:00",
+      "train_min_date_utc": "2020-12-22T00:00:00+00:00",
+      "test_games": 1042,
+      "test_actual_zero_minutes": 48,
+      "test_low_history_lt5": 384,
+      "weights": {
+        "rule": "2 ** (-age_years / half_life_years)",
+        "half_life_years": 2.0,
+        "weight_at_fold_origin": "2022-10-18T00:00:00+00:00",
+        "min": 0.5320544933692346,
+        "max": 0.8342373907811996
+      }
+    },
+    "13": {
+      "train_rows": 55236,
+      "test_rows": 18927,
+      "train_max_date_utc": "2023-04-09T00:00:00+00:00",
+      "test_min_date_utc": "2023-10-24T00:00:00+00:00",
+      "train_min_date_utc": "2020-12-22T00:00:00+00:00",
+      "test_games": 1013,
+      "test_actual_zero_minutes": 71,
+      "test_low_history_lt5": 434,
+      "weights": {
+        "rule": "2 ** (-age_years / half_life_years)",
+        "half_life_years": 2.0,
+        "weight_at_fold_origin": "2023-10-24T00:00:00+00:00",
+        "min": 0.3741695782048774,
+        "max": 0.828714578118694
+      }
+    },
+    "19": {
+      "train_rows": 74163,
+      "test_rows": 19590,
+      "train_max_date_utc": "2024-04-12T00:00:00+00:00",
+      "test_min_date_utc": "2024-10-22T00:00:00+00:00",
+      "train_min_date_utc": "2020-12-22T00:00:00+00:00",
+      "test_games": 1038,
+      "test_actual_zero_minutes": 59,
+      "test_low_history_lt5": 404,
+      "weights": {
+        "rule": "2 ** (-age_years / half_life_years)",
+        "half_life_years": 2.0,
+        "weight_at_fold_origin": "2024-10-22T00:00:00+00:00",
+        "min": 0.26488996496577255,
+        "max": 0.8326556993037315
+      }
+    },
+    "25": {
+      "train_rows": 93753,
+      "test_rows": 18412,
+      "train_max_date_utc": "2025-04-11T00:00:00+00:00",
+      "test_min_date_utc": "2025-10-21T00:00:00+00:00",
+      "train_min_date_utc": "2020-12-22T00:00:00+00:00",
+      "test_games": 1043,
+      "test_actual_zero_minutes": 0,
+      "test_low_history_lt5": 440,
+      "weights": {
+        "rule": "2 ** (-age_years / half_life_years)",
+        "half_life_years": 2.0,
+        "weight_at_fold_origin": "2025-10-21T00:00:00+00:00",
+        "min": 0.18752645224713668,
+        "max": 0.8326556993037315
+      }
+    }
+  },
+  "final_holdout_fold": "25",
+  "final_holdout_used_for_selection": false,
+  "feature_names": [
+    "history_games_before_target",
+    "nba_history_games_before_target",
+    "rest_days_from_nba_logs",
+    "lag1_pdk",
+    "lag2_pdk",
+    "lag3_pdk",
+    "lag4_pdk",
+    "lag5_pdk",
+    "prev3_pdk_mean",
+    "prev5_pdk_mean",
+    "prev10_pdk_mean",
+    "prev5_pdk_std",
+    "lag1_nba_min",
+    "lag2_nba_min",
+    "lag3_nba_min",
+    "prev3_nba_min_mean",
+    "prev5_nba_min_mean",
+    "lag1_nba_pts",
+    "lag2_nba_pts",
+    "lag3_nba_pts",
+    "prev3_nba_pts_mean",
+    "prev5_nba_pts_mean",
+    "lag1_nba_reb",
+    "lag2_nba_reb",
+    "lag3_nba_reb",
+    "prev3_nba_reb_mean",
+    "prev5_nba_reb_mean",
+    "lag1_nba_ast",
+    "lag2_nba_ast",
+    "lag3_nba_ast",
+    "prev3_nba_ast_mean",
+    "prev5_nba_ast_mean",
+    "lag1_nba_stl",
+    "lag2_nba_stl",
+    "lag3_nba_stl",
+    "prev3_nba_stl_mean",
+    "prev5_nba_stl_mean",
+    "lag1_nba_blk",
+    "lag2_nba_blk",
+    "lag3_nba_blk",
+    "prev3_nba_blk_mean",
+    "prev5_nba_blk_mean",
+    "lag1_nba_tov",
+    "lag2_nba_tov",
+    "lag3_nba_tov",
+    "prev3_nba_tov_mean",
+    "prev5_nba_tov_mean",
+    "lag1_nba_fg3m",
+    "lag2_nba_fg3m",
+    "lag3_nba_fg3m",
+    "prev3_nba_fg3m_mean",
+    "prev5_nba_fg3m_mean",
+    "lag1_nba_fga",
+    "lag2_nba_fga",
+    "lag3_nba_fga",
+    "prev3_nba_fga_mean",
+    "prev5_nba_fga_mean",
+    "lag1_nba_ftm",
+    "lag2_nba_ftm",
+    "lag3_nba_ftm",
+    "prev3_nba_ftm_mean",
+    "prev5_nba_ftm_mean",
+    "lag1_nba_oreb",
+    "lag2_nba_oreb",
+    "lag3_nba_oreb",
+    "prev3_nba_oreb_mean",
+    "prev5_nba_oreb_mean",
+    "lag1_nba_dreb",
+    "lag2_nba_dreb",
+    "lag3_nba_dreb",
+    "prev3_nba_dreb_mean",
+    "prev5_nba_dreb_mean",
+    "lag1_nba_plus_minus",
+    "lag2_nba_plus_minus",
+    "lag3_nba_plus_minus",
+    "prev3_nba_plus_minus_mean",
+    "prev5_nba_plus_minus_mean",
+    "pdk_trend_3v10",
+    "min_trend_3v5",
+    "min_last_vs_prev5",
+    "lag1_pdk_per_min",
+    "prev3_pdk_per_min",
+    "prev5_pdk_per_min",
+    "lag1_pts_per_min",
+    "prev3_pts_per_min",
+    "prev5_pts_per_min",
+    "lag1_reb_per_min",
+    "prev3_reb_per_min",
+    "prev5_reb_per_min",
+    "lag1_ast_per_min",
+    "prev3_ast_per_min",
+    "prev5_ast_per_min",
+    "lag1_usage_proxy",
+    "prev3_usage_proxy",
+    "prev5_usage_proxy",
+    "opponentTeamCode",
+    "opponentTeamPosition"
+  ],
+  "feature_policy": "existing past-only expanded-lag history from the audited walk-forward; target-game minutes are labels only",
+  "model": {
+    "implementation": "existing historical-walk-forward base.model('hgb') from experiment_dunkest_minutes_rate_decomposition_v1.py; same HGB estimator parameters as production shadow, but not an exact production feature/preprocessing replay",
+    "estimator": "HistGradientBoostingRegressor(max_iter=180, learning_rate=0.06, max_leaf_nodes=31, l2_regularization=5, min_samples_leaf=40, random_state=2026)",
+    "preprocessing": "fold-local numeric median imputation with missing indicators and categorical one-hot encoding",
+    "production_parity_limit": "Historical archive uses an expanded-lag schema with a one-hot/imputer pipeline; current predictor uses selected FEATURE_COLS and _fit_matrix numeric medians. The archived table lacks all current production inputs, so exact shadow replay is not claimed."
+  },
+  "recency_rule": {
+    "formula": "weight = 2 ** (-age_years / half_life_years)",
+    "half_life_years": 2.0,
+    "selection": "fixed a priori; no tuning against any holdout fold"
+  },
+  "primary_metrics": "paired HGB initial vs recency on identical labeled NBA player-game rows",
+  "paired_cluster_bootstrap_replicates": 2000,
+  "pooled": {
+    "n": 76094,
+    "n_games": 4136,
+    "hgb_initial": {
+      "n": 76094,
+      "mae": 4.940262091832327,
+      "rmse": 6.4062168675212074,
+      "bias_pred_minus_actual": 0.27845144405151734
+    },
+    "hgb_recency": {
+      "n": 76094,
+      "mae": 4.947776192107387,
+      "rmse": 6.41543412283589,
+      "bias_pred_minus_actual": 0.2952291042851854
+    },
+    "delta_recency_minus_initial": {
+      "mae": 0.007514100275059832,
+      "rmse": 0.00921725531468276,
+      "bias_pred_minus_actual": 0.016777660233668057
+    },
+    "paired_game_bootstrap_ci95_delta": {
+      "mae": [
+        0.003998522484684908,
+        0.011053469049670838
+      ],
+      "rmse": [
+        0.005380194430765517,
+        0.013208925596915442
+      ],
+      "bias": [
+        0.012930182624188522,
+        0.020651006823637616
+      ]
+    },
+    "previous5_baseline_on_available_cohort": {
+      "n": 75848,
+      "n_games": 4136,
+      "previous5": {
+        "n": 75848,
+        "mae": 5.094664590145202,
+        "rmse": 6.727965474706031,
+        "bias_pred_minus_actual": 0.04672037862274258
+      },
+      "hgb_initial": {
+        "n": 75848,
+        "mae": 4.931304128085362,
+        "rmse": 6.39549102346765,
+        "bias_pred_minus_actual": 0.2785756639760826
+      },
+      "hgb_recency": {
+        "n": 75848,
+        "mae": 4.9389382460641835,
+        "rmse": 6.404744990505227,
+        "bias_pred_minus_actual": 0.2958826868523112
+      },
+      "ci95_initial_minus_prev5": {
+        "mae": [
+          -0.18244237224717266,
+          -0.14495958997607286
+        ],
+        "rmse": [
+          -0.35605317674273435,
+          -0.30963842246220746
+        ],
+        "bias": [
+          0.2073516226433205,
+          0.2564967737471622
+        ]
+      },
+      "ci95_recency_minus_prev5": {
+        "mae": [
+          -0.17380278646412695,
+          -0.13679426457142355
+        ],
+        "rmse": [
+          -0.3448757324179196,
+          -0.29948873999069553
+        ],
+        "bias": [
+          0.22484808208118018,
+          0.2747369178190228
+        ]
+      }
+    }
+  },
+  "fold_results": [
+    {
+      "fold_id": "9",
+      "fold": "2022-23",
+      "train_rows": 36071,
+      "n": 19165,
+      "n_games": 1042,
+      "hgb_initial": {
+        "n": 19165,
+        "mae": 5.09147765848771,
+        "rmse": 6.6027586807482015,
+        "bias_pred_minus_actual": 0.3038318458193107
+      },
+      "hgb_recency": {
+        "n": 19165,
+        "mae": 5.086650288819938,
+        "rmse": 6.608373582287323,
+        "bias_pred_minus_actual": 0.3376834497269292
+      },
+      "delta_recency_minus_initial": {
+        "mae": -0.0048273696677716416,
+        "rmse": 0.005614901539121142,
+        "bias_pred_minus_actual": 0.03385160390761849
+      },
+      "paired_game_bootstrap_ci95_delta": {
+        "mae": [
+          -0.011441639927598123,
+          0.0017285605944685068
+        ],
+        "rmse": [
+          -0.001547809357976315,
+          0.012913369540229789
+        ],
+        "bias": [
+          0.026510495741319962,
+          0.04084281194464312
+        ]
+      },
+      "previous5_baseline_on_available_cohort": {
+        "n": 19111,
+        "n_games": 1042,
+        "previous5": {
+          "n": 19111,
+          "mae": 5.252692166814924,
+          "rmse": 6.9501824553748905,
+          "bias_pred_minus_actual": 0.0678684178396386
+        },
+        "hgb_initial": {
+          "n": 19111,
+          "mae": 5.0806847154331995,
+          "rmse": 6.5891210789011945,
+          "bias_pred_minus_actual": 0.30273656795574755
+        },
+        "hgb_recency": {
+          "n": 19111,
+          "mae": 5.076126644069168,
+          "rmse": 6.594841067647539,
+          "bias_pred_minus_actual": 0.3376074071906852
+        },
+        "ci95_initial_minus_prev5": {
+          "mae": [
+            -0.2091625560303903,
+            -0.1331048255903796
+          ],
+          "rmse": [
+            -0.40688263333596375,
+            -0.312144739255634
+          ],
+          "bias": [
+            0.18118936531923424,
+            0.2862919404317148
+          ]
+        },
+        "ci95_recency_minus_prev5": {
+          "mae": [
+            -0.21650163026037916,
+            -0.13726626704135453
+          ],
+          "rmse": [
+            -0.4048708219935136,
+            -0.30727469150429304
+          ],
+          "bias": [
+            0.22025778965581397,
+            0.32255526109922883
+          ]
+        }
+      },
+      "subgroups": {
+        "actual_minutes_ge25": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_initial",
+            "n_games": 1042,
+            "n": 9470,
+            "mae": 4.621282701111809,
+            "rmse": 6.163648332905008,
+            "bias_pred_minus_actual": -3.1511624209194213
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_recency",
+            "n_games": 1042,
+            "n": 9470,
+            "mae": 4.600142924641261,
+            "rmse": 6.149445287985104,
+            "bias_pred_minus_actual": -3.092175737358442
+          }
+        },
+        "all": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "all",
+            "model": "hgb_initial",
+            "n_games": 1042,
+            "n": 19165,
+            "mae": 5.09147765848771,
+            "rmse": 6.6027586807482015,
+            "bias_pred_minus_actual": 0.3038318458193107
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "all",
+            "model": "hgb_recency",
+            "n_games": 1042,
+            "n": 19165,
+            "mae": 5.086650288819938,
+            "rmse": 6.608373582287323,
+            "bias_pred_minus_actual": 0.3376834497269292
+          }
+        },
+        "history_ge5": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "history_ge5",
+            "model": "hgb_initial",
+            "n_games": 1042,
+            "n": 18781,
+            "mae": 5.074188975102711,
+            "rmse": 6.5813951036577345,
+            "bias_pred_minus_actual": 0.30757689232695895
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "history_ge5",
+            "model": "hgb_recency",
+            "n_games": 1042,
+            "n": 18781,
+            "mae": 5.069928181151779,
+            "rmse": 6.587243485868626,
+            "bias_pred_minus_actual": 0.3437081761619403
+          }
+        },
+        "low_history_lt5_proxy_not_rookie_label": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_initial",
+            "n_games": 242,
+            "n": 384,
+            "mae": 5.937047352898325,
+            "rmse": 7.5744388306868595,
+            "bias_pred_minus_actual": 0.1206659123293588
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_recency",
+            "n_games": 242,
+            "n": 384,
+            "mae": 5.9045094141212715,
+            "rmse": 7.570178074772009,
+            "bias_pred_minus_actual": 0.043020983122909695
+          }
+        },
+        "positive_minutes": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "positive_minutes",
+            "model": "hgb_initial",
+            "n_games": 1042,
+            "n": 19117,
+            "mae": 5.074816797743984,
+            "rmse": 6.578503486212897,
+            "bias_pred_minus_actual": 0.27514990441396997
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "positive_minutes",
+            "model": "hgb_recency",
+            "n_games": 1042,
+            "n": 19117,
+            "mae": 5.070030667547402,
+            "rmse": 6.583765906364248,
+            "bias_pred_minus_actual": 0.309139865056555
+          }
+        },
+        "zero_minutes_verified_label": {
+          "hgb_initial": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_initial",
+            "n_games": 42,
+            "n": 48,
+            "mae": 11.727012550942177,
+            "rmse": 13.073989999296701,
+            "bias_pred_minus_actual": 11.727012550942177
+          },
+          "hgb_recency": {
+            "fold_id": "9",
+            "fold": "2022-23",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_recency",
+            "n_games": 42,
+            "n": 48,
+            "mae": 11.705760702717436,
+            "rmse": 13.151441859296533,
+            "bias_pred_minus_actual": 11.705760702717436
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "13",
+      "fold": "2023-24",
+      "train_rows": 55236,
+      "n": 18927,
+      "n_games": 1013,
+      "hgb_initial": {
+        "n": 18927,
+        "mae": 5.00869349211197,
+        "rmse": 6.4207585971668495,
+        "bias_pred_minus_actual": 0.40044641034747863
+      },
+      "hgb_recency": {
+        "n": 18927,
+        "mae": 5.037478984064581,
+        "rmse": 6.4447799732171,
+        "bias_pred_minus_actual": 0.4503488195470867
+      },
+      "delta_recency_minus_initial": {
+        "mae": 0.028785491952611153,
+        "rmse": 0.024021376050250787,
+        "bias_pred_minus_actual": 0.04990240919960809
+      },
+      "paired_game_bootstrap_ci95_delta": {
+        "mae": [
+          0.021846853414268265,
+          0.03551370935215483
+        ],
+        "rmse": [
+          0.016172355384214465,
+          0.03146526375237881
+        ],
+        "bias": [
+          0.04228244246328275,
+          0.057962430060854706
+        ]
+      },
+      "previous5_baseline_on_available_cohort": {
+        "n": 18866,
+        "n_games": 1013,
+        "previous5": {
+          "n": 18866,
+          "mae": 5.098474327714761,
+          "rmse": 6.698908479882595,
+          "bias_pred_minus_actual": -0.006278490406021392
+        },
+        "hgb_initial": {
+          "n": 18866,
+          "mae": 5.000277123563574,
+          "rmse": 6.411149937669706,
+          "bias_pred_minus_actual": 0.39708627882560443
+        },
+        "hgb_recency": {
+          "n": 18866,
+          "mae": 5.0288821904659375,
+          "rmse": 6.435170882586769,
+          "bias_pred_minus_actual": 0.4463643800296427
+        },
+        "ci95_initial_minus_prev5": {
+          "mae": [
+            -0.13986829690557284,
+            -0.058696172503969815
+          ],
+          "rmse": [
+            -0.3412588721080132,
+            -0.23571845305574302
+          ],
+          "bias": [
+            0.3535974176057105,
+            0.4532697217781197
+          ]
+        },
+        "ci95_recency_minus_prev5": {
+          "mae": [
+            -0.11061306578785972,
+            -0.02873803501004364
+          ],
+          "rmse": [
+            -0.3162821197476211,
+            -0.21223542758770486
+          ],
+          "bias": [
+            0.39984911655010386,
+            0.5053660283448617
+          ]
+        }
+      },
+      "subgroups": {
+        "actual_minutes_ge25": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_initial",
+            "n_games": 1013,
+            "n": 9168,
+            "mae": 4.57565143293168,
+            "rmse": 6.0233655853788575,
+            "bias_pred_minus_actual": -2.957988934742652
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_recency",
+            "n_games": 1013,
+            "n": 9168,
+            "mae": 4.5719076582893665,
+            "rmse": 6.006810014775556,
+            "bias_pred_minus_actual": -2.967322668872981
+          }
+        },
+        "all": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "all",
+            "model": "hgb_initial",
+            "n_games": 1013,
+            "n": 18927,
+            "mae": 5.00869349211197,
+            "rmse": 6.4207585971668495,
+            "bias_pred_minus_actual": 0.40044641034747863
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "all",
+            "model": "hgb_recency",
+            "n_games": 1013,
+            "n": 18927,
+            "mae": 5.037478984064581,
+            "rmse": 6.4447799732171,
+            "bias_pred_minus_actual": 0.4503488195470867
+          }
+        },
+        "history_ge5": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "history_ge5",
+            "model": "hgb_initial",
+            "n_games": 1013,
+            "n": 18493,
+            "mae": 4.986849037745793,
+            "rmse": 6.395066889624306,
+            "bias_pred_minus_actual": 0.4047301562577686
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "history_ge5",
+            "model": "hgb_recency",
+            "n_games": 1013,
+            "n": 18493,
+            "mae": 5.01567394695573,
+            "rmse": 6.418889689025529,
+            "bias_pred_minus_actual": 0.4523398058126185
+          }
+        },
+        "low_history_lt5_proxy_not_rookie_label": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_initial",
+            "n_games": 287,
+            "n": 434,
+            "mae": 5.93949877919429,
+            "rmse": 7.433446413209005,
+            "bias_pred_minus_actual": 0.2179134308106273
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_recency",
+            "n_games": 287,
+            "n": 434,
+            "mae": 5.966604678198179,
+            "rmse": 7.465011450758915,
+            "bias_pred_minus_actual": 0.36551170201603095
+          }
+        },
+        "positive_minutes": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "positive_minutes",
+            "model": "hgb_initial",
+            "n_games": 1013,
+            "n": 18856,
+            "mae": 4.990184851658613,
+            "rmse": 6.400987652813076,
+            "bias_pred_minus_actual": 0.36458596978777497
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "positive_minutes",
+            "model": "hgb_recency",
+            "n_games": 1013,
+            "n": 18856,
+            "mae": 5.018657676874285,
+            "rmse": 6.42446001163514,
+            "bias_pred_minus_actual": 0.4142552254623937
+          }
+        },
+        "zero_minutes_verified_label": {
+          "hgb_initial": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_initial",
+            "n_games": 48,
+            "n": 71,
+            "mae": 9.924171300400596,
+            "rmse": 10.418709398548739,
+            "bias_pred_minus_actual": 9.924171300400596
+          },
+          "hgb_recency": {
+            "fold_id": "13",
+            "fold": "2023-24",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_recency",
+            "n_games": 48,
+            "n": 71,
+            "mae": 10.035994031673463,
+            "rmse": 10.53491100193654,
+            "bias_pred_minus_actual": 10.035994031673463
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "19",
+      "fold": "2024-25",
+      "train_rows": 74163,
+      "n": 19590,
+      "n_games": 1038,
+      "hgb_initial": {
+        "n": 19590,
+        "mae": 4.852231492755439,
+        "rmse": 6.3294693638666875,
+        "bias_pred_minus_actual": 0.1632954470172654
+      },
+      "hgb_recency": {
+        "n": 19590,
+        "mae": 4.849993566728303,
+        "rmse": 6.329011799444445,
+        "bias_pred_minus_actual": 0.13385604107614812
+      },
+      "delta_recency_minus_initial": {
+        "mae": -0.002237926027135906,
+        "rmse": -0.00045756442224220706,
+        "bias_pred_minus_actual": -0.02943940594111727
+      },
+      "paired_game_bootstrap_ci95_delta": {
+        "mae": [
+          -0.009528332827767971,
+          0.004829834067856236
+        ],
+        "rmse": [
+          -0.007979370399317686,
+          0.00695928610500479
+        ],
+        "bias": [
+          -0.03711046749859813,
+          -0.021882112322579198
+        ]
+      },
+      "previous5_baseline_on_available_cohort": {
+        "n": 19523,
+        "n_games": 1038,
+        "previous5": {
+          "n": 19523,
+          "mae": 5.031329713671054,
+          "rmse": 6.691107832346266,
+          "bias_pred_minus_actual": 0.0321048677628097
+        },
+        "hgb_initial": {
+          "n": 19523,
+          "mae": 4.846740615964484,
+          "rmse": 6.325899171918537,
+          "bias_pred_minus_actual": 0.16055530993793776
+        },
+        "hgb_recency": {
+          "n": 19523,
+          "mae": 4.844867286413454,
+          "rmse": 6.325378548927874,
+          "bias_pred_minus_actual": 0.13288649322272136
+        },
+        "ci95_initial_minus_prev5": {
+          "mae": [
+            -0.2199686628208383,
+            -0.14975574355393914
+          ],
+          "rmse": [
+            -0.40961696540823667,
+            -0.3183327642876963
+          ],
+          "bias": [
+            0.07638611445637268,
+            0.1774383650964413
+          ]
+        },
+        "ci95_recency_minus_prev5": {
+          "mae": [
+            -0.22061696564648275,
+            -0.15036898864198736
+          ],
+          "rmse": [
+            -0.41126529747421803,
+            -0.31976987883289615
+          ],
+          "bias": [
+            0.048297804916004,
+            0.15126096169946154
+          ]
+        }
+      },
+      "subgroups": {
+        "actual_minutes_ge25": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_initial",
+            "n_games": 1038,
+            "n": 9475,
+            "mae": 4.5194508611257,
+            "rmse": 6.062752730551917,
+            "bias_pred_minus_actual": -2.9071930325732414
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_recency",
+            "n_games": 1038,
+            "n": 9475,
+            "mae": 4.533142562379578,
+            "rmse": 6.078652331852261,
+            "bias_pred_minus_actual": -2.9265658466193747
+          }
+        },
+        "all": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "all",
+            "model": "hgb_initial",
+            "n_games": 1038,
+            "n": 19590,
+            "mae": 4.852231492755439,
+            "rmse": 6.3294693638666875,
+            "bias_pred_minus_actual": 0.1632954470172654
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "all",
+            "model": "hgb_recency",
+            "n_games": 1038,
+            "n": 19590,
+            "mae": 4.849993566728303,
+            "rmse": 6.329011799444445,
+            "bias_pred_minus_actual": 0.13385604107614812
+          }
+        },
+        "history_ge5": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "history_ge5",
+            "model": "hgb_initial",
+            "n_games": 1038,
+            "n": 19186,
+            "mae": 4.845879707449788,
+            "rmse": 6.325941945360198,
+            "bias_pred_minus_actual": 0.15952079185852736
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "history_ge5",
+            "model": "hgb_recency",
+            "n_games": 1038,
+            "n": 19186,
+            "mae": 4.845545016974926,
+            "rmse": 6.326447350865581,
+            "bias_pred_minus_actual": 0.13231726256262702
+          }
+        },
+        "low_history_lt5_proxy_not_rookie_label": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_initial",
+            "n_games": 240,
+            "n": 404,
+            "mae": 5.153878405810418,
+            "rmse": 6.4947813443966105,
+            "bias_pred_minus_actual": 0.34255419423396943
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_recency",
+            "n_games": 240,
+            "n": 404,
+            "mae": 5.061255634966672,
+            "rmse": 6.449623791673586,
+            "bias_pred_minus_actual": 0.20693278503757537
+          }
+        },
+        "positive_minutes": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "positive_minutes",
+            "model": "hgb_initial",
+            "n_games": 1038,
+            "n": 19531,
+            "mae": 4.834766480957028,
+            "rmse": 6.305781731638335,
+            "bias_pred_minus_actual": 0.13166591590604257
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "positive_minutes",
+            "model": "hgb_recency",
+            "n_games": 1038,
+            "n": 19531,
+            "mae": 4.832299264902102,
+            "rmse": 6.3049266227943574,
+            "bias_pred_minus_actual": 0.10191504865481721
+          }
+        },
+        "zero_minutes_verified_label": {
+          "hgb_initial": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_initial",
+            "n_games": 44,
+            "n": 59,
+            "mae": 10.63374243232732,
+            "rmse": 11.795777087373388,
+            "bias_pred_minus_actual": 10.63374243232732
+          },
+          "hgb_recency": {
+            "fold_id": "19",
+            "fold": "2024-25",
+            "cohort": "zero_minutes_verified_label",
+            "model": "hgb_recency",
+            "n_games": 44,
+            "n": 59,
+            "mae": 10.707407278042487,
+            "rmse": 11.865365847687269,
+            "bias_pred_minus_actual": 10.707407278042487
+          }
+        }
+      }
+    },
+    {
+      "fold_id": "25",
+      "fold": "2025-26",
+      "train_rows": 93753,
+      "n": 18412,
+      "n_games": 1043,
+      "hgb_initial": {
+        "n": 18412,
+        "mae": 4.806179536318154,
+        "rmse": 6.263103468728554,
+        "bias_pred_minus_actual": 0.24914945920128803
+      },
+      "hgb_recency": {
+        "n": 18412,
+        "mae": 4.815049428274365,
+        "rmse": 6.271056072438149,
+        "bias_pred_minus_actual": 0.2632776556164918
+      },
+      "delta_recency_minus_initial": {
+        "mae": 0.008869891956211795,
+        "rmse": 0.007952603709595607,
+        "bias_pred_minus_actual": 0.01412819641520377
+      },
+      "paired_game_bootstrap_ci95_delta": {
+        "mae": [
+          0.0021816307289511004,
+          0.015324083393414574
+        ],
+        "rmse": [
+          0.0002819300632186828,
+          0.015242514754862685
+        ],
+        "bias": [
+          0.007201471883991726,
+          0.02115085554941817
+        ]
+      },
+      "previous5_baseline_on_available_cohort": {
+        "n": 18348,
+        "n_games": 1043,
+        "previous5": {
+          "n": 18348,
+          "mae": 4.993538977908583,
+          "rmse": 6.559499442930123,
+          "bias_pred_minus_actual": 0.09473951444904682
+        },
+        "hgb_initial": {
+          "n": 18348,
+          "mae": 4.7947702557090475,
+          "rmse": 6.246546333044221,
+          "bias_pred_minus_actual": 0.2571319685422613
+        },
+        "hgb_recency": {
+          "n": 18348,
+          "mae": 4.803656875664381,
+          "rmse": 6.254612399242341,
+          "bias_pred_minus_actual": 0.2711271785876657
+        },
+        "ci95_initial_minus_prev5": {
+          "mae": [
+            -0.23244035283610864,
+            -0.1655574402676066
+          ],
+          "rmse": [
+            -0.36030544934864195,
+            -0.2682796359218361
+          ],
+          "bias": [
+            0.11484433758179644,
+            0.20796061514010392
+          ]
+        },
+        "ci95_recency_minus_prev5": {
+          "mae": [
+            -0.22276723959428943,
+            -0.15707240784394041
+          ],
+          "rmse": [
+            -0.34968150236217205,
+            -0.26165115141239564
+          ],
+          "bias": [
+            0.12643091721061697,
+            0.22657340350314364
+          ]
+        }
+      },
+      "subgroups": {
+        "actual_minutes_ge25": {
+          "hgb_initial": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_initial",
+            "n_games": 1041,
+            "n": 8587,
+            "mae": 4.411579704308369,
+            "rmse": 5.909535688144523,
+            "bias_pred_minus_actual": -2.850253801590759
+          },
+          "hgb_recency": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "actual_minutes_ge25",
+            "model": "hgb_recency",
+            "n_games": 1041,
+            "n": 8587,
+            "mae": 4.409020454856478,
+            "rmse": 5.904409390670591,
+            "bias_pred_minus_actual": -2.865047982377536
+          }
+        },
+        "all": {
+          "hgb_initial": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "all",
+            "model": "hgb_initial",
+            "n_games": 1043,
+            "n": 18412,
+            "mae": 4.806179536318154,
+            "rmse": 6.263103468728554,
+            "bias_pred_minus_actual": 0.24914945920128803
+          },
+          "hgb_recency": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "all",
+            "model": "hgb_recency",
+            "n_games": 1043,
+            "n": 18412,
+            "mae": 4.815049428274365,
+            "rmse": 6.271056072438149,
+            "bias_pred_minus_actual": 0.2632776556164918
+          }
+        },
+        "history_ge5": {
+          "hgb_initial": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "history_ge5",
+            "model": "hgb_initial",
+            "n_games": 1043,
+            "n": 17972,
+            "mae": 4.78917530610467,
+            "rmse": 6.24034476623481,
+            "bias_pred_minus_actual": 0.2591607683208709
+          },
+          "hgb_recency": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "history_ge5",
+            "model": "hgb_recency",
+            "n_games": 1043,
+            "n": 17972,
+            "mae": 4.797898087110591,
+            "rmse": 6.247848044019688,
+            "bias_pred_minus_actual": 0.27154078808185844
+          }
+        },
+        "low_history_lt5_proxy_not_rookie_label": {
+          "hgb_initial": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_initial",
+            "n_games": 275,
+            "n": 440,
+            "mae": 5.500725048583455,
+            "rmse": 7.1308863303205365,
+            "bias_pred_minus_actual": -0.15976701238312824
+          },
+          "hgb_recency": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "low_history_lt5_proxy_not_rookie_label",
+            "model": "hgb_recency",
+            "n_games": 275,
+            "n": 440,
+            "mae": 5.515603754172896,
+            "rmse": 7.15495249122645,
+            "bias_pred_minus_actual": -0.07423374590071358
+          }
+        },
+        "positive_minutes": {
+          "hgb_initial": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "positive_minutes",
+            "model": "hgb_initial",
+            "n_games": 1043,
+            "n": 18412,
+            "mae": 4.806179536318154,
+            "rmse": 6.263103468728554,
+            "bias_pred_minus_actual": 0.24914945920128803
+          },
+          "hgb_recency": {
+            "fold_id": "25",
+            "fold": "2025-26",
+            "cohort": "positive_minutes",
+            "model": "hgb_recency",
+            "n_games": 1043,
+            "n": 18412,
+            "mae": 4.815049428274365,
+            "rmse": 6.271056072438149,
+            "bias_pred_minus_actual": 0.2632776556164918
+          }
+        }
+      }
+    }
+  ],
+  "baseline_prev5_note": "reported only on rows with a real prev-five value; not presented as the production hybrid",
+  "production_hybrid_reconstruction": "not possible from this archive: historical per-game Dunkest role, lineup, credit, availability, same-team competition, and positional allocation inputs are not preserved as-of each game",
+  "pdk_impact": "not evaluated; the saved histories lack the exact historical market/availability/rotation inputs needed to replay the production PDK path with only minutes changed",
+  "subgroup_policy": {
+    "rookie": "not directly identifiable; history_games_before_target < 5 is a low-history proxy only",
+    "team_change": "not scored as a cohort because the target-row current NBA team lacks independent as-of provenance in this dataset",
+    "role_rotation_availability": "not evaluable from these historical training rows",
+    "zero_minutes": "observed target label zero; only present when explicitly represented by matched log data"
+  }
+}

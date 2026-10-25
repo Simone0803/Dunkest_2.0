@@ -1,6 +1,7 @@
 import importlib.util
 import hashlib
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 
@@ -51,6 +52,143 @@ def test_player_actuals_join_by_player_opponent_date_and_verified_fixture():
     }]
     assert missing.empty
     assert audit["prediction_coverage"] == 1.0
+
+
+def _box_row(name, minutes, **extra):
+    return {
+        "Game_ID": "game-1", "PLAYER_NAME": name, "TEAM_ABBREVIATION": "ATL",
+        "MIN": minutes, "PTS": 10, "OREB": 1, "DREB": 3, "AST": 2,
+        "STL": 1, "BLK": 0, "BLKA": 0, "TOV": 1, "FG3M": 1,
+        "FGA": 8, "FGM": 4, "FTA": 2, "FTM": 1, **extra,
+    }
+
+
+def test_outcome_panel_keeps_all_candidates_and_separates_official_and_proxy_pdk():
+    forecasts = pd.DataFrame([
+        {"player_name": "Test Player", "team": "ATL", "opponent": "BOS", "nba_game_id": "game-1", "expected_min": 30.0, "expected_pdk": 14.0},
+        {"player_name": "Missing Player", "team": "ATL", "opponent": "BOS", "nba_game_id": "game-1", "expected_min": 12.0, "expected_pdk": 5.0},
+    ])
+    market = pd.DataFrame([
+        {"player_name": "Test Player", "team_code": "ATL"},
+        {"player_name": "Missing Player", "team_code": "ATL"},
+    ])
+    official = pd.DataFrame([{
+        "_requested_player_name": "Test Player", "opponentTeamCode": "BOS",
+        "gameDate": "2026-10-01", "pdk": 12.5, "gameValidForDunkest": True,
+    }])
+    panel, audit = collector.build_player_outcome_panel(
+        forecasts, market, _fixtures(), official, pd.DataFrame([_box_row("Test Player", "31:30")])
+    )
+    played = panel.set_index("player_name").loc["Test Player"]
+    missing = panel.set_index("player_name").loc["Missing Player"]
+
+    assert len(panel) == 2
+    assert played["outcome_status"] == "appeared"
+    assert played["actual_minutes"] == 31.5
+    assert played["actual_pdk_official"] == 12.5
+    assert pd.notna(played["actual_pdk_nba_proxy"])
+    assert played["actual_pdk_source"] == "official_dunkest"
+    assert played["actual_pdk_nba_proxy_source"] == "nba_boxscore_rule_proxy"
+    assert missing["outcome_status"] == "outcome_missing"
+    assert pd.isna(missing["actual_minutes"])
+    assert audit["candidate_rows"] == 2
+
+
+@pytest.mark.parametrize(
+    ("minutes", "comment", "expected_status"),
+    [(0.0, "", "zero_minutes_verified"), (0.0, "DNP - Coach's Decision", "dnp_documented")],
+)
+def test_explicit_zero_log_distinguishes_verified_zero_and_documented_dnp(minutes, comment, expected_status):
+    forecasts = pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": "game-1", "expected_min": 8.0, "expected_pdk": 2.0,
+    }])
+    market = pd.DataFrame([{"player_name": "Test Player", "team_code": "ATL"}])
+    panel, _ = collector.build_player_outcome_panel(
+        forecasts, market, _fixtures(), pd.DataFrame(),
+        pd.DataFrame([_box_row("Test Player", minutes, COMMENT=comment)]),
+    )
+    assert panel.iloc[0]["outcome_status"] == expected_status
+    assert panel.iloc[0]["actual_minutes"] == 0.0
+
+
+def test_conflicting_log_rows_are_ambiguous_and_not_used_as_minutes_labels():
+    forecasts = pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": "game-1", "expected_min": 8.0, "expected_pdk": 2.0,
+    }])
+    market = pd.DataFrame([{"player_name": "Test Player", "team_code": "ATL"}])
+    panel, _ = collector.build_player_outcome_panel(
+        forecasts, market, _fixtures(), pd.DataFrame(),
+        pd.DataFrame([_box_row("Test Player", 0.0), _box_row("Test Player", 12.0)]),
+    )
+    assert panel.iloc[0]["outcome_status"] == "outcome_ambiguous"
+    assert pd.isna(panel.iloc[0]["actual_minutes"])
+
+
+def test_unverified_fixture_is_not_assigned_and_does_not_produce_zero_minutes():
+    forecasts = pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": None, "expected_min": 8.0, "expected_pdk": 2.0,
+    }])
+    market = pd.DataFrame([{"player_name": "Test Player", "team_code": "ATL"}])
+    panel, _ = collector.build_player_outcome_panel(
+        forecasts, market, _fixtures(), pd.DataFrame(), pd.DataFrame()
+    )
+    assert panel.iloc[0]["outcome_status"] == "fixture_unverified"
+    assert pd.isna(panel.iloc[0]["nba_game_id"])
+    assert pd.isna(panel.iloc[0]["actual_minutes"])
+
+
+def test_official_pdk_with_two_matching_fixtures_is_marked_ambiguous():
+    mapping = pd.DataFrame([
+        {
+            "nba_game_id": "game-1", "game_datetime_utc": "2026-10-01T12:00:00Z",
+            "game_date_local": "2026-10-01", "dunkest_gameweek": 1,
+            "mapping_verified": True, "source_retrieved_at_utc": "2026-10-01T07:00:00Z",
+            "raw_payload_sha256": "a" * 64, "home_team": "ATL", "away_team": "BOS",
+        },
+        {
+            "nba_game_id": "game-2", "game_datetime_utc": "2026-10-01T14:00:00Z",
+            "game_date_local": "2026-10-01", "dunkest_gameweek": 1,
+            "mapping_verified": True, "source_retrieved_at_utc": "2026-10-01T07:00:00Z",
+            "raw_payload_sha256": "b" * 64, "home_team": "ATL", "away_team": "BOS",
+        },
+    ])
+    fixtures, _ = collector.prepare_fixture_index(mapping, 1)
+    forecasts = pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": "game-1", "expected_min": 8.0, "expected_pdk": 2.0,
+    }])
+    market = pd.DataFrame([{"player_name": "Test Player", "team_code": "ATL"}])
+    official = pd.DataFrame([{
+        "_requested_player_name": "Test Player", "opponentTeamCode": "BOS",
+        "gameDate": "2026-10-01", "pdk": 11.0, "gameValidForDunkest": True,
+    }])
+    panel, _ = collector.build_player_outcome_panel(
+        forecasts, market, fixtures, official, pd.DataFrame()
+    )
+    assert panel.iloc[0]["actual_pdk_status"] == "ambiguous"
+    assert pd.isna(panel.iloc[0]["actual_pdk_official"])
+
+
+def test_player_forecast_metrics_report_coverage_and_use_only_valid_labels():
+    panel = pd.DataFrame([
+        {"expected_min": 10.0, "actual_minutes": 8.0, "expected_pdk": 7.0, "actual_pdk_official": 5.0, "outcome_status": "appeared"},
+        {"expected_min": 4.0, "actual_minutes": 0.0, "expected_pdk": 2.0, "actual_pdk_official": 1.0, "outcome_status": "dnp_documented"},
+        {"expected_min": 20.0, "actual_minutes": float("nan"), "expected_pdk": 9.0, "actual_pdk_official": float("nan"), "outcome_status": "outcome_missing"},
+    ])
+    summary = collector.evaluate_player_forecast_panel(panel)
+    assert summary["candidate_count"] == 3
+    assert summary["outcome_coverage"] == pytest.approx(2 / 3)
+    assert summary["verified_zero_minutes"] == 1
+    assert summary["documented_dnp"] == 1
+    assert summary["minutes"]["n"] == 2
+    assert summary["minutes"]["mae"] == 3.0
+    assert summary["minutes"]["rmse"] == pytest.approx(10 ** 0.5)
+    assert summary["minutes"]["bias"] == 3.0
+    assert summary["pdk_official"]["n"] == 2
+    assert summary["pdk_official"]["mae"] == 1.5
 
 
 def test_invalid_dunkest_result_rows_are_not_counted_as_actuals():
@@ -221,6 +359,14 @@ def test_collection_before_safe_cutoff_does_not_access_outcome_files(tmp_path, m
     def unexpected_outcome_access(path):
         raise AssertionError(f"outcome file accessed before safe cutoff: {path}")
 
+    class FrozenBeforeCutoff(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = datetime(2026, 10, 23, 11, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    monkeypatch.setattr(collector, "datetime", FrozenBeforeCutoff)
+
     monkeypatch.setattr(collector, "fingerprint_file", unexpected_outcome_access)
     monkeypatch.setattr(collector, "read_frame", unexpected_outcome_access)
     output_dir = tmp_path / "reports"
@@ -266,13 +412,34 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     data_dir = tmp_path / "data"
     processed = data_dir / "processed"
     processed.mkdir(parents=True)
-    run_dir = tmp_path / "workspace" / "run-1"
+    archive_root = tmp_path / "archives"
+    run_dir = archive_root / "season_id=26" / "gw=1" / "run-1"
     snapshot_dir = run_dir / "pre_match_snapshot"
     snapshot_dir.mkdir(parents=True)
+    forecast_path = run_dir / "player_forecast_snapshot.parquet"
+    candidate_forecasts = pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": "game-1", "expected_min": 30.0, "expected_pdk": 8.0,
+        "fixture_verified": True,
+    }])
+    candidate_forecasts.to_parquet(forecast_path, index=False)
+    forecast_sha = hashlib.sha256(forecast_path.read_bytes()).hexdigest()
     (run_dir / "manifest.json").write_text(json.dumps({
         "run_id": "run-1",
+        "timestamp": "2026-10-01T10:00:00Z",
         "configuration": {
             "season": "2026-27", "season_id": "26", "target_gameweek": 1,
+        },
+        "player_forecast_snapshot": {
+            "path": str(forecast_path), "sha256": forecast_sha, "candidate_rows": 1,
+            "forecast_timestamp_utc": "2026-10-01T09:30:00Z",
+            "prediction_cutoff_utc": "2026-10-01T12:00:00Z",
+            "cutoff_verified": True, "cutoff_basis": "official lock feed",
+            "cutoff_source_sha256": "b" * 64,
+            "certification": {
+                "pre_lock_eligible": True, "exact_dunkest_cutoff_verified": True,
+                "reason": "verified fixture",
+            },
         },
     }), encoding="utf-8")
     pd.DataFrame([{
@@ -291,6 +458,9 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     pd.DataFrame([{
         "player_name": "Test Player", "nba_game_id": "game-1", "expected_pdk": 8.0,
     }]).to_parquet(run_dir / "predictions.parquet", index=False)
+    pd.DataFrame([{"player_name": "Test Player", "nba_game_id": "game-1"}]).to_parquet(
+        run_dir / "lineups.parquet", index=False
+    )
     pd.DataFrame([{
         "_requested_player_name": "Test Player", "opponentTeamCode": "BOS",
         "gameDate": "2026-10-01", "pdk": 12.5, "gameValidForDunkest": True,
@@ -299,11 +469,43 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
         {"Game_ID": "game-1", "TEAM_ABBREVIATION": "ATL", "PTS": 110},
         {"Game_ID": "game-1", "TEAM_ABBREVIATION": "BOS", "PTS": 98},
     ]).to_parquet(processed / "team_game_logs_2026-27.parquet", index=False)
-    player_logs = [
-        {"Game_ID": "game-1", "TEAM_ABBREVIATION": team, "MIN": 48.0}
-        for team in ("ATL", "BOS") for _ in range(5)
+    player_logs = [_box_row("Test Player", 30.0)] + [
+        {**_box_row(f"Other {team} {index}", 42.0), "TEAM_ABBREVIATION": team}
+        for team in ("ATL", "BOS") for index in range(5)
     ]
     pd.DataFrame(player_logs).to_parquet(processed / "player_game_logs_2026-27.parquet", index=False)
+
+    archived_files = []
+    for path in sorted(run_dir.rglob("*")):
+        if path.is_file() and path.name != "archive_manifest.json":
+            archived_files.append({
+                "path": path.relative_to(run_dir).as_posix(),
+                "size_bytes": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            })
+    archive_manifest_path = run_dir / "archive_manifest.json"
+    archive_manifest_path.write_text(json.dumps({
+        "run_id": "run-1", "pre_lock_eligible": True, "files": archived_files,
+    }), encoding="utf-8")
+    registry_path = archive_root / "registry" / "run-1.json"
+    registry_path.parent.mkdir(parents=True)
+    registry_path.write_text(json.dumps({
+        "run_id": "run-1", "pre_lock_eligible": True,
+        "archive_manifest_sha256": hashlib.sha256(archive_manifest_path.read_bytes()).hexdigest(),
+        "predictions_sha256": hashlib.sha256((run_dir / "predictions.parquet").read_bytes()).hexdigest(),
+        "lineups_sha256": hashlib.sha256((run_dir / "lineups.parquet").read_bytes()).hexdigest(),
+        "player_forecast_snapshot_sha256": forecast_sha,
+    }), encoding="utf-8")
+
+    frozen_bytes = forecast_path.read_bytes()
+    frozen_manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+    checked, _ = collector.validate_frozen_forecast(run_dir, frozen_manifest)
+    assert len(checked) == 1
+    postcutoff_manifest = dict(frozen_manifest)
+    postcutoff_manifest["player_forecast_snapshot"] = dict(frozen_manifest["player_forecast_snapshot"])
+    postcutoff_manifest["player_forecast_snapshot"]["forecast_timestamp_utc"] = "2026-10-01T12:01:00Z"
+    with pytest.raises(ValueError, match="not certified pre-lock"):
+        collector.validate_frozen_forecast(run_dir, postcutoff_manifest)
 
     output_dir = tmp_path / "reports"
     monkeypatch.setattr(sys, "argv", [
@@ -313,10 +515,11 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     ])
 
     assert collector.main() == 0
+    assert forecast_path.read_bytes() == frozen_bytes
     archived = list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))
     assert len(archived) == 1
     manifest = json.loads(archived[0].read_text(encoding="utf-8"))
-    assert manifest["schema_version"] == 2
+    assert manifest["schema_version"] == 3
     assert manifest["run_id"] == "run-1"
     assert manifest["coverage_audit"]["timing_check_passed"] is True
     assert manifest["coverage_audit"]["player"]["prediction_coverage"] == 1.0
@@ -325,7 +528,7 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     assert set(fingerprints) == {
         "official_player_games", "team_logs", "nba_player_logs_for_overtime",
         "frozen_run_manifest", "frozen_predictions", "fixture_mapping",
-        "player_market", "coach_market",
+        "player_market", "coach_market", "pre_lock_archive_manifest", "pre_lock_registry",
     }
     official_source = processed / "official_dunkest_player_games_2026-27.parquet"
     assert fingerprints["official_player_games"]["sha256"] == hashlib.sha256(
@@ -340,13 +543,13 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     first_audit_bytes = first_audit.read_bytes()
     assert manifest["collection_id"] in first_audit.name
 
-    # Re-running collection for the same frozen run must keep the earlier
-    # attempt's audit instead of replacing it with the latest source state.
+    # Re-running collection is idempotent for the immutable outcome set.
     assert collector.main() == 0
+    assert forecast_path.read_bytes() == frozen_bytes
     second_output = json.loads(capsys.readouterr().out)
     assert Path(second_output["audit"]) != first_audit
     assert first_audit.read_bytes() == first_audit_bytes
-    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 2
+    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 1
 
     original_build_player_actuals = collector.build_player_actuals
 
@@ -358,4 +561,4 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     monkeypatch.setattr(collector, "build_player_actuals", change_official_results_after_read)
     with pytest.raises(RuntimeError, match="inputs changed while actuals were being built"):
         collector.main()
-    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 2
+    assert len(list((data_dir / "archive" / "26" / "gw1").glob("post_match_*/manifest.json"))) == 1

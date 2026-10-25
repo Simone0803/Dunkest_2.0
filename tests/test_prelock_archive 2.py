@@ -1,5 +1,6 @@
 from __future__ import annotations
 import importlib.util
+import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -25,9 +26,40 @@ def make_run(tmp_path: Path, *, unknown_fixture_time: bool = False) -> Path:
     (run / "manifest.json").write_text(json.dumps(manifest))
     (run / "predictions.parquet").write_bytes(b"prediction-bytes")
     (run / "lineups.parquet").write_bytes(b"lineup-bytes")
+    forecast_bytes = b"candidate-forecast-bytes"
+    (run / "player_forecast_snapshot.parquet").write_bytes(forecast_bytes)
+    import pandas as pd
+    feature_path = run / "runtime_feature_snapshot.parquet"
+    pd.DataFrame([{
+        "forecast_record_id": "record-1", "dunkest_player_id": "dk-1",
+        "canonical_player_id": "dk-1", "nba_game_id": "nba-1",
+        "player_key": "player-one", "feature_match_status": "missing",
+        "candidate_key_count": 1, "source_feature_row_count": 0,
+    }]).to_parquet(feature_path, index=False)
+    manifest["player_forecast_snapshot"] = {
+        "path": "player_forecast_snapshot.parquet",
+        "sha256": hashlib.sha256(forecast_bytes).hexdigest(),
+        "candidate_rows": 1,
+        "certification": {"pre_lock_eligible": False},
+    }
+    manifest["runtime_feature_snapshot"] = {
+        "path": feature_path.name,
+        "sha256": hashlib.sha256(feature_path.read_bytes()).hexdigest(),
+        "candidate_rows": 1,
+        "source_input_dataset_identifier": "test-inputs",
+        "source_input_provenance": [],
+        "certification_status": "valid",
+    }
+    manifest["dataset_identifier"] = "test-inputs"
+    (run / "manifest.json").write_text(json.dumps(manifest))
     fetched = (datetime.now(timezone.utc) - timedelta(minutes=5)).isoformat()
     for name in archive.SNAPSHOTS:
-        (snap / name).write_bytes(("snapshot:" + name).encode())
+        if name.startswith("dunkest_players_"):
+            pd.DataFrame([{
+                "player_name": f"Player {i}", "cr": 5.0, "team_code": "BOS", "position": "G"
+            } for i in range(410)]).to_parquet(snap / name, index=False)
+        else:
+            (snap / name).write_bytes(("snapshot:" + name).encode())
         if name in archive.FRESHNESS_REQUIRED:
             (snap / (name + ".meta.json")).write_text(json.dumps({"fetched_at": fetched}))
     return run

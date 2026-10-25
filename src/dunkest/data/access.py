@@ -186,6 +186,58 @@ def save_player_credit_snapshot(
     )
 
 
+def save_dunkest_round_snapshot(
+    settings: Settings,
+    round_stats: pd.DataFrame,
+    gameweek: int,
+    dunkest_round: int,
+) -> bool:
+    """Archive official per-round PDK, PLUS and credit values once observed.
+
+    Round snapshots are intentionally write-once: Dunkest's current CR/PLUS
+    can move after later games, so refreshing an old round from the live table
+    would silently replace the credit value recorded for that day.
+    """
+    required = {"player_name", "pdk", "cr", "plus"}
+    if round_stats.empty or not required.issubset(round_stats.columns):
+        return False
+    path = _processed(
+        settings,
+        f"dunkest_stats_{settings.season_id}_gw{int(gameweek)}_round{int(dunkest_round)}.parquet",
+    )
+    existing = read_parquet(path)
+    if existing is not None and not existing.empty:
+        return False
+    snapshot = round_stats.copy()
+    snapshot["gameweek"] = int(gameweek)
+    snapshot["dunkest_round"] = int(dunkest_round)
+    snapshot["observed_at_utc"] = datetime.now(timezone.utc).isoformat()
+    if "cr" in snapshot:
+        snapshot["cr"] = pd.to_numeric(snapshot["cr"], errors="coerce")
+    if "pdk" in snapshot:
+        snapshot["pdk"] = pd.to_numeric(snapshot["pdk"], errors="coerce")
+    if "plus" in snapshot:
+        snapshot["plus"] = pd.to_numeric(snapshot["plus"], errors="coerce")
+    snapshot = snapshot.dropna(subset=["player_name", "pdk", "cr", "plus"])
+    if "player_id" in snapshot:
+        snapshot = snapshot.drop_duplicates("player_id", keep="last")
+    else:
+        snapshot = snapshot.drop_duplicates("player_name", keep="last")
+    if snapshot.empty:
+        return False
+    write_parquet(
+        snapshot,
+        path,
+        source="dunkest_official_stats_table_round",
+        season_id=settings.season_id,
+        dunkest_stats_season_id=settings.dunkest_stats_season_id or settings.season_id,
+        gameweek=int(gameweek),
+        dunkest_round=int(dunkest_round),
+        rows=len(snapshot),
+    )
+    return True
+
+
 def add_previous_credit_change(
     settings: Settings, market: pd.DataFrame, gameweek: int
 ) -> pd.DataFrame:
@@ -250,7 +302,7 @@ def get_plusvalenza_history(
     NBA years. Candidate seasons are therefore verified using NBA team codes
     in the official statistics response before they enter the training set.
     """
-    active_season = str(season_id or settings.season_id)
+    active_season = str(season_id or settings.dunkest_stats_season_id or settings.season_id)
     through_gameweek = settings.target_gameweek - 1 if through_gameweek is None else int(through_gameweek)
     if through_gameweek < 0:
         raise ValueError("through_gameweek must be nonnegative")
@@ -278,6 +330,7 @@ def get_plusvalenza_history(
     for candidate in range(latest_candidate, 0, -1):
         prior_settings = copy(settings)
         prior_settings.season_id = str(candidate)
+        prior_settings.dunkest_stats_season_id = str(candidate)
         try:
             first_week = dk_module.fetch_dunkest_gameweek_players(prior_settings, 1)
         except Exception as exc:
@@ -313,6 +366,7 @@ def get_plusvalenza_history(
             continue
         prior_settings = copy(settings)
         prior_settings.season_id = historical_season
+        prior_settings.dunkest_stats_season_id = historical_season
         season_samples: list[pd.DataFrame] = []
         consecutive_misses = 0
         for gameweek in range(1, cutoff + 1):
@@ -421,7 +475,38 @@ def get_dunkest_data(
             if use_live_market:
                 save_player_credit_snapshot(settings, df, gw)
             return df
-    df = dk_module.fetch_nba_season_players(settings)
+    offline_market_cache = False
+    try:
+        df = dk_module.fetch_nba_season_players(settings)
+    except Exception:
+        metadata = read_cache_metadata(path) or {}
+        cached = read_parquet(path)
+        if (
+            not has_live_market
+            or not cache_valid(path, max_age_hours=settings.market_cache_max_age_hours)
+            or metadata.get("source") != "dunkest_api/stats/table"
+            or str(metadata.get("season_id")) != str(settings.season_id)
+            or int(metadata.get("gameweek", -1)) != int(gw)
+            or int(metadata.get("rows", 0)) < 250
+            or cached is None
+            or len(cached) < 250
+            or not {"player_name", "cr", "pdk", "gameweek_stats_available", "actual_pdk"}.issubset(cached.columns)
+            or cached["gameweek_stats_available"].fillna(True).astype(bool).any()
+            or pd.to_numeric(cached["actual_pdk"], errors="coerce").notna().any()
+        ):
+            raise
+        # The cached Stats table is a same-GW pregame capture. Keep its fetch
+        # timestamp intact and merge the separately timestamped live Lineups
+        # market below; never turn the cache fallback into a fresh snapshot.
+        logger.warning(
+            "Dunkest Stats endpoint unavailable for GW%s; reusing the recent "
+            "same-GW pregame table (%d rows).",
+            gw,
+            len(cached),
+            exc_info=True,
+        )
+        df = cached.copy()
+        offline_market_cache = True
     live = pd.DataFrame()
     if has_live_market:
         live = pd.read_csv(live_market_path)
@@ -449,10 +534,49 @@ def get_dunkest_data(
     cr_updates = df[["player_name", "cr"]].copy()
     cr_updates["key"] = cr_updates["player_name"].map(player_key)
     current_week_stats = pd.DataFrame()
-    for gw_i in range(max(1, gw - 5), gw + 1):
+    for gw_i in (() if offline_market_cache else range(max(1, gw - 5), gw + 1)):
         gw_slice = dk_module.fetch_dunkest_gameweek_players(settings, gw_i)
         if gw_slice.empty:
             continue
+        if use_live_market and gw_i < gw and "dunkest_rounds" in gw_slice.columns:
+            round_ids = str(gw_slice["dunkest_rounds"].dropna().iloc[0]).split(",")
+            for round_id in round_ids:
+                try:
+                    round_number = int(round_id)
+                    round_stats = dk_module.fetch_dunkest_round_players(
+                        settings, gw_i, round_number
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        "Could not fetch official Dunkest stats for GW%s round %s: %s",
+                        gw_i, round_id, exc,
+                    )
+                    continue
+                if round_stats.empty:
+                    logger.warning(
+                        "Official Dunkest stats for prior GW%s round %s are empty; "
+                        "no PDK/CR snapshot was archived for future features.",
+                        gw_i, round_id,
+                    )
+                    continue
+                if save_dunkest_round_snapshot(
+                    settings, round_stats, gw_i, round_number
+                ):
+                    logger.info(
+                        "Archived official Dunkest stats/credits for GW%s round %s: %s players",
+                        gw_i, round_number, len(round_stats),
+                    )
+                else:
+                    snapshot_path = _processed(
+                        settings,
+                        f"dunkest_stats_{settings.season_id}_gw{gw_i}_round{round_number}.parquet",
+                    )
+                    if not snapshot_path.exists():
+                        logger.warning(
+                            "Official Dunkest stats for prior GW%s round %s had no valid "
+                            "player/PDK/CR/PLUS rows; no snapshot was archived.",
+                            gw_i, round_number,
+                        )
         if gw_i == gw:
             current_week_stats = gw_slice
         if {"player_name", "cr"}.issubset(gw_slice.columns):
@@ -462,7 +586,8 @@ def get_dunkest_data(
             weekly = weekly.loc[weekly["cr"].ge(settings.min_cr)].drop_duplicates("key", keep="last")
             updates = weekly.set_index("key")["cr"]
             cr_updates["cr"] = cr_updates["key"].map(updates).fillna(cr_updates["cr"])
-    df = add_official_plusvalenza(df, current_week_stats)
+    if not offline_market_cache:
+        df = add_official_plusvalenza(df, current_week_stats)
     df = df.merge(
         cr_updates.drop(columns="key").rename(columns={"cr": "cr_latest"}),
         on="player_name",
@@ -502,9 +627,10 @@ def get_dunkest_data(
         df = df.drop(columns=["key", "pdk_gw"], errors="ignore")
     df["gameweek"] = gw
     df = add_previous_credit_change(settings, df, gw)
-    if use_live_market:
+    if use_live_market and not offline_market_cache:
         save_player_credit_snapshot(settings, df, gw)
-    write_parquet(df, path, source="dunkest_api/stats/table", season_id=settings.season_id, gameweek=gw)
+    if not offline_market_cache:
+        write_parquet(df, path, source="dunkest_api/stats/table", season_id=settings.season_id, gameweek=gw)
     return df
 
 
@@ -757,35 +883,76 @@ def get_player_data(settings: Settings, force_refresh: bool = False) -> pd.DataF
     if df.empty and dk.empty and collection_error is not None:
         raise RuntimeError(f"NBA player game-log collection failed: {collection_error}") from collection_error
     if df.empty and not dk.empty:
-        if not settings.allow_synthetic_logs:
+        report = df.attrs.get("collection_report", {})
+        complete_empty_season = bool(
+            settings.use_nba_api_logs
+            and collection_error is None
+            and report.get("collection_complete") is True
+            and int(report.get("expected_entities", 0) or 0) > 0
+        )
+        if complete_empty_season:
+            # A complete zero-row result is valid before the season's first
+            # completed games; it must not trigger synthetic fallback.
+            df["data_source"] = pd.Series(dtype="string")
+        elif not settings.allow_synthetic_logs:
             raise RuntimeError(
                 "Log NBA reali completi non disponibili; il fallback sintetico è disattivato. "
                 "Riprova con una cache player_game_logs valida oppure abilita "
                 "allow_synthetic_logs solo se accetti previsioni basate su dati simulati. "
                 f"Errore raccolta: {collection_error}"
             ) from collection_error
-        from dunkest.data.nba.fallback_logs import synthetic_logs_from_dunkest
+        else:
+            from dunkest.data.nba.fallback_logs import synthetic_logs_from_dunkest
 
-        import warnings
+            import warnings
 
-        warnings.warn(
-            "NBA game logs unavailable; using synthetic logs. Predictions and backtests "
-            "are based on synthetic history.", RuntimeWarning, stacklevel=2
-        )
-        fallback = dk
-        if settings.max_player_log_entries > 0:
-            order_column = "cr" if "cr" in dk.columns else "pdk"
-            fallback = dk.assign(_priority=pd.to_numeric(dk[order_column], errors="coerce"))
-            fallback = fallback.sort_values("_priority", ascending=False, na_position="last").head(
-                settings.max_player_log_entries
-            ).drop(columns="_priority")
-        df = synthetic_logs_from_dunkest(fallback)
-        df["data_source"] = "synthetic_dunkest_market"
-        write_parquet(df, path, source="synthetic_dunkest_market", season=settings.season)
-        return df
+            warnings.warn(
+                "NBA game logs unavailable; using synthetic logs. Predictions and backtests "
+                "are based on synthetic history.", RuntimeWarning, stacklevel=2
+            )
+            fallback = dk
+            if settings.max_player_log_entries > 0:
+                order_column = "cr" if "cr" in dk.columns else "pdk"
+                fallback = dk.assign(_priority=pd.to_numeric(dk[order_column], errors="coerce"))
+                fallback = fallback.sort_values("_priority", ascending=False, na_position="last").head(
+                    settings.max_player_log_entries
+                ).drop(columns="_priority")
+            df = synthetic_logs_from_dunkest(fallback)
+            df["data_source"] = "synthetic_dunkest_market"
+            write_parquet(df, path, source="synthetic_dunkest_market", season=settings.season)
+            return df
     if not df.empty:
         df["data_source"] = "nba_api/playergamelog"
     report = df.attrs.get("collection_report", {})
+    if report.get("collection_complete") is True:
+        metadata = read_cache_metadata(path) or {}
+        if (
+            metadata.get("source") == "nba_api/playergamelog"
+            and metadata.get("collection_complete") is True
+        ):
+            previous = read_parquet(path)
+            if previous is not None and not previous.empty:
+                if df.empty:
+                    # An empty complete response is valid before the season's
+                    # first game, but must not erase games already persisted.
+                    df = previous
+                    logger.warning(
+                        "Complete NBA player-log refresh returned zero rows for %s; "
+                        "retaining %d previously saved rows.",
+                        settings.season,
+                        len(previous),
+                    )
+                else:
+                    df, update_counts = _merge_complete_player_log_update(previous, df)
+                    logger.info(
+                        "Updated %s player-game log: fetched=%d, added=%d, refreshed=%d, retained=%d, total=%d",
+                        settings.season,
+                        update_counts["fetched"],
+                        update_counts["added"],
+                        update_counts["refreshed"],
+                        update_counts["retained"],
+                        len(df),
+                    )
     write_parquet(
         df,
         path,
@@ -794,6 +961,54 @@ def get_player_data(settings: Settings, force_refresh: bool = False) -> pd.DataF
         **report,
     )
     return df
+
+
+def _merge_complete_player_log_update(
+    previous: pd.DataFrame, fetched: pd.DataFrame
+) -> tuple[pd.DataFrame, dict[str, int]]:
+    """Upsert a complete NBA refresh while retaining games absent from the response."""
+    key_columns = ("PLAYER_ID", "GAME_ID")
+    for label, frame in (("cached", previous), ("fetched", fetched)):
+        if not set(key_columns).issubset(frame.columns):
+            raise RuntimeError(
+                f"Cannot safely merge {label} player-game logs without PLAYER_ID and GAME_ID."
+            )
+        if frame[list(key_columns)].isna().any().any():
+            raise RuntimeError(f"{label.title()} player-game logs contain missing identity keys.")
+        keys = frame[list(key_columns)].astype("string").apply(lambda col: col.str.strip())
+        if keys.eq("").any().any() or keys.duplicated(list(key_columns)).any():
+            raise RuntimeError(f"{label.title()} player-game logs contain blank or duplicate player-game keys.")
+
+    old = previous.copy()
+    new = fetched.copy()
+    old["_player_game_key"] = (
+        old["PLAYER_ID"].astype("string").str.strip()
+        + ":" + old["GAME_ID"].astype("string").str.strip()
+    )
+    new["_player_game_key"] = (
+        new["PLAYER_ID"].astype("string").str.strip()
+        + ":" + new["GAME_ID"].astype("string").str.strip()
+    )
+    old_keys = set(old["_player_game_key"])
+    new_keys = set(new["_player_game_key"])
+    refreshed = len(old_keys & new_keys)
+    added = len(new_keys - old_keys)
+    retained = len(old_keys - new_keys)
+    merged = pd.concat(
+        [old.loc[~old["_player_game_key"].isin(new_keys)], new],
+        ignore_index=True,
+        sort=False,
+    ).drop(columns="_player_game_key")
+    merged["GAME_DATE"] = pd.to_datetime(merged["GAME_DATE"], errors="coerce", utc=True).dt.tz_convert(None)
+    merged = merged.sort_values(
+        [column for column in ("GAME_DATE", "PLAYER_ID", "GAME_ID") if column in merged],
+        kind="stable",
+        na_position="last",
+    ).reset_index(drop=True)
+    return merged, {
+        "fetched": len(new), "added": added, "refreshed": refreshed,
+        "retained": retained,
+    }
 
 
 def get_team_data(settings: Settings, force_refresh: bool = False) -> pd.DataFrame:

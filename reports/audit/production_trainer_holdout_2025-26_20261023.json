@@ -1,0 +1,243 @@
+{
+  "created_utc": "2026-10-23T14:41:03.052434+00:00",
+  "source_dataset": "data/processed/dunkest_pdk_game_training_2020-26_v3.parquet",
+  "production_trainer_path": "train_models(settings, training_rows, target_column=target_pdk_official, sample_weight=_training_sample_weight) then _ensemble_predict",
+  "target": "official Dunkest PDK; valid rows only through adapt_certified_training_rows",
+  "train_seasons": [
+    "13",
+    "19",
+    "5",
+    "7",
+    "9"
+  ],
+  "holdout_season": "2025-26",
+  "train_rows": 93766,
+  "test_rows": 18412,
+  "holdout_loaded_for_training": false,
+  "trained_parameters_changed": false,
+  "metrics": [
+    {
+      "candidate": "production_ensemble",
+      "n": 18412,
+      "mae": 7.51488428013641,
+      "rmse": 9.765915432968107,
+      "bias_pred_minus_actual": -0.012601523864321777,
+      "r2": 0.43195791152727103
+    },
+    {
+      "candidate": "baseline_prev10_mean",
+      "n": 18412,
+      "mae": 7.788633422517751,
+      "rmse": 10.153896308385907,
+      "bias_pred_minus_actual": -0.047916359542948116,
+      "r2": 0.3859269395626125
+    }
+  ],
+  "decile_calibration": [
+    {
+      "prediction_bin": "(-1.0, 5.841]",
+      "n": 1842,
+      "mean_predicted": 4.283737837797842,
+      "mean_observed": 4.210933767643866,
+      "bias_pred_minus_actual": 0.07280407015397707,
+      "mae": 4.294555693801776
+    },
+    {
+      "prediction_bin": "(5.841, 8.564]",
+      "n": 1841,
+      "mean_predicted": 7.234673914338377,
+      "mean_observed": 7.29598587724063,
+      "bias_pred_minus_actual": -0.06131196290225286,
+      "mae": 5.8025952995590995
+    },
+    {
+      "prediction_bin": "(8.564, 10.752]",
+      "n": 1841,
+      "mean_predicted": 9.725290835462339,
+      "mean_observed": 9.822661596958175,
+      "bias_pred_minus_actual": -0.09737076149583555,
+      "mae": 6.520547882251079
+    },
+    {
+      "prediction_bin": "(10.752, 12.527]",
+      "n": 1841,
+      "mean_predicted": 11.639988853804905,
+      "mean_observed": 11.854769147202608,
+      "bias_pred_minus_actual": -0.21478029339770355,
+      "mae": 6.949017244804879
+    },
+    {
+      "prediction_bin": "(12.527, 14.609]",
+      "n": 1841,
+      "mean_predicted": 13.548904536391646,
+      "mean_observed": 13.967762085822923,
+      "bias_pred_minus_actual": -0.41885754943127446,
+      "mae": 7.2197951540668335
+    },
+    {
+      "prediction_bin": "(14.609, 17.014]",
+      "n": 1841,
+      "mean_predicted": 15.776272464720776,
+      "mean_observed": 16.05120043454644,
+      "bias_pred_minus_actual": -0.27492796982566486,
+      "mae": 7.898400845434332
+    },
+    {
+      "prediction_bin": "(17.014, 19.855]",
+      "n": 1841,
+      "mean_predicted": 18.42424015824063,
+      "mean_observed": 18.178582292232484,
+      "bias_pred_minus_actual": 0.24565786600814907,
+      "mae": 8.019129959493357
+    },
+    {
+      "prediction_bin": "(19.855, 23.145]",
+      "n": 1841,
+      "mean_predicted": 21.413199858353963,
+      "mean_observed": 21.52348723519826,
+      "bias_pred_minus_actual": -0.11028737684429789,
+      "mae": 8.725172327882815
+    },
+    {
+      "prediction_bin": "(23.145, 28.638]",
+      "n": 1841,
+      "mean_predicted": 25.687273743898793,
+      "mean_observed": 25.371303639326452,
+      "bias_pred_minus_actual": 0.3159701045723418,
+      "mae": 9.347256814296355
+    },
+    {
+      "prediction_bin": "(28.638, 57.545]",
+      "n": 1842,
+      "mean_predicted": 33.5539534033834,
+      "mean_observed": 33.1371444082519,
+      "bias_pred_minus_actual": 0.4168089951315029,
+      "mae": 10.3725685620139
+    }
+  ],
+  "history_lt5": {
+    "n": 440,
+    "ensemble_mae": 5.218220224317507,
+    "baseline_prev10_mae": 6.232318181818181
+  },
+  "monthly": [
+    {
+      "month": "2025-10",
+      "n": 1442,
+      "ensemble_mae": 7.676731193619559,
+      "baseline_prev10_mae": 8.286912104000177,
+      "ensemble_bias": 0.3659049536966847
+    },
+    {
+      "month": "2025-11",
+      "n": 3056,
+      "ensemble_mae": 7.32971388706202,
+      "baseline_prev10_mae": 7.546179399879499,
+      "ensemble_bias": -0.11982122399628069
+    },
+    {
+      "month": "2025-12",
+      "n": 3177,
+      "ensemble_mae": 7.645305516497032,
+      "baseline_prev10_mae": 7.8264692619572225,
+      "ensemble_bias": 0.035403454587353285
+    },
+    {
+      "month": "2026-01",
+      "n": 3469,
+      "ensemble_mae": 7.444487729875104,
+      "baseline_prev10_mae": 7.721739645247933,
+      "ensemble_bias": 0.20767417706583072
+    },
+    {
+      "month": "2026-02",
+      "n": 2360,
+      "ensemble_mae": 7.638295473037995,
+      "baseline_prev10_mae": 7.939875282485875,
+      "ensemble_bias": 0.03731885921196021
+    },
+    {
+      "month": "2026-03",
+      "n": 3629,
+      "ensemble_mae": 7.42105367043055,
+      "baseline_prev10_mae": 7.668544962974627,
+      "ensemble_bias": -0.0023475530355999323
+    },
+    {
+      "month": "2026-04",
+      "n": 1279,
+      "ensemble_mae": 7.680338310086545,
+      "baseline_prev10_mae": 7.9552807376794865,
+      "ensemble_bias": -1.0210572895444099
+    }
+  ],
+  "feature_columns": [
+    "pdk_mean_3",
+    "pdk_mean_5",
+    "pdk_mean_10",
+    "pdk_std_5",
+    "pdk_median_5",
+    "pdk_season_mean",
+    "min_mean_5",
+    "expected_pdk_minutes_model",
+    "pts_mean_5",
+    "reb_mean_5",
+    "ast_mean_5",
+    "stl_per36_5",
+    "blk_per36_5",
+    "tov_per36_5",
+    "oreb_per36_5",
+    "dreb_per36_5",
+    "fg3m_per36_5",
+    "fga_per36_5",
+    "rest_days",
+    "is_b2b",
+    "is_home",
+    "player_opp_games",
+    "lag1_pdk",
+    "lag2_pdk",
+    "lag3_pdk",
+    "lag4_pdk",
+    "lag5_pdk",
+    "pdk_trend_3v10",
+    "min_trend_3v5",
+    "min_last_vs_prev5",
+    "abs_min_last_vs_prev5",
+    "team_changed_from_previous_game",
+    "team_history_known",
+    "team_games_since_change",
+    "lag1_nba_min",
+    "lag2_nba_min",
+    "lag3_nba_min",
+    "prev3_nba_min_mean",
+    "lag1_nba_pts",
+    "lag2_nba_pts",
+    "lag3_nba_pts",
+    "prev3_nba_pts_mean",
+    "lag1_nba_reb",
+    "lag2_nba_reb",
+    "lag3_nba_reb",
+    "prev3_nba_reb_mean",
+    "lag1_nba_ast",
+    "lag2_nba_ast",
+    "lag3_nba_ast",
+    "prev3_nba_ast_mean",
+    "history_games_before_target",
+    "nba_history_games_before_target"
+  ],
+  "model_weights": {
+    "ridge": 0.33395385227561436,
+    "rf": 0.33264133899169823,
+    "gbr": 0.33340480873268735
+  },
+  "holdout_dates": {
+    "min": "2025-10-21 00:00:00",
+    "max": "2026-04-10 00:00:00"
+  },
+  "limitations": [
+    "Prequential game-level evaluation: later 2025-26 rows use earlier official game outcomes in their past-only lag features.",
+    "Does not validate roster/availability/coach snapshots, lineups or official lineup scoring.",
+    "Decile calibration is descriptive reliability on this one held-out season; it does not assess prediction interval coverage.",
+    "2018-19 and 2019-20 excluded because Dunkest validity flag is false for every row."
+  ]
+}

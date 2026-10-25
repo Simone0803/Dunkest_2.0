@@ -14,6 +14,7 @@ from dunkest.config import Settings
 from dunkest.names import player_key
 from dunkest.report.artifacts import save_post_match_snapshot
 from dunkest.rules.coach import coach_points_from_game
+from dunkest.rules.pdk import pdk_from_boxscore_row
 from dunkest.backtest.timing import safe_postgame_retrieval_cutoff
 
 
@@ -83,13 +84,19 @@ def game_date_series(values: pd.Series) -> pd.Series:
     return pd.to_datetime(values, errors="coerce").dt.strftime("%Y-%m-%d")
 
 
+def _verified(value: object) -> bool:
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    return str(value).strip().casefold() in {"true", "1", "yes"}
+
+
 def prepare_fixture_index(mapping: pd.DataFrame, gameweek: int) -> tuple[pd.DataFrame, dict]:
     required = {"nba_game_id", "home_team", "away_team", "game_datetime_utc", "dunkest_gameweek", "mapping_verified"}
     missing = sorted(required - set(mapping.columns))
     if missing:
         raise ValueError(f"Fixture mapping missing required columns: {missing}")
     fixtures = mapping.loc[pd.to_numeric(mapping["dunkest_gameweek"], errors="coerce").eq(gameweek)].copy()
-    fixtures = fixtures.loc[fixtures["mapping_verified"].fillna(False).astype(bool)]
+    fixtures = fixtures.loc[fixtures["mapping_verified"].map(_verified)]
     if fixtures.empty:
         raise ValueError(f"No verified fixture mapping for GW{gameweek}.")
     if {"source_retrieved_at_utc", "raw_payload_sha256"}.issubset(fixtures.columns):
@@ -229,6 +236,341 @@ def build_player_actuals(
         "opponent_column": opponent_col,
     }
     return actuals, pd.concat([missing, unresolved], ignore_index=True, sort=False), audit
+
+
+def _finite_number(value: object) -> float:
+    parsed = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+    return float(parsed) if pd.notna(parsed) and np.isfinite(float(parsed)) else np.nan
+
+
+def _parse_minutes(value: object) -> float:
+    if isinstance(value, str) and ":" in value:
+        parts = value.strip().split(":", maxsplit=1)
+        try:
+            minutes = float(parts[0])
+            seconds = float(parts[1])
+            if 0 <= seconds < 60:
+                return minutes + seconds / 60.0
+        except (TypeError, ValueError):
+            pass
+    return _finite_number(value)
+
+
+def build_player_outcome_panel(
+    predictions: pd.DataFrame,
+    player_market: pd.DataFrame,
+    fixtures: pd.DataFrame,
+    official_games: pd.DataFrame,
+    nba_player_logs: pd.DataFrame,
+) -> tuple[pd.DataFrame, dict]:
+    """Return one outcome row per frozen candidate; missing logs stay missing."""
+    if not {"player_name", "nba_game_id"}.issubset(predictions.columns):
+        raise ValueError("Frozen forecasts need player_name and nba_game_id columns.")
+    if not {"player_name", "team_code"}.issubset(player_market.columns):
+        raise ValueError("Frozen player market needs player_name and team_code columns.")
+
+    official_actuals, official_unresolved, official_audit = build_player_actuals(
+        predictions, player_market, fixtures, official_games
+    ) if not official_games.empty else (
+        pd.DataFrame(columns=["player_name", "nba_game_id", "actual_pdk"]),
+        pd.DataFrame(),
+        {"mapped_player_fixture_actuals": 0, "expected_player_fixture_pairs": len(predictions), "prediction_coverage": 0.0},
+    )
+    ambiguous_official: set[tuple[str, str]] = set()
+    if not official_unresolved.empty and {"player_key", "game_date", "candidate_fixture_count"}.issubset(official_unresolved):
+        for _, unresolved in official_unresolved.iterrows():
+            if _finite_number(unresolved.get("candidate_fixture_count")) > 1:
+                ambiguous_official.add((str(unresolved["player_key"]), str(unresolved["game_date"])))
+    market = player_market.copy()
+    market["player_key"] = market["player_name"].map(player_key)
+    market["team_code"] = market["team_code"].astype(str).str.upper().str.strip()
+    team_counts = market.groupby("player_key")["team_code"].nunique()
+    if (team_counts > 1).any():
+        raise ValueError("Frozen candidate identity maps to multiple NBA teams.")
+    market = market.drop_duplicates("player_key", keep="first").set_index("player_key")
+
+    fixture_by_id = {
+        str(row["nba_game_id"]): row
+        for _, row in fixtures.iterrows()
+        if str(row.get("nba_game_id", "")).strip()
+    }
+    nba_by_key: dict[tuple[str, str], list[pd.Series]] = {}
+    if not nba_player_logs.empty:
+        game_col = choose(nba_player_logs, ("Game_ID", "GAME_ID", "game_id", "gameId"), "NBA player logs")
+        name_col = choose(nba_player_logs, ("PLAYER_NAME", "player_name", "name"), "NBA player logs")
+        team_col = choose(nba_player_logs, ("TEAM_ABBREVIATION", "team_abbreviation", "team"), "NBA player logs")
+        minutes_col = choose(nba_player_logs, ("MIN", "minutes", "MINUTES", "MIN_SEC"), "NBA player logs")
+        logs = nba_player_logs.copy()
+        logs["_game"] = logs[game_col].astype(str).str.strip()
+        logs["_player_key"] = logs[name_col].map(player_key)
+        logs["_team"] = logs[team_col].astype(str).str.upper().str.strip()
+        logs["_minutes"] = logs[minutes_col].map(_parse_minutes)
+        for _, row in logs.iterrows():
+            nba_by_key.setdefault((row["_game"], row["_player_key"]), []).append(row)
+
+    official = official_actuals.copy()
+    official["player_key"] = official["player_name"].map(player_key) if not official.empty else pd.Series(dtype=str)
+    official_lookup = {
+        (str(row["nba_game_id"]), str(row["player_key"])): _finite_number(row.get("actual_pdk"))
+        for _, row in official.iterrows()
+    }
+    proxy_fields = {
+        "PTS", "OREB", "DREB", "AST", "STL", "BLK", "BLKA", "TOV",
+        "FG3M", "FGA", "FGM", "FTA", "FTM",
+    }
+    rows: list[dict] = []
+    for _, forecast in predictions.iterrows():
+        name = str(forecast.get("player_name", "")).strip()
+        key = player_key(name)
+        raw_game_id = forecast.get("nba_game_id")
+        game_id = "" if pd.isna(raw_game_id) else str(raw_game_id).strip()
+        team = str(forecast.get("team", "")).upper().strip()
+        market_team = str(market.loc[key, "team_code"]) if key in market.index else ""
+        if not team:
+            team = market_team
+        team_matches_market = bool(team and market_team and team == market_team)
+        fixture = fixture_by_id.get(game_id)
+        fixture_ok = bool(
+            fixture is not None
+            and _verified(fixture.get("mapping_verified", False))
+            and team_matches_market
+            and team in {str(fixture.get("home_team", "")).upper(), str(fixture.get("away_team", "")).upper()}
+        )
+        opponent = str(forecast.get("opponent", "")).upper().strip()
+        if fixture_ok:
+            expected_opp = str(
+                fixture.get("away_team") if team == str(fixture.get("home_team", "")).upper()
+                else fixture.get("home_team")
+            ).upper().strip()
+            fixture_ok = not opponent or opponent == expected_opp
+            if not opponent:
+                opponent = expected_opp
+        actual_min = np.nan
+        minutes_status = "outcome_missing"
+        proxy_pdk = np.nan
+        matching_logs = nba_by_key.get((game_id, key), []) if game_id else []
+        if fixture_ok and matching_logs:
+            wrong_team_rows = [row for row in matching_logs if str(row.get("_team", "")) != team]
+            if wrong_team_rows:
+                minutes_status = "outcome_ambiguous"
+            matching_logs = [row for row in matching_logs if str(row.get("_team", "")) == team]
+            minutes_values = sorted(set(float(row["_minutes"]) for row in matching_logs if pd.notna(row["_minutes"])))
+            if minutes_status == "outcome_ambiguous":
+                pass
+            elif len(matching_logs) != 1 or len(minutes_values) != 1:
+                minutes_status = "outcome_ambiguous"
+            elif minutes_values[0] > 0:
+                actual_min = minutes_values[0]
+                minutes_status = "appeared"
+                box = matching_logs[0]
+                if proxy_fields.issubset(box.index) and all(pd.notna(box[field]) for field in proxy_fields):
+                    proxy_pdk = pdk_from_boxscore_row(box, team_won=None)
+            elif minutes_values[0] == 0:
+                actual_min = 0.0
+                comment = " ".join(
+                    str(matching_logs[0].get(column, ""))
+                    for column in ("COMMENT", "comment", "STATUS", "status")
+                ).upper()
+                minutes_status = "dnp_documented" if "DNP" in comment or "INACTIVE" in comment else "zero_minutes_verified"
+        elif not fixture_ok:
+            minutes_status = "fixture_unverified"
+
+        fixture_date = str(fixture.get("_date", "")) if fixture is not None else ""
+        is_official_ambiguous = (key, fixture_date) in ambiguous_official
+        actual_official = official_lookup.get((game_id, key), np.nan) if fixture_ok and not is_official_ambiguous else np.nan
+        canonical_id = forecast.get("canonical_player_id", key)
+        if pd.isna(canonical_id) or not str(canonical_id).strip():
+            canonical_id = key
+        if minutes_status == "outcome_missing" and np.isfinite(actual_official):
+            minutes_status = "official_pdk_only"
+        rows.append({
+            **forecast.to_dict(),
+            "player_key": key,
+            "canonical_player_id": canonical_id,
+            "fixture_verified": fixture_ok,
+            "outcome_status": minutes_status,
+            "actual_minutes": actual_min,
+            "actual_minutes_source": "nba_player_game_log" if np.isfinite(actual_min) else None,
+            "actual_pdk_official": actual_official,
+            "actual_pdk": actual_official,
+            "actual_pdk_status": "official_verified" if np.isfinite(actual_official) else ("ambiguous" if is_official_ambiguous else "missing"),
+            "actual_pdk_source": "official_dunkest" if np.isfinite(actual_official) else None,
+            "actual_pdk_nba_proxy": proxy_pdk,
+            "actual_pdk_nba_proxy_source": "nba_boxscore_rule_proxy" if np.isfinite(proxy_pdk) else None,
+            "official_outcome_pending": not np.isfinite(actual_official),
+            "ambiguous_outcome": minutes_status == "outcome_ambiguous",
+            "ambiguous_official_pdk": bool(is_official_ambiguous),
+        })
+    panel = pd.DataFrame(rows)
+    if not panel.empty:
+        keys = list(zip(panel["player_key"], panel["nba_game_id"].fillna("").astype(str)))
+        if len(keys) != len(set(keys)):
+            raise ValueError("Frozen forecast contains duplicate player-fixture candidate rows.")
+    return panel, {
+        **official_audit,
+        "candidate_rows": int(len(panel)),
+        "minutes_reconciled": int(pd.to_numeric(panel.get("actual_minutes"), errors="coerce").notna().sum()),
+        "verified_zero_minutes": int(pd.to_numeric(panel.get("actual_minutes"), errors="coerce").eq(0.0).sum()),
+        "documented_dnp": int(panel.get("outcome_status", pd.Series(dtype=str)).eq("dnp_documented").sum()),
+        "missing_or_ambiguous": int(panel.get("outcome_status", pd.Series(dtype=str)).isin({"outcome_missing", "outcome_ambiguous", "fixture_unverified"}).sum()),
+        "ambiguous_official_pdk": int(panel.get("actual_pdk_status", pd.Series(dtype=str)).eq("ambiguous").sum()),
+    }
+
+
+def evaluate_player_forecast_panel(panel: pd.DataFrame) -> dict:
+    """Summarize coverage and errors using only valid, explicitly sourced labels."""
+    result = {
+        "candidate_count": int(len(panel)),
+        "reconciled_outcomes": int(panel.get("outcome_status", pd.Series(dtype=str)).isin({"appeared", "zero_minutes_verified", "dnp_documented", "official_pdk_only"}).sum()),
+        "verified_zero_minutes": int(pd.to_numeric(panel.get("actual_minutes"), errors="coerce").eq(0.0).sum()),
+        "documented_dnp": int(panel.get("outcome_status", pd.Series(dtype=str)).eq("dnp_documented").sum()),
+        "missing_outcomes": int(panel.get("outcome_status", pd.Series(dtype=str)).eq("outcome_missing").sum()),
+        "ambiguous_outcomes": int(panel.get("outcome_status", pd.Series(dtype=str)).isin({"outcome_ambiguous", "fixture_unverified"}).sum()),
+        "ambiguous_official_pdk": int(panel.get("actual_pdk_status", pd.Series(dtype=str)).eq("ambiguous").sum()),
+    }
+    result["outcome_coverage"] = (
+        result["reconciled_outcomes"] / result["candidate_count"] if result["candidate_count"] else 0.0
+    )
+    result["minutes_coverage"] = (
+        int(pd.to_numeric(panel.get("actual_minutes", pd.Series(dtype=float)), errors="coerce").notna().sum())
+        / result["candidate_count"] if result["candidate_count"] else 0.0
+    )
+    result["official_pdk_coverage"] = (
+        int(pd.to_numeric(panel.get("actual_pdk_official", pd.Series(dtype=float)), errors="coerce").notna().sum())
+        / result["candidate_count"] if result["candidate_count"] else 0.0
+    )
+    for label, prediction_col, actual_col in (
+        ("minutes", "expected_min", "actual_minutes"),
+        ("pdk_official", "expected_pdk", "actual_pdk_official"),
+    ):
+        if prediction_col not in panel or actual_col not in panel:
+            result[label] = {"n": 0, "mae": None, "rmse": None, "bias": None}
+            continue
+        predicted = pd.to_numeric(panel[prediction_col], errors="coerce")
+        actual = pd.to_numeric(panel[actual_col], errors="coerce")
+        valid = predicted.notna() & actual.notna() & np.isfinite(predicted) & np.isfinite(actual)
+        error = predicted.loc[valid] - actual.loc[valid]
+        result[label] = {
+            "n": int(valid.sum()),
+            "mae": float(error.abs().mean()) if valid.any() else None,
+            "rmse": float(np.sqrt(np.square(error).mean())) if valid.any() else None,
+            "bias": float(error.mean()) if valid.any() else None,
+        }
+    return result
+
+
+def _canonical_frame_hash(frame: pd.DataFrame, keys: list[str]) -> str:
+    ordered = frame.copy()
+    present_keys = [column for column in keys if column in ordered]
+    if present_keys:
+        ordered = ordered.sort_values(present_keys, kind="stable", na_position="last")
+    payload = ordered.to_json(orient="records", date_format="iso", double_precision=15)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _evaluation_markdown(evaluation: dict, run_id: str, certification: dict) -> str:
+    metrics = []
+    for key, label, unit in (("minutes", "Minuti", "min"), ("pdk_official", "PDK ufficiale", "PDK")):
+        item = evaluation.get(key, {})
+        metrics.append(
+            f"| {label} | {item.get('n', 0)} | {item.get('mae')} | {item.get('rmse')} | {item.get('bias')} | {unit} |"
+        )
+    return "\n".join([
+        "# Valutazione forecast giocatori",
+        "",
+        f"Run: `{run_id}`",
+        f"Certificazione pre-lock: `{bool(certification.get('pre_lock_eligible', False))}`",
+        f"Motivo: {certification.get('reason', 'evidenza di cutoff mancante')}",
+        "",
+        f"Candidati: {evaluation.get('candidate_count', 0)}; esiti riconciliati: {evaluation.get('reconciled_outcomes', 0)}; copertura: {evaluation.get('outcome_coverage', 0.0):.1%}.",
+        f"Copertura minuti: {evaluation.get('minutes_coverage', 0.0):.1%}; copertura PDK ufficiale: {evaluation.get('official_pdk_coverage', 0.0):.1%}.",
+        f"Zero minuti verificati: {evaluation.get('verified_zero_minutes', 0)}; DNP documentati: {evaluation.get('documented_dnp', 0)}; mancanti: {evaluation.get('missing_outcomes', 0)}; ambigui/non verificabili: {evaluation.get('ambiguous_outcomes', 0)}; PDK ufficiali ambigui: {evaluation.get('ambiguous_official_pdk', 0)}.",
+        "",
+        "| Target | N | MAE | RMSE | Bias (previsto − effettivo) | Unità |",
+        "|---|---:|---:|---:|---:|---|",
+        *metrics,
+        "",
+        "Le metriche PDK usano soltanto `actual_pdk_official`; `actual_pdk_nba_proxy` resta separato e non entra nell'etichetta ufficiale. Le metriche minuti includono solo righe NBA esplicite con minuti numerici, inclusi gli zero esplicitamente presenti. L'assenza di una riga nei log resta esito mancante.",
+        "",
+    ])
+
+
+def verify_immutable_prelock_bundle(run_dir: Path, run_manifest: dict) -> tuple[Path, dict]:
+    """Verify the canonical pre-lock archive and registry before outcome use."""
+    archive_manifest_path = run_dir / "archive_manifest.json"
+    if not archive_manifest_path.is_file():
+        raise ValueError("Run is not an immutable pre-lock archive; refusing certification or outcome reconciliation.")
+    archive_manifest = json.loads(archive_manifest_path.read_text(encoding="utf-8"))
+    current_files = []
+    for path in sorted(run_dir.rglob("*")):
+        if path.is_file() and path.name != "archive_manifest.json":
+            current_files.append({
+                "path": path.relative_to(run_dir).as_posix(),
+                "size_bytes": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            })
+    if current_files != archive_manifest.get("files", []):
+        raise ValueError("Pre-lock archive integrity check failed.")
+    run_id = str(run_manifest.get("run_id", run_dir.name))
+    registry_path = run_dir.parents[2] / "registry" / f"{run_id}.json"
+    if not registry_path.is_file():
+        raise ValueError("Immutable pre-lock registry record is missing.")
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    manifest_hash = hashlib.sha256(archive_manifest_path.read_bytes()).hexdigest()
+    if registry.get("archive_manifest_sha256") != manifest_hash:
+        raise ValueError("Pre-lock archive manifest does not match its registry hash.")
+    for filename, field in (("predictions.parquet", "predictions_sha256"), ("lineups.parquet", "lineups_sha256")):
+        path = run_dir / filename
+        if not path.is_file() or registry.get(field) != hashlib.sha256(path.read_bytes()).hexdigest():
+            raise ValueError(f"Frozen {filename} hash does not match its immutable registry.")
+    forecast_path = run_dir / "player_forecast_snapshot.parquet"
+    if (
+        not forecast_path.is_file()
+        or registry.get("player_forecast_snapshot_sha256") != hashlib.sha256(forecast_path.read_bytes()).hexdigest()
+    ):
+        raise ValueError("Frozen all-candidate forecast hash does not match its immutable registry.")
+    if not archive_manifest.get("pre_lock_eligible") or not registry.get("pre_lock_eligible"):
+        raise ValueError("Pre-lock archive is incomplete or not certified eligible.")
+    if registry.get("run_id") != run_id or run_manifest.get("run_id") != run_id:
+        raise ValueError("Pre-lock run identity differs across archive and registry.")
+    return registry_path, archive_manifest
+
+
+def validate_frozen_forecast(run_dir: Path, run_manifest: dict) -> tuple[pd.DataFrame, dict]:
+    registry_path, archive_manifest = verify_immutable_prelock_bundle(run_dir, run_manifest)
+    descriptor = run_manifest.get("player_forecast_snapshot", {})
+    # Resolve only inside the immutable run copy, never against a mutable source
+    # directory recorded before the run was archived.
+    path = run_dir / Path(descriptor.get("path", "player_forecast_snapshot.parquet")).name
+    if not path.is_file():
+        raise ValueError("Frozen all-candidate player forecast snapshot is missing; no retrospective reconstruction is allowed.")
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    if digest != descriptor.get("sha256"):
+        raise ValueError("Frozen player forecast snapshot hash mismatch.")
+    certification = descriptor.get("certification", {})
+    forecasted_at = pd.to_datetime(descriptor.get("forecast_timestamp_utc"), errors="coerce", utc=True)
+    cutoff = pd.to_datetime(descriptor.get("prediction_cutoff_utc"), errors="coerce", utc=True)
+    run_time = pd.to_datetime(run_manifest.get("timestamp"), errors="coerce", utc=True)
+    if (
+        not certification.get("pre_lock_eligible", False)
+        or not certification.get("exact_dunkest_cutoff_verified", False)
+        or not descriptor.get("cutoff_verified", False)
+        or len(str(descriptor.get("cutoff_source_sha256", ""))) != 64
+        or pd.isna(forecasted_at) or pd.isna(cutoff) or pd.isna(run_time)
+        or forecasted_at >= cutoff or run_time >= cutoff
+    ):
+        raise ValueError(
+            "Frozen forecast is not certified pre-lock: missing verification or forecast/run timestamp is at/after cutoff."
+        )
+    forecasts = pd.read_parquet(path)
+    if len(forecasts) != int(descriptor.get("candidate_rows", -1)):
+        raise ValueError("Frozen candidate forecast row count differs from its manifest.")
+    return forecasts, {
+        **certification,
+        "archive_manifest_sha256": hashlib.sha256((run_dir / "archive_manifest.json").read_bytes()).hexdigest(),
+        "registry_path": str(registry_path),
+        "archive_id": archive_manifest.get("run_id"),
+    }
 
 
 def build_coach_actuals(
@@ -424,12 +766,16 @@ def main() -> int:
         }, indent=2))
         return 2
 
+    predictions, forecast_certification = validate_frozen_forecast(run_dir, run_manifest)
+
     source_paths = {
         "official_player_games": player_path,
         "team_logs": team_path,
         "nba_player_logs_for_overtime": nba_player_path,
         "frozen_run_manifest": run_dir / "manifest.json",
-        "frozen_predictions": run_dir / "predictions.parquet",
+        "frozen_predictions": run_dir / Path(run_manifest["player_forecast_snapshot"]["path"]).name,
+        "pre_lock_archive_manifest": run_dir / "archive_manifest.json",
+        "pre_lock_registry": Path(forecast_certification["registry_path"]),
         "fixture_mapping": mapping_paths[0],
         "player_market": market_paths[0],
         "coach_market": coach_paths[0],
@@ -438,14 +784,16 @@ def main() -> int:
         name: fingerprint_file(path) for name, path in source_paths.items()
     }
 
-    predictions = pd.read_parquet(run_dir / "predictions.parquet")
     market = pd.read_parquet(market_paths[0])
     coach_market = pd.read_parquet(coach_paths[0])
 
     official_games = read_frame(player_path)
     team_logs = read_frame(team_path)
     nba_player_logs = read_frame(nba_player_path)
-    players_actual, missing_report, player_audit = build_player_actuals(predictions, market, fixtures, official_games)
+    players_actual, player_audit = build_player_outcome_panel(
+        predictions, market, fixtures, official_games, nba_player_logs
+    )
+    evaluation = evaluate_player_forecast_panel(players_actual)
     coaches_actual, coach_audit = build_coach_actuals(coach_market, fixtures, team_logs, nba_player_logs)
     source_file_fingerprints = {
         name: fingerprint_file(path) for name, path in source_paths.items()
@@ -464,7 +812,11 @@ def main() -> int:
     now = pd.Timestamp(datetime.now(timezone.utc))
     # Recheck at the end so a clock rollback during collection still fails closed.
     timing_ok = now >= safe_cutoff
-    all_players_matched = player_audit["prediction_coverage"] == 1.0
+    all_players_matched = bool(
+        evaluation["candidate_count"] > 0
+        and evaluation["minutes"]["n"] == evaluation["candidate_count"]
+        and evaluation["pdk_official"]["n"] == evaluation["candidate_count"]
+    )
     all_coaches_matched = coach_audit["coverage"] == 1.0
     ready = timing_ok and all_players_matched and all_coaches_matched
     out = Path(args.output_dir)
@@ -487,15 +839,22 @@ def main() -> int:
             "timing_mode": timing_mode,
         },
         "fixture_mapping": fixture_audit,
+        "pre_lock_certification": forecast_certification,
         "player_actuals": player_audit,
+        "player_forecast_evaluation": evaluation,
         "coach_actuals": coach_audit,
-        "missing_or_unresolved_player_rows": int(len(missing_report)),
+        "missing_or_unresolved_player_rows": int(evaluation["missing_outcomes"] + evaluation["ambiguous_outcomes"]),
         "partial_archive_requested": bool(args.allow_partial),
     }
-    missing_report.to_csv(out / f"{stem}_missing.csv", index=False)
+    if not timing_ok or (not ready and not args.allow_partial):
+        players_actual.to_csv(out / f"{stem}_player_outcomes.csv", index=False)
+        (out / f"{stem}_evaluation.json").write_text(json.dumps(evaluation, indent=2), encoding="utf-8")
+        (out / f"{stem}_evaluation.md").write_text(
+            _evaluation_markdown(evaluation, run_id, forecast_certification), encoding="utf-8"
+        )
     if not timing_ok or (not ready and not args.allow_partial):
         (out / f"{stem}.json").write_text(json.dumps(audit, indent=2, ensure_ascii=False), encoding="utf-8")
-        print(json.dumps({"status": audit["status"], "audit": str(out / f"{stem}.json"), "missing_rows": str(out / f"{stem}_missing.csv"), "player_coverage": player_audit["prediction_coverage"], "coach_coverage": coach_audit["coverage"], "timing_check": timing_ok}, indent=2))
+        print(json.dumps({"status": audit["status"], "audit": str(out / f"{stem}.json"), "player_outcomes": str(out / f"{stem}_player_outcomes.csv"), "player_coverage": evaluation["outcome_coverage"], "coach_coverage": coach_audit["coverage"], "timing_check": timing_ok}, indent=2))
         return 2
 
     archive_settings = Settings(
@@ -504,6 +863,10 @@ def main() -> int:
         target_gameweek=gameweek,
         data_dir=str(data_dir),
     )
+    idempotency_key = hashlib.sha256((
+        f"{run_id}:{_canonical_frame_hash(players_actual, ['player_key', 'nba_game_id'])}:"
+        f"{_canonical_frame_hash(coaches_actual, ['coach', 'nba_game_id'])}"
+    ).encode("utf-8")).hexdigest()
     archive_dir = save_post_match_snapshot(
         archive_settings,
         gameweek,
@@ -518,14 +881,21 @@ def main() -> int:
             "coverage_audit": {
                 "player": player_audit,
                 "coach": coach_audit,
+                "evaluation": evaluation,
                 "timing_check_passed": bool(timing_ok),
             },
+            "idempotency_key": idempotency_key,
         },
     )
     audit["archive_dir"] = str(archive_dir)
     audit["status"] = "archived_complete" if ready else "archived_partial"
     (out / f"{stem}.json").write_text(json.dumps(audit, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps({"status": audit["status"], "archive": str(archive_dir), "audit": str(out / f"{stem}.json"), "missing_rows": str(out / f"{stem}_missing.csv"), "player_coverage": player_audit["prediction_coverage"], "coach_coverage": coach_audit["coverage"]}, indent=2))
+    players_actual.to_csv(out / f"{stem}_player_outcomes.csv", index=False)
+    (out / f"{stem}_evaluation.json").write_text(json.dumps(evaluation, indent=2), encoding="utf-8")
+    (out / f"{stem}_evaluation.md").write_text(
+        _evaluation_markdown(evaluation, run_id, forecast_certification), encoding="utf-8"
+    )
+    print(json.dumps({"status": audit["status"], "archive": str(archive_dir), "audit": str(out / f"{stem}.json"), "player_outcomes": str(out / f"{stem}_player_outcomes.csv"), "player_coverage": evaluation["outcome_coverage"], "coach_coverage": coach_audit["coverage"]}, indent=2))
     return 0 if ready else 2
 
 

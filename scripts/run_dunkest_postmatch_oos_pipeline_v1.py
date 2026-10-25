@@ -9,7 +9,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from archive_dunkest_pre_lock_run_v1 import digest, inventory, load_json
+from archive_dunkest_pre_lock_run_v1 import (
+    digest, inventory, load_json, versioned_forecast_snapshot_validation,
+)
 
 def validate_archive(archive_dir: Path, allow_ineligible: bool = False) -> dict:
     archive_dir = archive_dir.resolve()
@@ -29,14 +31,48 @@ def validate_archive(archive_dir: Path, allow_ineligible: bool = False) -> dict:
         raise ValueError("Frozen prediction hash does not match the immutable registry")
     if registry.get("lineups_sha256") != digest(archive_dir / "lineups.parquet"):
         raise ValueError("Frozen lineup hash does not match the immutable registry")
+    archive_schema = int(meta.get("schema_version", 1) or 1)
+    if archive_schema >= 2:
+        registry_snapshots = (
+            ("player_forecast_snapshot.parquet", "player_forecast_snapshot_sha256"),
+            ("runtime_feature_snapshot.parquet", "runtime_feature_snapshot_sha256"),
+            ("shadow_forecast_snapshot.parquet", "shadow_forecast_snapshot_sha256"),
+            ("coach_forecast_snapshot.parquet", "coach_forecast_snapshot_sha256"),
+        )
+    else:
+        registry_snapshots = ((
+            "player_forecast_snapshot.parquet", "player_forecast_snapshot_sha256"
+        ),) if "player_forecast_snapshot_sha256" in registry else ()
+    for filename, field in registry_snapshots:
+        path = archive_dir / filename
+        expected = registry.get(field)
+        if expected is None:
+            if path.exists():
+                raise ValueError(f"Frozen {filename} has no immutable registry hash")
+        elif not path.is_file() or expected != digest(path):
+            raise ValueError(f"Frozen {filename} hash does not match the immutable registry")
     if bool(registry.get("pre_lock_eligible")) != bool(meta.get("pre_lock_eligible")):
         raise ValueError("Archive eligibility differs from the immutable registry")
     run_manifest = load_json(archive_dir / "manifest.json")
     if not (archive_dir / "predictions.parquet").is_file() or not (archive_dir / "lineups.parquet").is_file():
         raise ValueError("Archived predictions or lineups are missing")
+    try:
+        run_schema = int(run_manifest.get("schema_version", 1) or 1)
+    except (TypeError, ValueError):
+        raise ValueError("Archived run manifest has an invalid schema version") from None
+    snapshot_validation = versioned_forecast_snapshot_validation(archive_dir, run_manifest)
+    if run_schema >= 2 and snapshot_validation.get("status") != "complete":
+        raise ValueError(
+            "Archived versioned forecast snapshots are incomplete or unverifiable; "
+            "they cannot enter post-match evaluation"
+        )
     if not meta.get("pre_lock_eligible", False) and not allow_ineligible:
         raise ValueError("Archive is not certified pre-lock evidence; use --allow-ineligible-diagnostic only for exploratory evaluation")
-    return {"archive_manifest": meta, "run_manifest": run_manifest}
+    return {
+        "archive_manifest": meta,
+        "run_manifest": run_manifest,
+        "forecast_snapshot_validation": snapshot_validation,
+    }
 
 def run_pipeline(archive_dir: Path, data_dir: Path, output_dir: Path, allow_partial: bool = False,
                  allow_ineligible: bool = False) -> dict:

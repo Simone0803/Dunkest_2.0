@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from scipy.optimize import minimize
 
 from dunkest.config import Settings
-from dunkest.data.temporal import validate_prematch_features
+from dunkest.data.temporal import POST_MATCH_COLUMNS, validate_prematch_features
 from dunkest.names import player_key, player_surname
 from dunkest.rules.eligibility import play_probability
 from dunkest.rules.pdk import normalize_position
@@ -209,6 +209,87 @@ def _apply_projection_weights(
     weighted_sum = components.fillna(0.0).mul(weight_series).sum(axis=1)
     available_weight = components.notna().mul(weight_series).sum(axis=1)
     return weighted_sum.div(available_weight.replace(0.0, np.nan))
+
+
+_DEFAULT_PROJECTION_WEIGHTS = object()
+
+
+def recalculate_pdk_projection(
+    forecast: pd.DataFrame,
+    projection_weights: dict[str, float] | object = _DEFAULT_PROJECTION_WEIGHTS,
+    *,
+    expected_minutes=None,
+) -> pd.DataFrame:
+    """Recompose PDK using the production components and unchanged fallback rules.
+
+    ``expected_minutes`` is an optional counterfactual override. All other source
+    columns are preserved, while minute-scaled components and final PDK values
+    are recalculated exactly as in the production prediction path.
+    """
+    out = forecast.copy()
+    if expected_minutes is not None:
+        out["expected_min"] = expected_minutes
+
+    rate = pd.to_numeric(out["pdk_rate_for_projection"], errors="coerce").fillna(0.0)
+    minutes_pdk = out["expected_min"] * rate
+    ensemble = pd.to_numeric(out["ensemble_pdk"], errors="coerce")
+    implied = pd.to_numeric(out["implied_min"], errors="coerce").replace(0, np.nan).clip(lower=8.0)
+    scaled_ensemble = ensemble * (out["expected_min"] / implied)
+    prior = pd.to_numeric(out["prior_pdk"], errors="coerce")
+    scaled_prior = prior * (out["expected_min"] / implied)
+
+    hist = out["has_history"].fillna(False).astype(bool)
+    components = pd.DataFrame(
+        {"minutes": minutes_pdk, "ensemble": scaled_ensemble, "prior": scaled_prior},
+        index=out.index,
+    )
+    if projection_weights is _DEFAULT_PROJECTION_WEIGHTS:
+        projection_weights = {"minutes": 1.0, "ensemble": 0.0, "prior": 0.0}
+    out["component_minutes_pdk"] = minutes_pdk
+    out["component_ensemble_pdk"] = scaled_ensemble
+    out["component_prior_pdk"] = scaled_prior
+    out["projection_weight_minutes"] = projection_weights.get("minutes", 0.0)
+    out["projection_weight_ensemble"] = projection_weights.get("ensemble", 0.0)
+    out["projection_weight_prior"] = projection_weights.get("prior", 0.0)
+    blended = _apply_projection_weights(components, projection_weights)
+    blended = blended.fillna(minutes_pdk)
+    blended.loc[~hist] = minutes_pdk.loc[~hist]
+    # Historical RF predicts a game score at the player's historical role/minutes.
+    # Scale it to the current allocator's expected minutes before blending, so a
+    # player assigned zero minutes cannot receive a positive projection from the
+    # historical component alone.
+    historical_values = pd.to_numeric(out["historical_rf_pdk"], errors="coerce")
+    historical_weights = pd.to_numeric(out["historical_rf_blend_weight"], errors="coerce").fillna(0.0).clip(0.0, 1.0)
+    historical_scale_denominator = implied.where(implied.gt(0.0))
+    historical_scale_denominator = historical_scale_denominator.fillna(
+        out["expected_min"].where(pd.to_numeric(out["expected_min"], errors="coerce").gt(0.0))
+    )
+    historical_minute_ratio = (
+        pd.to_numeric(out["expected_min"], errors="coerce")
+        .div(historical_scale_denominator)
+        .replace([np.inf, -np.inf], np.nan)
+    )
+    historical_scaled = (historical_values * historical_minute_ratio).clip(lower=0.0)
+    out["historical_rf_pdk_scaled"] = historical_scaled
+    can_blend_historical = historical_scaled.notna() & historical_weights.gt(0.0)
+    blended.loc[can_blend_historical] = (
+        (1.0 - historical_weights.loc[can_blend_historical]) * blended.loc[can_blend_historical]
+        + historical_weights.loc[can_blend_historical] * historical_scaled.loc[can_blend_historical]
+    )
+    has_sample_size = pd.to_numeric(out["n_games"], errors="coerce").fillna(0.0)
+    confidence = has_sample_size.div(has_sample_size + 12.0).clip(0.0, 1.0)
+    blended.loc[hist] = (
+        confidence.loc[hist] * blended.loc[hist]
+        + (1.0 - confidence.loc[hist]) * minutes_pdk.loc[hist]
+    )
+
+    out["expected_pdk_conditional"] = blended.clip(lower=0.0)
+    out["expected_pdk_before_play_probability"] = out["expected_pdk_conditional"]
+    out["expected_pdk"] = (
+        pd.to_numeric(out["p_play"], errors="coerce").fillna(1.0)
+        * out["expected_pdk_conditional"]
+    ).clip(lower=0.0)
+    return out
 
 
 _RESIDUAL_SCORE_BINS = [-np.inf, 5.0, 10.0, 15.0, 20.0, 25.0, np.inf]
@@ -1087,11 +1168,14 @@ def predict_players(
         if c not in latest.columns:
             latest[c] = np.nan
     minute_model = models.get("_minutes_shadow_model")
+    shadow_feature_snapshot = latest.copy()
+    shadow_input_matrix = None
     if not latest.empty and minute_model is not None:
         minute_X = latest[cols].apply(pd.to_numeric, errors="coerce")
         minute_X = minute_X.replace([np.inf, -np.inf], np.nan)
         minute_X = minute_X.fillna(models.get("_feature_medians", pd.Series(dtype=float))).fillna(0.0)
         latest["expected_min_model_shadow"] = np.clip(minute_model.predict(minute_X), 0.0, 48.0)
+        shadow_input_matrix = minute_X.copy()
     else:
         latest["expected_min_model_shadow"] = np.nan
     if not latest.empty:
@@ -1234,6 +1318,35 @@ def predict_players(
             pd.to_numeric(hist.get("current_season_games"), errors="coerce")
             if hist is not None else np.nan
         )
+        prior_season_games = (
+            pd.to_numeric(hist.get("prior_seasons_games"), errors="coerce")
+            if hist is not None else np.nan
+        )
+        history_games_before_target = (
+            pd.to_numeric(
+                hist.get("history_games_before_target", hist.get("nba_history_games_before_target")),
+                errors="coerce",
+            )
+            if hist is not None else np.nan
+        )
+        if pd.isna(history_games_before_target) and hist is not None:
+            history_games_before_target = pd.to_numeric(hist.get("n_games"), errors="coerce")
+        history_games_before_target = (
+            float(history_games_before_target)
+            if pd.notna(history_games_before_target) else 0.0
+        )
+        has_current_games = pd.notna(current_season_games) and float(current_season_games) > 0
+        has_prior_games = pd.notna(prior_season_games) and float(prior_season_games) > 0
+        if has_current_games and has_prior_games:
+            history_source = "current_and_prior_season_game_logs"
+        elif has_current_games:
+            history_source = "current_season_game_logs"
+        elif has_prior_games:
+            history_source = "prior_season_game_logs"
+        elif hist is None:
+            history_source = "history_feature_row_missing"
+        else:
+            history_source = "no_valid_game_history"
         # Prefer a genuine prior-season rate, then a market/role prior. Never
         # let one hot game replace a multi-season baseline at full strength.
         season_baseline = (
@@ -1349,6 +1462,10 @@ def predict_players(
         rows.append(
             {
                 "player_name": name,
+                # Preserve the stable Dunkest identity from the market row.
+                # The forecast archive and post-match collector must not have
+                # to fall back to a name-derived key when this ID is present.
+                "dunkest_player_id": d.get("id", d.get("dunkest_player_id")),
                 "team": str(d.get("team_code", "")),
                 "role": role,
                 "opponent": opponent,
@@ -1380,6 +1497,11 @@ def predict_players(
                 "pdk_per_min_current_season": float(current_season_rate) if pd.notna(current_season_rate) else np.nan,
                 "pdk_per_min_prior_seasons": float(prior_season_rate) if pd.notna(prior_season_rate) else np.nan,
                 "current_season_games": float(current_season_games) if pd.notna(current_season_games) else 0.0,
+                "prior_seasons_games": float(
+                    prior_season_games
+                ) if pd.notna(prior_season_games) else 0.0,
+                "history_games_before_target": history_games_before_target,
+                "history_source": history_source,
                 "current_season_weight": float(current_season_weight),
                 "pdk_rate_for_projection": rate,
                 "cr_market_pdk_per_min": peer_rate,
@@ -1410,72 +1532,10 @@ def predict_players(
     out = _apply_current_role_competition(out)
     out = allocate_positional_minutes(out)
 
-    rate = pd.to_numeric(out["pdk_rate_for_projection"], errors="coerce").fillna(0.0)
-    minutes_pdk = out["expected_min"] * rate
-    ensemble = pd.to_numeric(out["ensemble_pdk"], errors="coerce")
-    implied = pd.to_numeric(out["implied_min"], errors="coerce").replace(0, np.nan).clip(lower=8.0)
-    scaled_ensemble = ensemble * (out["expected_min"] / implied)
-    prior = pd.to_numeric(out["prior_pdk"], errors="coerce")
-    scaled_prior = prior * (out["expected_min"] / implied)
-
-    hist = out["has_history"].fillna(False).astype(bool)
-    components = pd.DataFrame(
-        {"minutes": minutes_pdk, "ensemble": scaled_ensemble, "prior": scaled_prior},
-        index=out.index,
-    )
     projection_weights = models.get(
         "_projection_weights", {"minutes": 1.0, "ensemble": 0.0, "prior": 0.0}
     )
-    out["component_minutes_pdk"] = minutes_pdk
-    out["component_ensemble_pdk"] = scaled_ensemble
-    out["component_prior_pdk"] = scaled_prior
-    out["projection_weight_minutes"] = projection_weights.get("minutes", 0.0)
-    out["projection_weight_ensemble"] = projection_weights.get("ensemble", 0.0)
-    out["projection_weight_prior"] = projection_weights.get("prior", 0.0)
-    blended = _apply_projection_weights(components, projection_weights)
-    blended = blended.fillna(minutes_pdk)
-    blended.loc[~hist] = minutes_pdk.loc[~hist]
-    # The historical model is a separately evaluated direct PDK estimator. Blend
-    # conservatively only when player history is sufficient; preserve rookie/low-data
-    # paths and the existing minute allocation logic.
-    historical_values = pd.to_numeric(out["historical_rf_pdk"], errors="coerce")
-    historical_weights = pd.to_numeric(out["historical_rf_blend_weight"], errors="coerce").fillna(0.0).clip(0.0, 1.0)
-    # Historical RF predicts a game score at the player's historical role/minutes.
-    # Scale it to the current allocator's expected minutes before blending, so a
-    # player assigned zero minutes cannot receive a positive projection from the
-    # historical component alone.
-    historical_scale_denominator = implied.where(implied.gt(0.0))
-    historical_scale_denominator = historical_scale_denominator.fillna(
-        out["expected_min"].where(pd.to_numeric(out["expected_min"], errors="coerce").gt(0.0))
-    )
-    historical_minute_ratio = (
-        pd.to_numeric(out["expected_min"], errors="coerce")
-        .div(historical_scale_denominator)
-        .replace([np.inf, -np.inf], np.nan)
-    )
-    historical_scaled = (historical_values * historical_minute_ratio).clip(lower=0.0)
-    out["historical_rf_pdk_scaled"] = historical_scaled
-    can_blend_historical = historical_scaled.notna() & historical_weights.gt(0.0)
-    blended.loc[can_blend_historical] = (
-        (1.0 - historical_weights.loc[can_blend_historical]) * blended.loc[can_blend_historical]
-        + historical_weights.loc[can_blend_historical] * historical_scaled.loc[can_blend_historical]
-    )
-    has_sample_size = pd.to_numeric(out["n_games"], errors="coerce").fillna(0.0)
-    confidence = has_sample_size.div(has_sample_size + 12.0).clip(0.0, 1.0)
-    blended.loc[hist] = (
-        confidence.loc[hist] * blended.loc[hist]
-        + (1.0 - confidence.loc[hist]) * minutes_pdk.loc[hist]
-    )
-
-    # Keep the conditional performance estimate separate from availability.
-    # `expected_pdk` is the value consumed by the optimizer: P(play) times the
-    # expected Dunkest score conditional on playing.
-    out["expected_pdk_conditional"] = blended.clip(lower=0.0)
-    out["expected_pdk_before_play_probability"] = out["expected_pdk_conditional"]
-    out["expected_pdk"] = (
-        pd.to_numeric(out["p_play"], errors="coerce").fillna(1.0)
-        * out["expected_pdk_conditional"]
-    ).clip(lower=0.0)
+    out = recalculate_pdk_projection(out, projection_weights)
     interval_quantiles = _residual_quantiles_for_predictions(
         models, pd.to_numeric(out["expected_pdk_before_play_probability"], errors="coerce")
     )
@@ -1487,4 +1547,36 @@ def predict_players(
         residual_q90=interval_quantiles["q90"],
     )
     out = add_capital_gain_forecasts(out, plusvalenza_history)
+    # Archive the exact preprocessor output used by the shadow model alongside
+    # its source feature row. This is metadata only and does not affect either
+    # forecast path. Drop current/post-game labels from the source copy.
+    if not shadow_feature_snapshot.empty:
+        post_match_names = {str(column).strip().lower() for column in POST_MATCH_COLUMNS}
+        post_match_names.update({
+            "min", "nba_min", "nba_minutes", "nba_pts", "nba_reb", "nba_ast",
+            "nba_stl", "nba_blk", "nba_tov", "nba_fgm", "nba_fga", "nba_ftm",
+            "nba_fta", "nba_fg3m", "nba_oreb", "nba_dreb", "nba_plus_minus",
+            "target_minutes", "target_min",
+        })
+        shadow_feature_snapshot = shadow_feature_snapshot.drop(
+            columns=[
+                column for column in shadow_feature_snapshot.columns
+                if str(column).strip().lower() in post_match_names
+            ],
+            errors="ignore",
+        ).copy()
+        if "PLAYER_NAME" in shadow_feature_snapshot:
+            shadow_feature_snapshot["player_key"] = shadow_feature_snapshot[
+                "PLAYER_NAME"
+            ].map(player_key)
+        if shadow_input_matrix is not None:
+            for column in shadow_input_matrix.columns:
+                shadow_feature_snapshot[f"hgb_input__{column}"] = (
+                    shadow_input_matrix[column].to_numpy(copy=True)
+                )
+            shadow_feature_snapshot["minutes_shadow_feature_status"] = "transformed"
+        else:
+            shadow_feature_snapshot["minutes_shadow_feature_status"] = "model_unavailable"
+    out.attrs["runtime_feature_snapshot"] = shadow_feature_snapshot.reset_index(drop=True)
+    out.attrs["minutes_shadow_feature_columns"] = list(cols)
     return out

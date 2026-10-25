@@ -122,3 +122,32 @@ def test_run_optimize_persists_verified_coach_matchup_and_scoring_evidence(monke
     assert result[0].meta["coach_matchup"]["expected_coach_pdk"] == 12.0
     assert result[0].meta["coach_matchup"]["win_probability"] == 0.62
     assert result[0].meta["coach_matchup"]["coach_dunkest_turn"] == 2
+
+
+def test_run_optimize_excludes_shadow_minutes_without_mutating_operational_forecasts(monkeypatch):
+    captured = {}
+    solutions = [object(), object(), object()]
+
+    def fake_optimizer(players, coaches, settings, **kwargs):
+        captured["players"] = players.copy()
+        return solutions
+
+    monkeypatch.setattr(pipeline_optimize, "optimize_top_k_lineups", fake_optimizer)
+    players = pd.DataFrame([{
+        "player_name": "Player One", "expected_pdk": 12.0,
+        "expected_min": 24.0, "expected_min_model_shadow": 18.0,
+    }])
+    original = players.copy(deep=True)
+    coaches = pd.DataFrame([{
+        "coach": "Coach A", "team": "BOS", "coach_cr": 8.0,
+        "expected_coach_pdk": 12.0, "matchup_projection_available": True,
+        "coach_projection_source": "verified_matchup",
+    }])
+
+    result = pipeline_optimize.run_optimize(Settings.from_yaml(), players, coaches)
+
+    assert result is solutions
+    assert "expected_min_model_shadow" not in captured["players"].columns
+    assert captured["players"].loc[0, "expected_min"] == 24.0
+    assert captured["players"].loc[0, "expected_pdk"] == 12.0
+    pd.testing.assert_frame_equal(players, original)

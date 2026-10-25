@@ -1,4 +1,5 @@
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -239,6 +240,32 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
     pd.DataFrame([{
         "player_name": "Test Player", "nba_game_id": "game-1", "expected_pdk": 8.0,
     }]).to_parquet(run_dir / "predictions.parquet", index=False)
+    (run_dir / "lineups.parquet").write_bytes(b"lineups")
+    candidate_path = run_dir / "player_forecast_snapshot.parquet"
+    pd.DataFrame([{
+        "player_name": "Test Player", "team": "ATL", "opponent": "BOS",
+        "nba_game_id": "game-1", "expected_min": 30.0, "expected_pdk": 8.0,
+        "fixture_verified": True,
+    }]).to_parquet(candidate_path, index=False)
+    candidate_sha = hashlib.sha256(candidate_path.read_bytes()).hexdigest()
+    run_manifest = {
+        "run_id": "run-1", "timestamp": "2026-10-01T10:00:00Z",
+        "configuration": {
+            "season": "2026-27", "season_id": "26", "target_gameweek": 1,
+        },
+        "player_forecast_snapshot": {
+            "path": str(candidate_path), "sha256": candidate_sha, "candidate_rows": 1,
+            "forecast_timestamp_utc": "2026-10-01T09:30:00Z",
+            "prediction_cutoff_utc": "2026-10-01T12:00:00Z",
+            "cutoff_verified": True, "cutoff_basis": "official lock feed",
+            "cutoff_source_sha256": "b" * 64,
+            "certification": {
+                "pre_lock_eligible": True, "exact_dunkest_cutoff_verified": True,
+                "reason": "verified fixture",
+            },
+        },
+    }
+    (run_dir / "manifest.json").write_text(json.dumps(run_manifest), encoding="utf-8")
     pd.DataFrame([{
         "_requested_player_name": "Test Player", "opponentTeamCode": "BOS",
         "gameDate": "2026-10-01", "pdk": 12.5, "gameValidForDunkest": True,
@@ -248,10 +275,36 @@ def test_post_match_builder_archives_linked_results_through_shared_writer(tmp_pa
         {"Game_ID": "game-1", "TEAM_ABBREVIATION": "BOS", "PTS": 98},
     ]).to_parquet(processed / "team_game_logs_2026-27.parquet", index=False)
     player_logs = [
-        {"Game_ID": "game-1", "TEAM_ABBREVIATION": team, "MIN": 48.0}
-        for team in ("ATL", "BOS") for _ in range(5)
+        {
+            "Game_ID": "game-1", "TEAM_ABBREVIATION": team,
+            "PLAYER_NAME": "Test Player" if team == "ATL" and index == 0 else f"Player {team} {index}",
+            "MIN": 48.0,
+        }
+        for team in ("ATL", "BOS") for index in range(5)
     ]
     pd.DataFrame(player_logs).to_parquet(processed / "player_game_logs_2026-27.parquet", index=False)
+
+    archived_files = []
+    for path in sorted(run_dir.rglob("*")):
+        if path.is_file() and path.name != "archive_manifest.json":
+            archived_files.append({
+                "path": path.relative_to(run_dir).as_posix(),
+                "size_bytes": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            })
+    archive_manifest_path = run_dir / "archive_manifest.json"
+    archive_manifest_path.write_text(json.dumps({
+        "run_id": "run-1", "pre_lock_eligible": True, "files": archived_files,
+    }), encoding="utf-8")
+    registry_dir = run_dir.parents[2] / "registry"
+    registry_dir.mkdir(parents=True, exist_ok=True)
+    (registry_dir / "run-1.json").write_text(json.dumps({
+        "run_id": "run-1", "pre_lock_eligible": True,
+        "archive_manifest_sha256": hashlib.sha256(archive_manifest_path.read_bytes()).hexdigest(),
+        "predictions_sha256": hashlib.sha256((run_dir / "predictions.parquet").read_bytes()).hexdigest(),
+        "lineups_sha256": hashlib.sha256((run_dir / "lineups.parquet").read_bytes()).hexdigest(),
+        "player_forecast_snapshot_sha256": candidate_sha,
+    }), encoding="utf-8")
 
     output_dir = tmp_path / "reports"
     monkeypatch.setattr(sys, "argv", [

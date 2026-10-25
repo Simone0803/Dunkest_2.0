@@ -922,6 +922,7 @@ def _attach_current_season_form(
             out.at[idx, "current_season_games"] = 0.0
             out.at[idx, "pdk_per_min_prior_seasons"] = np.nan
             out.at[idx, "prior_seasons_games"] = 0.0
+            out.at[idx, "history_games_before_target"] = 0.0
             continue
 
         target_date = _to_naive_utc(out.at[idx, "NBA_GAME_DATETIME_UTC"]) if (
@@ -935,11 +936,13 @@ def _attach_current_season_form(
             out.at[idx, "current_season_games"] = 0.0
             out.at[idx, "pdk_per_min_prior_seasons"] = np.nan
             out.at[idx, "prior_seasons_games"] = 0.0
+            out.at[idx, "history_games_before_target"] = 0.0
             continue
 
         # The game log is post-match evidence; strict timestamp filtering is
         # essential even if the collector accidentally contains future rows.
         history = history.loc[history["_season_date"].lt(target_date)].copy()
+        out.at[idx, "history_games_before_target"] = float(len(history))
         season_year = int(target_date.year - (target_date.month < 7))
         minutes = history["_season_minutes"]
         pdk = history["_season_pdk"]

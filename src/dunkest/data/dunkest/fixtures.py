@@ -21,6 +21,7 @@ FIXTURE_COLUMNS = [
     "season_id",
     "nba_season",
     "nba_game_id",
+    "dunkest_match_id",
     "game_datetime_utc",
     "game_date_local",
     "home_team",
@@ -40,11 +41,33 @@ FIXTURE_COLUMNS = [
 ]
 
 REQUIRED_FIXTURE_COLUMNS = set(FIXTURE_COLUMNS).difference(
-    {"home_team_eligible", "away_team_eligible"}
+    {"home_team_eligible", "away_team_eligible", "dunkest_match_id"}
 )
 
 DUNKEST_SCHEDULE_API_BASE = "https://fantaking-api.dunkest.com/api/v1"
 DUNKEST_NBA_LEAGUE_ID = 1
+DUNKEST_TURN_RULE_URL = (
+    "https://www.dunkest.com/it/notizie/fantabasket/8774/"
+    "calendario-dunkest-cosa-sono-giornata-turni"
+)
+DUNKEST_LOCK_RULE_URL = (
+    "https://www.dunkest.com/it/nba/notizie/fantabasket/19903/"
+    "check-list-giornata-cosa-fare-quando"
+)
+
+
+def _official_timestamp_utc(value: object, *, label: str) -> pd.Timestamp:
+    """Parse an official source timestamp only when it carries a timezone."""
+    parsed = pd.Timestamp(value)
+    if pd.isna(parsed) or parsed.tzinfo is None:
+        raise ValueError(f"Official Dunkest {label} timestamp is missing or has no timezone offset.")
+    return parsed.tz_convert("UTC")
+
+
+def _canonical_payload_sha256(payload: object) -> str:
+    return hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
 
 
 def fetch_official_dunkest_gameweek_calendar(
@@ -63,6 +86,7 @@ def fetch_official_dunkest_gameweek_calendar(
         raise ValueError("Dunkest gameweek must be a positive integer.")
     config_url = f"{DUNKEST_SCHEDULE_API_BASE}/leagues/{DUNKEST_NBA_LEAGUE_ID}/config"
     config_payload = get_json(config_url, timeout=timeout)
+    config_retrieved_at = pd.Timestamp.now(tz="UTC")
     config = config_payload.get("data", config_payload) if isinstance(config_payload, dict) else {}
     current = config.get("current_matchday") or {}
     schedule_id = config.get("current_schedule_id")
@@ -73,6 +97,7 @@ def fetch_official_dunkest_gameweek_calendar(
     candidate_id = int(current_id) + (gw - int(current_number))
     matchday_url = f"{DUNKEST_SCHEDULE_API_BASE}/schedules/{int(schedule_id)}/matchdays/{candidate_id}"
     payload = get_json(matchday_url, timeout=timeout)
+    matchday_retrieved_at = pd.Timestamp.now(tz="UTC")
     matchday = payload.get("data", payload) if isinstance(payload, dict) else {}
     if int(matchday.get("number", -1)) != gw:
         raise ValueError(
@@ -84,7 +109,12 @@ def fetch_official_dunkest_gameweek_calendar(
         for match in round_data.get("matches", []):
             home = match.get("home_team") or {}
             away = match.get("away_team") or {}
-            started_at = pd.to_datetime(match.get("started_at"), errors="coerce", utc=True)
+            try:
+                started_at = _official_timestamp_utc(
+                    match.get("started_at"), label="match started_at"
+                )
+            except (TypeError, ValueError):
+                started_at = pd.NaT
             home_valid = parse_fixture_bool(home.get("is_valid"))
             away_valid = parse_fixture_bool(away.get("is_valid"))
             if (
@@ -115,20 +145,229 @@ def fetch_official_dunkest_gameweek_calendar(
     calendar = pd.DataFrame(rows)
     if calendar["dunkest_match_id"].duplicated().any():
         raise ValueError(f"Official Dunkest Giornata {gw} contains duplicate match IDs.")
+    turn_cutoffs = (
+        calendar.groupby("dunkest_turn")["game_datetime_utc"].min()
+        - pd.Timedelta(minutes=1)
+    )
+    calendar["dunkest_turn_cutoff_utc"] = calendar["dunkest_turn"].map(turn_cutoffs)
+    config_hash = _canonical_payload_sha256(config_payload)
+    matchday_hash = _canonical_payload_sha256(payload)
     metadata = {
         "source": "official_fantaking_dunkest_api",
         "config_url": config_url,
         "matchday_url": matchday_url,
+        "turn_rule_url": DUNKEST_TURN_RULE_URL,
+        "lock_rule_url": DUNKEST_LOCK_RULE_URL,
         "schedule_id": int(schedule_id),
         "matchday_id": int(matchday["id"]),
         "gameweek": gw,
         "match_count": len(calendar),
-        "retrieved_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
-        "raw_payload_sha256": hashlib.sha256(
-            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest(),
+        "timezone_semantics": "timezone offsets required in official ISO timestamps; normalized to UTC",
+        "cutoff_semantics": "official_rule_derived:first_match_started_at_minus_1_minute",
+        "retrieved_at_utc": matchday_retrieved_at.isoformat(),
+        "config_retrieved_at_utc": config_retrieved_at.isoformat(),
+        "matchday_retrieved_at_utc": matchday_retrieved_at.isoformat(),
+        "config_payload_sha256": config_hash,
+        "matchday_payload_sha256": matchday_hash,
+        "raw_payload_sha256": matchday_hash,
+        # Keep the exact parsed response objects for immutable run evidence.
+        "evidence_payloads": {"config": config_payload, "matchday": payload},
     }
     return calendar, metadata
+
+
+def certify_official_gameweek_cutoffs(
+    fixture_mapping: pd.DataFrame,
+    official_calendar: pd.DataFrame,
+    source_metadata: dict,
+    *,
+    gameweek: int,
+) -> dict:
+    """Resolve rule-derived turn locks only across unique verified fixtures.
+
+    Dunkest documents that a turn starts one minute before its first game and
+    that lineup operations close when the turn starts. The returned status is
+    explicitly rule-derived, never an assertion that the API has a dedicated
+    lock field.
+    """
+    result = {
+        "status": "uncertified",
+        "gameweek": int(gameweek),
+        "cutoff_kind": "official_rule_derived",
+        "reason": "missing_or_unverifiable_official_cutoff_evidence",
+    }
+    try:
+        metadata_gameweek = int(source_metadata.get("gameweek", -1))
+    except (TypeError, ValueError):
+        metadata_gameweek = -1
+    if (
+        source_metadata.get("source") != "official_fantaking_dunkest_api"
+        or source_metadata.get("cutoff_semantics") != "official_rule_derived:first_match_started_at_minus_1_minute"
+        or metadata_gameweek != int(gameweek)
+        or source_metadata.get("turn_rule_url") != DUNKEST_TURN_RULE_URL
+        or source_metadata.get("lock_rule_url") != DUNKEST_LOCK_RULE_URL
+    ):
+        result["reason"] = "official_source_or_gameweek_mismatch"
+        return result
+    payloads = source_metadata.get("evidence_payloads", {})
+    for key in ("config", "matchday"):
+        if (
+            key not in payloads
+            or _canonical_payload_sha256(payloads[key])
+            != source_metadata.get(f"{key}_payload_sha256")
+        ):
+            result["reason"] = f"official_{key}_payload_missing_or_hash_mismatch"
+            return result
+    config_payload = payloads["config"]
+    config_payload = config_payload.get("data", config_payload) if isinstance(config_payload, dict) else {}
+    matchday_payload = payloads["matchday"]
+    matchday_payload = matchday_payload.get("data", matchday_payload) if isinstance(matchday_payload, dict) else {}
+    current_matchday = config_payload.get("current_matchday") or {}
+    try:
+        expected_matchday_id = int(current_matchday["id"]) + (
+            int(gameweek) - int(current_matchday["number"])
+        )
+        schedule_id = int(config_payload["current_schedule_id"])
+        matchday_id = int(matchday_payload["id"])
+        matchday_number = int(matchday_payload["number"])
+        metadata_schedule_id = int(source_metadata.get("schedule_id", -1))
+        metadata_matchday_id = int(source_metadata.get("matchday_id", -1))
+    except (KeyError, TypeError, ValueError):
+        result["reason"] = "official_gameweek_or_turn_identity_missing"
+        return result
+    if (
+        schedule_id != metadata_schedule_id
+        or matchday_id != metadata_matchday_id
+        or matchday_id != expected_matchday_id
+        or matchday_number != int(gameweek)
+    ):
+        result["reason"] = "official_payload_gameweek_identity_mismatch"
+        return result
+    if not {
+        "dunkest_turn", "dunkest_gameweek", "game_datetime_utc", "home_team", "away_team",
+    }.issubset(official_calendar.columns):
+        result["reason"] = "official_calendar_missing_turn_or_match_identity"
+        return result
+    if fixture_mapping.empty or not {
+        "nba_game_id", "dunkest_turn", "game_datetime_utc", "home_team", "away_team",
+        "mapping_verified", "fantasy_eligible", "dunkest_gameweek",
+    }.issubset(fixture_mapping.columns):
+        result["reason"] = "verified_fixture_mapping_missing_required_identity"
+        return result
+    official = official_calendar.copy()
+    official["_turn"] = pd.to_numeric(official["dunkest_turn"], errors="coerce")
+    official["_start"] = pd.to_datetime(official["game_datetime_utc"], errors="coerce", utc=True)
+    official["_home"] = official["home_team"].astype(str).str.strip().str.upper()
+    official["_away"] = official["away_team"].astype(str).str.strip().str.upper()
+    official_gameweeks = pd.to_numeric(official["dunkest_gameweek"], errors="coerce")
+    if not official_gameweeks.eq(int(gameweek)).all():
+        result["reason"] = "official_calendar_gameweek_mismatch"
+        return result
+    if official["_turn"].isna().any() or official["_start"].isna().any():
+        result["reason"] = "official_turn_or_game_start_timestamp_missing"
+        return result
+    recalculated = (
+        official.groupby("_turn")["_start"].min() - pd.Timedelta(minutes=1)
+    ).sort_index()
+    if "dunkest_turn_cutoff_utc" in official:
+        supplied = pd.to_datetime(official["dunkest_turn_cutoff_utc"], errors="coerce", utc=True)
+        expected = official["_turn"].map(recalculated)
+        if supplied.isna().any() or not supplied.eq(expected).all():
+            result["reason"] = "official_turn_cutoff_does_not_match_documented_rule"
+            return result
+
+    fixtures = fixture_mapping.copy()
+    fixtures["_turn"] = pd.to_numeric(fixtures["dunkest_turn"], errors="coerce")
+    fixtures["_start"] = pd.to_datetime(fixtures["game_datetime_utc"], errors="coerce", utc=True)
+    fixtures["_home"] = fixtures["home_team"].astype(str).str.strip().str.upper()
+    fixtures["_away"] = fixtures["away_team"].astype(str).str.strip().str.upper()
+    fixtures = fixtures.loc[
+        pd.to_numeric(fixtures["dunkest_gameweek"], errors="coerce").eq(int(gameweek))
+        & fixtures["mapping_verified"].map(parse_fixture_bool).fillna(False)
+        & fixtures["fantasy_eligible"].map(parse_fixture_bool).fillna(False)
+    ]
+    if fixtures.empty:
+        result["reason"] = "no_verified_eligible_fixtures_for_gameweek"
+        return result
+    linked_rows = []
+    for _, fixture in fixtures.iterrows():
+        candidates = official.loc[
+            official["_turn"].eq(fixture["_turn"])
+            & official["_home"].eq(fixture["_home"])
+            & official["_away"].eq(fixture["_away"])
+            & (official["_start"] - fixture["_start"]).abs().le(pd.Timedelta(hours=36))
+        ]
+        if len(candidates) != 1:
+            result["reason"] = "fixture_to_official_turn_link_missing_or_ambiguous"
+            return result
+        official_match = candidates.iloc[0]
+        if "dunkest_match_id" in fixtures and pd.notna(fixture.get("dunkest_match_id")):
+            if str(fixture["dunkest_match_id"]).strip() != str(official_match.get("dunkest_match_id", "")).strip():
+                result["reason"] = "dunkest_match_id_mismatch"
+                return result
+        for status_column in ("home_team_eligible", "away_team_eligible"):
+            if status_column in fixtures:
+                fixture_status = parse_fixture_bool(fixture.get(status_column))
+                official_status = parse_fixture_bool(official_match.get(status_column))
+                if fixture_status is None or official_status is None or fixture_status != official_status:
+                    result["reason"] = f"{status_column}_mismatch_or_unverified"
+                    return result
+        linked_rows.append({
+            "nba_game_id": str(fixture["nba_game_id"]),
+            "dunkest_match_id": str(official_match.get("dunkest_match_id", "")),
+            "dunkest_turn": int(fixture["_turn"]),
+            "home_team": str(official_match["_home"]),
+            "away_team": str(official_match["_away"]),
+        })
+    turn_cutoffs = {
+        str(int(turn)): cutoff.isoformat()
+        for turn, cutoff in recalculated.items()
+    }
+    try:
+        fetched = [
+            _official_timestamp_utc(source_metadata.get(key), label=key)
+            for key in ("config_retrieved_at_utc", "matchday_retrieved_at_utc")
+        ]
+    except (TypeError, ValueError):
+        result["reason"] = "official_payload_acquisition_timestamp_missing_or_naive"
+        return result
+    earliest_cutoff = recalculated.min()
+    if max(fetched) >= earliest_cutoff:
+        result["reason"] = "official_cutoff_evidence_acquired_after_gameweek_lock"
+        return result
+    evidence_hash = hashlib.sha256(
+        json.dumps({
+            "config_payload_sha256": source_metadata.get("config_payload_sha256"),
+            "matchday_payload_sha256": source_metadata.get("matchday_payload_sha256"),
+            "turn_rule_url": DUNKEST_TURN_RULE_URL,
+            "lock_rule_url": DUNKEST_LOCK_RULE_URL,
+            "gameweek": int(gameweek),
+            "turn_cutoffs_utc": turn_cutoffs,
+            "fixture_links": sorted(linked_rows, key=lambda item: (item["dunkest_turn"], item["nba_game_id"])),
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return {
+        **result,
+        "status": "certified",
+        "reason": "official_rule_and_calendar_verified",
+        "cutoff_utc": recalculated.min().isoformat(),
+        "turn_cutoffs_utc": turn_cutoffs,
+        "evidence_sha256": evidence_hash,
+        "source_urls": [
+            source_metadata["config_url"], source_metadata["matchday_url"],
+            DUNKEST_TURN_RULE_URL, DUNKEST_LOCK_RULE_URL,
+        ],
+        "source_payload_sha256": {
+            "config": source_metadata.get("config_payload_sha256"),
+            "matchday": source_metadata.get("matchday_payload_sha256"),
+        },
+        "acquired_at_utc": {
+            "config": source_metadata["config_retrieved_at_utc"],
+            "matchday": source_metadata["matchday_retrieved_at_utc"],
+        },
+        "timezone": "UTC (source timezone offsets preserved in raw API payload)",
+        "fixture_links": linked_rows,
+    }
 
 
 def build_gameweek_mapping_from_official_calendar(
@@ -180,6 +419,7 @@ def build_gameweek_mapping_from_official_calendar(
             "season_id": str(settings.season_id),
             "nba_season": str(settings.season),
             "nba_game_id": str(game["GAME_ID"]),
+            "dunkest_match_id": str(official["dunkest_match_id"]),
             "game_datetime_utc": start,
             "game_date_local": start.tz_convert("Europe/Rome").date(),
             "home_team": home, "away_team": away,
@@ -208,7 +448,7 @@ def build_gameweek_mapping_from_official_calendar(
         raise ValueError(f"Official Dunkest calendar maps duplicate NBA game IDs: {ids[:20]}")
     digest = hashlib.sha256(
         "|".join(
-            f"{row['nba_game_id']}:{row['dunkest_match_id'] if 'dunkest_match_id' in row else row['eligibility_reason']}:{row['dunkest_turn']}:{row['home_team_eligible']}:{row['away_team_eligible']}"
+            f"{row['nba_game_id']}:{row['dunkest_match_id']}:{row['dunkest_turn']}:{row['home_team_eligible']}:{row['away_team_eligible']}"
             for row in frame.sort_values(["game_datetime_utc", "nba_game_id"]).to_dict("records")
         ).encode("utf-8")
     ).hexdigest()
@@ -250,6 +490,8 @@ def validate_fixture_mapping(mapping: pd.DataFrame) -> pd.DataFrame:
     if missing:
         raise ValueError(f"Fixture mapping missing columns: {', '.join(missing)}")
     out = mapping.copy()
+    if "dunkest_match_id" not in out:
+        out["dunkest_match_id"] = pd.NA
     # Older saved bridges only had a game-level flag. Preserve their meaning
     # for compatibility, while new browser captures carry independent status
     # for the home and away Dunkest franchises.
@@ -258,7 +500,7 @@ def validate_fixture_mapping(mapping: pd.DataFrame) -> pd.DataFrame:
     if "away_team_eligible" not in out:
         out["away_team_eligible"] = out["fantasy_eligible"]
     out = out[FIXTURE_COLUMNS].copy()
-    for column in ("season_id", "nba_season", "nba_game_id", "home_team", "away_team", "source", "mapping_version"):
+    for column in ("season_id", "nba_season", "nba_game_id", "dunkest_match_id", "home_team", "away_team", "source", "mapping_version"):
         out[column] = out[column].astype("string").str.strip()
     for column in ("home_team", "away_team"):
         out[column] = out[column].str.upper()
@@ -988,7 +1230,7 @@ def load_pre_match_snapshot(
             if (
                 str(manifest.get("season_id")) != sid
                 or int(manifest.get("dunkest_gameweek", -1)) != int(dunkest_gameweek)
-                or int(manifest.get("schema_version", -1)) != 1
+                or int(manifest.get("schema_version", -1)) not in {1, 2, 3}
                 or not str(manifest.get("source", "")).strip()
             ):
                 continue
@@ -1074,7 +1316,7 @@ def load_post_match_results_archive(
             if (
                 str(manifest.get("season_id")) != sid
                 or int(manifest.get("dunkest_gameweek", -1)) != int(dunkest_gameweek)
-                or int(manifest.get("schema_version", -1)) != 1
+                or int(manifest.get("schema_version", -1)) not in {1, 2, 3}
                 or not str(manifest.get("source", "")).strip()
             ):
                 continue
@@ -1088,9 +1330,17 @@ def load_post_match_results_archive(
             coverage = manifest.get("coverage_audit", {})
             player_coverage = float(coverage.get("player", {}).get("prediction_coverage", 0.0))
             coach_coverage = float(coverage.get("coach", {}).get("coverage", 0.0))
-            if (
-                not coverage.get("timing_check_passed", False)
-                or not np.isfinite(player_coverage) or not 0.0 < player_coverage <= 1.0
+            schema_version = int(manifest.get("schema_version", -1))
+            if not coverage.get("timing_check_passed", False):
+                continue
+            if schema_version >= 3:
+                if (
+                    not np.isfinite(player_coverage) or not 0.0 <= player_coverage <= 1.0
+                    or not np.isfinite(coach_coverage) or not 0.0 <= coach_coverage <= 1.0
+                ):
+                    continue
+            elif (
+                not np.isfinite(player_coverage) or not 0.0 < player_coverage <= 1.0
                 or not np.isfinite(coach_coverage) or not 0.0 < coach_coverage <= 1.0
             ):
                 continue
@@ -1099,6 +1349,19 @@ def load_post_match_results_archive(
             if not {"player_name", "nba_game_id", "actual_pdk"}.issubset(players.columns):
                 continue
             if not {"coach", "nba_game_id", "actual_coach_pdk"}.issubset(coaches.columns):
+                continue
+            if int(manifest.get("schema_version", -1)) >= 3:
+                # Schema 3 preserves one row per candidate, including unresolved
+                # outcomes. Downstream scoring still consumes only explicit
+                # finite official labels and must establish lineup completeness.
+                retrieved_at = pd.to_datetime(manifest.get("retrieved_at_utc"), errors="coerce", utc=True)
+                if pd.isna(retrieved_at) or not coverage.get("timing_check_passed", False):
+                    continue
+                valid.append((
+                    min(player_coverage, coach_coverage) if coach_coverage > 0 else player_coverage,
+                    player_coverage + coach_coverage,
+                    retrieved_at, archive, players, coaches, manifest,
+                ))
                 continue
             player_scores = pd.to_numeric(players["actual_pdk"], errors="coerce")
             coach_scores = pd.to_numeric(coaches["actual_coach_pdk"], errors="coerce")
@@ -1268,12 +1531,14 @@ def check_backtest_readiness(
         fixture_ids = set(mapping["nba_game_id"].astype(str))
         player_scores = pd.to_numeric(actuals["actual_pdk"], errors="coerce")
         actual_ok = (
-            np.isfinite(player_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+            not actuals.empty
+            and np.isfinite(player_scores.to_numpy(dtype=float, na_value=np.nan)).all()
             and actuals["nba_game_id"].astype(str).isin(fixture_ids).all()
         )
         coach_scores = pd.to_numeric(actual_coaches["actual_coach_pdk"], errors="coerce")
         actual_coach_ok = (
-            np.isfinite(coach_scores.to_numpy(dtype=float, na_value=np.nan)).all()
+            not actual_coaches.empty
+            and np.isfinite(coach_scores.to_numpy(dtype=float, na_value=np.nan)).all()
             and actual_coaches["nba_game_id"].astype(str).isin(fixture_ids).all()
         )
     checks["ACTUAL_RESULTS"] = {

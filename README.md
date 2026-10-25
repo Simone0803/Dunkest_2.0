@@ -38,15 +38,27 @@ Se la cattura associa tutte le partite NBA ma classifica come non eleggibile ogn
 
 ## Dopo la giornata 1
 
-Copia `config/roster.example.yaml` in `config/current_roster.yaml` e sostituisci i nomi con i 10 giocatori e il coach che possiedi **prima** della giornata da ottimizzare. Poi indica anche i crediti CR totali che hai a disposizione per costruire la rosa:
+Dalla Giornata 2, il budget CR totale attuale è salvato insieme alla rosa in `config/current_roster.yaml`. In un terminale interattivo il file si apre automaticamente; se non esiste, viene creato copiando il modello. Aggiorna budget, 10 giocatori e coach, salva il file e premi Invio per continuare. Il comando semplice è:
+
+Le statistiche ufficiali Dunkest sono acquisite dalla [sezione NBA Stats](https://www.dunkest.com/en/nba/stats/players/table?iframe=yes). `dunkest_stats_season_id` identifica il catalogo della tabella ufficiale e resta distinto da `season_id`, usato per gli artefatti locali; per la stagione 2026/27 il catalogo è `29`, mentre l'ID locale rimane `26`. Quando si prepara una giornata successiva, i dati PDK, CR, PLUS e box score delle giornate concluse vengono archiviati per turno in `data/processed/dunkest_stats_<season>_gw<giornata>_round<turno>.parquet`. Questi snapshot conservano il primo valore di crediti osservato per quel turno. Lo storico NBA di stagione corrente resta aggiornato dai log partita e viene combinato con lo storico precedente secondo il blending già validato, senza cambiare i pesi.
 
 ```bash
-./.venv/bin/python -m dunkest run --giornata 2 --roster config/current_roster.yaml --budget 97.5
+./run-dunkest.sh --giornata 2
 ```
 
-Nell'esempio `97.5` è solo un valore dimostrativo: sostituiscilo con il tuo budget reale aggiornato, includendo i crediti disponibili per l'intera rosa. Dalla Giornata 2 in poi sia `--roster` sia `--budget` sono obbligatori; il comando non assume più automaticamente il budget iniziale di 95 CR. Per le giornate successive aggiorna `--giornata`, il file con la rosa effettiva e `--budget` con il budget aggiornato dopo la plusvalenza della giornata precedente. Il comando acquisisce listino, quotazioni coach e fixture di tutti e tre i turni Lineups in un'unica sessione; `--turno` è facoltativo e ignorato per compatibilità con i vecchi comandi. La mappatura della nuova giornata viene aggiunta a quella della stagione senza cancellare le giornate precedenti. La rosa deve contenere esattamente 10 giocatori distinti e il coach attuale; il sistema applica il malus configurato (5 punti per ogni giocatore o coach cambiato per default). Per usare i dati già salvati senza aprire Lineups aggiungi `--no-lineups-scrape`: questa modalità richiede che esista già una mappatura verificata per la giornata richiesta e che il mercato sia ancora aggiornato.
+Il file ha questa struttura:
 
-I log NBA sintetici sono disattivati per impostazione predefinita: se mancano log reali e non è presente una cache valida, il flusso si ferma invece di produrre previsioni da dati simulati. Per raccogliere i log NBA configura `use_nba_api_logs: true`; per accettare esplicitamente il fallback sintetico imposta invece `allow_synthetic_logs: true` in `config/default.yaml`. La cache generata viene marcata come sintetica e il backtest la rifiuta.
+```yaml
+budget: 97.5
+players:
+  - Nome Giocatore 1
+  # ...altri 9 giocatori
+coach: Nome Coach
+```
+
+Il campo `budget` indica i CR totali disponibili per l'intera rosa; aggiornalo dopo la plusvalenza della giornata precedente. Il comando `./run-dunkest.sh` evita di dover digitare il percorso dell'interprete Python. In esecuzioni non interattive, aggiungi `--roster config/current_roster.yaml`; puoi anche usare `--budget` per sovrascrivere il valore del file. La rosa deve contenere esattamente 10 giocatori distinti e il coach attuale; il sistema applica il malus configurato (5 punti per ogni giocatore o coach cambiato per default). Per usare i dati già salvati senza aprire Lineups aggiungi `--no-lineups-scrape`: questa modalità richiede che esista già una mappatura verificata per la giornata richiesta e che il mercato sia ancora aggiornato.
+
+I log NBA sintetici sono disattivati per impostazione predefinita. I log NBA reali vengono aggiornati automaticamente da GW2 e salvati nella cache; se la raccolta è incompleta, il flusso si ferma invece di usare dati simulati o una cache presentata come aggiornata. Per disattivare l'acquisizione NBA imposta `use_nba_api_logs: false`; per accettare esplicitamente il fallback sintetico imposta `allow_synthetic_logs: true` in `config/default.yaml`. La cache generata viene marcata come sintetica e il backtest la rifiuta.
 
 ## Expected points e diversità delle rose
 

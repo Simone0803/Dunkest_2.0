@@ -33,6 +33,9 @@ def _parse_bool(value: Any, *, setting: str) -> bool:
 class Settings:
     season: str = "2026-27"
     season_id: str = "26"
+    # Dunkest's stats API uses its own competition/season catalog ID, which
+    # can differ from the project season identifier used for local artifacts.
+    dunkest_stats_season_id: str | None = None
     target_gameweek: int = 1
     target_dunkest_turn: int | None = None
     budget: float = 95.0
@@ -49,6 +52,10 @@ class Settings:
     use_matchup: bool = True
     use_coach_model: bool = True
     use_schedule: bool = True
+    # DvP uses a conservative, explicitly capped operational adjustment.
+    use_dvp_matchup: bool = True
+    dvp_adjustment_scale: float = 0.10
+    dvp_max_relative_adjustment: float = 0.02
     data_dir: str = "data"
     nba_season_start: str = "2026-10-20"
     nba_season_end: str = "2027-06-30"
@@ -117,6 +124,13 @@ class Settings:
             raise ValueError("historical_pdk_blend_weight must be finite and between 0 and 1.")
         if not isfinite(self.risk_lambda) or self.risk_lambda < 0:
             raise ValueError("risk_lambda must be finite and nonnegative.")
+        if not isfinite(self.dvp_adjustment_scale) or not 0.0 <= self.dvp_adjustment_scale <= 1.0:
+            raise ValueError("dvp_adjustment_scale must be finite and in [0, 1].")
+        if (
+            not isfinite(self.dvp_max_relative_adjustment)
+            or not 0.0 <= self.dvp_max_relative_adjustment <= 0.05
+        ):
+            raise ValueError("dvp_max_relative_adjustment must be finite and in [0, 0.05].")
         if not self.rolling_windows or any(window < 1 for window in self.rolling_windows):
             raise ValueError("rolling_windows must contain positive integers.")
         if self.http_timeout <= 0 or not isfinite(self.http_timeout):
@@ -187,6 +201,11 @@ class Settings:
         return cls(
             season=str(data.get("season", cls.season)),
             season_id=str(data.get("season_id", cls.season_id)),
+            dunkest_stats_season_id=(
+                str(data["dunkest_stats_season_id"])
+                if data.get("dunkest_stats_season_id") is not None
+                else None
+            ),
             target_gameweek=int(data.get("target_gameweek", cls.target_gameweek)),
             target_dunkest_turn=(
                 int(data["target_dunkest_turn"])
@@ -207,6 +226,11 @@ class Settings:
             use_matchup=_parse_bool(data.get("use_matchup", cls.use_matchup), setting="use_matchup"),
             use_coach_model=_parse_bool(data.get("use_coach_model", cls.use_coach_model), setting="use_coach_model"),
             use_schedule=_parse_bool(data.get("use_schedule", cls.use_schedule), setting="use_schedule"),
+            use_dvp_matchup=_parse_bool(data.get("use_dvp_matchup", cls.use_dvp_matchup), setting="use_dvp_matchup"),
+            dvp_adjustment_scale=float(data.get("dvp_adjustment_scale", cls.dvp_adjustment_scale)),
+            dvp_max_relative_adjustment=float(
+                data.get("dvp_max_relative_adjustment", cls.dvp_max_relative_adjustment)
+            ),
             data_dir=str(data.get("data_dir", cls.data_dir)),
             nba_season_start=str(data.get("nba_season_start", cls.nba_season_start)),
             nba_season_end=str(data.get("nba_season_end", cls.nba_season_end)),
@@ -286,9 +310,10 @@ def settings_for_season_opener(base: Settings | None = None, **overrides: Any) -
     return s
 
 
-def load_roster_yaml(path: Path) -> tuple[list[str], str | None]:
+def load_roster_yaml(path: Path) -> tuple[list[str], str | None, Any]:
     with path.open(encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
     players = list(data.get("players") or [])
     coach = data.get("coach")
-    return players, coach
+    budget = data.get("budget")
+    return players, coach, budget

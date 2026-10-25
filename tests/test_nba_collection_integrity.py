@@ -36,7 +36,7 @@ def _game_log():
 
 
 def _install_fake_player_api(monkeypatch, failures=()):
-    from nba_api.stats.endpoints import playergamelog
+    from nba_api.stats.endpoints import playergamelogs
     from nba_api.stats.static import players
 
     active_players = [
@@ -44,25 +44,28 @@ def _install_fake_player_api(monkeypatch, failures=()):
         {"id": 2, "full_name": "Player Two"},
     ]
     monkeypatch.setattr(players, "get_active_players", lambda: active_players)
-    calls = {player["id"]: 0 for player in active_players}
+    calls = {"bulk": 0}
 
-    class FakePlayerGameLog:
-        def __init__(self, player_id, **_kwargs):
-            calls[player_id] += 1
-            if player_id in failures:
+    class FakePlayerGameLogs:
+        def __init__(self, **_kwargs):
+            calls["bulk"] += 1
+            if failures:
                 raise RuntimeError("simulated timeout")
-            self.player_id = player_id
 
         def get_data_frames(self):
-            return [_game_log()]
+            rows = []
+            for player in active_players:
+                for row in _game_log().to_dict("records"):
+                    rows.append({**row, "PLAYER_ID": player["id"], "PLAYER_NAME": player["full_name"]})
+            return [pd.DataFrame(rows)]
 
-    monkeypatch.setattr(playergamelog, "PlayerGameLog", FakePlayerGameLog)
+    monkeypatch.setattr(playergamelogs, "PlayerGameLogs", FakePlayerGameLogs)
     monkeypatch.setattr(collector.time, "sleep", lambda _seconds: None)
     return calls
 
 
 def test_player_collection_reports_failed_entities_after_bounded_retries(monkeypatch):
-    calls = _install_fake_player_api(monkeypatch, failures={2})
+    calls = _install_fake_player_api(monkeypatch, failures={"bulk"})
 
     with pytest.warns(RuntimeWarning, match="1/2 failed"):
         result = collector.fetch_player_game_logs(
@@ -74,8 +77,8 @@ def test_player_collection_reports_failed_entities_after_bounded_retries(monkeyp
     assert report["expected_entities"] == 2
     assert report["attempted_entities"] == 2
     assert report["failed_entities"] == 1
-    assert report["failed_entity_names"] == ["Player Two"]
-    assert calls[2] == 3
+    assert report["failed_entity_names"] == ["NBA PlayerGameLogs endpoint"]
+    assert calls["bulk"] == 3
 
 
 def test_player_limit_marks_truncated_collection_incomplete(monkeypatch):
@@ -212,6 +215,97 @@ def test_incomplete_player_collection_is_not_cached(tmp_path, monkeypatch):
         access.get_player_data(settings)
 
     assert writes == []
+
+
+def test_complete_empty_current_season_collection_is_saved_without_synthetic_rows(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), use_nba_api_logs=True, allow_synthetic_logs=False)
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: False)
+    monkeypatch.setattr(
+        access.dk_module,
+        "fetch_nba_season_players",
+        lambda _settings: pd.DataFrame([{"player_name": "Player One", "cr": 8.0, "pdk": 10.0}]),
+    )
+    empty = pd.DataFrame()
+    empty.attrs["collection_report"] = {
+        "collection_complete": True,
+        "expected_entities": 1,
+        "attempted_entities": 1,
+        "failed_entities": 0,
+        "truncated_entities": 0,
+        "unmatched_requested_count": 0,
+    }
+    monkeypatch.setattr(access.nba, "fetch_player_game_logs", lambda *args, **kwargs: empty)
+    writes = []
+    monkeypatch.setattr(access, "write_parquet", lambda frame, path, **kwargs: writes.append((frame, kwargs)))
+
+    result = access.get_player_data(settings, force_refresh=True)
+
+    assert result.empty
+    assert writes and writes[0][1]["source"] == "nba_api/playergamelog"
+    assert writes[0][1]["collection_complete"] is True
+
+
+def test_complete_collection_with_unmatched_market_player_keeps_real_logs_and_reports_gap(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), use_nba_api_logs=True, allow_synthetic_logs=False)
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: False)
+    monkeypatch.setattr(
+        access.dk_module,
+        "fetch_nba_season_players",
+        lambda _settings: pd.DataFrame([
+            {"player_name": "Player One", "cr": 8.0, "pdk": 10.0},
+            {"player_name": "Rookie Name", "cr": 6.0, "pdk": float("nan")},
+        ]),
+    )
+    result = pd.DataFrame([{"PLAYER_NAME": "Player One", "GAME_ID": "game-1", "PLAYER_ID": 1}])
+    result.attrs["collection_report"] = {
+        "collection_complete": True,
+        "expected_entities": 1,
+        "attempted_entities": 1,
+        "failed_entities": 0,
+        "truncated_entities": 0,
+        "unmatched_requested_count": 1,
+    }
+    monkeypatch.setattr(access.nba, "fetch_player_game_logs", lambda *args, **kwargs: result)
+    writes = []
+    monkeypatch.setattr(access, "write_parquet", lambda frame, path, **kwargs: writes.append((frame, kwargs)))
+
+    collected = access.get_player_data(settings, force_refresh=True)
+
+    assert collected["PLAYER_NAME"].tolist() == ["Player One"]
+    assert "Rookie Name" not in set(collected["PLAYER_NAME"])
+    assert collected["data_source"].eq("nba_api/playergamelog").all()
+    assert len(writes) == 1
+    assert writes[0][1]["collection_complete"] is True
+    assert writes[0][1]["unmatched_requested_count"] == 1
+
+
+def test_complete_empty_collection_with_unmatched_market_players_is_not_synthesized(tmp_path, monkeypatch):
+    settings = Settings(data_dir=str(tmp_path), use_nba_api_logs=True, allow_synthetic_logs=False)
+    monkeypatch.setattr(access, "cache_valid", lambda *args, **kwargs: False)
+    monkeypatch.setattr(
+        access.dk_module,
+        "fetch_nba_season_players",
+        lambda _settings: pd.DataFrame([
+            {"player_name": "Player One", "cr": 8.0, "pdk": 10.0},
+            {"player_name": "Rookie Name", "cr": 6.0, "pdk": float("nan")},
+        ]),
+    )
+    empty = pd.DataFrame()
+    empty.attrs["collection_report"] = {
+        "collection_complete": True, "expected_entities": 1, "attempted_entities": 1,
+        "failed_entities": 0, "truncated_entities": 0,
+        "unmatched_requested_count": 1,
+    }
+    monkeypatch.setattr(access.nba, "fetch_player_game_logs", lambda *args, **kwargs: empty)
+    writes = []
+    monkeypatch.setattr(access, "write_parquet", lambda frame, path, **kwargs: writes.append((frame, kwargs)))
+
+    result = access.get_player_data(settings, force_refresh=True)
+
+    assert result.empty
+    assert writes and writes[0][1]["source"] == "nba_api/playergamelog"
+    assert writes[0][1]["collection_complete"] is True
+    assert writes[0][1]["unmatched_requested_count"] == 1
 
 
 def test_team_collection_failure_is_not_cached(tmp_path, monkeypatch):

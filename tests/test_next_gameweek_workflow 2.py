@@ -106,7 +106,8 @@ def test_prediction_context_uses_verified_opponent_turn_and_turn_specific_lineup
     fixtures = pd.DataFrame([{
         "home_team": "BOS", "away_team": "NYK", "home_team_eligible": True,
         "away_team_eligible": True, "fantasy_eligible": True, "dunkest_turn": 2,
-        "nba_game_id": "g2", "game_datetime_utc": "2026-10-24T00:00:00Z",
+        "mapping_verified": True, "nba_game_id": "g2",
+        "game_datetime_utc": "2026-10-24T00:00:00Z",
     }])
 
     out = _attach_verified_gameweek_context(settings, market, fixtures).set_index("player_name")

@@ -45,7 +45,7 @@ def test_backtest_readiness_rejects_stale_fixture_bridge(tmp_path: Path):
     old = (datetime.now(timezone.utc) - timedelta(hours=49)).isoformat()
     mapping = pd.DataFrame([{
         "season_id": "26", "nba_season": "2026-27", "nba_game_id": "0022600001",
-        "game_datetime_utc": "2026-10-20T23:00:00Z", "game_date_local": "2026-10-20",
+        "game_datetime_utc": "2027-10-20T23:00:00Z", "game_date_local": "2027-10-20",
         "home_team": "BOS", "away_team": "PHI", "home_team_eligible": True,
         "away_team_eligible": True, "dunkest_gameweek": 1, "dunkest_turn": 1,
         "fantasy_eligible": True, "mapping_verified": True, "eligibility_reason": "verified",

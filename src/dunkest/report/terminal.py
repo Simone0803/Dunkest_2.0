@@ -149,6 +149,7 @@ def print_lineup_cards(console: Console, solutions) -> None:
             ("CR", "right"),
             ("Min", "right"),
             ("PDK", "right"),
+            ("ΔDvP", "right"),
         ):
             table.add_column(label, justify=justify, no_wrap=True)
 
@@ -178,6 +179,7 @@ def print_lineup_cards(console: Console, solutions) -> None:
                 _cell(player.get("cr"), ".1f"),
                 _cell(player.get("expected_min"), ".1f"),
                 _cell(player.get("expected_pdk"), ".1f"),
+                _cell(player.get("dvp_adjustment_pdk_expected"), "+.2f"),
             )
 
         console.print(

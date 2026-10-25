@@ -17,6 +17,7 @@ from dunkest.models.predictor import (
     _fit_projection_weights,
     _lineup_minutes_prior,
     predict_players,
+    recalculate_pdk_projection,
     train_models,
 )
 from dunkest.uncertainty.quantiles import add_uncertainty_columns
@@ -36,8 +37,8 @@ def test_current_roster_competition_scales_expected_minutes_and_role_projection(
         ]
     )
     market = pd.DataFrame(
-        [{"player_name": name, "team_code": "BOS", "position": "G", "role": "G", "cr": 16.0}
-         for name in ("Guard A", "Guard B", "Guard C", "Guard D")]
+        [{"id": f"dk-{index}", "player_name": name, "team_code": "BOS", "position": "G", "role": "G", "cr": 16.0}
+         for index, name in enumerate(("Guard A", "Guard B", "Guard C", "Guard D"), start=1)]
     )
     models = {"_feature_cols": [], "_weights": {}, "_residual_std": 1.0}
 
@@ -47,6 +48,7 @@ def test_current_roster_competition_scales_expected_minutes_and_role_projection(
     assert (result["competition_scale"] < 1.0).any()
     assert result["expected_min"].sum() <= 96.0
     assert "expected_min_model_shadow" in result.columns
+    assert result.set_index("player_name").loc["Guard A", "dunkest_player_id"] == "dk-1"
     assert result["expected_min_model_shadow"].isna().all()
     assert (result["expected_min"] > 0.0).all()
     assert (result["expected_min"] < 44.0).all()
@@ -54,6 +56,85 @@ def test_current_roster_competition_scales_expected_minutes_and_role_projection(
     assert {"component_minutes_pdk", "component_ensemble_pdk", "component_prior_pdk"}.issubset(result.columns)
     assert (result["expected_pdk"] == result["expected_pdk_before_play_probability"] * result["p_play"]).all()
     assert (result["expected_pdk_conditional"] == result["expected_pdk_before_play_probability"]).all()
+
+
+def test_shared_pdk_recalculation_matches_production_components_and_edge_cases():
+    source = pd.DataFrame([
+        {
+            "expected_min": 20.0, "pdk_rate_for_projection": 0.5,
+            "ensemble_pdk": 12.0, "prior_pdk": 15.0, "implied_min": 30.0,
+            "has_history": True, "n_games": 20.0, "historical_rf_pdk": 18.0,
+            "historical_rf_blend_weight": 0.25, "p_play": 0.75,
+            "opaque_source_value": "preserved",
+        },
+        {
+            "expected_min": 12.0, "pdk_rate_for_projection": 0.8,
+            "ensemble_pdk": np.nan, "prior_pdk": 8.0, "implied_min": 0.0,
+            "has_history": False, "n_games": 0.0, "historical_rf_pdk": 30.0,
+            "historical_rf_blend_weight": 0.0, "p_play": np.nan,
+            "opaque_source_value": "rookie",
+        },
+        {
+            "expected_min": 0.0, "pdk_rate_for_projection": np.nan,
+            "ensemble_pdk": 4.0, "prior_pdk": 6.0, "implied_min": np.nan,
+            "has_history": True, "n_games": np.nan, "historical_rf_pdk": 10.0,
+            "historical_rf_blend_weight": 0.5, "p_play": 0.0,
+            "opaque_source_value": "zero minutes",
+        },
+    ])
+    source_before = source.copy(deep=True)
+    weights = {"minutes": 0.5, "ensemble": 0.3, "prior": 0.2}
+
+    result = recalculate_pdk_projection(source, weights)
+
+    # Hand-calculated production-path values exercise historical scaling,
+    # confidence shrinkage, no-history handling, NaN play probability, and zero minutes.
+    assert result.loc[0, "component_minutes_pdk"] == pytest.approx(10.0)
+    assert result.loc[0, "component_ensemble_pdk"] == pytest.approx(8.0)
+    assert result.loc[0, "component_prior_pdk"] == pytest.approx(10.0)
+    assert result.loc[0, "historical_rf_pdk_scaled"] == pytest.approx(12.0)
+    assert result.loc[0, "expected_pdk_conditional"] == pytest.approx(10.03125)
+    assert result.loc[0, "expected_pdk"] == pytest.approx(7.5234375)
+    assert result.loc[1, "expected_pdk_conditional"] == pytest.approx(9.6)
+    assert result.loc[1, "expected_pdk"] == pytest.approx(9.6)
+    assert result.loc[2, "expected_pdk_conditional"] == pytest.approx(0.0)
+    assert result.loc[2, "expected_pdk"] == pytest.approx(0.0)
+    assert result["opaque_source_value"].tolist() == source["opaque_source_value"].tolist()
+    pd.testing.assert_frame_equal(source, source_before)
+
+
+def test_shared_pdk_minute_override_changes_only_minute_derived_outputs():
+    source = pd.DataFrame([
+        {
+            "expected_min": 20.0, "pdk_rate_for_projection": 0.5,
+            "ensemble_pdk": 12.0, "prior_pdk": 15.0, "implied_min": 30.0,
+            "has_history": True, "n_games": 20.0, "historical_rf_pdk": 18.0,
+            "historical_rf_blend_weight": 0.25, "p_play": 0.75,
+            "pdk_rate_for_projection_copy": 0.5, "feature_marker": "unchanged",
+        },
+    ])
+    weights = {"minutes": 0.5, "ensemble": 0.3, "prior": 0.2}
+    original = recalculate_pdk_projection(source, weights)
+
+    overridden = recalculate_pdk_projection(source, weights, expected_minutes=10.0)
+
+    assert overridden.loc[0, "expected_min"] == pytest.approx(10.0)
+    assert overridden.loc[0, "component_minutes_pdk"] == pytest.approx(5.0)
+    assert overridden.loc[0, "component_ensemble_pdk"] == pytest.approx(4.0)
+    assert overridden.loc[0, "component_prior_pdk"] == pytest.approx(5.0)
+    assert overridden.loc[0, "expected_pdk"] != pytest.approx(original.loc[0, "expected_pdk"])
+    derived = {
+        "expected_min", "component_minutes_pdk", "component_ensemble_pdk",
+        "component_prior_pdk", "historical_rf_pdk_scaled",
+        "expected_pdk_conditional", "expected_pdk_before_play_probability",
+        "expected_pdk",
+    }
+    for column in source.columns:
+        if column not in derived:
+            pd.testing.assert_series_equal(overridden[column], source[column])
+    pd.testing.assert_series_equal(source["expected_min"], pd.Series([20.0], name="expected_min"))
+    with pytest.raises(AttributeError):
+        recalculate_pdk_projection(source, None)
 
 
 def test_same_team_role_competition_uses_credit_as_secondary_depth_signal():
@@ -378,6 +459,20 @@ def test_minutes_shadow_prediction_is_exposed_without_changing_pdk(monkeypatch):
     without_shadow = predict_players(Settings(), without_shadow_models, inference, market)
 
     assert with_shadow["expected_min_model_shadow"].notna().all()
+    runtime_feature_snapshot = with_shadow.attrs["runtime_feature_snapshot"]
+    assert runtime_feature_snapshot["minutes_shadow_feature_status"].eq("transformed").all()
+    assert "hgb_input__pdk_mean_3" in runtime_feature_snapshot.columns
+    assert "target_min" not in runtime_feature_snapshot.columns
+    assert with_shadow.attrs["minutes_shadow_feature_columns"] == models["_feature_cols"]
+    replay_matrix = runtime_feature_snapshot[
+        [f"hgb_input__{column}" for column in models["_feature_cols"]]
+    ].rename(columns=lambda column: column.removeprefix("hgb_input__"))
+    replay_prediction = np.clip(
+        models["_minutes_shadow_model"].predict(replay_matrix), 0.0, 48.0
+    )
+    assert with_shadow["expected_min_model_shadow"].iloc[0] == pytest.approx(
+        replay_prediction[0]
+    )
     assert np.allclose(with_shadow["expected_pdk"], without_shadow["expected_pdk"])
     assert "_minutes_shadow_model" not in models["_weights"]
 

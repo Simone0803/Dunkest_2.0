@@ -32,6 +32,10 @@ Se uno o più snapshot mancano, il comando elenca i controlli falliti e termina 
 
 ## Archivio storico Dunkest e modello PDK sperimentale
 
+Per la stagione Dunkest 2026/27 il catalogo della pagina statistiche usa `season_id=29`; il progetto mantiene `season_id=26` per i propri artefatti locali. Le acquisizioni ufficiali per singolo turno sono archiviate in `processed/dunkest_stats_26_gw<giornata>_round<turno>.parquet`, con i JSON di origine sotto `raw/`. Contengono PDK, CR, PLUS e box score restituiti dalla tabella Stats. Il timestamp documenta quando l’osservazione è stata acquisita. Non usare uno snapshot acquisito dopo il lock come se fosse un input pre-lock, anche quando la pagina consente di filtrare una giornata passata.
+
+Nel training, `attach_observed_round_pdk_labels()` può usare i PDK ufficiali archiviati come forma recente soltanto se il turno si abbina univocamente ai log NBA per nome, squadra e otto statistiche di box score, e `observed_at_utc` precede il timestamp minimo del mapping fixture target. Il mapping attuale non registra l'ora esatta del lock Dunkest: questa soglia schedule è un limite prudenziale, ma non certifica da sola il lock di una giornata futura. Le righe incomplete, ambigue, discordanti o successive al cutoff restano fuori; il builder mantiene il proxy NBA per le righe prive di etichetta ufficiale. I CR e PLUS per turno restano snapshot storici append-only e non vengono sostituiti dai valori correnti del mercato.
+
 La raccolta storica dei risultati ufficiali Dunkest e i relativi controlli sono documentati in [reports/audit/dunkest_historical_data_training_2018-25_v1.md](../reports/audit/dunkest_historical_data_training_2018-25_v1.md). Il dataset weekly-round copre le Regular Season 2020/21–2024/25; la cronologia per partita via API ufficiale include anche 2018/19 e 2019/20, ma il flag `gameValidForDunkest` è sempre `False` in quelle due annate e i relativi PDK non sono quindi usati come target nel training rigoroso.
 
 I dataset e gli artefatti `dunkest_pdk_historical_random_forest_2020-25_v1/v2` sono esperimenti separati, non usati dalla pipeline di produzione. La V2 usa le statistiche NBA dell'ultima partita precedente alla data target, con controlli anti-leakage e walk-forward per stagione. Prima di integrare un modello, consultare il report, ripetere la validazione su dati prospettici e verificare il significato dei flag storici.
@@ -45,6 +49,26 @@ nome legacy senza _v4). L'overlay viene associato ai log NBA tramite ID giocator
 ID partita, data e squadra; il join è uno-a-uno e non modifica la colonna PDK
 proxy già usata per le feature storiche. Le righe senza un target ufficiale restano
 senza etichetta ufficiale.
+
+## Aggiornamento dei log durante la stagione
+
+Da GW2 in poi ogni training forza una nuova raccolta completa dei log NBA della
+stagione corrente prima di costruire le feature. Gli aggiornamenti completi sono
+salvati in `processed/player_game_logs_<stagione>.parquet`: le righe appena
+acquisite aggiornano le stesse chiavi `PLAYER_ID` + `GAME_ID`, mentre le partite
+già salvate ma assenti dalla risposta vengono mantenute. Ripetere la raccolta non
+duplica le partite. Una raccolta incompleta o senza il report di completezza viene
+rifiutata prima della scrittura, lasciando intatta la cache valida precedente.
+L'acquisizione dei log NBA reali è attiva nel profilo predefinito; può essere
+disabilitata esplicitamente con `use_nba_api_logs: false`.
+
+Per le feature di GW2 e successive, la pipeline affianca questi log al cache
+completo della stagione precedente. I tassi correnti e precedenti vengono
+calcolati solo con partite antecedenti all'orario della fixture; il predictor
+salva il numero di partite trovate e la provenienza del tasso usato. Il run deve
+avere accesso alla NBA API per aggiornare i log correnti; senza una raccolta
+completa, il training si interrompe e non produce una rosa basata su dati vecchi
+presentati come aggiornati.
 
 Le configurazioni versionate `config/default.yaml` e `config/season_opener.yaml`
 forzano `training_target: target_pdk_official`: se il target ufficiale manca o non

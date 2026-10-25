@@ -41,6 +41,21 @@ def _fetch_player_log(player_id: int, season: str) -> pd.DataFrame:
     wait=wait_exponential(multiplier=0.2, min=0.2, max=1.0),
     reraise=True,
 )
+def _fetch_league_player_logs(season: str) -> pd.DataFrame:
+    """Fetch all player-game rows for a season in one NBA Stats request."""
+    from nba_api.stats.endpoints import playergamelogs
+
+    return playergamelogs.PlayerGameLogs(
+        season_nullable=season,
+        season_type_nullable="Regular Season",
+    ).get_data_frames()[0]
+
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=0.2, min=0.2, max=1.0),
+    reraise=True,
+)
 def _fetch_team_log(team_id: int, season: str) -> pd.DataFrame:
     from nba_api.stats.endpoints import teamgamelog
 
@@ -93,7 +108,12 @@ def require_complete_collection(frame: pd.DataFrame, entity_type: str) -> dict:
 def fetch_player_game_logs(
     settings: Settings, player_names: list[str] | set[str] | None = None
 ) -> pd.DataFrame:
-    """Fetch game logs for active players (cached externally)."""
+    """Fetch season game logs in bulk and retain the requested active players.
+
+    The league endpoint returns all player-game rows in one response. This avoids
+    hundreds of sequential per-player requests and lets each post-gameweek run
+    persist a complete refreshed snapshot through the cache merge in data.access.
+    """
     from nba_api.stats.static import players
 
     season = _nba_season_str(settings.season)
@@ -113,72 +133,35 @@ def fetch_player_game_logs(
     if settings.max_player_log_entries > 0:
         truncated_players = max(0, len(all_players) - settings.max_player_log_entries)
         all_players = all_players[: settings.max_player_log_entries]
-    frames: list[pd.DataFrame] = []
     failures: list[tuple[str, str]] = []
-    for i, p in enumerate(all_players):
-        try:
-            df = _fetch_player_log(p["id"], season)
-            if df.empty:
-                continue
-            df["PLAYER_ID"] = p["id"]
-            df["PLAYER_NAME"] = p["full_name"]
-            frames.append(df)
-        except Exception as exc:
-            failures.append((str(p["full_name"]), str(exc)))
-            continue
-        if i % 20 == 0:
-            time.sleep(0.35)
-    out = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-    if out.empty:
-        report = _collection_report(
-            expected_players, len(all_players), failures, truncated_players
-        )
-        report["unmatched_requested_players"] = unmatched_requested
-        report["requested_entities"] = len(requested_names)
-        report["unmatched_requested_count"] = len(unmatched_requested)
-        if unmatched_requested:
-            warnings.warn(
-                "NBA player logs did not match these requested Dunkest names: "
-                + ", ".join(unmatched_requested[:10]),
-                RuntimeWarning,
-                stacklevel=2,
+    try:
+        out = _fetch_league_player_logs(season)
+    except Exception as exc:
+        failures.append(("NBA PlayerGameLogs endpoint", str(exc)))
+        out = pd.DataFrame()
+
+    if not out.empty:
+        active_by_key = {player_key(p["full_name"]): p for p in all_players}
+        if "PLAYER_NAME" in out:
+            out["_player_key"] = out["PLAYER_NAME"].map(player_key)
+            out = out.loc[out["_player_key"].isin(active_by_key)].copy()
+            # Use the canonical active-roster identity and id for stable joins.
+            out["PLAYER_NAME"] = out["_player_key"].map(
+                lambda key: active_by_key[key]["full_name"]
             )
-        return _attach_collection_report(out, report, "player game-log", failures)
-    out["GAME_DATE"] = pd.to_datetime(out["GAME_DATE"])
-    numeric_cols = [
-        "MIN",
-        "PTS",
-        "REB",
-        "AST",
-        "STL",
-        "BLK",
-        "BLKA",
-        "TOV",
-        "FGM",
-        "FGA",
-        "FG3M",
-        "FG3A",
-        "FTM",
-        "FTA",
-        "OREB",
-        "DREB",
-        "PF",
-    ]
-    for c in numeric_cols:
-        if c in out.columns:
-            out[c] = pd.to_numeric(out[c], errors="coerce").fillna(0)
-    out["MIN"] = out["MIN"].apply(_minutes_to_float)
-    out["PDK"] = out.apply(
-        lambda row: pdk_from_boxscore_row(row, team_won=str(row.get("WL", "")).upper() == "W"),
-        axis=1,
-    )
-    out["MATCHUP"] = out.get("MATCHUP", "")
-    out["IS_HOME"] = out["MATCHUP"].astype(str).str.contains(" vs. ")
-    out["OPPONENT"] = out["MATCHUP"].astype(str).str.replace(".*@ ", "", regex=True).str.replace(
-        " vs. ", "", regex=True
-    )
+            out["PLAYER_ID"] = out["_player_key"].map(
+                lambda key: active_by_key[key]["id"]
+            )
+            out = out.drop(columns="_player_key")
+        else:
+            failures.append(("NBA PlayerGameLogs endpoint", "PLAYER_NAME column missing"))
+            out = pd.DataFrame()
+
     report = _collection_report(
-        expected_players, len(all_players), failures, truncated_players
+        expected_players,
+        len(all_players),
+        failures,
+        truncated_players,
     )
     report["unmatched_requested_players"] = unmatched_requested
     report["requested_entities"] = len(requested_names)
@@ -189,6 +172,25 @@ def fetch_player_game_logs(
             + ", ".join(unmatched_requested[:10]),
             RuntimeWarning,
             stacklevel=2,
+        )
+    if not out.empty:
+        out["GAME_DATE"] = pd.to_datetime(out["GAME_DATE"])
+        numeric_cols = [
+            "MIN", "PTS", "REB", "AST", "STL", "BLK", "BLKA", "TOV",
+            "FGM", "FGA", "FG3M", "FG3A", "FTM", "FTA", "OREB", "DREB", "PF",
+        ]
+        for c in numeric_cols:
+            if c in out.columns:
+                out[c] = pd.to_numeric(out[c], errors="coerce").fillna(0)
+        out["MIN"] = out["MIN"].apply(_minutes_to_float)
+        out["PDK"] = out.apply(
+            lambda row: pdk_from_boxscore_row(row, team_won=str(row.get("WL", "")).upper() == "W"),
+            axis=1,
+        )
+        out["MATCHUP"] = out.get("MATCHUP", "")
+        out["IS_HOME"] = out["MATCHUP"].astype(str).str.contains(" vs. ")
+        out["OPPONENT"] = out["MATCHUP"].astype(str).str.replace(".*@ ", "", regex=True).str.replace(
+            " vs. ", "", regex=True
         )
     return _attach_collection_report(out, report, "player game-log", failures)
 

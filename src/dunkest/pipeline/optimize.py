@@ -45,8 +45,13 @@ def run_optimize(
                 "Interrompo l'ottimizzazione invece di assegnare un contributo coach "
                 "artificiale pari a zero. Aggiorna fixture e proiezioni coach."
             )
+    # Shadow minutes are archived for evaluation only and must never become
+    # an optimizer input. The caller's frame remains untouched for reporting.
+    operational_players = players.drop(
+        columns=["expected_min_model_shadow"], errors="ignore"
+    )
     solutions = optimize_top_k_lineups(
-        players,
+        operational_players,
         coach_candidates,
         settings,
         current_roster=settings.current_roster,

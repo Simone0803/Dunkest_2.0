@@ -131,7 +131,10 @@ def fetch_week_rounds(settings: Settings, week_number: int) -> list[str]:
     url = f"{settings.dunkest_api_base}/stats/dunkest/week/rounds"
     data = get_json(
         url,
-        params={"season_id": settings.season_id, "week_number": week_number},
+        params={
+            "season_id": settings.dunkest_stats_season_id or settings.season_id,
+            "week_number": week_number,
+        },
         timeout=settings.http_timeout,
     )
     return [str(x) for x in data]
@@ -187,7 +190,7 @@ def fetch_dunkest_gameweek_players(settings: Settings, gameweek: int) -> pd.Data
     if not rounds:
         return pd.DataFrame()
     params: dict[str, Any] = {
-        "season_id": settings.season_id,
+        "season_id": settings.dunkest_stats_season_id or settings.season_id,
         "mode": "dunkest",
         "stats_type": "avg",
         "weeks": [gameweek],
@@ -209,9 +212,44 @@ def fetch_dunkest_gameweek_players(settings: Settings, gameweek: int) -> pd.Data
     return df
 
 
+def fetch_dunkest_round_players(
+    settings: Settings, week_number: int, round_number: int
+) -> pd.DataFrame:
+    """Fetch official Dunkest player results for one completed daily round.
+
+    The stats page exposes per-round PDK, credits, PLUS, minutes and box-score
+    statistics. This is kept separate from the weekly aggregate used by the
+    gameweek target so a round snapshot can preserve the credit values seen
+    immediately after that day's games.
+    """
+    rounds = fetch_week_rounds(settings, week_number)
+    round_id = str(round_number)
+    if round_id not in rounds:
+        return pd.DataFrame()
+    params: dict[str, Any] = {
+        "season_id": settings.dunkest_stats_season_id or settings.season_id,
+        "mode": "dunkest",
+        "stats_type": "tot",
+        "weeks": [week_number],
+        "rounds": [round_id],
+        "teams": [str(i) for i in range(1, 31)],
+        "positions": ["1", "2", "3"],
+        "min_cr": settings.min_cr,
+        "max_cr": settings.max_cr,
+        "sort_by": "pdk",
+        "sort_order": "desc",
+    }
+    df = fetch_stats_table(settings, **params)
+    if not df.empty:
+        df["gameweek"] = int(week_number)
+        df["dunkest_round"] = int(round_number)
+        df["dunkest_rounds"] = round_id
+    return df
+
+
 def fetch_nba_season_players(settings: Settings) -> pd.DataFrame:
     params: dict[str, Any] = {
-        "season_id": settings.season_id,
+        "season_id": settings.dunkest_stats_season_id or settings.season_id,
         "mode": "nba",
         "stats_type": "avg",
         "date_from": settings.nba_season_start,
@@ -229,7 +267,7 @@ def fetch_nba_season_players(settings: Settings) -> pd.DataFrame:
 def fetch_coach_cr_table(settings: Settings, gameweek: int) -> pd.DataFrame:
     """Coach CR from Dunkest coach stats board (entity=coach when supported)."""
     params: dict[str, Any] = {
-        "season_id": settings.season_id,
+        "season_id": settings.dunkest_stats_season_id or settings.season_id,
         "mode": "dunkest",
         "stats_type": "avg",
         "weeks": [gameweek],

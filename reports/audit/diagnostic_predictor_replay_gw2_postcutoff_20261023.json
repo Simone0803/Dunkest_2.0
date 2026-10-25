@@ -1,0 +1,66 @@
+{
+  "classification": "post-cutoff production-trainer/predictor diagnostic replay; not a certified GW2 forecast",
+  "model_training_rows": 93766,
+  "training_target": "target_pdk_official",
+  "training_target_source": "official_dunkest_pdk",
+  "current_season_training_rows": 0,
+  "cache_current_player_rows": 324,
+  "cache_current_games": 16,
+  "cache_current_players": 304,
+  "cache_team_rows": 32,
+  "cache_team_entities": 30,
+  "history_rows_used": 24424,
+  "inference_feature_rows": 420,
+  "market_rows_after_verified_fixture_gate": 458,
+  "prediction_rows": 458,
+  "eligible_after_injury_filter": 414,
+  "finite_expected_min": 458,
+  "finite_rate_for_projection": 458,
+  "finite_conditional_pdk": 458,
+  "finite_expected_pdk": 458,
+  "expected_min_range": [
+    0.0,
+    34.99118051282051
+  ],
+  "pdk_rate_nan_rows": 0,
+  "projection_source_counts": {
+    "current_season_shrunk": 260,
+    "player_history_shrunk": 126,
+    "college_rookie_prior": 43,
+    "cr_market_prior": 27,
+    "prior_season_player_market_shrunk": 2
+  },
+  "conditional_blend_recomposition_max_abs_error": 1.0658141036401503e-14,
+  "availability_recomposition_max_abs_error": 1.7763568394002505e-15,
+  "p_play_range": [
+    0.0,
+    1.0
+  ],
+  "p_play_counts": {
+    "1.0": 392,
+    "0.0": 44,
+    "0.75": 22
+  },
+  "market_history_rows": 527,
+  "plusvalenza_history_rows": 93744,
+  "rookie_prior_rows": 54,
+  "injury_snapshot_utc": "2026-10-23T13:08:12.912687+00:00",
+  "market_snapshot_utc": "2026-10-23T13:08:05Z",
+  "team_logs_fetched_utc": "2026-10-23T15:07:39.791912Z",
+  "forecast_degradations": [],
+  "fixture_rows_verified": 15,
+  "fixture_rows_unverified_excluded": 1,
+  "verified_fixture_input": "/Users/simone/Documents/Dunkest/data/processed/dunkest_fixture_mapping_26_lineups_browser_season_multigw_v1.parquet",
+  "prediction_rows_after_verified_team_context": 458,
+  "forecast_stage": "production predictor followed by verified team-context assignment",
+  "fixture_gate": "mapping_verified=true and fantasy_eligible=true; 15 fixtures; unverified GSW-MEM excluded",
+  "team_context_rows_missing": 0,
+  "feature_target_dates_utc": [
+    "2026-10-23",
+    "2026-10-24"
+  ],
+  "latest_current_player_log_date_utc": "2026-10-22",
+  "target_dates_at_or_before_latest_current_log": 0,
+  "current_season_game_count_mismatches_vs_strict_asof_recount": 0,
+  "full_test_suite": "650 passed"
+}

@@ -9,6 +9,7 @@ import pytest
 from dunkest.config import Settings
 from dunkest.pipeline.season_opener import _model_artifact_metadata
 from dunkest.report.artifacts import (
+    _gameweek_fixture_snapshot,
     _source_fingerprint,
     save_post_match_snapshot,
     save_pre_match_snapshot,
@@ -165,6 +166,12 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert manifest["model_details"]["interval_diagnostic_scope"] == (
         "cross-fitted cohort diagnostic"
     )
+    assert manifest["player_forecast_snapshot"]["certification"]["pre_lock_eligible"] is False
+    assert manifest["player_forecast_snapshot"]["certification"][
+        "candidate_stable_identity_verified"
+    ] is False
+    assert manifest["player_forecast_snapshot"]["prediction_cutoff_utc"] is None
+    assert manifest["player_forecast_snapshot"]["cutoff_status"] == "uncertified"
     assert manifest["runtime"]["packages"]["pandas"]
 
     input_hashes = {entry["path"]: entry["sha256"] for entry in manifest["inputs"]}
@@ -177,6 +184,8 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     assert input_hashes["processed/player_game_logs_2026-27.parquet"] == hashlib.sha256(
         b"captured-input"
     ).hexdigest()
+
+
     assert input_hashes[
         "processed/dunkest_nba_player_games_enriched_2018-25_v1.parquet"
     ] == hashlib.sha256(b"minute-label-training-input").hexdigest()
@@ -218,6 +227,41 @@ def test_run_manifest_captures_reproducibility_metadata(tmp_path):
     ).hexdigest()
 
 
+def test_run_manifest_archives_cutoff_evidence_but_does_not_certify_without_candidates(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), target_gameweek=1)
+    evidence = {
+        "status": "certified",
+        "cutoff_kind": "official_rule_derived",
+        "cutoff_utc": "2030-10-20T16:59:00+00:00",
+        "evidence_sha256": "a" * 64,
+        "acquired_at_utc": {
+            "config": "2030-10-19T10:00:00+00:00",
+            "matchday": "2030-10-19T10:00:01+00:00",
+        },
+        "evidence_payloads": {"config": {"data": {}}, "matchday": {"data": {}}},
+    }
+    predictions = pd.DataFrame()
+    predictions.attrs.update({
+        "forecast_timestamp_utc": "2030-10-20T16:00:00+00:00",
+        "dunkest_lock_utc": evidence["cutoff_utc"],
+        "dunkest_lock_source": "official_rule_derived:first_match_start_minus_1_minute",
+        "dunkest_lock_source_sha256": evidence["evidence_sha256"],
+        "dunkest_lock_verified": True,
+        "dunkest_cutoff_evidence": evidence,
+    })
+
+    output = save_run_artifacts(settings, predictions, [])
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    descriptor = manifest["player_forecast_snapshot"]
+    evidence_path = output / descriptor["cutoff_evidence_path"]
+
+    assert evidence_path.is_file()
+    assert hashlib.sha256(evidence_path.read_bytes()).hexdigest() == descriptor["cutoff_evidence_file_sha256"]
+    assert descriptor["cutoff_status"] == "certified"
+    assert descriptor["certification_status"] == "uncertified"
+    assert descriptor["certification"]["pre_lock_eligible"] is False
+
+
 def test_season_opener_manifest_keeps_training_provenance(tmp_path):
     settings = Settings(data_dir=str(tmp_path), target_gameweek=1)
     models = {
@@ -256,6 +300,254 @@ def test_season_opener_manifest_keeps_training_provenance(tmp_path):
     assert details["model_weights"] == {"ridge": 0.6, "rf": 0.4}
     assert details["projection_weights"] == {"minutes": 0.5, "ensemble": 0.4, "prior": 0.1}
     assert details["calibration_samples"] == 300
+
+
+def _prospective_snapshot_inputs():
+    player = {
+        "player_name": "Player One", "dunkest_player_id": "dk-101", "team": "BOS",
+        "role": "G", "opponent": "NYK", "nba_game_id": "game-1", "dunkest_turn": 1,
+        "fixture_verified": True, "game_datetime_utc": "2030-10-20T17:00:00Z",
+        "availability_observed_at_utc": "2030-10-20T10:00:00Z",
+        "expected_min": 28.0, "expected_min_model_shadow": 26.0,
+        "pdk_rate_for_projection": 0.6, "p_play": 0.9,
+        "ensemble_pdk": 17.0, "prior_pdk": 16.0, "implied_min": 30.0,
+        "has_history": True, "n_games": 30.0,
+        "historical_rf_pdk": 15.0, "historical_rf_blend_weight": 0.1,
+        "component_minutes_pdk": 16.8, "component_ensemble_pdk": 15.87,
+        "component_prior_pdk": 14.93,
+        "projection_weight_minutes": 0.5, "projection_weight_ensemble": 0.4,
+        "projection_weight_prior": 0.1,
+        "expected_pdk_conditional": 16.0, "expected_pdk": 14.4,
+    }
+    coach_rows = pd.DataFrame([
+        {"coach": "Coach BOS", "team": "BOS", "nba_game_id": "game-1",
+         "dunkest_turn": 1, "coach_cr": 8.0, "expected_coach_pdk": 12.5,
+         "p10_coach_pdk": 4.0, "p90_coach_pdk": 20.0},
+        {"coach": "Coach NYK", "team": "NYK", "nba_game_id": "game-1",
+         "dunkest_turn": 1, "coach_cr": 7.5, "expected_coach_pdk": 10.0,
+         "p10_coach_pdk": 2.0, "p90_coach_pdk": 18.0},
+    ])
+    predictions = pd.DataFrame([{
+        "player_name": "Player One", "team": "BOS", "role": "G", "cr": 8.0,
+        "expected_pdk": 14.4,
+    }])
+    predictions.attrs.update({
+        "candidate_forecasts": pd.DataFrame([player]),
+        "runtime_feature_snapshot": pd.DataFrame([{
+            "PLAYER_NAME": "Player One", "pdk_mean_5": 15.0,
+            "hgb_input__min_mean_5": 28.0,
+        }]),
+        "minutes_shadow_feature_columns": ["min_mean_5"],
+        "forecast_timestamp_utc": "2030-10-20T10:01:00Z",
+    })
+    return predictions, coach_rows
+
+
+def test_versioned_player_shadow_and_complete_coach_snapshots(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
+    processed = settings.data_path / "processed"
+    processed.mkdir(parents=True)
+    pd.DataFrame([{
+        "player_name": f"Player {i}", "cr": 5.0, "team_code": "BOS", "position": "G"
+    } for i in range(400)]).to_parquet(
+        processed / "dunkest_players_30_gw2.parquet", index=False
+    )
+    legacy_dir = tmp_path / "predictions" / "legacy-run"
+    legacy_dir.mkdir(parents=True)
+    legacy_manifest = legacy_dir / "manifest.json"
+    legacy_manifest.write_text('{"run_id":"legacy-run"}\n', encoding="utf-8")
+    original_legacy_bytes = legacy_manifest.read_bytes()
+    predictions, coaches = _prospective_snapshot_inputs()
+
+    output = save_run_artifacts(
+        settings, predictions, [], coach_forecasts=coaches
+    )
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    player_desc = manifest["player_forecast_snapshot"]
+    runtime_desc = manifest["runtime_feature_snapshot"]
+    shadow_desc = manifest["shadow_forecast_snapshot"]
+    coach_desc = manifest["coach_forecast_snapshot"]
+
+    assert manifest["schema_version"] == 2
+    assert player_desc["schema_version"] == 1
+    assert runtime_desc["schema_version"] == 1
+    assert shadow_desc["schema_version"] == 1
+    assert coach_desc["schema_version"] == 1
+    assert manifest["archive_status"] == "complete"
+    market_descriptor = manifest["required_pre_match_inputs"]["dunkest_market_snapshot"]
+    assert market_descriptor["status"] == "present"
+    copied_market = output / "pre_match_snapshot" / market_descriptor["path"]
+    assert hashlib.sha256(copied_market.read_bytes()).hexdigest() == market_descriptor["sha256"]
+    assert manifest["prospective_evaluation_status"] == "awaiting_reconciled_outcomes"
+
+    player_path = output / player_desc["path"]
+    shadow_path = output / shadow_desc["path"]
+    coach_path = output / coach_desc["path"]
+    player_snapshot = pd.read_parquet(player_path)
+    shadow_snapshot = pd.read_parquet(shadow_path)
+    coach_snapshot = pd.read_parquet(coach_path)
+    for descriptor, path in ((player_desc, player_path), (runtime_desc, output / runtime_desc["path"]),
+                             (shadow_desc, shadow_path), (coach_desc, coach_path)):
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == descriptor["sha256"]
+    assert player_snapshot["forecast_record_id"].is_unique
+    assert coach_snapshot["forecast_record_id"].is_unique
+    assert player_snapshot.loc[0, "forecast_schema_version"] == 1
+    assert player_snapshot.loc[0, "expected_min"] == pytest.approx(28.0)
+    assert player_snapshot.loc[0, "expected_min_model_shadow"] == pytest.approx(26.0)
+    assert player_snapshot.loc[0, "projection_weight_minutes"] == pytest.approx(0.5)
+    assert pd.Timestamp(player_snapshot.loc[0, "forecast_timestamp_utc"]) == pd.Timestamp("2030-10-20T10:01:00Z")
+    assert pd.Timestamp(coach_snapshot.loc[0, "forecast_timestamp_utc"]) == pd.Timestamp("2030-10-20T10:01:00Z")
+    assert len(coach_snapshot) == 2
+    assert shadow_snapshot.loc[0, "expected_min_model_shadow"] == pytest.approx(26.0)
+    assert shadow_desc["optimizer_input"] is False
+    assert "expected_min_model_shadow" not in pd.read_parquet(output / "predictions.parquet").columns
+    assert legacy_manifest.read_bytes() == original_legacy_bytes
+
+
+def test_missing_dunkest_market_is_recorded_and_marks_run_incomplete(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
+    predictions, coaches = _prospective_snapshot_inputs()
+
+    output = save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    market = manifest["required_pre_match_inputs"]["dunkest_market_snapshot"]
+    assert market == {
+        "status": "missing",
+        "path": "dunkest_players_30_gw2.parquet",
+        "sha256": None,
+        "source": None,
+        "reason": "required pre-lock Dunkest market snapshot was absent at archive time",
+    }
+    assert manifest["snapshot_set_complete"] is False
+    assert manifest["archive_status"] == "incomplete"
+    assert not (output / "pre_match_snapshot" / "dunkest_players_30_gw2.parquet").exists()
+
+
+def test_gameweek_mapping_snapshot_is_a_verified_source_slice(tmp_path):
+    source = tmp_path / "season_mapping.parquet"
+    captured = pd.Timestamp("2026-10-20T10:00:00Z")
+    rows = []
+    for gameweek, game_id in ((2, "g2"), (3, "g3")):
+        rows.append({
+            "season_id": "26", "nba_season": "2026-27", "nba_game_id": game_id,
+            "dunkest_match_id": f"dk-{gameweek}",
+            "game_datetime_utc": captured + pd.Timedelta(days=2),
+            "game_date_local": "2026-10-22", "home_team": "BOS", "away_team": "NYK",
+            "home_team_eligible": True, "away_team_eligible": False,
+            "dunkest_gameweek": gameweek, "dunkest_turn": 1,
+            "fantasy_eligible": True, "mapping_verified": True,
+            "eligibility_reason": "verified", "source": "lineups",
+            "source_url_or_endpoint": "https://example.invalid/fixture",
+            "source_retrieved_at_utc": captured, "mapping_version": "lineups_browser_season_multigw_v1",
+            "raw_payload_sha256": ("a" if gameweek == 2 else "b") * 64,
+        })
+    pd.DataFrame(rows).to_parquet(source, index=False)
+
+    snapshot = _gameweek_fixture_snapshot(
+        source, season_id="26", gameweek=2,
+        forecast_timestamp=pd.Timestamp("2026-10-20T11:00:00Z"),
+    )
+
+    assert snapshot["season_id"].astype(str).tolist() == ["26"]
+    assert snapshot["dunkest_gameweek"].astype(int).tolist() == [2]
+    assert snapshot["nba_game_id"].tolist() == ["g2"]
+    assert snapshot.loc[0, "mapping_version"] == "lineups_browser_season_multigw_v1"
+
+
+def test_run_writer_uses_archive_gameweek_mapping_name_without_copying_season_map(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="26", target_gameweek=2)
+    processed = settings.data_path / "processed"
+    processed.mkdir(parents=True)
+    source = processed / "dunkest_fixture_mapping_26_lineups_browser_season_multigw_v1.parquet"
+    pd.DataFrame([{
+        "season_id": "26", "nba_season": "2026-27", "nba_game_id": "g2",
+        "dunkest_match_id": "dk-2", "game_datetime_utc": "2030-10-22T10:00:00Z",
+        "game_date_local": "2030-10-22", "home_team": "BOS", "away_team": "NYK",
+        "home_team_eligible": True, "away_team_eligible": False,
+        "dunkest_gameweek": 2, "dunkest_turn": 1, "fantasy_eligible": True,
+        "mapping_verified": True, "eligibility_reason": "verified", "source": "lineups",
+        "source_url_or_endpoint": "https://example.invalid/fixture",
+        "source_retrieved_at_utc": "2030-10-20T09:00:00Z",
+        "mapping_version": "lineups_browser_season_multigw_v1", "raw_payload_sha256": "a" * 64,
+    }]).to_parquet(source, index=False)
+    predictions, coaches = _prospective_snapshot_inputs()
+
+    output = save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+
+    snapshot_dir = output / "pre_match_snapshot"
+    expected = snapshot_dir / "dunkest_fixture_mapping_26_lineups_browser_gw2_team_status_v2.parquet"
+    assert expected.is_file()
+    assert not (snapshot_dir / source.name).exists()
+    stored = pd.read_parquet(expected)
+    source_frame = pd.read_parquet(source)
+    from dunkest.data.dunkest.fixtures import validate_fixture_mapping
+    pd.testing.assert_frame_equal(
+        stored, validate_fixture_mapping(source_frame).reset_index(drop=True)
+    )
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    mapping_entries = [
+        item for item in manifest["pre_match_snapshot"]["files"]
+        if item["path"].startswith("dunkest_fixture_mapping_")
+    ]
+    assert [item["path"] for item in mapping_entries] == [expected.name]
+
+
+@pytest.mark.parametrize(
+    ("season_id", "gameweek", "forecast_timestamp", "message"),
+    [
+        ("27", 2, "2026-10-20T11:00:00Z", "no rows"),
+        ("26", 4, "2026-10-20T11:00:00Z", "no rows"),
+        ("26", 2, "2026-10-20T09:00:00Z", "post-forecast"),
+    ],
+)
+def test_gameweek_mapping_snapshot_rejects_missing_or_incoherent_source(
+    tmp_path, season_id, gameweek, forecast_timestamp, message,
+):
+    source = tmp_path / "season_mapping.parquet"
+    pd.DataFrame([{
+        "season_id": "26", "nba_season": "2026-27", "nba_game_id": "g2",
+        "dunkest_match_id": "dk-2", "game_datetime_utc": "2026-10-22T10:00:00Z",
+        "game_date_local": "2026-10-22", "home_team": "BOS", "away_team": "NYK",
+        "home_team_eligible": True, "away_team_eligible": False,
+        "dunkest_gameweek": 2, "dunkest_turn": 1, "fantasy_eligible": True,
+        "mapping_verified": True, "eligibility_reason": "verified", "source": "lineups",
+        "source_url_or_endpoint": "https://example.invalid/fixture",
+        "source_retrieved_at_utc": "2026-10-20T10:00:00Z",
+        "mapping_version": "lineups_browser_season_multigw_v1", "raw_payload_sha256": "a" * 64,
+    }]).to_parquet(source, index=False)
+
+    with pytest.raises(ValueError, match=message):
+        _gameweek_fixture_snapshot(
+            source, season_id=season_id, gameweek=gameweek,
+            forecast_timestamp=pd.Timestamp(forecast_timestamp),
+        )
+
+
+def test_snapshot_persistence_failure_is_logged_and_marks_archive_incomplete(tmp_path, monkeypatch, caplog):
+    settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
+    predictions, coaches = _prospective_snapshot_inputs()
+    original_to_parquet = pd.DataFrame.to_parquet
+
+    def fail_coach_snapshot(self, path, *args, **kwargs):
+        if str(path).endswith("coach_forecast_snapshot.parquet"):
+            raise OSError("simulated coach snapshot disk failure")
+        return original_to_parquet(self, path, *args, **kwargs)
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", fail_coach_snapshot)
+    output = save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+    manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+
+    assert manifest["archive_status"] == "incomplete"
+    assert manifest["snapshot_set_complete"] is False
+    assert manifest["coach_forecast_snapshot"]["status"] == "incomplete"
+    assert manifest["coach_forecast_snapshot"]["sha256"] is None
+    assert manifest["persistence_errors"] == [{
+        "artifact": "coach_forecast", "error_type": "OSError",
+        "message": "simulated coach snapshot disk failure",
+    }]
+    assert "Could not persist coach_forecast snapshot" in caplog.text
+    assert not (output / "coach_forecast_snapshot.parquet").exists()
 
 
 def test_post_match_snapshot_archives_hashes_and_evaluation_provenance(tmp_path):
