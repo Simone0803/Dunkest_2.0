@@ -45,6 +45,26 @@ PDK_REPLAY_REQUIRED_COLUMNS = {
     "projection_weight_ensemble", "projection_weight_prior", "expected_pdk_conditional",
     "expected_pdk",
 }
+REALIZED_OUTCOME_COLUMNS = {
+    "actual_pdk", "actual_pdk_official", "actual_pdk_nba_proxy",
+    "actual_minutes", "actual_min", "actual_coach_pdk",
+    "target_pdk", "target_min", "target_minutes", "outcome_status",
+}
+
+
+def _reject_realized_outcome_columns(frames: dict[str, object]) -> None:
+    """Keep post-game labels out of immutable pre-game forecast artifacts."""
+    for label, frame in frames.items():
+        if not isinstance(frame, pd.DataFrame):
+            continue
+        present = sorted(
+            str(column) for column in frame.columns
+            if str(column).strip().casefold() in REALIZED_OUTCOME_COLUMNS
+        )
+        if present:
+            raise ValueError(
+                f"Pre-game forecast input {label!r} contains realized outcome columns: {present}"
+            )
 
 
 def _persist_versioned_snapshot(
@@ -350,9 +370,18 @@ def save_run_artifacts(
     *,
     coach_forecasts: pd.DataFrame | None = None,
 ) -> Path:
+    prediction_attrs = dict(predictions.attrs)
+    _reject_realized_outcome_columns({
+        "optimizer_predictions": predictions,
+        "all_candidate_forecasts": prediction_attrs.get("candidate_forecasts"),
+        "runtime_feature_snapshot": prediction_attrs.get("runtime_feature_snapshot"),
+        "coach_forecasts": coach_forecasts,
+    })
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "_" + uuid4().hex[:8]
     out_dir = settings.data_path / "predictions" / run_id
-    out_dir.mkdir(parents=True, exist_ok=True)
+    # Each run is an append-only archive. If an ID is ever reused, fail before
+    # touching any existing forecast files instead of silently replacing them.
+    out_dir.mkdir(parents=True, exist_ok=False)
     persistence_errors: list[dict] = []
     input_fingerprints = _input_fingerprints(settings)
     configuration = asdict(settings)
@@ -362,7 +391,6 @@ def save_run_artifacts(
     input_dataset_identifier = _json_hash(input_fingerprints)
     code_version = git_hash or source_fingerprint["sha256"]
 
-    prediction_attrs = dict(predictions.attrs)
     # pandas serializes DataFrame.attrs into parquet metadata; the complete
     # candidate view is written as its own immutable table below.
     predictions.attrs = {

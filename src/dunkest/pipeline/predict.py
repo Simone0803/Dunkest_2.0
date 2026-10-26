@@ -160,6 +160,30 @@ def _attach_verified_gameweek_context(
     return out.drop(columns="_team_context").reset_index(drop=True)
 
 
+def _require_complete_market_fixture_coverage(
+    market: pd.DataFrame, fixtures: pd.DataFrame
+) -> None:
+    """Fail closed when market teams have no verified matchup or rest status."""
+    if market.empty:
+        raise RuntimeError("Il listino Dunkest è vuoto: non posso verificare la copertura fixture.")
+    team_col = "team_code" if "team_code" in market else "team"
+    if team_col not in market:
+        raise RuntimeError("Il mercato Dunkest non contiene team_code/team per validare la copertura fixture.")
+    market_teams = set(
+        market[team_col].dropna().astype(str).str.strip().str.upper()
+    ) - {"", "NAN", "NONE", "<NA>"}
+    fixture_teams = set(_verified_team_context(fixtures))
+    unaccounted = sorted(market_teams.difference(fixture_teams))
+    if unaccounted:
+        raise RuntimeError(
+            "Copertura incompleta del listino rispetto alle fixture: nessun matchup "
+            f"certificato per {', '.join(unaccounted)}. Potrebbero essere squadre "
+            "a riposo oppure fixture non acquisite; il forecast non può distinguerle "
+            "in sicurezza. Acquisisci il calendario ufficiale con lo stato Team at Rest "
+            "prima di generare le rose."
+        )
+
+
 def _attach_prediction_fixture_context(
     predictions: pd.DataFrame, fixtures: pd.DataFrame
 ) -> pd.DataFrame:
@@ -217,6 +241,7 @@ def run_predict(
             f"Manca la mappatura verificata delle partite Dunkest per la Giornata {gw}. "
             "Aggiorna Lineups e acquisisci il calendario della giornata prima di generare rose."
         )
+    _require_complete_market_fixture_coverage(dk, fixture_schedule)
     cutoff_source_metadata: dict = {}
     cutoff_evidence: dict = {
         "status": "uncertified",

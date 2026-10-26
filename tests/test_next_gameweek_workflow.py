@@ -10,7 +10,10 @@ from dunkest.data.dunkest.fixtures import (
     save_current_capture_fixture_mapping,
     save_fixture_mapping,
 )
-from dunkest.pipeline.predict import _attach_verified_gameweek_context
+from dunkest.pipeline.predict import (
+    _attach_verified_gameweek_context,
+    _require_complete_market_fixture_coverage,
+)
 
 
 def _fixture(game_id, home, away, *, gw, turn, date, retrieved):
@@ -119,6 +122,23 @@ def test_prediction_context_uses_verified_opponent_turn_and_turn_specific_lineup
     assert out.loc["Player One", "lineup_group"] == "QUINTETTO"
     assert out.loc["Player Two", "opponent"] == "BOS"
     assert out.loc["Player Two", "lineup_group"] == "PANCHINA"
+
+
+def test_market_fixture_coverage_fails_for_unmatched_team_and_accepts_complete_map():
+    market = pd.DataFrame([
+        {"player_name": "One", "team_code": "BOS"},
+        {"player_name": "Two", "team_code": "NYK"},
+        {"player_name": "Resting", "team_code": "ORL"},
+    ])
+    fixtures = pd.DataFrame([{
+        "home_team": "BOS", "away_team": "NYK", "home_team_eligible": True,
+        "away_team_eligible": True, "fantasy_eligible": True, "dunkest_turn": 2,
+        "mapping_verified": True, "nba_game_id": "g2",
+    }])
+
+    with pytest.raises(RuntimeError, match="ORL.*squadre a riposo"):
+        _require_complete_market_fixture_coverage(market, fixtures)
+    _require_complete_market_fixture_coverage(market.iloc[:2], fixtures)
 
 
 def test_prediction_context_fails_closed_without_verified_fixture():

@@ -20,6 +20,13 @@ def test_run_after_gameweek_one_uses_budget_from_roster(
     from dunkest.data.dunkest import fixtures, lineups_browser
 
     settings = Settings(data_dir=str(tmp_path))
+    roster_path = tmp_path / "current_roster.yaml"
+    roster_path.write_text(
+        "budget: 96.1\nplayers:\n"
+        + "".join(f"  - Player {i}\n" for i in range(10))
+        + "coach: Coach\n",
+        encoding="utf-8",
+    )
     monkeypatch.setattr(
         Settings, "from_yaml",
         classmethod(lambda cls, path=None: settings),
@@ -28,7 +35,7 @@ def test_run_after_gameweek_one_uses_budget_from_roster(
     monkeypatch.setattr(
         sys, "argv",
         ["dunkest", "run", "--giornata", "2",
-         "--roster", "config/current_roster.yaml"],
+         "--roster", str(roster_path)],
     )
 
     monkeypatch.setattr(

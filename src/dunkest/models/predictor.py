@@ -724,6 +724,28 @@ def _inference_rows(features: pd.DataFrame) -> pd.DataFrame:
     return features.sort_values("GAME_DATE").groupby("PLAYER_NAME", as_index=False).tail(1)
 
 
+def _selected_runtime_feature_rows(
+    inference_rows: pd.DataFrame,
+    shadow_input_matrix: pd.DataFrame | None,
+) -> tuple[pd.DataFrame, pd.DataFrame | None]:
+    """Keep the exact per-player rows used by prediction, aligned to HGB inputs.
+
+    The operational lookup deduplicates normalized player keys with ``keep=last``.
+    Archive that same selected row so aliases in historical logs do not become
+    ambiguous during a later player-key join.
+    """
+    if inference_rows.empty or "_key" not in inference_rows:
+        return inference_rows.copy(), shadow_input_matrix
+    keep = ~inference_rows["_key"].duplicated(keep="last").to_numpy()
+    positions = np.flatnonzero(keep)
+    selected_rows = inference_rows.iloc[positions].copy()
+    selected_matrix = (
+        shadow_input_matrix.iloc[positions].copy()
+        if shadow_input_matrix is not None else None
+    )
+    return selected_rows, selected_matrix
+
+
 def _inference_minutes_baseline(models: dict, latest: pd.DataFrame) -> pd.Series:
     """Return the baseline that must be added to the model's prediction scale."""
     if models.get("_prediction_is_absolute", False):
@@ -1185,7 +1207,10 @@ def predict_players(
         # legacy trainer predicts residuals around the minutes baseline.
         baseline = _inference_minutes_baseline(models, latest)
         latest["ensemble_pdk"] = (baseline + residual).clip(lower=0.0)
-        hist_lookup = latest.drop_duplicates("_key", keep="last").set_index("_key")
+        shadow_feature_snapshot, shadow_input_matrix = _selected_runtime_feature_rows(
+            latest, shadow_input_matrix
+        )
+        hist_lookup = shadow_feature_snapshot.set_index("_key")
     else:
         hist_lookup = pd.DataFrame()
 

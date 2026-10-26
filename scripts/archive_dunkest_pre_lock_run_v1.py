@@ -712,8 +712,33 @@ def versioned_forecast_snapshot_validation(run_dir: Path, manifest: dict) -> dic
             ambiguous_mapping = True
             errors.append("runtime feature snapshot contains ambiguous candidate/feature mappings")
         if "missing" in statuses:
-            missing_components = True
-            errors.append("runtime feature snapshot has candidates without a matched runtime feature row")
+            missing_rows = runtime.loc[
+                runtime["feature_match_status"].astype(str).eq("missing")
+            ]
+            documented_fallback = pd.Series(False, index=missing_rows.index)
+            if (
+                not missing_rows.empty
+                and {"candidate_key_count", "source_feature_row_count", "minutes_shadow_status"}.issubset(runtime.columns)
+                and {"forecast_record_id", "history_source", "expected_min_model_shadow"}.issubset(players.columns)
+            ):
+                player_index = players.set_index("forecast_record_id")
+                history_source = missing_rows["forecast_record_id"].map(player_index["history_source"])
+                player_shadow = missing_rows["forecast_record_id"].map(
+                    player_index["expected_min_model_shadow"]
+                )
+                documented_fallback = (
+                    pd.to_numeric(missing_rows["candidate_key_count"], errors="coerce").eq(1)
+                    & pd.to_numeric(missing_rows["source_feature_row_count"], errors="coerce").eq(0)
+                    & missing_rows["minutes_shadow_status"].astype(str).eq("unavailable")
+                    & history_source.astype(str).eq("history_feature_row_missing")
+                    & pd.to_numeric(player_shadow, errors="coerce").isna()
+                )
+            if missing_rows.empty or not documented_fallback.all():
+                missing_components = True
+                errors.append(
+                    "runtime feature snapshot has unmatched candidates without an explicit "
+                    "no-history fallback and unavailable shadow forecast"
+                )
         if "forecast_run_id" in runtime and not runtime["forecast_run_id"].astype(str).eq(
             str(manifest.get("run_id", ""))
         ).all():

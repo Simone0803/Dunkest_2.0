@@ -28,6 +28,101 @@ from dunkest.pipeline.season_opener import run_season_opener
 from dunkest.names import player_key
 
 
+def _archive_and_review_run(run_dir: Path, data_dir: Path) -> dict:
+    """Seal a saved run and recheck it without changing its eligibility gates."""
+    repo_root = Path(__file__).resolve().parents[2]
+    archive_root = data_dir.expanduser().resolve() / "archives" / "pre_lock"
+    archive_script = repo_root / "scripts" / "archive_dunkest_pre_lock_run_v1.py"
+    review_script = repo_root / "scripts" / "review_dunkest_pre_lock_archive_v1.py"
+
+    try:
+        archived = subprocess.run(
+            [
+                sys.executable,
+                str(archive_script),
+                "--run-dir",
+                str(run_dir.resolve()),
+                "--archive-root",
+                str(archive_root),
+            ],
+            cwd=repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError as exc:
+        return {"status": "archive_failed", "error": str(exc)}
+    if archived.returncode != 0:
+        return {
+            "status": "archive_failed",
+            "error": (archived.stderr or archived.stdout).strip()[-2000:],
+        }
+    try:
+        archive_result = json.loads(archived.stdout)
+    except (TypeError, json.JSONDecodeError) as exc:
+        return {"status": "archive_failed", "error": f"invalid archiver response: {exc}"}
+    archive_path = archive_result.get("archive_path")
+    if not archive_path:
+        return {"status": "archive_failed", "error": "archiver response has no archive_path"}
+
+    try:
+        reviewed = subprocess.run(
+            [
+                sys.executable,
+                str(review_script),
+                "--archive-dir",
+                str(Path(archive_path).resolve()),
+            ],
+            cwd=repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+    except OSError as exc:
+        return {"status": "review_failed", "archive": archive_result, "error": str(exc)}
+    if reviewed.returncode != 0:
+        return {
+            "status": "review_failed",
+            "archive": archive_result,
+            "error": (reviewed.stderr or reviewed.stdout).strip()[-2000:],
+        }
+    try:
+        review_result = json.loads(reviewed.stdout)
+    except (TypeError, json.JSONDecodeError) as exc:
+        return {
+            "status": "review_failed",
+            "archive": archive_result,
+            "error": f"invalid reviewer response: {exc}",
+        }
+    return {"status": "reviewed", "archive": archive_result, "review": review_result}
+
+
+def _report_archive_review(archive_check: dict) -> None:
+    """Report archive status; fail the command only for technical archive/review errors."""
+    if archive_check.get("status") != "reviewed":
+        CONSOLE.print(
+            "[bold yellow]Archivio pre-lock non verificato[/bold yellow]  "
+            f"{archive_check.get('error', archive_check.get('status', 'unknown_error'))}. "
+            "Il forecast è stato salvato, ma non va considerato eleggibile."
+        )
+        raise SystemExit(2)
+
+    archived = archive_check["archive"]
+    reviewed = archive_check["review"]
+    if archived.get("pre_lock_eligible") and reviewed.get("rechecked_pre_lock_eligible"):
+        CONSOLE.print(
+            "[bold green]Bundle pre-lock verificato[/bold green]  "
+            f"{archived.get('archive_path')}"
+        )
+    else:
+        CONSOLE.print(
+            "[bold yellow]Bundle archiviato a fini diagnostici, non eleggibile[/bold yellow]  "
+            f"stato reviewer: {reviewed.get('status')}; "
+            f"eligibility: {archived.get('eligibility_status')}; "
+            f"archivio: {archived.get('archive_path')}"
+        )
+
+
 def _prepare_and_open_current_roster(roster_path: Path) -> None:
     """Open the current roster for editing before a post-opener run."""
     roster_path = roster_path.expanduser().resolve()
@@ -262,8 +357,32 @@ def main() -> None:
                 from dunkest.data.dunkest.fixtures import save_current_capture_fixture_mapping
 
                 market_path = settings.data_path / "current_lineups_market.csv"
+                previous_market = market_path.read_bytes() if market_path.is_file() else None
+                market_metadata_path = market_path.with_suffix(market_path.suffix + ".meta.json")
+                previous_market_metadata = (
+                    market_metadata_path.read_bytes() if market_metadata_path.is_file() else None
+                )
                 print(f"\nAcquisizione Lineups dell'intera Giornata {args.giornata} (tutti i turni)...")
-                scrape_lineups_market(market_path, turn_number=None)
+                try:
+                    scrape_lineups_market(market_path, turn_number=None)
+                    mapping = save_current_capture_fixture_mapping(settings, args.giornata)
+                    if mapping.empty:
+                        raise RuntimeError(
+                            f"Nessun matchup verificato per la Giornata {args.giornata}; "
+                            "non genero rose su un calendario incompleto."
+                        )
+                except Exception:
+                    # A valid market is kept until the new fixture capture has
+                    # been certified for the requested gameweek.
+                    if previous_market is not None:
+                        market_path.write_bytes(previous_market)
+                    elif market_path.is_file():
+                        market_path.unlink()
+                    if previous_market_metadata is not None:
+                        market_metadata_path.write_bytes(previous_market_metadata)
+                    elif market_metadata_path.is_file():
+                        market_metadata_path.unlink()
+                    raise
                 capture_manifest = {
                     "source": "dunkest_lineups_browser",
                     "gameweek": args.giornata,
@@ -271,16 +390,12 @@ def main() -> None:
                     "turns_captured": [1, 2, 3],
                     "market_merged": False,
                     "captured_at": datetime.now(timezone.utc).isoformat(),
+                    "fixture_mapping_rows": int(len(mapping)),
+                    "fixture_mapping_verified": True,
                 }
                 (settings.data_path / f"lineups_gw{args.giornata}_capture.json").write_text(
                     json.dumps(capture_manifest, indent=2), encoding="utf-8"
                 )
-                mapping = save_current_capture_fixture_mapping(settings, args.giornata)
-                if mapping.empty:
-                    raise RuntimeError(
-                        f"Nessun matchup verificato per la Giornata {args.giornata}; "
-                        "non genero rose su un calendario incompleto."
-                    )
             except Exception as exc:
                 parser.error(f"Aggiornamento Lineups/calendario non riuscito: {exc}")
         else:
@@ -309,6 +424,8 @@ def main() -> None:
             settings, preds, solutions, models, coach_forecasts=coach_df
         )
         CONSOLE.print(f"\n[bold green]Artefatti salvati[/bold green]  {out}")
+        archive_check = _archive_and_review_run(out, settings.data_path)
+        _report_archive_review(archive_check)
         return
 
     if args.command == "backtest":

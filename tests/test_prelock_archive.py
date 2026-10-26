@@ -578,6 +578,64 @@ def test_versioned_snapshot_bundle_validates_all_components_and_hashes(tmp_path)
     assert result["components"]["shadow_forecast_snapshot"]["rows"] == 1
 
 
+def test_versioned_snapshot_accepts_documented_no_history_fallback_without_shadow_features(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    player_path = run / "player_forecast_snapshot.parquet"
+    players = pd.read_parquet(player_path)
+    players["history_source"] = "history_feature_row_missing"
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+    manifest["player_forecast_snapshot"]["columns"] = list(players.columns)
+
+    runtime_path = run / "runtime_feature_snapshot.parquet"
+    runtime = pd.read_parquet(runtime_path)
+    runtime["feature_match_status"] = "missing"
+    runtime["candidate_key_count"] = 1
+    runtime["source_feature_row_count"] = 0
+    runtime.to_parquet(runtime_path, index=False)
+    manifest["runtime_feature_snapshot"]["sha256"] = archive.digest(runtime_path)
+
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "complete"
+
+    players["history_source"] = "current_season_game_logs"
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+    result = archive.versioned_forecast_snapshot_validation(run, manifest)
+
+    assert result["status"] == "incomplete"
+    assert any("no-history fallback" in error for error in result["errors"])
+
+
+def test_archive_with_existing_files_stays_ineligible_when_player_ids_are_missing(tmp_path):
+    import pandas as pd
+
+    run, manifest = make_versioned_snapshot_run(tmp_path)
+    player_path = run / "player_forecast_snapshot.parquet"
+    players = pd.read_parquet(player_path)
+    players.loc[0, "dunkest_player_id"] = None
+    players.loc[0, "canonical_player_id_source"] = "normalized_player_key"
+    players.to_parquet(player_path, index=False)
+    manifest["player_forecast_snapshot"]["sha256"] = archive.digest(player_path)
+    (run / "manifest.json").write_text(json.dumps(manifest))
+
+    result = archive.archive_run(run, tmp_path / "archive", 36)
+    sealed = Path(result["archive_path"])
+    archive_manifest = archive.load_json(sealed / "archive_manifest.json")
+
+    assert result["pre_lock_eligible"] is False
+    assert archive_manifest["pre_lock_eligible"] is False
+    assert archive_manifest["versioned_forecast_snapshot_validation"]["status"] == "incomplete"
+    assert any(
+        "stable Dunkest player ID" in error
+        for error in archive_manifest["versioned_forecast_snapshot_validation"]["errors"]
+    )
+    assert (sealed / "player_forecast_snapshot.parquet").is_file()
+
+
 def test_versioned_snapshot_bundle_marks_missing_component_incomplete(tmp_path):
     run, manifest = make_versioned_snapshot_run(tmp_path)
     (run / "coach_forecast_snapshot.parquet").unlink()

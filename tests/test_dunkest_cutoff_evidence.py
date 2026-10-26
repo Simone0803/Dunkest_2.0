@@ -221,9 +221,15 @@ def test_archive_certification_requires_untampered_official_cutoff_evidence(monk
         "source_feature_row_count": 1,
         "minutes_shadow_status": "available",
         "runtime_feature__hgb_input__lag1_nba_min": 22.0,
+        "runtime_feature_schema_version": 1,
     } for row in forecast_rows]).to_parquet(feature_path, index=False)
     run_manifest = {
+        # Schema 2 is the first version with immutable component snapshots.
+        # This test exercises player/runtime cutoff validation; the full
+        # versioned bundle contract has dedicated reviewer tests.
+        "schema_version": 2,
         "timestamp": forecast_time,
+        "snapshot_schemas": {"runtime_features": 1},
         "configuration": {"target_gameweek": 1},
         "player_forecast_snapshot": {
             "path": forecast_path.name,
@@ -248,6 +254,7 @@ def test_archive_certification_requires_untampered_official_cutoff_evidence(monk
         "runtime_feature_snapshot": {
             "path": feature_path.name,
             "sha256": hashlib.sha256(feature_path.read_bytes()).hexdigest(),
+            "schema_version": 1,
             "candidate_rows": 2,
             "source_input_dataset_identifier": "test-inputs",
             "source_input_provenance": [],

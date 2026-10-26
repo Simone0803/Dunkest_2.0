@@ -404,6 +404,45 @@ def test_versioned_player_shadow_and_complete_coach_snapshots(tmp_path):
     assert legacy_manifest.read_bytes() == original_legacy_bytes
 
 
+def test_run_artifact_id_collision_never_overwrites_existing_forecast(tmp_path, monkeypatch):
+    import dunkest.report.artifacts as artifacts
+
+    settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
+    predictions, coaches = _prospective_snapshot_inputs()
+
+    class FixedRunId:
+        hex = "a" * 32
+
+    fixed_timestamp = pd.Timestamp("2030-10-20T10:01:00Z").to_pydatetime()
+    monkeypatch.setattr(
+        artifacts, "datetime", SimpleNamespace(now=lambda tz=None: fixed_timestamp)
+    )
+    monkeypatch.setattr(artifacts, "uuid4", lambda: FixedRunId())
+    first = save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+    protected_files = {
+        name: (first / name).read_bytes()
+        for name in ("manifest.json", "predictions.parquet", "player_forecast_snapshot.parquet")
+    }
+
+    with pytest.raises(FileExistsError):
+        save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+
+    assert all((first / name).read_bytes() == content for name, content in protected_files.items())
+
+
+def test_run_writer_rejects_realized_outcomes_in_pre_match_inputs(tmp_path):
+    settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
+    predictions, coaches = _prospective_snapshot_inputs()
+    candidates = predictions.attrs["candidate_forecasts"].copy()
+    candidates["actual_pdk_official"] = 21.0
+    predictions.attrs["candidate_forecasts"] = candidates
+
+    with pytest.raises(ValueError, match="realized outcome columns"):
+        save_run_artifacts(settings, predictions, [], coach_forecasts=coaches)
+
+    assert not (settings.data_path / "predictions").exists()
+
+
 def test_missing_dunkest_market_is_recorded_and_marks_run_incomplete(tmp_path):
     settings = Settings(data_dir=str(tmp_path), season_id="30", target_gameweek=2)
     predictions, coaches = _prospective_snapshot_inputs()

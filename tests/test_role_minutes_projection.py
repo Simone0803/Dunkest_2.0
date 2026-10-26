@@ -16,11 +16,27 @@ from dunkest.models.predictor import (
     _apply_current_role_competition,
     _fit_projection_weights,
     _lineup_minutes_prior,
+    _selected_runtime_feature_rows,
     predict_players,
     recalculate_pdk_projection,
     train_models,
 )
 from dunkest.uncertainty.quantiles import add_uncertainty_columns
+
+
+def test_runtime_feature_snapshot_uses_same_last_alias_row_as_forecast_lookup():
+    inference = pd.DataFrame({
+        "PLAYER_NAME": ["Bobby Portis Jr.", "Bobby Portis"],
+        "_key": ["bobby portis", "bobby portis"],
+        "pdk_mean_3": [12.0, 18.0],
+    }, index=[4, 9])
+    hgb_inputs = pd.DataFrame({"pdk_mean_3": [12.0, 18.0]}, index=[4, 9])
+
+    selected, selected_inputs = _selected_runtime_feature_rows(inference, hgb_inputs)
+
+    assert selected["PLAYER_NAME"].tolist() == ["Bobby Portis"]
+    assert selected["pdk_mean_3"].tolist() == [18.0]
+    assert selected_inputs["pdk_mean_3"].tolist() == [18.0]
 
 
 def test_current_roster_competition_scales_expected_minutes_and_role_projection():
